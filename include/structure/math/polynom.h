@@ -11,6 +11,7 @@ template<typename T>
 class polynom {
 public:
 
+	// zero coefficient used for const reference return
 	static T ZERO_COEFF;
 	
 	// FFT root and order; if set, FFT will be used for multiplication
@@ -50,7 +51,7 @@ public:
 	}
 	
 	// pr = -p1; O(l1)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, and `pr` to be the same instance
 	static void neg(polynom &pr, const polynom &p1) {
 		int lr = p1.deg();
 		pr.c.resize(lr + 1);
@@ -59,7 +60,7 @@ public:
 	}
 
 	// pr = p1 + p2; O(l1 + l2)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void add(polynom &pr, const polynom &p1, const polynom &p2) {
 		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
 		pr.c.resize(lr + 1); 
@@ -68,7 +69,7 @@ public:
 	}
 	
 	// pr = p1 - p2; O(l1 + l2)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void sub(polynom &pr, const polynom &p1, const polynom &p2) {
 		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
 		pr.c.resize(lr + 1); 
@@ -77,7 +78,7 @@ public:
 	}
 	
 	// pr = p1 * p2; O(lr log lr)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul_fft(polynom &pr, const polynom &p1, const polynom &p2) {
 		int sizeR = p1.deg() + p2.deg() + 1;
 		int sizeFFT = 1; while (sizeFFT < sizeR) sizeFFT *= 2;
@@ -89,7 +90,7 @@ public:
 	}
 	
 	// pr = p1 * p2; O(l1 * l2)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2) {
 		int l1 = p1.deg(), l2 = p2.deg(); int lr = l1 + l2;
 		pr.c.resize(lr + 1);
@@ -101,7 +102,7 @@ public:
 		}
 	}
 
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul(polynom &pr, const polynom &p1, const polynom &p2) {
 		int sizeR = p1.deg() + p2.deg() + 1;
 		long long cost = (long long) p1.deg() * p2.deg();
@@ -113,11 +114,12 @@ public:
 	}
 
 	// pr = p1 % p2 | p1 / p2; O((l1 - lm) * lm)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1` and `pr` to be the same instance
+	// `pr` and `pm` must not be the same instance
 	static void quot_rem(polynom &pr, const polynom &p1, const polynom &pm) {
-		if (pm.is_power()) { pr.c = p1.c; return; }
 		int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
-		pr.c.resize(l1 + 1);
+		pr.c = p1.c; pr.c.resize(l1 + 1);
+		if (pm.is_power()) return;
 		for (int i = l1; i >= lm; i--) {
 			T s = pr[i] /= pm[lm]; if (s == 0) continue;
 			for (int j = 1; j <= lm; j++)
@@ -126,9 +128,11 @@ public:
 	}
 
 	// pr = p1 / p2; O((l1 - lm) * lm)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1` and `pr` to be the same instance
+	// `pr` and `pm` must not be the same instance
 	static void div(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
+		if (lr < 0) { pr.c.clear(); return; }
 		quot_rem(pr, p1, pm);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = pr[i + lm];
@@ -136,7 +140,8 @@ public:
 	}
 
 	// pr = p1 % pm; O((l1 - lm) * lm)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1` and `pr` to be the same instance
+	// `pr` and `pm` must not be the same instance
 	static void mod(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = lm - 1;
 		quot_rem(pr, p1, pm);
@@ -144,7 +149,7 @@ public:
 	}
 
 	// pr = p1 * s; O(l1)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1` and `pr` to be the same instance
 	static void mul(polynom &pr, const polynom &p1, const T &s) {
 		int lr = p1.deg();
 		pr.c.resize(lr + 1);
@@ -153,7 +158,7 @@ public:
 	}
 
 	// pr = p1 / s; O(l1)
-	// it is allowed for `pr` and `p1` to be the same polynom
+	// it is allowed for `p1` and `pr` to be the same instance
 	static void div(polynom &pr, const polynom &p1, const T &s) {
 		int lr = p1.deg();
 		pr.c.resize(lr + 1);
