@@ -2,10 +2,15 @@
 
 #include "gtest/gtest.h"
 
+#include <functional>
+
 using namespace std;
 using namespace altruct::math;
 
 typedef modulo<int, 1000000007> mod;
+
+typedef modulo<long long, 1> modl;
+long long modl::M = 1000000000000000003LL;
 
 TEST(modulo_test, constructor) {
 	mod m1;
@@ -115,8 +120,6 @@ TEST(modulo_test, operators_inplace_self) {
 }
 
 TEST(modulo_test, long_long) {
-	typedef modulo<long long, 1> modl;
-	modl::M = 1000000000000000003LL;
 	const modl m1(1000000000000000000LL);
 	const modl m2(2000000000000000008LL);
 	const modl m4(4000000000000000000LL);
@@ -137,4 +140,45 @@ TEST(modulo_test, long_long) {
 	EXPECT_EQ(modl(2), m2 % m1);
 	EXPECT_EQ(modl(4), m4 / m1);
 	EXPECT_EQ(modl(250000000000000001LL), m1 / m4);
+}
+
+template<typename T, typename F>
+void modulo_test_perf_impl(T a, T b, int n, char *msg, const F& func) {
+	double clocks_per_sec = 1000;
+	auto T0 = clock();
+	for (int i = 0; i < n; i++) func(a, b);
+	double dT = (clock() - T0) / clocks_per_sec;
+	double Mops = n / dT / 1000000;
+	printf("%s: %0.2lf Mops  %0.2lf s\n", msg, Mops, dT, a);
+}
+
+TEST(modulo_test, perf) {
+	return; // do not run perf test by default
+	
+	int ni = 1000000000;
+	int ai(12345678);
+	int bi(456789);
+	modulo_test_perf_impl(ai, bi, ni, "int add", [](int &a, int &b){a += b; b++; });
+	modulo_test_perf_impl(ai, bi, ni, "int sub", [](int &a, int &b){a -= b; b--; });
+	modulo_test_perf_impl(ai, bi, ni, "int neg", [](int &a, int &b){a = -b; b--; });
+	modulo_test_perf_impl(ai, bi, ni / 3, "int mul", [](int &a, int &b){a *= b; b++; });
+	modulo_test_perf_impl(ai, bi, ni / 10, "int div", [](int &a, int &b){a /= b; a += 1000000000; });
+
+	int nmi = 100000000;
+	mod ami(12345678);
+	mod bmi(13456789);
+	modulo_test_perf_impl(ami, bmi, nmi, "mod<int> add", [](mod &a, mod &b){a += b; b.v++; });
+	modulo_test_perf_impl(ami, bmi, nmi, "mod<int> sub", [](mod &a, mod &b){a -= b; b.v++; });
+	modulo_test_perf_impl(ami, bmi, nmi, "mod<int> neg", [](mod &a, mod &b){a = -b; b.v++; });
+	modulo_test_perf_impl(ami, bmi, nmi / 3, "mod<int> mul", [](mod &a, mod &b){a *= b; b.v++; });
+	modulo_test_perf_impl(ami, bmi, nmi / 30, "mod<int> div", [](mod &a, mod &b){a /= b; a.v++; });
+
+	int nml = 100000000;
+	modl aml(12345678);
+	modl bml(13456789);
+	modulo_test_perf_impl(aml, bml, nml, "mod<ll> add", [](modl &a, modl &b){a += b; b.v++; });
+	modulo_test_perf_impl(aml, bml, nml, "mod<ll> sub", [](modl &a, modl &b){a -= b; b.v++; });
+	modulo_test_perf_impl(aml, bml, nml, "mod<ll> neg", [](modl &a, modl &b){a = -b; b.v++; });
+	modulo_test_perf_impl(aml, bml, nml / 100, "mod<ll> mul", [](modl &a, modl &b){a *= b; b.v++; });
+	modulo_test_perf_impl(aml, bml, nml / 300, "mod<ll> div", [](modl &a, modl &b){a /= b; a.v++; });
 }

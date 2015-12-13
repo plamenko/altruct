@@ -10,7 +10,12 @@ template<typename T>
 void modulo_normalize(T& v, const T& M) { v %= M; }
 // integral type specializations
 template<typename I>
-void modulo_normalize_int(I& v, I M) { if (v < 0 || v >= M) v %= M; if (v < 0) v += M; }
+void modulo_normalize_int(I& v, I M) {
+	if (v < 0) v += M;
+	if (v >= M) v -= M;
+	if (v < 0 || v >= M) v %= M;
+	if (v < 0) v += M;
+}
 void modulo_normalize(long long& v, long long M);
 void modulo_normalize(int& v, int M);
 
