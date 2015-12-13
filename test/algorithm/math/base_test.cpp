@@ -191,3 +191,28 @@ TEST(base_test, div_ceil) {
 	EXPECT_EQ(-6LL, div_ceil(-20, +3));
 	EXPECT_EQ(+7LL, div_ceil(-20, -3));
 }
+
+TEST(base_test, gcd) {
+	EXPECT_EQ(15, gcd(15, 0));
+	EXPECT_EQ(15, gcd(0, 15));
+	EXPECT_EQ(15, gcd(15 * 7, 15 * 11 * 13));
+	EXPECT_EQ(15, gcd(15 * 11 * 13, 15 * 7));
+	EXPECT_EQ(1, gcd(7, 11 * 13));
+	EXPECT_EQ(1, gcd(11 * 13, 7));
+}
+
+void gcd_ex_test_impl(int expected_g, int a, int b) {
+	int g, x, y;
+	g = gcd_ex(a, b, &x, &y);
+	EXPECT_EQ(expected_g, g);
+	EXPECT_EQ(expected_g, a * x + b * y);
+}
+
+TEST(base_test, gcd_ex) {
+	gcd_ex_test_impl(15, 15, 0);
+	gcd_ex_test_impl(15, 0, 15);
+	gcd_ex_test_impl(15, 15 * 7, 15 * 13);
+	gcd_ex_test_impl(15, 15 * 13, 15 * 7);
+	gcd_ex_test_impl(1, 7, 11 * 13);
+	gcd_ex_test_impl(1, 11 * 13, 7);
+}

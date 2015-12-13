@@ -17,6 +17,34 @@ T powT(T x, int64_t y) {
 	return r;
 }
 
+// generic GCD
+// note: for integral types and negative input the result might be of incorrect sign!
+template<typename T>
+T gcd(T a, T b) {
+	while (a != 0) { T r = b % a; b = a; a = r; }
+	return b;
+}
+
+// generic extended GCD
+// note: for integral types and negative input the result might be of incorrect sign!
+template<typename T>
+T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
+	T r, q, g = a, h = b;
+	T xo = 0, xn = 1;
+//	T yo = 1, yn = 0;
+	while (h != 0) {
+		q = g / h;
+		r = g  - q * h;  g  = h;  h  = r;
+		r = xn - q * xo; xn = xo; xo = r;
+//		r = yn - q * yo; yn = yo; yo = r;
+//		T gn = a * xn + b * yn;
+	}
+	if (x) *x = xn;
+//	if (y) *y = yn;
+	if (y) *y = (b != 0) ? (g - a * xn) / b : 0;
+	return g;
+}
+
 // generic squaring
 template<typename T> T sqT(T x) {
 	return x * x;

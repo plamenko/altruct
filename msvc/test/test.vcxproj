@@ -28,6 +28,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\polymod_test .cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -125,7 +127,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -145,7 +147,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -163,7 +165,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -184,7 +186,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programs\Projects\Apps &amp; Libraries\Altruct\include;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

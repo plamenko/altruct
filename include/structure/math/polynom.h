@@ -119,7 +119,7 @@ public:
 	static void quot_rem(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
 		pr.c = p1.c; pr.c.resize(l1 + 1);
-		if (pm.is_power()) return;
+		if (lr < 0 || pm.is_power()) return;
 		for (int i = l1; i >= lm; i--) {
 			T s = pr[i] /= pm[lm]; if (s == 0) continue;
 			for (int j = 1; j <= lm; j++)
@@ -145,7 +145,7 @@ public:
 	static void mod(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = lm - 1;
 		quot_rem(pr, p1, pm);
-		pr.c.resize(lr + 1);
+		if (lr < l1) pr.c.resize(lr + 1);
 	}
 
 	// pr = p1 * s; O(l1)

@@ -10,6 +10,8 @@ syntax: glob
 *_i.c
 *_p.c
 *.ncb
+*.sdf
+*.opensdf
 *.suo
 *.tlb
 *.tlh
