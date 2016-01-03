@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lib\algorithm\math\base.cpp" />
+    <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
     <ClCompile Include="..\..\lib\structure\math\modulo.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
