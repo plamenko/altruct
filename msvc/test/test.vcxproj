@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polymod_test .cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
