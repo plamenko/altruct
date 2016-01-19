@@ -71,16 +71,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest;D:\Programs\Projects\Apps &amp; Libraries\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
