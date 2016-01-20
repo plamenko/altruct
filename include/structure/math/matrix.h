@@ -126,14 +126,11 @@ public:
 
 	// matrix must be a square matrix
 	matrix pow (long long p) const {
-		int n = rows();
-		matrix t(*this), r = identity(n);
-		if (p < 0) t = t.inverse(), p = -p;
-		for (; p; p >>= 1) {
-			if (p & 1) r *= t;
-			t *= t;
+		if (p < 0) {
+			return powT(inverse(), -p, identity(rows()));
+		} else {
+			return powT(*this, p, identity(rows()));
 		}
-		return r;
 	}
 
 	// matrix must be a square matrix
