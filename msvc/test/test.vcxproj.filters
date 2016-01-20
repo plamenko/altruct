@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\test\algorithm\math\base_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\matrix_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulo_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\polymod_test .cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\polynom_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{eeab0636-25f3-410c-b864-9abee7cc7556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\math">
+      <UniqueIdentifier>{2c445ce6-ae8f-4674-b6ea-bb7c41b2cdb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure">
+      <UniqueIdentifier>{5656dea1-70ca-427a-aea2-7af2d4182aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure\math">
+      <UniqueIdentifier>{9238ff7b-5520-4603-8a86-3e8a1cf8fab4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

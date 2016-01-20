@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\lib\algorithm\math\primes.cpp">
+      <Filter>src\algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\algorithm\math\base.cpp">
+      <Filter>src\algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lib\structure\math\modulo.cpp">
+      <Filter>src\structure\math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{6a697f4e-d00b-41b0-9b63-2cd9c30310b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\structure">
+      <UniqueIdentifier>{e7c56203-017d-476a-b20c-f3155ed3d28b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\structure\math">
+      <UniqueIdentifier>{13341fc6-a6b8-41fb-b454-06ed09b2fa6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithm">
+      <UniqueIdentifier>{0e18d6fc-d7d7-4c0e-8ac0-bd3cf044dd24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithm\math">
+      <UniqueIdentifier>{2c0003c5-f268-41f2-a584-ff788dfc9412}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{7bd4a3b5-b940-4802-bbea-4cfc412d3f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\algorithm">
+      <UniqueIdentifier>{9f5b1ed9-6c6b-4b14-bdbc-64ec7a8c5d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\algorithm\math">
+      <UniqueIdentifier>{b9edc163-4288-4569-a5ad-3fccf97e8474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\structure">
+      <UniqueIdentifier>{818361a8-0e79-48ef-9121-0b54cab6a6f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\structure\math">
+      <UniqueIdentifier>{e782747d-be26-42f2-8338-77b2c231062f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\algorithm\math\base.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\fft.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\primes.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\recurrence.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\matrix.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\modulo.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\polynom.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
