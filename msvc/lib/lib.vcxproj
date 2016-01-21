@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\lib\algorithm\math\base.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
     <ClCompile Include="..\..\lib\structure\math\modulo.cpp" />
+    <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="..\..\include\structure\math\matrix.h" />
     <ClInclude Include="..\..\include\structure\math\modulo.h" />
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
+    <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}</ProjectGuid>

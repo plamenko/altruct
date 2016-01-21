@@ -10,6 +10,9 @@
     <ClCompile Include="..\..\lib\structure\math\modulo.cpp">
       <Filter>src\structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp">
+      <Filter>src\structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -63,6 +66,9 @@
       <Filter>include\structure\math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\structure\math\polynom.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\prime_holder.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
   </ItemGroup>
