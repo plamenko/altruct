@@ -53,4 +53,18 @@ TEST(prime_holder, factor_integer) {
 	EXPECT_EQ((vector<ll>{ 1, 1000000007, 1000000009 }), prim.divisors(vector<fact_pair>{{ 1000000007, 1 }, { 1000000009, 1 }}, 1000000009));
 }
 
-// TODO: pf, phi, pi, mu
+TEST(prime_holder_test, other) {
+	prime_holder prim(30);
+	EXPECT_EQ((vector<int>{0, 1, 2, 3, 2, 5, 3, 7, 2, 3, 5, 11, 3, 13, 7, 5, 2, 17, 3, 19, 5, 7, 11, 23, 3, 5, 13, 3, 7, 29}), prim.pf());
+	EXPECT_EQ(0, prim.pf(0));
+	EXPECT_EQ(7, prim.pf(28));
+	EXPECT_EQ((vector<int>{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8, 12, 10, 22, 8, 20, 12, 18, 12, 28}), prim.phi());
+	EXPECT_EQ(0, prim.phi(0));
+	EXPECT_EQ(12, prim.phi(28));
+	EXPECT_EQ((vector<int>{0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10}), prim.pi());
+	EXPECT_EQ(0, prim.pi(0));
+	EXPECT_EQ(10, prim.pi(29));
+	EXPECT_EQ((vector<int>{0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, -1, 1, 1, 0, -1, 0, -1, 0, 1, 1, -1, 0, 0, 1, 0, 0, -1}), prim.mu());
+	EXPECT_EQ(0, prim.mu(0));
+	EXPECT_EQ(-1, prim.mu(29));
+}
