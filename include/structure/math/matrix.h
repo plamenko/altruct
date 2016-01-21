@@ -4,13 +4,16 @@
 
 #include <vector>
 
+namespace altruct {
+namespace math {
+
 template<typename T>
 class matrix {
 public:
 	typedef std::vector<T> row_type;
 
 	std::vector<row_type> a;
-	
+
 	matrix(int n = 0, int m = 0) {
 		if (!m) m = n;
 		a.resize(n);
@@ -32,18 +35,18 @@ public:
 	}
 
 	int rows() const {
-		return (int) a.size();
+		return (int)a.size();
 	}
 
 	int cols() const {
-		return a.empty() ? 0 : (int) a.back().size();
+		return a.empty() ? 0 : (int)a.back().size();
 	}
 
 	matrix& swap(matrix &rhs) {
 		std::swap(a, rhs.a);
 		return (*this);
 	}
-	
+
 	row_type& operator [] (int i) { return a[i]; }
 	const row_type& operator [] (int i) const { return a[i]; }
 
@@ -58,26 +61,26 @@ public:
 	matrix& operator += (const matrix &rhs) {
 		int n = rows(), m = cols();
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
-				a[i][j] += rhs[i][j];
+		for (int j = 0; j < m; j++)
+			a[i][j] += rhs[i][j];
 		return *this;
 	}
 	matrix operator + (const matrix &rhs) const {
 		return matrix(*this) += rhs;
 	}
-	
+
 	// matrices must be of same dimensions
 	matrix& operator -= (const matrix &rhs) {
 		int n = rows(), m = cols();
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
-				a[i][j] -= rhs[i][j];
+		for (int j = 0; j < m; j++)
+			a[i][j] -= rhs[i][j];
 		return *this;
 	}
 	matrix operator - (const matrix &rhs) const {
 		return matrix(*this) -= rhs;
 	}
-	
+
 	// lhs.cols() must be equal to rhs.rows()
 	matrix& operator *= (const matrix &rhs) {
 		int n = rows(), m = cols(), p = rhs.cols();
@@ -94,18 +97,18 @@ public:
 	matrix operator * (const matrix &rhs) const {
 		return matrix(*this) *= rhs;
 	}
-	
+
 	matrix& operator *= (const T& s) {
 		int n = rows(), m = cols();
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
-				a[i][j] *= s;
+		for (int j = 0; j < m; j++)
+			a[i][j] *= s;
 		return *this;
 	}
 	matrix operator * (const T& s) const {
 		return matrix(*this) *= s;
 	}
-	
+
 	matrix& operator /= (const matrix &rhs) {
 		return (*this) *= rhs.inverse();
 	}
@@ -116,8 +119,8 @@ public:
 	matrix& operator /= (const T& s) {
 		int n = rows(), m = cols();
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
-				a[i][j] /= s;
+		for (int j = 0; j < m; j++)
+			a[i][j] /= s;
 		return *this;
 	}
 	matrix operator / (const T& s) const {
@@ -125,10 +128,11 @@ public:
 	}
 
 	// matrix must be a square matrix
-	matrix pow (long long p) const {
+	matrix pow(long long p) const {
 		if (p < 0) {
 			return powT(inverse(), -p, identity(rows()));
-		} else {
+		}
+		else {
 			return powT(*this, p, identity(rows()));
 		}
 	}
@@ -180,7 +184,7 @@ public:
 		}
 		return true;
 	}
-	
+
 	// matrix must be a square matrix
 	matrix inverse() const {
 		matrix mat(*this), inv; T det;
@@ -194,16 +198,16 @@ public:
 		gauss(mat, inv, det);
 		return det;
 	}
-	
+
 	matrix transpose() const {
 		int n = rows(), m = cols();
 		matrix t(m, n);
 		for (int i = 0; i < n; i++)
-			for (int j = 0; j < m; j++)
-				t[j][i] = a[i][j];
+		for (int j = 0; j < m; j++)
+			t[j][i] = a[i][j];
 		return t;
 	}
-	
+
 	static matrix identity(int n) {
 		matrix t(n);
 		for (int i = 0; i < n; i++) {
@@ -212,3 +216,6 @@ public:
 		return t;
 	}
 };
+
+} // math
+} // altruct
