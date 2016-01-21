@@ -10,27 +10,27 @@ typedef long long ll;
 TEST(primes_test, primes_pq) {
 	int n = 30;
 	vector<int> vp(n);
-	vector<int> vq(n);
+	vector<char> vq(n);
 	int m = primes(&vp[0], &vq[0], n);
 	EXPECT_EQ(10, m);
 	EXPECT_EQ((vector<int> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }), vp);
-	EXPECT_EQ((vector<int> { 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 }), vq);
+	EXPECT_EQ((vector<char> { 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 }), vq);
 }
 
 TEST(primes_test, primes_p) {
 	int n = 30;
 	vector<int> vp(n);
-	int m = primes(&vp[0], nullptr, n);
+	int m = primes(&vp[0], nullptr, n); vp.resize(m);
 	EXPECT_EQ(10, m);
-	EXPECT_EQ((vector<int> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 }), vp);
+	EXPECT_EQ((vector<int> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 }), vp);
 }
 
 TEST(primes_test, primes_q) {
 	int n = 30;
-	vector<int> vq(n);
+	vector<char> vq(n);
 	int m = primes(nullptr, &vq[0], n);
 	EXPECT_EQ(10, m);
-	EXPECT_EQ((vector<int> { 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 }), vq);
+	EXPECT_EQ((vector<char> { 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 }), vq);
 }
 
 TEST(primes_test, prime_pi) {

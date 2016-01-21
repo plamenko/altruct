@@ -13,8 +13,11 @@ namespace math {
  * arrays. Array `p` contains all the primes up to `n`, whereas array `q`
  * contains flags whether the number at the given index is prime or not. If
  * null pointer is passed for one of those arrays, the corresponding output
- * won't be stored. At least one of `p` or `q` needs to be non-null. Each
- * array, if specified, needs to be of size `n`.
+ * won't be stored. At least one of `p` or `q` needs to be non-null.
+ *
+ * If only `p` is specified, `p` needs to be of size at least `n`.
+ * If both `p` and `q` are specified, `p` needs to be of size at least `pi(n)`.
+ * `q` if specified, needs to be of size at least `n`.
  *
  * Complexity: O(n log log n)
  *
@@ -23,7 +26,7 @@ namespace math {
  * @param n - performs sieving for numbers up to `n` (exclusive)
  * @return - number of primes up to `n`
  */
-int primes(int *p, int *q, int n);
+int primes(int *p, char *q, int n);
 
 /**
  * Prime Pi (Number of primes) up to `n`
@@ -69,7 +72,7 @@ void euler_phi(int *phi, int n, int *p, int m);
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
  */
-int moebius_mu(int *mu, int n, int *p, int m);
+void moebius_mu(int *mu, int n, int *p, int m);
 
 /**
  * Segmented Euler's Phi (Number of coprimes; Totient) in range `[b, e)`

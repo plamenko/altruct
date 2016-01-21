@@ -9,9 +9,10 @@ namespace math {
 
 typedef long long ll;
 
-int primes(int *p, int *q, int n) {
+int primes(int *p, char *q, int n) {
 	// if q not specified, use p for both
-	if (!q) q = p;
+	// last n chars of p are used for q
+	if (!q) q = (char *) (p + n) - n;
 	// initialize q
 	q[0] = q[1] = 0;
 	for (int i = 2; i < n; i++)
@@ -44,7 +45,7 @@ void euler_phi(int *phi, int n, int *p, int m) {
 			phi[j] = phi[j] / p[i] * (p[i] - 1);
 }
 
-int moebius_mu(int *mu, int n, int *p, int m) {
+void moebius_mu(int *mu, int n, int *p, int m) {
 	int i, j;
 	mu[0] = 0;
 	for (i = 1; i < n; i++)
@@ -57,7 +58,6 @@ int moebius_mu(int *mu, int n, int *p, int m) {
 		for (j = 0; j < n; j += p2)
 			mu[j] = 0;
 	}
-	return 0;
 }
 
 void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
