@@ -1,6 +1,7 @@
 #include "algorithm/math/primes.h"
 
 #include <cmath>
+#include <climits>
 #include <stdint.h>
 
 namespace altruct {
@@ -125,9 +126,38 @@ void factor(int *bpf, int n, int *p, int m) {
 
 void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf) {
 	while (n > 1) {
-		int p = pf[n];
-		int e = 0; while (n % p == 0) n /= p, e++;
+		int p = pf[n], e = 0;
+		while (n % p == 0) {
+			n /= p, e++;
+		}
 		vf.push_back({ p, e });
+	}
+}
+
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, int *pf) {
+	for (auto &n : vn) {
+		while (n > 1) {
+			int p = pf[n], e = 0;
+			for (auto &m : vn) {
+				while (m % p == 0) {
+					m /= p, e++;
+				}
+			}
+			vf.push_back({ p, e });
+		}
+	}
+}
+
+void divisors(std::vector<ll> &vd, const std::vector<std::pair<int, int>> &vf, ll maxd, ll d, int i) {
+	if (i >= (int) vf.size()) {
+		vd.push_back(d);
+		return;
+	}
+	const auto &f = vf[i];
+	for (int e = 0; e <= f.second; e++) {
+		divisors(vd, vf, maxd, d, i + 1);
+		if (d > maxd / f.first) break;
+		d *= f.first;
 	}
 }
 

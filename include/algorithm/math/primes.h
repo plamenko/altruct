@@ -142,19 +142,48 @@ void divisor_sigma1(long long *ds1, int n);
 void factor(int *bpf, int n, int *p, int m);
 
 /**
-* Prime factorization of integer `n`
-*
-* Stores the prime factors and their exponents to the vector `vf`. This
-* function requires a prime factors array for integers up to `n` inclusive
-* to be provided. That array can be precalculated with the `factor` function.
-*
-* Complexity: O(log n / log log n)
-*
-* @param vf - vector to store prime factors and the corresponding exponents
-* @param n - integer to factor
-* @param pf - array of prime factors for integers up to `n` inclusive
-*/
+ * Prime factorization of integer `n`
+ *
+ * Stores the prime factors and their exponents to the vector `vf`. This
+ * function requires a prime factors array for integers up to `n` inclusive
+ * to be provided. That array can be precalculated with the `factor` function.
+ *
+ * Complexity: O(log n / log log n)
+ *
+ * @param vf - vector to store prime factors and the corresponding exponents
+ * @param n - integer to factor
+ * @param pf - array of prime factors for integers up to `n` inclusive
+ */
 void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf);
+
+/**
+ * Prime factorization of the product of integers `vn`
+ *
+ * Stores the prime factors and their exponents to the vector `vf`. This
+ * function requires a prime factors array for integers up to `n` inclusive
+ * to be provided, where `n` is the largest element in `vn`. That array can
+ * be precalculated with the `factor` function.
+ *
+ * Complexity: O(k log n / log log n)
+ *
+ * @param vf - vector to store prime factors and the corresponding exponents
+ * @param vn - integers whose product to factor
+ * @param pf - array of prime factors for integers up to `n` inclusive
+ */
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, int *pf);
+
+/**
+ * Divisors of the number whose factorization is `vf`
+ *
+ * Stores the divisors to the vector `vd`. Only divisors up to `maxd` are stored.
+ *
+ * @param vd - vector to store divisors
+ * @param vf - prime factorization of the original number
+ * @param maxd - maximum divisor to store
+ * @param d - reserved
+ * @param i - reserved
+ */
+void divisors(std::vector<long long> &vd, const std::vector<std::pair<int, int>> &vf, long long maxd = LLONG_MAX, long long d = 1, int i = 0);
 
 } // math
 } // altruct
