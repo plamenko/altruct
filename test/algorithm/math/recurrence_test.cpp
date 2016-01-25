@@ -56,3 +56,8 @@ TEST(recurrence_test, lucas_u_11_10) {
 	}
 	EXPECT_EQ((vector<int> {0, 1, 11, 111, 1111, 11111, 111111, 1111111, 11111111, 111111111, 1111111111}), f);
 }
+
+TEST(recurrence_test, bernoulli_b) {
+	std::vector<mod> b = bernoulli_b<mod>(10);
+	EXPECT_EQ((vector<mod> {mod(1)/1, mod(1)/2, mod(1)/6, 0, -mod(1)/30, 0, mod(1)/42, 0, -mod(1)/30, 0, mod(5)/66}), b);
+}

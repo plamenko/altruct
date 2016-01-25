@@ -71,5 +71,21 @@ T lucas_v(T p, T q, long long n) {
 	return linear_recurrence<T>({ p, -q }, { 2, p }, n);
 }
 
+/*
+ * First B0...Bn Bernoulli numbers of the second kind
+ */
+template<typename T>
+std::vector<T> bernoulli_b(int n) {
+	std::vector<T> a(n+1), b(n+1);
+	for (int m = 0; m <= n; m++) {
+		a[m] = T(1) / (m + 1);
+		for (int j = m; j >= 1; j--) {
+			a[j - 1] = (a[j - 1] - a[j]) * j;
+		}
+		b[m] = a[0];
+	}
+	return b;
+}
+
 } // math
 } // altruct
