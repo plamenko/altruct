@@ -503,3 +503,17 @@ TEST(polynom_test, operators_inplace_self) {
 	pr = p1; pr /= pr;
 	EXPECT_EQ((polynom<int>{ 1 }), pr);
 }
+
+TEST(polynom_test, eval) {
+	const polynom<int> p1{ 7, 5, -3, 2 };
+	vector<int> ve1;
+	for (int x = -3; x <= 4; x++) {
+		ve1.push_back(p1.eval(x));
+	}
+	EXPECT_EQ((vector<int>{-89, -31, -3, 7, 11, 21, 49, 107}), ve1);
+	vector<double> ve2;
+	for (int x = -3; x <= 4; x++) {
+		ve2.push_back(p1.eval(x + 0.5));
+	}
+	EXPECT_EQ((vector<double>{-55.5, -14, 3.5, 9, 14.5, 32, 73.5, 151}), ve2);
+}

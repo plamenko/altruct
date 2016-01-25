@@ -33,7 +33,7 @@ public:
 	polynom& reserve(int sz) { if (sz > size()) c.resize(sz); return *this; }
 
 	int size() const { return (int)c.size(); }
-	const T& at(int index) const { return (index < size()) ? c[index] : ZERO_COEFF; }
+	const T& at(int index) const { return (0 <= index && index < size()) ? c[index] : ZERO_COEFF; }
 	const T& operator [] (int index) const { return at(index); }
 	T& operator [] (int index) { reserve(index + 1); return c[index]; }
 	int deg() const { for (int i = size() - 1; i > 0; i--) if (c[i] != 0) return i; return 0; }
@@ -191,6 +191,15 @@ public:
 	
 	polynom& operator *= (const T &val) { mul(*this, *this, val); return *this; }
 	polynom& operator /= (const T &val) { div(*this, *this, val); return *this; }
+
+	template<typename A>
+	A eval(const A &x) const {
+		A r = 0;
+		for (int i = deg(); i >= 0; i--) {
+			r = r * x + c[i];
+		}
+		return r;
+	}
 };
 
 template<typename T> T polynom<T>::ZERO_COEFF = 0;
