@@ -87,5 +87,35 @@ std::vector<T> bernoulli_b(int n) {
 	return b;
 }
 
+/**
+ * Finds the characteristic polynomial of a linearly recurrent sequence
+ *
+ * Works for an arbitrary field. The field requirement means that all non-zero
+ * elements need to have a multiplicative inverse.
+ * 
+ * @param a - the first 2n elements (or more) of the sequence,
+ *            where n is the degree of the polynomial
+ */
+template<typename T>
+polynom<T> berlekamp_massey(std::vector<T> a) {
+	int n = (int)a.size() / 2;
+	int m = 2 * n - 1;
+	polynom<T> R, R0, R1, V, V0, V1, Q;
+	R0[m + 1] = 1;
+	for (int i = 0; i <= m; i++) {
+		R1[i] = a[m - i];
+	}
+	V0[0] = 0;
+	V1[0] = 1;
+	while (R1.deg() >= n) {
+		Q = R0 / R1;
+		R = R0 % R1;
+		V = V0 - Q * V1;
+		V0 = V1; V1 = V;
+		R0 = R1; R1 = R;
+	}
+	return V1 / V1[V1.deg()];
+}
+
 } // math
 } // altruct

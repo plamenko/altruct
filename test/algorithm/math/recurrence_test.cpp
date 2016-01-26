@@ -61,3 +61,26 @@ TEST(recurrence_test, bernoulli_b) {
 	std::vector<mod> b = bernoulli_b<mod>(10);
 	EXPECT_EQ((vector<mod> {mod(1)/1, mod(1)/2, mod(1)/6, 0, -mod(1)/30, 0, mod(1)/42, 0, -mod(1)/30, 0, mod(5)/66}), b);
 }
+
+TEST(recurrence_test, berlekamp_massey) {
+	// a[n+1] = 17 a[n-0] - 23 a[n-1] + 13 a[n-2] + 45 a[n-3] - 58 a[n-4]
+	// x^(n+1) = 17 x^(n-0) - 23 x^(n-1) + 13 x^(n-2) + 45 x^(n-3) - 58 x^(n-4)   / x^(n-4)
+	// x^5 = 17 x^4 - 23 x^3 + 13 x^2 + 45 x^1 - 58 x^0
+	// 58 x^0 - 45 x^1 - 13 x^2 + 23 x^3 - 17 x^4 + 1 x^5 = 0
+	std::vector<mod> a;
+	for (int n = 0; n <= 100; n++) {
+		a.push_back(linear_recurrence<mod>({ 17, -23, 13, 45, -58 }, { 2, 3, 5, 7, 11 }, n));
+	}
+	auto p = berlekamp_massey(a);
+	EXPECT_EQ((polynom<mod> { +58, -45, -13, +23, -17, 1 }), p);
+	
+	// use the characteristic polynomial to calculate the n-th term of the sequence
+	typedef modulo<polynom<mod>, 1> poly_mod;
+	poly_mod::M = p;
+	auto x_n = powT(poly_mod({ 0, 1 }), 100); // x^n % p
+	mod r = 0;
+	for (int i = 0; i <= x_n.v.deg(); i++) {
+		r += x_n.v[i] * a[i];
+	}
+	EXPECT_EQ(a[100], r);
+}
