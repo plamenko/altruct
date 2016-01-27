@@ -516,24 +516,11 @@ TEST(polynom_test, eval) {
 		ve2.push_back(p1.eval(x + 0.5));
 	}
 	EXPECT_EQ((vector<double>{-55.5, -14, 3.5, 9, 14.5, 32, 73.5, 151}), ve2);
+	EXPECT_EQ(3.5, p1(-0.5));
 }
 
 TEST(polynom_test, derivative) {
 	const polynom<int> p1{ 7, 5, -3, 4 };
 	const polynom<int> pd = p1.derivative();
 	EXPECT_EQ((polynom<int>{ 5, -6, 12 }), pd);
-}
-
-TEST(polynom_test, search) {
-	const polynom<int> p1{ 7, -5, -13, 4 };
-	EXPECT_DOUBLE_EQ(-0.8262501959871101, p1.search(-1e100, -0.177, 0.0));
-	EXPECT_DOUBLE_EQ(+0.6112574125565371, p1.search(-0.177, +2.344, 0.0));
-	EXPECT_DOUBLE_EQ(+3.4649927834305730, p1.search(+2.344, +1e100, 0.0));
-}
-
-TEST(polynom_test, zeros) {
-	const polynom<int> p1{ 7, -5, -13, 4 };
-	vector<double> vz = p1.find_zeros(1e100);
-	for (auto &z : vz) { z = round(z * 1e12) / 1e12; }
-	EXPECT_EQ((vector<double>{-0.826250195987, 0.611257412557, 3.464992783431}), vz);
 }

@@ -25,6 +25,9 @@
     <ClCompile Include="..\..\test\structure\math\prime_holder_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

@@ -71,5 +71,8 @@
     <ClInclude Include="..\..\include\structure\math\prime_holder.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\polynoms.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

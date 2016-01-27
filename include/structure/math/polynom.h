@@ -193,6 +193,9 @@ public:
 	polynom& operator /= (const T &val) { div(*this, *this, val); return *this; }
 
 	template<typename A>
+	A operator () (const A& x) const { return eval<A>(x); }
+	
+	template<typename A>
 	A eval(const A& x) const {
 		A r = 0;
 		for (int i = deg(); i >= 0; i--) {
@@ -207,50 +210,6 @@ public:
 			r[i - 1] = c[i] * i;
 		}
 		return r;
-	}
-
-	// Searches for argument x within the monotonic interval [b, e] so that p(x) = y.
-	// Note, this method only works for floating point arguments.
-	template<typename F>
-	F search(const F &b, const F& e, const F& y, const F& eps = 0) const {
-		F lo = b, hi = e, mid = e;
-		int s = (eval<F>(b) > eval<F>(e)) ? -1 : +1;
-		while (hi - lo > eps) {
-			mid = (lo + hi) / 2;
-			if (mid == lo || mid == hi) {
-				break;
-			}
-			if ((s > 0) ? (eval<F>(mid) < y) : eval<F>(mid) > y) {
-				lo = mid;
-			}
-			else {
-				hi = mid;
-			}
-		}
-		return mid;
-	}
-
-	// Finds polynom zeros.
-	// Note, this method only works for floating point arguments.
-	// @param inf - zeros are searched within [-inf, +inf] range.
-	template<typename F>
-	std::vector<F> find_zeros(const F& inf, const F& eps = 0) const {
-		int l = deg();
-		// derivations
-		std::vector<polynom> pd(l);
-		pd[0]= *this;
-		for (int i = 1; i < l; i++)
-			pd[i] = pd[i - 1].derivative();
-		// derivations' zeros
-		std::vector<F> z(l + 1);
-		for (int i = l - 1; i >= 0; i--) {
-			z[0] = -inf; z[l - i] = inf;
-			for (int j = 1; j <= l - i; j++) {
-				z[j] = pd[i].search<F>(z[j - 1], z[j], 0, eps);
-			}
-		}
-		z.erase(z.begin());
-		return z;
 	}
 };
 
