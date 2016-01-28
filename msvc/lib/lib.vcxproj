@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h" />
     <ClInclude Include="..\..\include\algorithm\math\fft.h" />
+    <ClInclude Include="..\..\include\algorithm\math\modulos.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\..\include\structure\math\modulo.h" />
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
+    <ClInclude Include="..\..\include\structure\math\quadratic.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}</ProjectGuid>

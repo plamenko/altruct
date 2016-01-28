@@ -74,5 +74,11 @@
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\modulos.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\quadratic.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
