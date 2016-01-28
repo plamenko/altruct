@@ -67,8 +67,14 @@ I modulo_divide_int(I x, I y, I M) {
 long long modulo_divide(long long x, long long y, long long M);
 int modulo_divide(int x, int y, int M);
 
-// T must be constructable from int
-template<typename T = int, int ID = 1000000007>
+/**
+ * Modulo M arithmetics
+ *
+ * modulo<int, 3> - Z/3Z
+ *
+ * T must be constructable from int
+ */
+template<typename T, int ID>
 class modulo {
 public:
 	static T M;

@@ -47,7 +47,7 @@ modulo<T, ID> sqrt_cipolla(modulo<T, ID> n) {
 		d = a * a - n;
 	} while (powT(d, (p - 1) / 2) == 1); // jacobi(d, p) == 1
 	// r = (a + sqrt(d)) ^ ((p + 1) / 2)
-	typedef quadratic<mod, -1> quad;
+	typedef quadratic<mod, 0> quad;
 	quad::D = d;
 	quad r = powT(quad(a, 1), (p + 1) / 2);
 	return r.a;
@@ -58,7 +58,7 @@ modulo<T, ID> sqrt_cipolla(modulo<T, ID> n) {
  */
 template <typename I>
 I sqrt_cipolla(I n, I p) {
-	typedef modulo<I, -1> mod;
+	typedef modulo<I, 1> mod;
 	mod::M = p;
 	return sqrt_cipolla(mod(n)).v;
 }
@@ -68,7 +68,7 @@ I sqrt_cipolla(I n, I p) {
  */
 template <typename I>
 I sqrt_hensel_lift(I n, int p, int k) {
-	typedef modulo<I, -1> mod;
+	typedef modulo<I, 1> mod;
 	mod::M = p; int p_i = p, p_k = powT(p, k);
 	// f(r) == r^2 - n; f'(r) == 2r;
 	mod r = sqrt_cipolla(mod(n));

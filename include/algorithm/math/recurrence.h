@@ -27,7 +27,7 @@ T linear_recurrence(const std::vector<T> &f_coeff, const std::vector<T> &f_init,
 	for (int i = 0; i < L; i++)
 		p[L - 1 - i] = -f_coeff[i];
 	// x^n % p(x)
-	typedef modulo<polynom<T>> polymod;
+	typedef modulo<polynom<T>, 1> polymod;
 	polymod::M = p;
 	polynom<T> x = { 0, 1 };
 	polymod xn = powT<polymod>(x, n);

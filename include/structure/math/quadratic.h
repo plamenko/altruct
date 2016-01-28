@@ -5,8 +5,13 @@
 namespace altruct {
 namespace math {
 
-// a + b * sqrt(D)
-template<typename T = int, int ID = -1>
+/**
+ * a + b * sqrt(D)
+ *
+ * quadratic<int, -1> - gaussian integers
+ * quadratic<double, -1> - complex numbers
+ */
+template<typename T, int ID>
 class quadratic {
 public:
 	static T D;
