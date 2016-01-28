@@ -80,5 +80,8 @@
     <ClInclude Include="..\..\include\structure\math\quadratic.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\complex.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

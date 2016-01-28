@@ -32,6 +32,7 @@
     <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polymod_test .cpp" />
