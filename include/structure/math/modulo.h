@@ -68,7 +68,7 @@ long long modulo_divide(long long x, long long y, long long M);
 int modulo_divide(int x, int y, int M);
 
 // T must be constructable from int
-template<typename T = long long, int ID = 1000000007>
+template<typename T = int, int ID = 1000000007>
 class modulo {
 public:
 	static T M;

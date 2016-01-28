@@ -16,14 +16,14 @@ vector<double>& round(vector<double>& vz, double mul) {
 	return vz;
 }
 
-TEST(polynom_test, search) {
+TEST(polynoms_test, search) {
 	const polynom<int> p1{ 7, -5, -13, 4 };
 	EXPECT_DOUBLE_EQ(-0.8262501959871101, monotonic_search(p1, -1e100, -0.177, 0.0));
 	EXPECT_DOUBLE_EQ(+0.6112574125565371, monotonic_search(p1, -0.177, +2.344, 0.0));
 	EXPECT_DOUBLE_EQ(+3.4649927834305730, monotonic_search(p1, +2.344, +1e100, 0.0));
 }
 
-TEST(polynom_test, zeros) {
+TEST(polynoms_test, zeros) {
 	const polynom<int> p1{ 7, -5, -13, 4 };
 	const polynom<int> p2{ 70, -5, -13, 4 };
 	const polynom<int> p3{ -12, 16, -7, 1 };
