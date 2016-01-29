@@ -14,11 +14,11 @@ namespace math {
  * @param id - multiplicative identity
  * @return x^y
  */
-template<typename T>
-T powT(T x, int64_t y, T id = T(1)) {
+template<typename T, typename I>
+T powT(T x, I y, T id = T(1)) {
 	T r = id;
-	for (; y > 0; y >>= 1) {
-		if (y & 1) r *= x;
+	for (; y > 0; y /= 2) {
+		if (y % 2) r *= x;
 		x *= x;
 	}
 	return r;
