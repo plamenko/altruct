@@ -133,9 +133,23 @@ TEST(primes_test, factor_integer) {
 
 	vector<ll> vd20; divisors(vd20, vf20); sort(vd20.begin(), vd20.end());
 	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5, 10, 20 }), vd20);
-	vector<ll> vd9800; divisors(vd9800, vf9800, 49); sort(vd9800.begin(), vd9800.end());
+	vector<ll> vd9800; divisors(vd9800, vf9800, 49LL); sort(vd9800.begin(), vd9800.end());
 	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5, 7, 8, 10, 14, 20, 25, 28, 35, 40, 49 }), vd9800);
 	vector<pair<int, int>> vf1e9{ { 1000000007, 1 }, { 1000000009, 1 } };
 	vector<ll> vd1e9; divisors(vd1e9, vf1e9); sort(vd1e9.begin(), vd1e9.end());
 	EXPECT_EQ((vector<ll>{ 1, 1000000007, 1000000009, 1000000016000000063LL }), vd1e9);
+
+	EXPECT_EQ((vector<int>{5, 2}), prime_factors(vf20));
+	EXPECT_EQ((vector<int>{5, 2, 7}), prime_factors(vf9800));
+}
+
+TEST(primes_test, carmichael_lambda) {
+	EXPECT_EQ(3360, euler_phi(vector<pair<int, int>> {{ 5, 2 }, { 2, 3 }, { 7, 2 } }));
+	EXPECT_EQ(420, carmichael_lambda(vector<pair<int, int>> {{ 5, 2 }, { 2, 3 }, { 7, 2 } }));
+	EXPECT_EQ(1, carmichael_lambda(vector<pair<int, int>> {}));
+	EXPECT_EQ(1, carmichael_lambda(vector<pair<int, int>> {{ 2, 1 } }));
+	EXPECT_EQ(2, carmichael_lambda(vector<pair<int, int>> {{ 2, 2 } }));
+	EXPECT_EQ(2, carmichael_lambda(vector<pair<int, int>> {{ 2, 3 }}));
+	EXPECT_EQ(4, carmichael_lambda(vector<pair<int, int>> {{ 2, 4 }}));
+	EXPECT_EQ(256, carmichael_lambda(vector<pair<int, int>> {{ 2, 10 }}));
 }

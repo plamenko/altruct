@@ -176,17 +176,70 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf);
 void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, int *pf);
 
 /**
- * Divisors of the number whose factorization is `vf`
+ * Calculates divisors from a factorization.
  *
  * Stores the divisors to the vector `vd`. Only divisors up to `maxd` are stored.
  *
  * @param vd - vector to store divisors
  * @param vf - prime factorization of the original number
- * @param maxd - maximum divisor to store
+ * @param maxd - maximum divisor to store, 0 for all divisors
  * @param d - reserved
  * @param i - reserved
  */
-void divisors(std::vector<long long> &vd, const std::vector<std::pair<int, int>> &vf, long long maxd = LLONG_MAX, long long d = 1, int i = 0);
+//void divisors(std::vector<long long> &vd, const std::vector<std::pair<int, int>> &vf, long long maxd = LLONG_MAX, long long d = 1, int i = 0);
+template<typename D, typename P>
+void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D maxd = 0, D d = 1, int i = 0) {
+	if (i >= (int)vf.size()) {
+		vd.push_back(d);
+		return;
+	}
+	const auto &f = vf[i];
+	for (int e = 0; e <= f.second; e++) {
+		divisors(vd, vf, maxd, d, i + 1);
+		if (maxd && d > maxd / f.first) break;
+		d *= f.first;
+	}
+}
+
+/**
+ * Extracts prime factors from a factorization.
+ *
+ * Extracts the first element `p` of each pair `(p, e)`.
+ */
+template<typename P>
+std::vector<P> prime_factors(const std::vector<std::pair<P, int>> &vf) {
+	std::vector<P> vp;
+	vp.reserve(vf.size());
+	for (const auto& f : vf) {
+		vp.push_back(f.first);
+	}
+	return vp;
+}
+
+/**
+ * Calculates Euler Phi from a factorization.
+ */
+template<typename P>
+P euler_phi(const std::vector<std::pair<P, int>> &vf) {
+	P r = 1;
+	for (const auto& f : vf) {
+		r *= powT(f.first, f.second - 1) * (f.first - 1);
+	}
+	return r;
+}
+
+/**
+ * Calculates Carmichael Lambda from a factorization.
+ */
+template<typename P>
+P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
+	P r = 1;
+	for (const auto& f : vf) {
+		int e = (f.first == 2 && f.second > 2) ? f.second - 1 : f.second;
+		r = lcm(r, powT(f.first, e - 1) * (f.first - 1));
+	}
+	return r;
+}
 
 } // math
 } // altruct

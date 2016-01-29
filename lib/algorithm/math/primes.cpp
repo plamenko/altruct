@@ -148,18 +148,5 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, 
 	}
 }
 
-void divisors(std::vector<ll> &vd, const std::vector<std::pair<int, int>> &vf, ll maxd, ll d, int i) {
-	if (i >= (int) vf.size()) {
-		vd.push_back(d);
-		return;
-	}
-	const auto &f = vf[i];
-	for (int e = 0; e <= f.second; e++) {
-		divisors(vd, vf, maxd, d, i + 1);
-		if (d > maxd / f.first) break;
-		d *= f.first;
-	}
-}
-
 } // math
 } // altruct
