@@ -54,3 +54,35 @@ TEST(modulos_test, sqrt_hensel_lift) {
 	EXPECT_EQ(1419853, sqrt_hensel_lift(16, 17, 5));
 	EXPECT_EQ(883131, sqrt_hensel_lift(12346, 17, 5));
 }
+
+TEST(modulos_test, primitive_root) {
+	prime_holder prim(100);
+	EXPECT_EQ(1, primitive_root(2, 1, vector<int>{ }));
+	EXPECT_EQ(2, primitive_root(3, 2, vector<int>{ 2 }));
+	EXPECT_EQ(3, primitive_root(4, 2, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root(5, 4, vector<int>{ 2 }));
+	EXPECT_EQ(5, primitive_root(6, 2, vector<int>{ 2 }));
+	EXPECT_EQ(3, primitive_root(7, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(0, primitive_root(8, 4, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root(9, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(3, primitive_root(10, 4, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root(11, 10, vector<int>{ 2, 5 }));
+	EXPECT_EQ(5, primitive_root(18, 6, vector<int>{ 2, 3 }));
+	vector<int> vg;
+	for (int m = 2; m <= 20; m++) {
+		vg.push_back(primitive_root(m, prim));
+	}
+	EXPECT_EQ((vector<int>{1, 2, 3, 2, 5, 3, 0, 2, 3, 2, 0, 2, 3, 0, 0, 3, 5, 2, 0}), vg);
+}
+
+TEST(modulos_test, kth_roots) {
+	prime_holder prim(100);
+	EXPECT_EQ((vector<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, 16, vector<int>{2}));
+	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, 6, 6, vector<int>{2, 3}));
+	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, 6, 6, vector<int>{2, 3}));
+	EXPECT_EQ((vector<int>{1, 4, 13, 16}), kth_roots(17, 4, prim));
+	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, prim));
+	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, prim));
+	EXPECT_EQ((vector<int>{1}), kth_roots(18, 5, prim));
+	EXPECT_EQ((vector<int>{1, 5, 7, 11, 13, 17}), kth_roots(18, 6, prim));
+}
