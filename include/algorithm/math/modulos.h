@@ -159,5 +159,48 @@ std::vector<int> kth_roots(int m, int k, prime_holder& prim) {
 	return kth_roots(m, k, lam, phi, phi_factors);
 }
 
+
+/**
+ * Builds the look-up table for `factorial_mod_p`
+ */
+template<typename M>
+void factorial_mod_p_table(M p, M* table) {
+	table[0] = 1;
+	for (M i = 1; i < p; i++) {
+		table[i] = modulo_multiply(table[i - 1], i, p);
+	}
+}
+
+/**
+ * Factorial of n modulo p
+ *
+ * `(n! / p^e) % p`, where `p^e` is the highest power of `p` dividing `n`.
+ * Note, before modulo operation gets applied, all factors `p` are removed.
+ *
+ * Complexity: O(p + log_p n)
+ *
+ * @param I - type of the number `n`
+ * @param M - type of the prime moduli
+ * @param n - number to take factorial of
+ * @param p - prime moduli
+ * @param table - look-up table of `k! % p` for all `k < p`
+ * @param e_out - if given, the highest exponent of `p` that divides `n!`
+ *                will be stored in it
+ */
+template<typename I, typename M>
+M factorial_mod_p(I n, M p, M* table, I *e_out = nullptr) {
+	M r = 1;
+	I e = 0;
+	while (n > 1) {
+		r = modulo_multiply(r, table[n % p], p);
+		n /= p;
+		e += n;
+		if (n % 2 == 1) r = -r;
+	}
+	modulo_normalize(r, p);
+	if (e_out) *e_out = e;
+	return r;
+}
+
 } // math
 } // altruct

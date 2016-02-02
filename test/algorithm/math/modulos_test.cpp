@@ -86,3 +86,24 @@ TEST(modulos_test, kth_roots) {
 	EXPECT_EQ((vector<int>{1}), kth_roots(18, 5, prim));
 	EXPECT_EQ((vector<int>{1, 5, 7, 11, 13, 17}), kth_roots(18, 6, prim));
 }
+
+TEST(modulos_test, factorial_mod_p) {
+	int p = 37;
+	vector<int> table(p);
+	factorial_mod_p_table(p, &table[0]);
+	EXPECT_EQ((vector<int>{1, 1, 2, 6, 24, 9, 17, 8, 27, 21, 25, 16, 7, 17, 16, 18, 29, 12, 31, 34, 14, 35, 30, 24, 21, 7, 34, 30, 26, 14, 13, 33, 20, 31, 18, 1, 36}), table);
+	
+	long long e = 0;
+	EXPECT_EQ(25, factorial_mod_p(10LL, p, &table[0], &e));
+	EXPECT_EQ(0, e);
+	EXPECT_EQ(31, factorial_mod_p(100LL, p, &table[0], &e));
+	EXPECT_EQ(2, e);
+	EXPECT_EQ(7, factorial_mod_p(1000LL, p, &table[0], &e));
+	EXPECT_EQ(27, e);
+	EXPECT_EQ(19, factorial_mod_p(10000LL, p, &table[0], &e));
+	EXPECT_EQ(277, e);
+	EXPECT_EQ(3, factorial_mod_p(100000LL, p, &table[0], &e));
+	EXPECT_EQ(2776, e);
+	EXPECT_EQ(30, factorial_mod_p(1000000LL, p, &table[0], &e));
+	EXPECT_EQ(27776, e);
+}
