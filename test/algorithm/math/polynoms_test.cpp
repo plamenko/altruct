@@ -1,4 +1,5 @@
 #include "algorithm/math/polynoms.h"
+#include "structure/math/fraction.h"
 
 #include "gtest/gtest.h"
 
@@ -33,4 +34,12 @@ TEST(polynoms_test, zeros) {
 	EXPECT_EQ((vector<double>{-1.957184056592}), vz2);
 	vector<double> vz3 = round(find_zeros(p3, 1e100, 1e-12), 1e-12);
 	EXPECT_EQ((vector<double>{2.0, 2.0, 3.0}), vz3);
+}
+
+TEST(polynoms_test, polynom_sum) {
+	typedef fraction<int> frac;
+	EXPECT_EQ((polynom<frac>{0, 1} / frac(1)), polynom_sum(polynom<frac>{ 1 }));
+	EXPECT_EQ((polynom<frac>{0, 1, 1} / frac(2)), polynom_sum(polynom<frac>{ 0, 1 }));
+	EXPECT_EQ((polynom<frac>{0, 1, 3, 2} / frac(6)), polynom_sum(polynom<frac>{ 0, 0, 1 }));
+	EXPECT_EQ((polynom<frac>{0, 19, 15, 14} / frac(6)), polynom_sum(polynom<frac>{ 3, -2, 7 }));
 }

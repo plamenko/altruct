@@ -1,6 +1,7 @@
 #pragma once
 
 #include "structure/math/polynom.h"
+#include "algorithm/math/recurrence.h"
 
 #include <vector>
 
@@ -76,6 +77,27 @@ std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsy = 0, 
 	}
 	z.resize(n);
 	return z;
+}
+
+/**
+ * Discrete integral of the polynom `p`
+ *
+ * s(n) = sum{p(k), {k, 1, n}}
+ */
+template<typename T>
+polynom<T> polynom_sum(const polynom<T>& p) {
+	polynom<T> s;
+	std::vector<T> b = bernoulli_b<T>(p.deg());
+	for (int m = p.deg(); m >= 0; m--) {
+		T c = p[m] / (m + 1);
+		if (c == 0) continue;
+		for (int k = 0; k <= m; k++) {
+			s[m + 1 - k] += c * b[k];
+			c *= (m + 1 - k);
+			c /= (k + 1);
+		}
+	}
+	return s;
 }
 
 } // math
