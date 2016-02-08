@@ -7,6 +7,14 @@ namespace altruct {
 namespace math {
 
 /**
+ * Absolute value
+ */
+template <typename T>
+T absT(const T &x) {
+	return (x < 0) ? -x : x;
+}
+
+/**
  * Exponentiation by squaring
  *
  * @param x - base

@@ -5,6 +5,15 @@
 using namespace std;
 using namespace altruct::math;
 
+TEST(base_test, absT) {
+	EXPECT_EQ(0, absT(0));
+	EXPECT_EQ(10, absT(10));
+	EXPECT_EQ(10, absT(-10));
+	EXPECT_EQ(0.0, absT(0.0));
+	EXPECT_EQ(10.0, absT(10.0));
+	EXPECT_EQ(10.0, absT(-10.0));
+}
+
 TEST(base_test, powT) {
 	EXPECT_EQ(1, powT(0, 0));
 	EXPECT_EQ(1, powT(+1, 0));
