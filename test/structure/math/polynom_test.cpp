@@ -5,6 +5,14 @@
 using namespace std;
 using namespace altruct::math;
 
+class A {
+public:
+	double v;
+	A(double v) : v(v) {}
+	A(int v) : v(v) {}
+	bool operator == (const A& rhs) const { return v == rhs.v; }
+};
+
 TEST(polynom_test, constructor) {
 	const vector<int> c = { 1, 2, 3, 4 };
 	polynom<int> p1;
@@ -21,6 +29,10 @@ TEST(polynom_test, constructor) {
 	EXPECT_EQ((vector<int>{ 5 }), p6.c);
 	polynom<int> p7{ 1, 2, 3, 4 };
 	EXPECT_EQ(c, p7.c);
+	polynom<A> q1(5);
+	EXPECT_EQ((vector<A>{5.0}), q1.c);
+	polynom<A> q2(A(5.3));
+	EXPECT_EQ((vector<A>{5.3}), q2.c);
 }
 
 TEST(polynom_test, swap) {

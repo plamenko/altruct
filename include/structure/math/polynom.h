@@ -2,6 +2,7 @@
 
 #include "algorithm/math/fft.h"
 
+#include <type_traits>
 #include <vector>
 
 namespace altruct {
@@ -22,9 +23,12 @@ public:
 	std::vector<T> c;
 
 	polynom() {}
-	polynom(const polynom &rhs) : c(rhs.c) {}
-	polynom(const std::vector<T> &c) : c(c) {}
+	polynom(const polynom& rhs) : c(rhs.c) {}
+	polynom(const std::vector<T>& c) : c(c) {}
 	template<typename It> polynom(It begin, It end) : c(begin, end) {}
+	// construct from T, but only if T is not integral to avoid clashing with `polynom(int c0)`
+	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
+	polynom(const T& c0) { c.push_back(c0); }
 	polynom(int c0) { c.push_back(c0); } // to allow constructing from 0 and 1
 	polynom(std::initializer_list<T> list) : c(list) {}
 	
@@ -199,7 +203,7 @@ public:
 	A eval(const A& x) const {
 		A r = 0;
 		for (int i = deg(); i >= 0; i--) {
-			r = r * x + c[i];
+			r = r * x + A(c[i]);
 		}
 		return r;
 	}
