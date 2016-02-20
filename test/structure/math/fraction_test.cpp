@@ -2,8 +2,6 @@
 
 #include "gtest/gtest.h"
 
-//#include <functional>
-
 using namespace std;
 using namespace altruct::math;
 

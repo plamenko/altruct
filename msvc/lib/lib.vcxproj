@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h" />
     <ClInclude Include="..\..\include\algorithm\math\fft.h" />
+    <ClInclude Include="..\..\include\algorithm\math\fractions.h" />
     <ClInclude Include="..\..\include\algorithm\math\modulos.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />

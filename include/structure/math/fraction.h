@@ -12,7 +12,7 @@ public:
 	fraction(const T &p = 0, const T &q = 1) : p(p), q(q) { reduce(); }
 	
 	void reduce() {
-		T g = gcd(p, q);
+		T g = absT(gcd(p, q));
 		if (g != 1) p /= g, q /= g;
 		if (q < 0) p = -p, q = -q;
 	}

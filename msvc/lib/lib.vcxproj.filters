@@ -86,5 +86,8 @@
     <ClInclude Include="..\..\include\structure\math\fraction.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\fractions.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
