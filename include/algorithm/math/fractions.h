@@ -12,8 +12,8 @@ namespace math {
 /**
  * The next element in the Farey sequence of order n.
  *
- * if f_prev is the left neighbour or -inf, f_next is the right neighbour
- * if f_prev is the right neighbour or +inf, f_next is the left neighbour
+ * if f_prev is the left neighbour or -inf, f_next is the right neighbour of f
+ * if f_prev is the right neighbour or +inf, f_next is the left neighbour of f
  */
 template<typename T>
 fraction<T> farey_neighbour(const T& n, const fraction<T>& f_prev, const fraction<T>& f) {
