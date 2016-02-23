@@ -1,5 +1,7 @@
 ﻿#include "algorithm/math/primes.h"
 
+#include <algorithm>
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -141,6 +143,8 @@ TEST(primes_test, factor_integer) {
 
 	EXPECT_EQ((vector<int>{5, 2}), prime_factors(vf20));
 	EXPECT_EQ((vector<int>{5, 2, 7}), prime_factors(vf9800));
+	EXPECT_EQ((vector<int>{1, 2}), prime_exponents(vf20));
+	EXPECT_EQ((vector<int>{2, 3, 2}), prime_exponents(vf9800));
 }
 
 TEST(primes_test, carmichael_lambda) {
@@ -152,4 +156,49 @@ TEST(primes_test, carmichael_lambda) {
 	EXPECT_EQ(2, carmichael_lambda(vector<pair<int, int>> {{ 2, 3 }}));
 	EXPECT_EQ(4, carmichael_lambda(vector<pair<int, int>> {{ 2, 4 }}));
 	EXPECT_EQ(256, carmichael_lambda(vector<pair<int, int>> {{ 2, 10 }}));
+}
+
+TEST(primes_test, miller_rabin) {
+	int n = 100000;
+	vector<char> vq(n);
+	int m = primes(nullptr, &vq[0], n);
+	vector<char> vr(n);
+	for (int i = 0; i < n; i++) {
+		vr[i] = miller_rabin(i);
+	}
+	EXPECT_EQ(vq, vr);
+}
+
+TEST(primes_test, pollard_rho) {
+	EXPECT_EQ(1, pollard_rho_repeated(1));
+	EXPECT_EQ(2, pollard_rho_repeated(2 * 2 * 2 * 2 * 2 * 2));
+	EXPECT_EQ(27, pollard_rho_repeated(3 * 3 * 3 * 3 * 3));
+	EXPECT_EQ(5, pollard_rho_repeated(5 * 5 * 5 * 7 * 7));
+	EXPECT_EQ(5, pollard_rho_repeated(5 * 5 * 5 * 7 * 13 * 13));
+	EXPECT_EQ(ll(7027), pollard_rho_repeated(ll(1657) * 7027));
+	EXPECT_EQ(ll(21859), pollard_rho_repeated(ll(21859) * 45751));
+	EXPECT_EQ(ll(113903), pollard_rho_repeated(ll(87803) * 113903));
+	EXPECT_EQ(ll(36947), pollard_rho_repeated(ll(27259) * 36947));
+}
+
+template<typename C> C sorted(C c) { sort(c.begin(), c.end()); return c; }
+
+TEST(primes_test, factor_integer_general_purpose) {
+	typedef vector<pair<ll, int>> fact;
+	// smooth
+	EXPECT_EQ((fact{ { 2, 3 }, { 3, 5 }, { 5, 2 }, { 7, 4 }, { 13, 1 }, { 17, 2 } }), sorted(factor_integer(438399070200LL)));
+	// non-square-free
+	EXPECT_EQ((fact{ { 2, 2 }, { 79, 1 }, { 24137441, 1 }, { 32046803, 1 } }), sorted(factor_integer(244434790061754868LL)));
+	// square-free
+	EXPECT_EQ((fact{ { 2, 1 }, { 13, 1 }, { 11329, 1 }, { 39367, 1 }, { 11293829, 1 } }), sorted(factor_integer(130959935583540622LL)));
+	// small-big prime
+	EXPECT_EQ((fact{ { 3, 1 }, { 10402882839016853, 1 } }), sorted(factor_integer(31208648517050559LL)));
+	// big semi-prime
+	EXPECT_EQ((fact{ { 181153303, 1 }, { 558255521, 1 } }), sorted(factor_integer(101129831547135863LL)));
+	// big square
+	EXPECT_EQ((fact{ { 549843233, 2 } }), sorted(factor_integer(302327580875892289LL)));
+	// big power
+	EXPECT_EQ((fact{ { 337013, 3 } }), sorted(factor_integer(38277182361861197LL)));
+	// big prime
+	EXPECT_EQ((fact{ { 988359650216386457, 1 } }), sorted(factor_integer(988359650216386457LL)));
 }

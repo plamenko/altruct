@@ -9,9 +9,6 @@ using namespace altruct::math;
 
 typedef modulo<int, 1000000007> mod;
 
-typedef modulo<long long, 1> modl;
-long long modl::M = 1000000000000000003LL;
-
 TEST(modulo_test, constructor) {
 	mod m1;
 	EXPECT_EQ(0, m1.v);
@@ -120,6 +117,8 @@ TEST(modulo_test, operators_inplace_self) {
 }
 
 TEST(modulo_test, long_long) {
+	typedef modulo<long long, 1> modl;
+	modl::M = 1000000000000000003LL;
 	const modl m1(1000000000000000000LL);
 	const modl m2(2000000000000000008LL);
 	const modl m4(4000000000000000000LL);
@@ -154,6 +153,9 @@ void modulo_test_perf_impl(T a, T b, int n, char *msg, const F& func) {
 
 TEST(modulo_test, perf) {
 	return; // do not run perf test by default
+
+	typedef modulo<long long, 1> modl;
+	modl::M = 1000000000000000003LL;
 	
 	int ni = 1000000000;
 	int ai(12345678);
