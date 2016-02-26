@@ -340,6 +340,7 @@ bool miller_rabin(const T& n) {
  */
 template<typename T>
 T pollard_rho(const T& n, T k = 2, T a = 1) {
+	if (n == 0) return 0;
 	if (n == 1) return 1;
 	if (n % 2 == 0) return 2;
 	typedef modulo<T, 1> mod; mod::M = n;
@@ -375,6 +376,7 @@ T pollard_rho_repeated(const T& n, T max_iter = 20) {
 template<typename T>
 std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 	std::vector<std::pair<T, int>> vf;
+	if (n == 0 || n == 1) return vf;
 	std::vector<T> q = { n };
 	while (!q.empty()) {
 		T a = q.back(); q.pop_back();

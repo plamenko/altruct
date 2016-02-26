@@ -202,3 +202,18 @@ TEST(primes_test, factor_integer_general_purpose) {
 	// big prime
 	EXPECT_EQ((fact{ { 988359650216386457, 1 } }), sorted(factor_integer(988359650216386457LL)));
 }
+
+TEST(primes_test, factor_integer_general_purpose_first_1000) {
+	typedef vector<pair<int, int>> fact;
+
+	int n = 1000;
+	vector<int> vp(n);
+	int m = primes(&vp[0], nullptr, n);
+	vector<int> vpf(n);
+	factor(&vpf[0], n, &vp[0], m);
+
+	for (int i = 1; i < n; i++) {
+		fact vf; factor_integer(vf, i, &vpf[0]);
+		EXPECT_EQ(sorted(vf), sorted(factor_integer(i)));
+	}
+}
