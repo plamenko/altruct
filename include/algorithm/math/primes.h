@@ -188,7 +188,6 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, 
  * @param d - reserved
  * @param i - reserved
  */
-//void divisors(std::vector<long long> &vd, const std::vector<std::pair<int, int>> &vf, long long maxd = LLONG_MAX, long long d = 1, int i = 0);
 template<typename D, typename P>
 void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D maxd = 0, D d = 1, int i = 0) {
 	if (i >= (int)vf.size()) {
@@ -259,7 +258,7 @@ P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
 }
 
 /**
- * Miller–Rabin primality test.
+ * Miller-Rabin primality test.
  *
  * Probabilistic primality test with accuracy `4^-k`, where `k` is the number of bases tested.
  *
@@ -269,7 +268,6 @@ P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
  * @param bases - a null-terminated array of bases to test against.
  * @return - true means `n` is probably prime, false means `n` is certainly composite.
  */
-//int mrb[] = { 2, 3, 5, 7, 11, 13, 17, 19, 0 };
 template<typename T>
 bool miller_rabin(const T& n, const T* bases) {
 	if (n == 0 || n == 1) return 0;
@@ -291,7 +289,7 @@ bool miller_rabin(const T& n, const T* bases) {
 }
 
 /**
- * Miller–Rabin primality test.
+ * Miller-Rabin primality test.
  *
  * Selects the appropriate bases based on the input size so that the test is
  * deterministic. See `miller_rabin` above.
@@ -371,8 +369,8 @@ T pollard_rho_repeated(const T& n, T max_iter = 20) {
 }
 
 /**
-* Factors integer `n` using a general-purpose factoring algorithm.
-*/
+ * Factors integer `n` using a general-purpose factoring algorithm.
+ */
 template<typename T>
 std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 	std::vector<std::pair<T, int>> vf;
@@ -384,7 +382,7 @@ std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 			continue;
 		}
 		if (miller_rabin<T>(a)) {
-			// prime factor found
+			// a prime factor found
 			int e = 1;
 			for (auto& b : q) {
 				while (b % a == 0) b /= a, e++;
@@ -392,14 +390,14 @@ std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 			vf.push_back({ a, e });
 			continue;
 		}
-		// composite
+		// `a` is composite
 		T d = pollard_rho_repeated<T>(a, max_iter);
 		if (d == 1 || d == a) {
-			// failed to factor the composite `a`
+			// failed to factor the composite
 			vf.push_back({ a, 1 });
 			continue;
 		}
-		// non-trivial factorization a = d * e
+		// a non-trivial factorization `a = d * e`
 		q.push_back(d);
 		q.push_back(a / d);
 	}
