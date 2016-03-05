@@ -33,6 +33,7 @@
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
+    <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fraction.h" />
     <ClInclude Include="..\..\include\structure\math\matrix.h" />

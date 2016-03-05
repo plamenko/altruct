@@ -92,5 +92,8 @@
     <ClInclude Include="..\..\include\algorithm\math\comb_primes.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\reduce.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
