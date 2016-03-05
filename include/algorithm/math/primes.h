@@ -404,5 +404,24 @@ std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 	return vf;
 }
 
+/**
+ * Gives the vector of digits of `n` in base `b`.
+ *
+ * @param n - number to extract the digits of
+ * @param b - base
+ * @param len - zeros are added if necessary to fill the `len` digits
+ */
+template<typename I>
+std::vector<I> integer_digits(const I& n, const I& b, int len = 0) {
+	std::vector<I> vd;
+	for (I t = n; t > 0; t /= b) {
+		vd.push_back(t % b);
+	}
+	while (vd.size() < len) {
+		vd.push_back(0);
+	}
+	return vd;
+}
+
 } // math
 } // altruct

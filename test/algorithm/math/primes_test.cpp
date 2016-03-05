@@ -1,4 +1,5 @@
 ﻿#include "algorithm/math/primes.h"
+#include "structure/math/polynom.h"
 
 #include <algorithm>
 
@@ -216,4 +217,15 @@ TEST(primes_test, factor_integer_general_purpose_first_1000) {
 		fact vf; factor_integer(vf, i, &vpf[0]);
 		EXPECT_EQ(sorted(vf), sorted(factor_integer(i)));
 	}
+}
+
+TEST(primes_test, integer_digits) {
+	EXPECT_EQ((vector<int>{}), integer_digits(0, 10));
+	EXPECT_EQ((vector<int>{1}), integer_digits(1, 10));
+	EXPECT_EQ((vector<int>{3, 2, 1}), integer_digits(123, 10));
+	EXPECT_EQ((vector<int>{11, 7}), integer_digits(123, 16));
+	EXPECT_EQ((vector<int>{1, 0, 1, 1, 0, 0, 1}), integer_digits(77, 2));
+	EXPECT_EQ(77, (polynom<int>{ 1, 0, 1, 1, 0, 0, 1 }(2)));
+	EXPECT_EQ(123, (polynom<int>{ 11, 7 }(16)));
+	EXPECT_EQ(123, (polynom<int>{ 3, 2, 1 }(10)));
 }
