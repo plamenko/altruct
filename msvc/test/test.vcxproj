@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\comb_primes_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fractions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
