@@ -130,8 +130,25 @@ bool is_cube(int64_t x);
 /**
  * Integer floor & ceil division
  */
-int64_t div_floor(int64_t a, int64_t b);
-int64_t div_ceil(int64_t a, int64_t b);
+template<typename I>
+I div_floor(I a, I b) {
+	if (b < 0) a = -a, b = -b;
+	return (a < 0) ? (a + 1) / b - 1 : a / b;
+}
+
+template<typename I>
+I div_ceil(I a, I b) {
+	if (b < 0) a = -a, b = -b;
+	return (a > 0) ? (a - 1) / b + 1 : a / b;
+}
+
+/**
+ * Multiple of `a`, greater than or equal to `b`.
+ */
+template<typename I>
+I multiple(I a, I b) {
+	return div_ceil(b, a) * a;
+}
 
 } // math
 } // altruct

@@ -65,7 +65,7 @@ void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
 	for (ll q = b; q < e; q++)
 		_phi[q] = 1, _tmp[q] = q;
 	for (int i = 0; i < m; i++) {
-		for (ll q = div_ceil(b, p[i]) * p[i]; q < e; q += p[i]) {
+		for (ll q = div_ceil<ll>(b, p[i]) * p[i]; q < e; q += p[i]) {
 			_phi[q] *= p[i] - 1, _tmp[q] /= p[i];
 			while (_tmp[q] % p[i] == 0)
 				_phi[q] *= p[i], _tmp[q] /= p[i];
@@ -81,11 +81,11 @@ void segmented_mu(ll *mu, ll b, ll e, int *p, int m) {
 	for (ll q = b; q < e; q++)
 		_mu[q] = 1;
 	for (int i = 0; i < m; i++) {
-		for (ll q = div_ceil(b, p[i]) * p[i]; q < e; q += p[i]) {
+		for (ll q = div_ceil<ll>(b, p[i]) * p[i]; q < e; q += p[i]) {
 			_mu[q] *= -p[i];
 		}
 		ll p2 = isq(p[i]);
-		for (ll q = div_ceil(b, p2) * p2; q < e; q += p2) {
+		for (ll q = div_ceil<ll>(b, p2) * p2; q < e; q += p2) {
 			_mu[q] = 0;
 		}
 	}

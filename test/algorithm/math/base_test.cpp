@@ -188,17 +188,24 @@ TEST(base_test, is_cube) {
 }
 
 TEST(base_test, div_floor) {
-	EXPECT_EQ(+6LL, div_floor(+20, +3));
-	EXPECT_EQ(-7LL, div_floor(+20, -3));
-	EXPECT_EQ(-7LL, div_floor(-20, +3));
-	EXPECT_EQ(+6LL, div_floor(-20, -3));
+	EXPECT_EQ(+6, div_floor(+20, +3));
+	EXPECT_EQ(-7, div_floor(+20, -3));
+	EXPECT_EQ(-7, div_floor(-20, +3));
+	EXPECT_EQ(+6, div_floor(-20, -3));
 }
 
 TEST(base_test, div_ceil) {
-	EXPECT_EQ(+7LL, div_ceil(+20, +3));
-	EXPECT_EQ(-6LL, div_ceil(+20, -3));
-	EXPECT_EQ(-6LL, div_ceil(-20, +3));
-	EXPECT_EQ(+7LL, div_ceil(-20, -3));
+	EXPECT_EQ(+7, div_ceil(+20, +3));
+	EXPECT_EQ(-6, div_ceil(+20, -3));
+	EXPECT_EQ(-6, div_ceil(-20, +3));
+	EXPECT_EQ(+7, div_ceil(-20, -3));
+}
+
+TEST(base_test, multiple) {
+	EXPECT_EQ(+20, multiple(10, +13));
+	EXPECT_EQ(-10, multiple(10, -13));
+	EXPECT_EQ(+20, multiple(10, +20));
+	EXPECT_EQ(-20, multiple(10, -20));
 }
 
 TEST(base_test, gcd) {

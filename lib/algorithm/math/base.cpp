@@ -58,17 +58,5 @@ bool is_cube(int64_t x) {
 	return (icb(icbrt(x)) == x);
 }
 
-// integer floor & ceil division
-
-int64_t div_floor(int64_t a, int64_t b) {
-	if (b < 0) a = -a, b = -b;
-	return (a < 0) ? (a + 1) / b - 1 : a / b;
-}
-
-int64_t div_ceil(int64_t a, int64_t b) {
-	if (b < 0) a = -a, b = -b;
-	return (a > 0) ? (a - 1) / b + 1 : a / b;
-}
-
 } // math
 } // altruct
