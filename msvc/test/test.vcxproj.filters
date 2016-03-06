@@ -52,6 +52,9 @@
     <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp">
+      <Filter>algorithm\collections</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -65,6 +68,9 @@
     </Filter>
     <Filter Include="structure\math">
       <UniqueIdentifier>{9238ff7b-5520-4603-8a86-3e8a1cf8fab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\collections">
+      <UniqueIdentifier>{4996bb0e-202c-42b6-ac64-b1340f44f53b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

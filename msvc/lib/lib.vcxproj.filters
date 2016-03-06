@@ -45,6 +45,9 @@
     <Filter Include="include\structure\math">
       <UniqueIdentifier>{e782747d-be26-42f2-8338-77b2c231062f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\algorithm\collections">
+      <UniqueIdentifier>{2f7fd685-9de2-43c4-9251-426e0f3883c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -97,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\combinatorics.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\collections\collections.h">
+      <Filter>include\algorithm\collections</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
