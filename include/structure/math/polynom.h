@@ -95,8 +95,8 @@ public:
 	
 	// pr = p1 * p2; O(l1 * l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2) {
-		int l1 = p1.deg(), l2 = p2.deg(); int lr = l1 + l2;
+	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2, int lr = 0) {
+		int l1 = p1.deg(), l2 = p2.deg(); if (!lr) lr = l1 + l2;
 		pr.c.resize(lr + 1);
 		for (int i = lr; i >= 0; i--) {
 			T r = 0;
