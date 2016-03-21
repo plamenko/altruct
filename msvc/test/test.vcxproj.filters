@@ -55,6 +55,9 @@
     <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp">
       <Filter>algorithm\collections</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp">
+      <Filter>concurrency</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -71,6 +74,9 @@
     </Filter>
     <Filter Include="algorithm\collections">
       <UniqueIdentifier>{4996bb0e-202c-42b6-ac64-b1340f44f53b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="concurrency">
+      <UniqueIdentifier>{0ec743fa-4978-4a72-b9de-33d1ab42ae2e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

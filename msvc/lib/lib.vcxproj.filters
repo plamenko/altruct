@@ -48,6 +48,9 @@
     <Filter Include="include\algorithm\collections">
       <UniqueIdentifier>{2f7fd685-9de2-43c4-9251-426e0f3883c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\concurrency">
+      <UniqueIdentifier>{bfb9e335-fb2b-487d-9500-457225c57cf0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\collections\collections.h">
       <Filter>include\algorithm\collections</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\concurrency\concurrency.h">
+      <Filter>include\concurrency</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
