@@ -44,6 +44,7 @@
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
     <ClInclude Include="..\..\include\structure\math\quadratic.h" />
+    <ClInclude Include="..\..\include\structure\math\vectorNd.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}</ProjectGuid>

@@ -58,6 +58,9 @@
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp">
       <Filter>concurrency</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\vectorNd_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

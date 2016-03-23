@@ -110,5 +110,8 @@
     <ClInclude Include="..\..\include\concurrency\concurrency.h">
       <Filter>include\concurrency</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\vectorNd.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
