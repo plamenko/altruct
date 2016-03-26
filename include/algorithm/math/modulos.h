@@ -38,6 +38,31 @@ void chinese_remainder(T &ar, T&nr, T a, T n) {
 }
 
 /**
+ * Calculates coefficients of the mixed radix equation using Garner Algorithm.
+ *
+ * Let `u` be given as a set of congruence equations: `u == a[i] (mod p[i])`.
+ * Let `q[i]` be the product of the first `i` elements of `p`. `q[0] = 1`.
+ * Then `a` can be represented in the mixed radix form: `u = Sum[x[i] * q[i]]`.
+ * Note: `u` is unique modulo `q[n]` as per Chinese Remainder Theorem.
+ *
+ * @param vap - vector of (remainder, modulus) pairs, moduli shoulde be pairwise relatively prime
+ * @return vx - vector of (coeeficient, modulus) pairs, moduli are same as in `vap`
+ */
+template<typename V>
+V garner(const V& vap) {
+	V vx(vap.size());
+	for (int i = 0; i < vx.size(); i++) {
+		auto y = vap[i];
+		for (int j = 0; j < i; j++) {
+			y -= vx[j];
+			y /= vap[j].M;
+		}
+		vx[i] = y;
+	}
+	return vx;
+}
+
+/**
  * Jacobi symbol
  * 
  * For prime `m`, this is equivalent to Legendre symbol:

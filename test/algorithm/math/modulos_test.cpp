@@ -1,6 +1,9 @@
 #include "algorithm/math/modulos.h"
+#include "algorithm/collections/collections.h"
 
 #include "gtest/gtest.h"
+
+#include <vector>
 
 using namespace std;
 using namespace altruct::math;
@@ -21,6 +24,30 @@ TEST(modulos_test, chinese_remainder) {
 	crt_test_impl(4, 10, 6, 14);
 	crt_test_impl(6, 14, 6, 14);
 	crt_test_impl(102, 65535, 12345, 48888);
+}
+
+TEST(modulos_test, garner) {
+	typedef moduloX<int> modx;
+	typedef std::vector<modx> modv;
+	
+	modv a = { { 1000, 1009 }, { 1000, 1013 }, { 1000, 1019 } };
+	modv a3 = altruct::collections::transform(a, [](const modx& e){ return powT(e, 3); });
+
+	moduloX<int> r0{ 0, 1 };
+	for (int i = 0; i < a3.size(); i++) {
+		chinese_remainder<int>(r0.v, r0.M, a3[i].v, a3[i].M);
+	}
+	EXPECT_EQ(1000000000, r0.v);
+	EXPECT_EQ(1009*1013*1019, r0.M);
+
+	modv x3 = garner(a3);
+	moduloX<int> r1{ 0, 1 };
+	for (int i = 0; i < x3.size(); i++) {
+		r1.v += r1.M * x3[i].v;
+		r1.M *= x3[i].M;
+	}
+	EXPECT_EQ(1000000000, r1.v);
+	EXPECT_EQ(1009 * 1013 * 1019, r1.M);
 }
 
 TEST(modulos_test, jacobi) {
