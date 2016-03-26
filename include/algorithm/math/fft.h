@@ -68,8 +68,9 @@ void fft_convolve(T *dataR, T *data1, T *data2, int size, const T& root_base, in
 	}
 	// inverse transform is same as original transform,
 	// but with inverse root and elements divided by size
-	fft(dataR, data1, size, T(1) / root);
-	T ni = T(1) / T(size);
+	T e1 = identityT<T>::of(root);
+	fft(dataR, data1, size, e1 / root);
+	T ni = e1 / T(size);
 	for (int i = 0; i < size; i++) {
 		dataR[i] *= ni;
 	}

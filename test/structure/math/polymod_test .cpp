@@ -21,7 +21,7 @@ TEST(polymod_test, constructor) {
 TEST(polymod_test, division) {
 	// irreducible polynomial M(x) = x^2 - x^1 - x^0
 	polymod::M = poly{ -1, -1, 1 };
-	const polymod x({ 0, 1 });
+	const polymod x(poly{ 0, 1 });
 	const polymod x20 = powT(x, 20);
 	const polymod x100 = powT(x, 100);
 	const polymod x120 = powT(x, 120);
@@ -36,7 +36,7 @@ TEST(polymod_test, fibonacci) {
 	// p(x) = x^2 - x^1 - x^0
 	// f(n) = x^n % p(x)
 	polymod::M = poly{ -1, -1, 1 };
-	polymod x({0, 1});
+	polymod x(poly{0, 1});
 	vector<mod> vf;
 	for (int i = 0; i < 13; i++) {
 		vf.push_back(powT(x, i).v[1]);

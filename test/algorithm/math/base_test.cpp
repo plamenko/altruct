@@ -5,6 +5,24 @@
 using namespace std;
 using namespace altruct::math;
 
+TEST(base_test, identity) {
+	EXPECT_EQ(1, identityT<int>::of(0));
+	EXPECT_EQ(1, identityT<int>::of(1));
+	EXPECT_EQ(1, identityT<int>::of(5));
+	EXPECT_EQ(1.0, identityT<double>::of(0.0));
+	EXPECT_EQ(1.0, identityT<double>::of(1.0));
+	EXPECT_EQ(1.0, identityT<double>::of(5.0));
+}
+
+TEST(base_test, zero) {
+	EXPECT_EQ(0, zeroT<int>::of(0));
+	EXPECT_EQ(0, zeroT<int>::of(1));
+	EXPECT_EQ(0, zeroT<int>::of(5));
+	EXPECT_EQ(0.0, zeroT<double>::of(0.0));
+	EXPECT_EQ(0.0, zeroT<double>::of(1.0));
+	EXPECT_EQ(0.0, zeroT<double>::of(5.0));
+}
+
 TEST(base_test, absT) {
 	EXPECT_EQ(0, absT(0));
 	EXPECT_EQ(10, absT(10));
@@ -239,22 +257,4 @@ TEST(base_test, lcm) {
 	EXPECT_EQ(15, lcm(15, 15));
 	EXPECT_EQ(30, lcm(15, 10));
 	EXPECT_EQ(210, lcm(14, 15));
-}
-
-void crt_test_impl(int a1, int n1, int a2, int n2) {
-	int a, n; chinese_remainder(a, n, a1, n1, a2, n2);
-	EXPECT_EQ(lcm(n1, n2), n);
-	EXPECT_EQ(a1, a % n1);
-	EXPECT_EQ(a2, a % n2);
-	EXPECT_GE(a, 0);
-	EXPECT_LT(a, n);
-}
-
-TEST(base_test, crt) {
-	crt_test_impl(0, 10, 5, 13);
-	crt_test_impl(5, 10, 3, 13);
-	crt_test_impl(5, 10, 3, 14);
-	crt_test_impl(4, 10, 6, 14);
-	crt_test_impl(6, 14, 6, 14);
-	crt_test_impl(102, 65535, 12345, 55557);
 }

@@ -14,7 +14,10 @@ public:
 
 	std::vector<row_type> a;
 
-	matrix(int n = 0, int m = 0) {
+	matrix() : matrix(0, 0) {
+	}
+
+	matrix(int n, int m) {
 		if (!m) m = n;
 		a.resize(n);
 		for (auto &row : a) {
@@ -130,24 +133,24 @@ public:
 	// matrix must be a square matrix
 	matrix pow(long long p) const {
 		if (p < 0) {
-			return powT(inverse(), -p, identity(rows()));
-		}
-		else {
-			return powT(*this, p, identity(rows()));
+			return powT(inverse(), -p);
+		} else {
+			return powT(*this, p);
 		}
 	}
 
 	// matrix must be a square matrix
 	static bool gauss(matrix &mat, matrix &inv, T &det) {
+		T e0 = zeroT<T>::of(mat.a[0][0]), e1 = identityT<T>::of(mat.a[0][0]);
 		int i, j, k, n = mat.rows();
 		inv = identity(n);
-		det = T(1);
+		det = e1;
 		for (j = 0; j < n; j++) {
-			for (i = j; i < n && mat.a[i][j] == T(0); i++);
+			for (i = j; i < n && mat.a[i][j] == e0; i++);
 			// matrix singular?
 			if (i >= n) {
-				inv = matrix(n);
-				det = T(0);
+				inv = matrix(n, n);
+				det = e0;
 				return false;
 			}
 			// rows transposition
@@ -157,7 +160,7 @@ public:
 				det = -det;
 			}
 			// normalize row
-			T pi = T(1) / mat.a[j][j];
+			T pi = e1 / mat.a[j][j];
 			det *= mat.a[j][j];
 			for (k = 0; k < n; k++) {
 				mat.a[j][k] *= pi;
@@ -165,7 +168,7 @@ public:
 			}
 			// eliminate below
 			for (i = j + 1; i < n; i++) {
-				T p = mat.a[i][j]; if (p == T(0)) continue;
+				T p = mat.a[i][j]; if (p == e0) continue;
 				for (k = 0; k < n; k++) {
 					mat.a[i][k] -= mat.a[j][k] * p;
 					inv.a[i][k] -= inv.a[j][k] * p;
@@ -175,7 +178,7 @@ public:
 		for (j = n - 1; j >= 0; j--) {
 			// eliminate above
 			for (i = j - 1; i >= 0; i--) {
-				T p = mat.a[i][j]; if (p == T(0)) continue;
+				T p = mat.a[i][j]; if (p == e0) continue;
 				for (k = 0; k < n; k++) {
 					mat.a[i][k] -= mat.a[j][k] * p;
 					inv.a[i][k] -= inv.a[j][k] * p;
@@ -209,11 +212,25 @@ public:
 	}
 
 	static matrix identity(int n) {
-		matrix t(n);
+		matrix t(n, n);
 		for (int i = 0; i < n; i++) {
 			t.a[i][i] = 1;
 		}
 		return t;
+	}
+};
+
+template<typename T>
+struct identityT<matrix<T>> {
+	static matrix<T> of(const matrix<T>& x) {
+		return matrix<T>::identity(x.rows());
+	}
+};
+
+template<typename T>
+struct zeroT<matrix<T>> {
+	static matrix<T> of(const matrix<T>& x) {
+		return matrix<T>(x.rows(), x.cols());
 	}
 };
 

@@ -12,7 +12,9 @@ template<typename T>
 class polynom {
 public:
 
-	// zero coefficient used for const reference return
+	// zero coefficient
+	// TODO: perhaps we should keep this as c.back() instead of a static member.
+	// Right now we have issues with polynom<moduloX>.
 	static T ZERO_COEFF;
 	
 	// FFT root and order; if set, FFT will be used for multiplication
@@ -26,23 +28,23 @@ public:
 	polynom(const polynom& rhs) : c(rhs.c) {}
 	polynom(const std::vector<T>& c) : c(c) {}
 	template<typename It> polynom(It begin, It end) : c(begin, end) {}
-	// construct from T, but only if T is not integral to avoid clashing with `polynom(int c0)`
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
 	polynom(const T& c0) { c.push_back(c0); }
+	// construct from int, but only if T is not integral to avoid constructor clashing
+	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
 	polynom(int c0) { c.push_back(c0); } // to allow constructing from 0 and 1
 	polynom(std::initializer_list<T> list) : c(list) {}
-	
+
 	polynom& swap(polynom &rhs) { c.swap(rhs.c); return *this; }
-	polynom& shrink_to_fit() { c.resize(deg() + 1); return *this; }
-	polynom& reserve(int sz) { if (sz > size()) c.resize(sz); return *this; }
+	polynom& shrink_to_fit() { c.resize(deg() + 1, ZERO_COEFF); return *this; }
+	polynom& reserve(int sz) { if (sz > size()) c.resize(sz, ZERO_COEFF); return *this; }
 
 	int size() const { return (int)c.size(); }
 	const T& at(int index) const { return (0 <= index && index < size()) ? c[index] : ZERO_COEFF; }
 	const T& operator [] (int index) const { return at(index); }
 	T& operator [] (int index) { reserve(index + 1); return c[index]; }
-	int deg() const { for (int i = size() - 1; i > 0; i--) if (c[i] != 0) return i; return 0; }
+	int deg() const { for (int i = size() - 1; i > 0; i--) if (c[i] != ZERO_COEFF) return i; return 0; }
 	const T& leading_coeff() const { return at(deg()); }
-	bool is_power() const { for (int i = deg() - 1; i >= 0; i--) if (c[i] != 0) return false; return leading_coeff() == 1; }
+	bool is_power() const { for (int i = deg() - 1; i >= 0; i--) if (c[i] != ZERO_COEFF) return false; return leading_coeff() == identityT<T>::of(ZERO_COEFF); }
 
 	// compares p1 and p2; O(l1 + l2)
 	static int cmp(const polynom &p1, const polynom &p2) {
@@ -58,7 +60,7 @@ public:
 	// it is allowed for `p1`, and `pr` to be the same instance
 	static void neg(polynom &pr, const polynom &p1) {
 		int lr = p1.deg();
-		pr.c.resize(lr + 1);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = -p1[i];
 	}
@@ -67,7 +69,7 @@ public:
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void add(polynom &pr, const polynom &p1, const polynom &p2) {
 		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
-		pr.c.resize(lr + 1); 
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = p1[i] + p2[i];
 	}
@@ -76,7 +78,7 @@ public:
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void sub(polynom &pr, const polynom &p1, const polynom &p2) {
 		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
-		pr.c.resize(lr + 1); 
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = p1[i] - p2[i];
 	}
@@ -88,18 +90,18 @@ public:
 		int sizeFFT = 1; while (sizeFFT < sizeR) sizeFFT *= 2;
 		std::vector<T> temp1(p1.c); temp1.resize(sizeFFT);
 		std::vector<T> temp2(p2.c); temp2.resize(sizeFFT);
-		pr.c.assign(sizeFFT, 0);
+		pr.c.assign(sizeFFT, ZERO_COEFF);
 		fft_convolve(&pr.c[0], &temp1[0], &temp2[0], sizeFFT, FFT_ROOT, FFT_ORDER);
-		pr.c.resize(sizeR);
+		pr.c.resize(sizeR, ZERO_COEFF);
 	}
 	
 	// pr = p1 * p2; O(l1 * l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2, int lr = 0) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (!lr) lr = l1 + l2;
-		pr.c.resize(lr + 1);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = lr; i >= 0; i--) {
-			T r = 0;
+			T r = ZERO_COEFF;
 			for (int j = min(i, l1); j >= max(0, i - l2); j--)
 				r += p1[j] * p2[i - j];
 			pr[i] = r;
@@ -122,10 +124,10 @@ public:
 	// `pr` and `pm` must not be the same instance
 	static void quot_rem(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
-		pr.c = p1.c; pr.c.resize(l1 + 1);
+		pr.c = p1.c; pr.c.resize(l1 + 1, ZERO_COEFF);
 		if (lr < 0 || pm.is_power()) return;
 		for (int i = l1; i >= lm; i--) {
-			T s = pr[i] /= pm[lm]; if (s == 0) continue;
+			T s = pr[i] /= pm[lm]; if (s == ZERO_COEFF) continue;
 			for (int j = 1; j <= lm; j++)
 				pr[i - j] = pr[i - j] - s * pm[lm - j];
 		}
@@ -140,7 +142,7 @@ public:
 		quot_rem(pr, p1, pm);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = pr[i + lm];
-		pr.c.resize(lr + 1);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 	}
 
 	// pr = p1 % pm; O((l1 - lm) * lm)
@@ -149,14 +151,14 @@ public:
 	static void mod(polynom &pr, const polynom &p1, const polynom &pm) {
 		int l1 = p1.deg(), lm = pm.deg(); int lr = lm - 1;
 		quot_rem(pr, p1, pm);
-		if (lr < l1) pr.c.resize(lr + 1);
+		if (lr < l1) pr.c.resize(lr + 1, ZERO_COEFF);
 	}
 
 	// pr = p1 * s; O(l1)
 	// it is allowed for `p1` and `pr` to be the same instance
 	static void mul(polynom &pr, const polynom &p1, const T &s) {
 		int lr = p1.deg();
-		pr.c.resize(lr + 1);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = p1[i] * s;
 	}
@@ -165,7 +167,7 @@ public:
 	// it is allowed for `p1` and `pr` to be the same instance
 	static void div(polynom &pr, const polynom &p1, const T &s) {
 		int lr = p1.deg();
-		pr.c.resize(lr + 1);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++)
 			pr[i] = p1[i] / s;
 	}
@@ -201,7 +203,7 @@ public:
 	
 	template<typename A>
 	A eval(const A& x) const {
-		A r = 0;
+		A r = zeroT<A>::of(x);
 		for (int i = deg(); i >= 0; i--) {
 			r = r * x + A(c[i]);
 		}
@@ -220,6 +222,20 @@ public:
 template<typename T> T polynom<T>::ZERO_COEFF = 0;
 template<typename T> T polynom<T>::FFT_ROOT = 0;
 template<typename T> int polynom<T>::FFT_ORDER = 0;
+
+template<typename T>
+struct identityT<polynom<T>> {
+	static polynom<T> of(const polynom<T>& x) {
+		return polynom<T>(identityT<T>::of(polynom<T>::ZERO_COEFF));
+	}
+};
+
+template<typename T>
+struct zeroT<polynom<T>> {
+	static polynom<T> of(const polynom<T>& x) {
+		return polynom<T>(polynom<T>::ZERO_COEFF);
+	}
+};
 
 } // math
 } // altruct

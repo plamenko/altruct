@@ -15,7 +15,7 @@ TEST(matrix_test, constructor) {
 	EXPECT_EQ(0, m1.rows());
 	EXPECT_EQ(0, m1.cols());
 	
-	matrix<int> m2(3);
+	matrix<int> m2(3, 3);
 	EXPECT_EQ(3, m2.rows());
 	EXPECT_EQ(3, m2.cols());
 	EXPECT_EQ((vector<vector<int>>{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }), m2.a);
@@ -170,5 +170,10 @@ TEST(matrix_test, transpose) {
 }
 
 TEST(matrix_test, identity) {
+	const matrix<int> m1({ { 2, 3, 5 }, { 7, 11, 13 }, { 17, 19, 23 } });
+	const matrix<int> m2({ { 2, 3, 5, 6 }, { 7, 11, 13, 14 }, { 17, 19, 23, 25 } });
 	EXPECT_EQ((matrix<int>{ { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}), matrix<int>::identity(3));
+	EXPECT_EQ((matrix<int>{{ 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}), identityT<matrix<int>>::of(m1));
+	EXPECT_EQ((matrix<int>{{ 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }}), zeroT<matrix<int>>::of(m1));
+	EXPECT_EQ((matrix<int>{{ 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }}), zeroT<matrix<int>>::of(m2));
 }

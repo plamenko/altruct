@@ -13,6 +13,9 @@
     <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp">
       <Filter>src\structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp">
+      <Filter>src\algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

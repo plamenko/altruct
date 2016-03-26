@@ -273,11 +273,11 @@ bool miller_rabin(const T& n, const T* bases) {
 	if (n == 0 || n == 1) return 0;
 	if (n == 2 || n == 3) return 1;
 	if ((n % 2) == 0) return 0;
-	typedef modulo<T, 1> mod; mod::M = n;
+	typedef moduloX<T> modx;
 	T d = n - 1; int r = 0; // n-1 = 2^r * d
 	while (d % 2 == 0) d /= 2, r++;
 	for (int i = 0; bases[i] && bases[i] < n; i++) {
-		mod x = powT<mod>(bases[i], d);
+		modx x = powT(modx(bases[i], n), d);
 		if (x == 1 || x == n - 1) continue;
 		for (int i = 1; i < r; i++) {
 			x *= x;
@@ -336,18 +336,18 @@ bool miller_rabin(const T& n) {
  * @param a - parameter of the polynomial g(x) = x^2 + a
  * @return d - a nontrivial factor of `n`, or `n` if factorization failed
  */
-template<typename T>
-T pollard_rho(const T& n, T k = 2, T a = 1) {
+template<typename I>
+I pollard_rho(const I& n, const I& k = 2, const I& a = 1) {
 	if (n == 0) return 0;
 	if (n == 1) return 1;
 	if (n % 2 == 0) return 2;
-	typedef modulo<T, 1> mod; mod::M = n;
-	auto g = [a](const mod& x){ return (x*x + a).v; };
-	T x = k, y = k, d = 1;
+	typedef moduloX<I> modx;
+	auto g = [a](const modx& x){ return x*x + a; };
+	modx x = modx(k, n), y = modx(k, n); I d = 1;
 	while (d == 1) {
 		x = g(x);
 		y = g(g(y));
-		d = gcd<T>(absT<T>(x - y), n);
+		d = gcd(absT((x - y).v), n);
 	}
 	return d;
 }
@@ -359,10 +359,10 @@ T pollard_rho(const T& n, T k = 2, T a = 1) {
  * By trying different `k` and `a` parameters, the algorithm significantly reduces a chance of
  * factorization failure.
  */
-template<typename T>
-T pollard_rho_repeated(const T& n, T max_iter = 20) {
-	for (int k = 2; k <= max_iter; k++) {
-		T d = pollard_rho<T>(n, k, k);
+template<typename I>
+I pollard_rho_repeated(const I& n, I max_iter = 20) {
+	for (I k = 2; k <= max_iter; k++) {
+		I d = pollard_rho(n, k, k);
 		if (d != n) return d;
 	}
 	return n;
@@ -371,17 +371,17 @@ T pollard_rho_repeated(const T& n, T max_iter = 20) {
 /**
  * Factors integer `n` using a general-purpose factoring algorithm.
  */
-template<typename T>
-std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
-	std::vector<std::pair<T, int>> vf;
+template<typename I>
+std::vector<std::pair<I, int>> factor_integer(const I& n, int max_iter = 20) {
+	std::vector<std::pair<I, int>> vf;
 	if (n == 0 || n == 1) return vf;
-	std::vector<T> q = { n };
+	std::vector<I> q = { n };
 	while (!q.empty()) {
-		T a = q.back(); q.pop_back();
+		I a = q.back(); q.pop_back();
 		if (a == 1) {
 			continue;
 		}
-		if (miller_rabin<T>(a)) {
+		if (miller_rabin<I>(a)) {
 			// a prime factor found
 			int e = 1;
 			for (auto& b : q) {
@@ -391,7 +391,7 @@ std::vector<std::pair<T, int>> factor_integer(const T& n, int max_iter = 20) {
 			continue;
 		}
 		// `a` is composite
-		T d = pollard_rho_repeated<T>(a, max_iter);
+		I d = pollard_rho_repeated<I>(a, max_iter);
 		if (d == 1 || d == a) {
 			// failed to factor the composite
 			vf.push_back({ a, 1 });

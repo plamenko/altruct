@@ -90,7 +90,7 @@ polynom<T> polynom_sum(const polynom<T>& p) {
 	std::vector<T> b = bernoulli_b<T>(p.deg());
 	for (int m = p.deg(); m >= 0; m--) {
 		T c = p[m] / (m + 1);
-		if (c == 0) continue;
+		if (c == p.ZERO_COEFF) continue;
 		for (int k = 0; k <= m; k++) {
 			s[m + 1 - k] += c * b[k];
 			c *= (m + 1 - k);

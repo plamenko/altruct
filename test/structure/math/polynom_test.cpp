@@ -1,4 +1,5 @@
 ﻿#include "structure/math/polynom.h"
+#include "structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 
@@ -535,4 +536,27 @@ TEST(polynom_test, derivative) {
 	const polynom<int> p1{ 7, 5, -3, 4 };
 	const polynom<int> pd = p1.derivative();
 	EXPECT_EQ((polynom<int>{ 5, -6, 12 }), pd);
+}
+
+TEST(polynom_test, identity) {
+	typedef moduloX<int> modx;
+	typedef polynom<modx> polyx;
+	polyx::ZERO_COEFF = modx(0, 1009);
+	polyx p1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
+	EXPECT_EQ(2, p1[0].v);
+	EXPECT_EQ(1009, p1[0].M);
+	EXPECT_EQ(3, p1[1].v);
+	EXPECT_EQ(1009, p1[1].M);
+	EXPECT_EQ(5, p1[2].v);
+	EXPECT_EQ(1009, p1[2].M);
+	EXPECT_EQ(0, p1[3].v);
+	EXPECT_EQ(1009, p1[3].M);
+	polyx e0 = zeroT<polyx>::of(p1);
+	EXPECT_EQ(0, e0[0].v);
+	EXPECT_EQ(1009, e0[0].M);
+	EXPECT_EQ(0, e0.deg());
+	polyx e1 = identityT<polyx>::of(p1);
+	EXPECT_EQ(1, e1[0].v);
+	EXPECT_EQ(1009, e1[0].M);
+	EXPECT_EQ(0, e1.deg());
 }

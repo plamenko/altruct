@@ -1,4 +1,5 @@
 ﻿#include "structure/math/fraction.h"
+#include "structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 
@@ -105,4 +106,20 @@ TEST(fraction_test, operators_inplace_self) {
 	EXPECT_EQ(frac(1), fr);
 	fr = f1; fr %= fr;
 	EXPECT_EQ(frac(0), fr);
+}
+
+TEST(fraction_test, identity) {
+	typedef moduloX<int> modx;
+	typedef fraction<modx> fracx;
+	const fracx f1({ 3, 1009 }, { 7, 1009 });
+	const fracx e0 = zeroT<fracx>::of(f1);
+	const fracx e1 = identityT<fracx>::of(f1);
+	EXPECT_EQ(0, e0.p.v);
+	EXPECT_EQ(1009, e0.p.M);
+	EXPECT_EQ(1, e0.q.v);
+	EXPECT_EQ(1009, e0.q.M);
+	EXPECT_EQ(1, e1.p.v);
+	EXPECT_EQ(1009, e1.p.M);
+	EXPECT_EQ(1, e1.q.v);
+	EXPECT_EQ(1009, e1.q.M);
 }

@@ -2,6 +2,8 @@
 
 #include "algorithm/math/base.h"
 
+#include <type_traits>
+
 namespace altruct {
 namespace math {
 
@@ -10,7 +12,7 @@ template<typename T>
 void modulo_normalize(T& v, const T& M) { v %= M; }
 // integral type specializations
 template<typename I>
-void modulo_normalize_int(I& v, I M) {
+void modulo_normalize_int(I& v, const I& M) {
 	if (v < 0) v += M;
 	if (v >= M) v -= M;
 	if (v < 0 || v >= M) v %= M;
@@ -67,22 +69,42 @@ I modulo_divide_int(I x, I y, I M) {
 long long modulo_divide(long long x, long long y, long long M);
 int modulo_divide(int x, int y, int M);
 
+template<typename T, int ID, bool STATIC = true>
+struct modulo_members;
+
+template<typename T, int ID>
+struct modulo_members<T, ID, false> {
+	T M;
+	modulo_members(const T& M = 0) : M(M) {}
+};
+
+template<typename T, int ID>
+struct modulo_members<T, ID, true> {
+	static T M;
+	modulo_members(const T& M = 0) {}
+};
+
 /**
  * Modulo M arithmetics
  *
  * modulo<int, 3> - Z/3Z
  *
- * T must be constructable from int
+ * @param T - the underlying type
+ * @param ID - ID of the modulo type (useful when STATIC = true)
+ * @param STATIC - whether M is a static or instance member
  */
-template<typename T, int ID>
-class modulo {
+template<typename T, int ID, bool STATIC = true>
+class modulo : public modulo_members<T, ID, STATIC> {
 public:
-	static T M;
-
 	T v;
 
-	modulo(const modulo &rhs) : v(rhs.v) {}
-	modulo(T v = 0) : v(v) { normalize(); }
+	// construct from int, but only if T is not integral to avoid constructor clashing
+	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
+	modulo(int v) : v(v), modulo_members(1) { if (STATIC) normalize(); }
+	modulo(const T& v = 0) : v(v), modulo_members(1) { if (STATIC) normalize(); }
+	modulo(const T& v, const T& M) : v(v), modulo_members(M) { normalize(); }
+	modulo(const modulo& rhs) : v(rhs.v), modulo_members(rhs.M) {}
+	modulo make(const T& v) const { return modulo(v, M); }
 
 	void normalize() { modulo_normalize(v, M); }
 	
@@ -107,8 +129,25 @@ public:
 	modulo& operator %= (const modulo &rhs) { v %= rhs.v;     normalize(); return *this; }
 };
 
+template<typename T>
+using moduloX = modulo<T, 0, false>;
+
 template<typename T, int ID>
-T modulo<T, ID>::M = (T) ID;
+T modulo_members<T, ID, true>::M = (T)ID;
+
+template<typename T, int ID, bool STATIC>
+struct identityT<modulo<T, ID, STATIC>> {
+	static modulo<T, ID, STATIC> of(const modulo<T, ID, STATIC>& x) {
+		return modulo<T, ID, STATIC>(identityT<T>::of(x.v), x.M);
+	}
+};
+
+template<typename T, int ID, bool STATIC>
+struct zeroT<modulo<T, ID, STATIC>> {
+	static modulo<T, ID, STATIC> of(const modulo<T, ID, STATIC>& x) {
+		return modulo<T, ID, STATIC>(zeroT<T>::of(x.v), x.M);
+	}
+};
 
 } // math
 } // altruct

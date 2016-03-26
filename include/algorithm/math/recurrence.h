@@ -18,8 +18,9 @@ namespace math {
  * @param f_coeff - coefficients
  * @param f_init - initial values
  */
-template<typename T>
-T linear_recurrence(const std::vector<T> &f_coeff, const std::vector<T> &f_init, long long n) {
+template<typename T, typename A>
+A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init, long long n) {
+	T e0 = zeroT<T>::of(f_coeff[0]), e1 = identityT<T>::of(f_coeff[0]);
 	// characteristic polynomial: p(x) = 0
 	int L = (int) f_coeff.size();
 	polynom<T> p(vector<T>(L + 1));
@@ -27,14 +28,13 @@ T linear_recurrence(const std::vector<T> &f_coeff, const std::vector<T> &f_init,
 	for (int i = 0; i < L; i++)
 		p[L - 1 - i] = -f_coeff[i];
 	// x^n % p(x)
-	typedef modulo<polynom<T>, 1> polymod;
-	polymod::M = p;
-	polynom<T> x = { 0, 1 };
-	polymod xn = powT<polymod>(x, n);
+	typedef moduloX<polynom<T>> polymod;
+	polynom<T> x = { e0, e1 };
+	polymod xn = powT(polymod(x, p), n);
 	// f[n]
-	T r = 0;
+	A r = zeroT<A>::of(f_init[0]);
 	for (int i = 0; i < L; i++) {
-		r += xn.v[i] * f_init[i];
+		r += f_init[i] * xn.v[i];
 	}
 	return r;
 }
@@ -44,7 +44,7 @@ T linear_recurrence(const std::vector<T> &f_coeff, const std::vector<T> &f_init,
  */
 template<typename T>
 T fibonacci(long long n) {
-	return linear_recurrence<T>({ 1, 1 }, {0, 1}, n);
+	return linear_recurrence<T, T>({ 1, 1 }, {0, 1}, n);
 }
 
 /**
@@ -52,7 +52,7 @@ T fibonacci(long long n) {
  */
 template<typename T>
 T lucas_l(long long n) {
-	return linear_recurrence<T>({ 1, 1 }, { 2, 1 }, n);
+	return linear_recurrence<T, T>({ 1, 1 }, { 2, 1 }, n);
 }
 
 /**
@@ -60,7 +60,7 @@ T lucas_l(long long n) {
  */
 template<typename T>
 T lucas_u(T p, T q, long long n) {
-	return linear_recurrence<T>({ p, -q }, { 0, 1 }, n);
+	return linear_recurrence<T, T>({ p, -q }, { 0, 1 }, n);
 }
 
 /**
@@ -68,17 +68,17 @@ T lucas_u(T p, T q, long long n) {
  */
 template<typename T>
 T lucas_v(T p, T q, long long n) {
-	return linear_recurrence<T>({ p, -q }, { 2, p }, n);
+	return linear_recurrence<T, T>({ p, -q }, { 2, p }, n);
 }
 
 /*
  * First B0...Bn Bernoulli numbers of the second kind
  */
 template<typename T>
-std::vector<T> bernoulli_b(int n) {
+std::vector<T> bernoulli_b(int n, T id = T(1)) {
 	std::vector<T> a(n+1), b(n+1);
 	for (int m = 0; m <= n; m++) {
-		a[m] = T(1) / (m + 1);
+		a[m] = id / (m + 1);
 		for (int j = m; j >= 1; j--) {
 			a[j - 1] = (a[j - 1] - a[j]) * j;
 		}
@@ -95,21 +95,25 @@ std::vector<T> bernoulli_b(int n) {
  * 
  * @param a - the first 2n elements (or more) of the sequence,
  *            where n is the degree of the polynomial
+ *
+ * TODO: doesn't work for arbitrary ring A, see Reeds and Sloane's extension to handle a ring.
  */
-template<typename T>
-polynom<T> berlekamp_massey(std::vector<T> a) {
+template<typename T, typename A = T>
+polynom<T> berlekamp_massey(std::vector<A> a, T id = T(1)) {
+	T e0 = zeroT<T>::of(id), e1 = identityT<T>::of(id);
 	int n = (int)a.size() / 2;
 	int m = 2 * n - 1;
-	polynom<T> R, R0, R1, V, V0, V1, Q;
-	R0[m + 1] = 1;
+	polynom<A> R, R0, R1;
+	polynom<T> V, V0, V1, Q;
+	R0[m + 1] = identityT<A>::of(a[0]);
 	for (int i = 0; i <= m; i++) {
 		R1[i] = a[m - i];
 	}
-	V0[0] = 0;
-	V1[0] = 1;
+	V0[0] = e0;
+	V1[0] = e1;
 	while (R1.deg() >= n) {
 		Q = R0 / R1;
-		R = R0 % R1;
+		R = R0 - Q * R1;
 		V = V0 - Q * V1;
 		V0 = V1; V1 = V;
 		R0 = R1; R1 = R;

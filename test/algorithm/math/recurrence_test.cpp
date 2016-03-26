@@ -1,4 +1,5 @@
 #include "algorithm/math/recurrence.h"
+#include "structure/math/matrix.h"
 
 #include "gtest/gtest.h"
 
@@ -7,13 +8,27 @@ using namespace altruct::math;
 
 typedef long long ll;
 typedef modulo<int, 1000000007> mod;
+typedef matrix<int> mat;
 
 TEST(recurrence_test, linear_recurrence) {
 	std::vector<int> f;
 	for (int n = 0; n < 20; n++) {
-		f.push_back(linear_recurrence<int>({1, -2, 3, 4, -5}, {2, 3, 5, 7, 11}, n));
+		f.push_back(linear_recurrence<int, int>({1, -2, 3, 4, -5}, {2, 3, 5, 7, 11}, n));
 	}
 	EXPECT_EQ((vector<int> {2, 3, 5, 7, 11, 14, 18, 26, 41, 44, 42, 91, 173, 88, -37, 460, 1035, -509, -1787, 4361}), f);
+}
+
+TEST(recurrence_test, linear_recurrence_on_matrix) {
+	std::vector<mat> a;
+	mat a0 = { { 1, 0 }, { 0, 1 } };
+	mat a1 = { { 1, 1 }, { 1, 0 } };
+	mat a2 = { { 3, 1 }, { 1, 2 } };
+	mat a3 = { { 5, 3 }, { 3, 2 } };
+	mat a4 = { { 11, 5 }, { 5, 6 } };
+	for (int n = 0; n < 5; n++) {
+		a.push_back(linear_recurrence<int, mat>({ 1, 2 }, { a0, a1 }, n));
+	}
+	EXPECT_EQ((vector<mat> {a0, a1, a2, a3, a4}), a);
 }
 
 TEST(recurrence_test, fibonacci) {
@@ -69,15 +84,14 @@ TEST(recurrence_test, berlekamp_massey) {
 	// 58 x^0 - 45 x^1 - 13 x^2 + 23 x^3 - 17 x^4 + 1 x^5 = 0
 	std::vector<mod> a;
 	for (int n = 0; n <= 100; n++) {
-		a.push_back(linear_recurrence<mod>({ 17, -23, 13, 45, -58 }, { 2, 3, 5, 7, 11 }, n));
+		a.push_back(linear_recurrence<mod, mod>({ 17, -23, 13, 45, -58 }, { 2, 3, 5, 7, 11 }, n));
 	}
-	auto p = berlekamp_massey(a);
+	auto p = berlekamp_massey<mod>(a);
 	EXPECT_EQ((polynom<mod> { +58, -45, -13, +23, -17, 1 }), p);
 	
 	// use the characteristic polynomial to calculate the n-th term of the sequence
-	typedef modulo<polynom<mod>, 1> poly_mod;
-	poly_mod::M = p;
-	auto x_n = powT(poly_mod({ 0, 1 }), 100); // x^n % p
+	typedef moduloX<polynom<mod>> polymod;
+	auto x_n = powT(polymod({ 0, 1 }, p), 100); // x^n % p
 	mod r = 0;
 	for (int i = 0; i <= x_n.v.deg(); i++) {
 		r += x_n.v[i] * a[i];

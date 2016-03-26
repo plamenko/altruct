@@ -1,4 +1,5 @@
 ﻿#include "structure/math/vectorNd.h"
+#include "algorithm/math/modulos.h"
 
 #include "gtest/gtest.h"
 
@@ -136,4 +137,33 @@ TEST(vectNd_test, abs2) {
 	EXPECT_EQ(0, v0.abs2());
 	const vect4 v1{ 1, 5, -4, 7 };
 	EXPECT_EQ(91, v1.abs2());
+}
+
+TEST(vectNd_test, identity) {
+	typedef moduloX<int> modx;
+	typedef vectorNd<modx, 3> vect3;
+	vect3 v{ { 2, 1009 }, { 3, 1013 }, { 5, 1019 } };
+	vect3 e0 = zeroT<vect3>::of(v);
+	EXPECT_EQ(0, e0[0].v);
+	EXPECT_EQ(1009, e0[0].M);
+	EXPECT_EQ(0, e0[1].v);
+	EXPECT_EQ(1013, e0[1].M);
+	EXPECT_EQ(0, e0[2].v);
+	EXPECT_EQ(1019, e0[2].M);
+	vect3 e1 = identityT<vect3>::of(v);
+	EXPECT_EQ(1, e1[0].v);
+	EXPECT_EQ(1009, e1[0].M);
+	EXPECT_EQ(1, e1[1].v);
+	EXPECT_EQ(1013, e1[1].M);
+	EXPECT_EQ(1, e1[2].v);
+	EXPECT_EQ(1019, e1[2].M);
+	
+	vect3 v1 = e1 * modx(1000);
+	vect3 v3 = powT(v1, 3);
+	modx r;
+	for (int i = 0; i < v3.size(); i++) {
+		chinese_remainder(r.v, r.M, v3[i].v, v3[i].M);
+	}
+	EXPECT_EQ(1000000000, r.v);
+	EXPECT_EQ(1009*1013*1019, r.M);
 }

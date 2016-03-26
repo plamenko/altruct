@@ -5,6 +5,24 @@
 using namespace std;
 using namespace altruct::math;
 
+void crt_test_impl(int a1, int n1, int a2, int n2) {
+	int a, n; chinese_remainder(a, n, a1, n1, a2, n2);
+	EXPECT_EQ(lcm(n1, n2), n);
+	EXPECT_EQ(a1, a % n1);
+	EXPECT_EQ(a2, a % n2);
+	EXPECT_GE(a, 0);
+	EXPECT_LT(a, n);
+}
+
+TEST(modulos_test, chinese_remainder) {
+	crt_test_impl(0, 10, 5, 13);
+	crt_test_impl(5, 10, 3, 13);
+	crt_test_impl(5, 10, 3, 14);
+	crt_test_impl(4, 10, 6, 14);
+	crt_test_impl(6, 14, 6, 14);
+	crt_test_impl(102, 65535, 12345, 48888);
+}
+
 TEST(modulos_test, jacobi) {
 	vector<vector<int>> v(1);
 	for (int m = 1; m <= 50; m++) {

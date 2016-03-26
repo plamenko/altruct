@@ -116,6 +116,21 @@ TEST(modulo_test, operators_inplace_self) {
 	EXPECT_EQ(mod(0), mr);
 }
 
+TEST(modulo_test, identity) {
+	typedef moduloX<int> modx;
+	modx m1(1000000000, 1000000007);
+	modx e0 = zeroT<modx>::of(m1);
+	modx e1 = identityT<modx>::of(m1);
+	EXPECT_EQ(0, e0.v);
+	EXPECT_EQ(1000000007, e0.M);
+	EXPECT_EQ(1, e1.v);
+	EXPECT_EQ(1000000007, e1.M);
+	modx mr = powT(m1, 10);
+	EXPECT_EQ(282475249, mr.v);
+	EXPECT_EQ(1000000007, mr.M);
+
+}
+
 TEST(modulo_test, long_long) {
 	typedef modulo<long long, 1> modl;
 	modl::M = 1000000000000000003LL;

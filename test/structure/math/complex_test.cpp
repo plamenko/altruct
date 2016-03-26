@@ -118,3 +118,15 @@ TEST(complex_test, norm) {
 	EXPECT_EQ(29.0, z1.norm());
 	EXPECT_EQ(25.0, z2.norm());
 }
+
+TEST(complex_test, identity) {
+	const cplx z1(2, -5);
+	const cplx e0 = zeroT<cplx>::of(z1);
+	const cplx e1 = identityT<cplx>::of(z1);
+	EXPECT_EQ(0, e0.a);
+	EXPECT_EQ(0, e0.b);
+	EXPECT_EQ(-1, e0.D);
+	EXPECT_EQ(1, e1.a);
+	EXPECT_EQ(0, e1.b);
+	EXPECT_EQ(-1, e1.D);
+}

@@ -7,20 +7,52 @@ using namespace altruct::math;
 
 typedef quadratic<int, 5> quad;
 typedef quadratic<int, -1> gaussian;
+typedef quadraticX<int> quadx;
 
 TEST(quadratic_test, constructor) {
 	quad q1;
 	EXPECT_EQ(0, q1.a);
 	EXPECT_EQ(0, q1.b);
+	EXPECT_EQ(5, q1.D);
 	quad q2(10);
 	EXPECT_EQ(10, q2.a);
 	EXPECT_EQ(0, q2.b);
+	EXPECT_EQ(5, q2.D);
 	quad q3(+2, -5);
 	EXPECT_EQ(+2, q3.a);
 	EXPECT_EQ(-5, q3.b);
-	quad q4(q3);
+	EXPECT_EQ(5, q3.D);
+	quad q4(+2, -5, 7); // ignore D if static
 	EXPECT_EQ(+2, q4.a);
 	EXPECT_EQ(-5, q4.b);
+	EXPECT_EQ(5, q4.D);
+	quad q5(q4);
+	EXPECT_EQ(+2, q5.a);
+	EXPECT_EQ(-5, q5.b);
+	EXPECT_EQ(5, q5.D);
+}
+
+TEST(quadratic_test, constructor_x) {
+	quadx q1;
+	EXPECT_EQ(0, q1.a);
+	EXPECT_EQ(0, q1.b);
+	EXPECT_EQ(0, q1.D);
+	quadx q2(10);
+	EXPECT_EQ(10, q2.a);
+	EXPECT_EQ(0, q2.b);
+	EXPECT_EQ(0, q2.D);
+	quadx q3(+2, -5);
+	EXPECT_EQ(+2, q3.a);
+	EXPECT_EQ(-5, q3.b);
+	EXPECT_EQ(0, q3.D);
+	quadx q4(+2, -5, 7); // ignore D if static
+	EXPECT_EQ(+2, q4.a);
+	EXPECT_EQ(-5, q4.b);
+	EXPECT_EQ(7, q4.D);
+	quadx q5(q4);
+	EXPECT_EQ(+2, q5.a);
+	EXPECT_EQ(-5, q5.b);
+	EXPECT_EQ(7, q5.D);
 }
 
 template<typename T>
@@ -122,4 +154,28 @@ TEST(quadratic_test, norm) {
 	const gaussian g2(3, 4);
 	EXPECT_EQ(29, g1.norm());
 	EXPECT_EQ(25, g2.norm());
+}
+
+TEST(quadratic_test, identity) {
+	const quad q(2, -5);
+	const quad e0 = zeroT<quad>::of(q);
+	const quad e1 = identityT<quad>::of(q);
+	EXPECT_EQ(0, e0.a);
+	EXPECT_EQ(0, e0.b);
+	EXPECT_EQ(5, e0.D);
+	EXPECT_EQ(1, e1.a);
+	EXPECT_EQ(0, e1.b);
+	EXPECT_EQ(5, e1.D);
+}
+
+TEST(quadratic_test, identity_x) {
+	const quadx z(2, -5, -1);
+	const quadx z0 = zeroT<quadx>::of(z);
+	const quadx z1 = identityT<quadx>::of(z);
+	EXPECT_EQ(0, z0.a);
+	EXPECT_EQ(0, z0.b);
+	EXPECT_EQ(-1, z0.D);
+	EXPECT_EQ(1, z1.a);
+	EXPECT_EQ(0, z1.b);
+	EXPECT_EQ(-1, z1.D);
 }

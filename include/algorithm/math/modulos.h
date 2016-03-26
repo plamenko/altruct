@@ -11,6 +11,33 @@ namespace altruct {
 namespace math {
 
 /**
+ * Chinese Remainder
+ *
+ * Calculates `a` and `n` so that:
+ *   n = lcm(n1, n2)
+ *   a % n1 == a1
+ *   a % n2 == a2
+ *   0 <= a < n
+ * `n1` and `n2` don't have to be coprime.
+ * Correctly handles 64bit result for long long type.
+ */
+template<typename T>
+void chinese_remainder(T &a, T&n, T a1, T n1, T a2, T n2) {
+	T e0 = zeroT<T>::of(a);
+	T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
+	if ((a2 - a1) % g != e0) { n = e0, a = e0; return; }
+	T t1 = modulo_multiply(a1, ni2, n1);
+	T t2 = modulo_multiply(a2, ni1, n2);
+	n1 /= g; n2 /= g; n = n1 * n2 * g;
+	a = modulo_multiply(t1, n2, n) + modulo_multiply(t2, n1, n);
+	return modulo_normalize(a, n);
+}
+template<typename T>
+void chinese_remainder(T &ar, T&nr, T a, T n) {
+	chinese_remainder(ar, nr, ar, nr, a, n);
+}
+
+/**
  * Jacobi symbol
  * 
  * For prime `m`, this is equivalent to Legendre symbol:
@@ -39,50 +66,44 @@ int jacobi(I n, I m) {
 }
 
 /**
- * Square root of `y` modulo `p`
+ * Square root of `y.v` modulo prime `y.M`
+ *
+ * @param M - the modulo<I, ...> type
  */
-template <typename I, int ID>
-modulo<I, ID> sqrt_cipolla(modulo<I, ID> y) {
-	typedef modulo<I, ID> mod;
-	const I& p = mod::M;
+template <typename M>
+M sqrt_cipolla(const M& y) {
+	M e0 = zeroT<M>::of(y), e1 = identityT<M>::of(y);
 	// find a quadratic nonresidue `d` modulo `p`
-	mod a = 0, d = 0;
+	M a = e0, d = e0;
 	do {
-		a += 1;
-		d = a * a - y;
-	} while (powT(d, (p - 1) / 2) == 1); // jacobi(d, p) == 1
+		a += 1, d = a * a - y;
+	} while (powT(d, (y.M - 1) / 2) == 1); // jacobi(d, p) == 1
 	// r = (a + sqrt(d)) ^ ((p + 1) / 2)
-	typedef quadratic<mod, 0> quad;
-	quad::D = d;
-	quad r = powT(quad(a, 1), (p + 1) / 2);
-	return r.a;
+	return powT(quadraticX<M>(a, e1, d), (y.M + 1) / 2).a;
 }
 
 /**
- * Square root of `y` modulo `p`
+ * Square root of `y` modulo prime `p`
  */
 template <typename I>
-I sqrt_cipolla(I y, I p) {
-	typedef modulo<I, 1> mod;
-	mod::M = p;
-	return sqrt_cipolla(mod(y)).v;
+I sqrt_cipolla(const I& y, const I& p) {
+	return sqrt_cipolla(moduloX<I>(y, p)).v;
 }
 
 /**
- * Square root of `y` modulo `p^k`
+ * Square root of `y` modulo prime power `p^k`
  */
 template <typename I>
-I sqrt_hensel_lift(I y, int p, int k) {
-	typedef modulo<I, 1> mod;
-	mod::M = p; int p_i = p, p_k = powT(p, k);
+I sqrt_hensel_lift(const I& y, const I& p, I k) {
+	typedef moduloX<I> modx;
 	// f(r) == r^2 - y; f'(r) == 2r;
-	mod r = sqrt_cipolla(mod(y));
-	for (int i = 1; i < k; i *= 2) {
-		int phi = p_i / p * (p - 1); // euler_phi(p_i)
-		mod u = powT(r * 2, -1 + phi); // f'(r) ^-1
-		mod::M = p_i = (i * 2 < k) ? p_i * p_i : p_k; // lift modulus
-		mod v = r * r - y; // f(r)
-		r -= u * v;
+	modx r = sqrt_cipolla(modx(y, p));
+	for (I i = 1; i < k; i *= 2) {
+		I phi = r.M / p * (p - 1); // euler_phi(r.M)
+		modx u = powT(r * 2, phi - 1); // f'(r) ^-1
+		r.M = (i * 2 < k) ? r.M * r.M : powT(p, k); // lift modulus
+		modx v = r * r - y; // f(r)
+		r -= v * u;
 	}
 	return r.v;
 }
@@ -98,13 +119,12 @@ I sqrt_hensel_lift(I y, int p, int k) {
  */
 template<typename I>
 I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
-	typedef modulo<I, 1> mod;
-	mod::M = m;
+	typedef moduloX<I> modx;
 	for (I g = 1; g < m; g += 1) {
 		if (gcd(g, m) > 1) continue;
 		bool primitive = true;
 		for (const I& p : phi_factors) {
-			primitive &= (powT<mod>(g, phi / p) != 1);
+			primitive &= (powT(modx(g, m), phi / p) != 1);
 		}
 		if (primitive) return g;
 	}
@@ -113,12 +133,10 @@ I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
 
 /**
  * Primitive root modulo `m`
+ *
+ * `m` must be 2, 4, p^k or 2p^k.
  */
-int primitive_root(int m, prime_holder& prim) {
-	int phi = euler_phi(prim.factor_integer(m));
-	auto phi_factors = prime_factors(prim.factor_integer(phi));
-	return primitive_root(m, phi, phi_factors);
-}
+int primitive_root(int m, prime_holder& prim);
 
 /**
  * `k-th` roots of unity modulo `m`
@@ -132,15 +150,14 @@ int primitive_root(int m, prime_holder& prim) {
  * @param phi_factors - unique prime factors of `phi`
  */
 template<typename I>
-std::vector<I> kth_roots(I m, int k, I lam, I phi, const std::vector<I> &phi_factors) {
-	typedef modulo<I, 1> mod;
-	mod::M = m;
+std::vector<I> kth_roots(I m, I k, I lam, I phi, const std::vector<I> &phi_factors) {
+	typedef moduloX<I> modx;
 	I g = primitive_root(m, phi, phi_factors);
 	I l = gcd(lam, k);
-	mod w = powT<mod>(g, lam / l);
-	mod r = 1;
-	std::vector<int> vr;
-	for (int j = 0; j < l; j++) {
+	modx w = powT(modx(g, m), lam / l);
+	modx r = identityT<modx>::of(w);
+	std::vector<I> vr;
+	for (I j = 0; j < l; j++) {
 		vr.push_back(r.v);
 		r *= w;
 	}
@@ -150,23 +167,18 @@ std::vector<I> kth_roots(I m, int k, I lam, I phi, const std::vector<I> &phi_fac
 
 /**
  * `k-th` roots of unity modulo `m`
+ *
+ * `m` must be 2, 4, p^k or 2p^k.
  */
-std::vector<int> kth_roots(int m, int k, prime_holder& prim) {
-	auto vf = prim.factor_integer(m);
-	int lam = carmichael_lambda(vf);
-	int phi = euler_phi(vf);
-	auto phi_factors = prime_factors(prim.factor_integer(phi));
-	return kth_roots(m, k, lam, phi, phi_factors);
-}
-
+std::vector<int> kth_roots(int m, int k, prime_holder& prim);
 
 /**
  * Builds the look-up table for `factorial_mod_p`
  */
-template<typename M>
-void factorial_mod_p_table(M p, M* table) {
+template<typename P>
+void factorial_mod_p_table(P p, P* table) {
 	table[0] = 1;
-	for (M i = 1; i < p; i++) {
+	for (P i = 1; i < p; i++) {
 		table[i] = modulo_multiply(table[i - 1], i, p);
 	}
 }
@@ -180,16 +192,16 @@ void factorial_mod_p_table(M p, M* table) {
  * Complexity: O(p + log_p n)
  *
  * @param I - type of the number `n`
- * @param M - type of the prime moduli
+ * @param P - type of the prime moduli
  * @param n - number to take factorial of
  * @param p - prime moduli
  * @param table - look-up table of `k! % p` for all `k < p`
  * @param e_out - if given, the highest exponent of `p` that divides `n!`
  *                will be stored in it
  */
-template<typename I, typename M>
-M factorial_mod_p(I n, M p, M* table, I *e_out = nullptr) {
-	M r = 1;
+template<typename I, typename P>
+P factorial_mod_p(I n, P p, P* table, I *e_out = nullptr) {
+	P r = 1;
 	I e = 0;
 	while (n > 1) {
 		r = modulo_multiply(r, table[n % p], p);

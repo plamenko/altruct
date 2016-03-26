@@ -7,11 +7,54 @@ namespace altruct {
 namespace math {
 
 /**
+ * Gives the multiplicative identity element for the element `x`.
+ *
+ * For example:
+ * if `x` is a `5x5` matrix, `e` is an identity matrix of rank `5`.
+ * If `x` is an integer modulo M, `e` is `1 (mod M)`.
+ * If `x` is an integer, `e` is simply 1.
+ *
+ * Note: implemented as a class because C++ doesn't allow
+ * partial template specializations for functions.
+ *
+ * @param x - the element to provide the multiplicative identity for
+ * @return e - such that `e * x = x * e = x`
+ */
+template<typename T>
+struct identityT {
+	static T of(const T& x) {
+		return T(1);
+	}
+};
+
+/**
+ * Gives the additive identity element (multiplicative zero) for the element `x`.
+ *
+ * For example:
+ * if `x` is a `5x5` matrix, `e` is a `5x5` zero matrix.
+ * If `x` is an integer modulo M, `e` is `0 (mod M)`.
+ * If `x` is an integer, `e` is simply 0.
+ *
+ * Note: implemented as a class because C++ doesn't allow
+ * partial template specializations for functions.
+ *
+ * @param x - the element to provide the additive identity for
+ * @return e - such that `e + x = x + e = x`
+ */
+template<typename T>
+struct zeroT {
+	static T of(const T& x) {
+		return T(0);
+	}
+};
+
+/**
  * Absolute value
  */
 template <typename T>
 T absT(const T &x) {
-	return (x < 0) ? -x : x;
+	T e0 = zeroT<T>::of(x);
+	return (x < e0) ? -x : x;
 }
 
 /**
@@ -19,12 +62,12 @@ T absT(const T &x) {
  *
  * @param x - base
  * @param y - exponent
- * @param id - multiplicative identity
  * @return x^y
  */
 template<typename T, typename I>
-T powT(T x, I y, T id = T(1)) {
-	T r = id;
+T powT(T x, I y) {
+	T e1 = identityT<T>::of(x);
+	T r = e1;
 	for (; y > 0; y /= 2) {
 		if (y % 2) r *= x;
 		x *= x;
@@ -39,7 +82,8 @@ T powT(T x, I y, T id = T(1)) {
  */
 template<typename T>
 T gcd(T a, T b) {
-	while (a != 0) { T r = b % a; b = a; a = r; }
+	T e0 = zeroT<T>::of(a);
+	while (a != e0) { T r = b % a; b = a; a = r; }
 	return b;
 }
 
@@ -49,18 +93,19 @@ T gcd(T a, T b) {
  * Calculates `x`, `y` and `g` so that: `a * x + b * y = g`.
  * Note: for integral types and negative input the result might be of incorrect sign!
  *
- * @param a - first operand
- * @param b - second operand
- * @param x - output argument `x`
- * @param y - output argument `y`
- * @return g
+ * @param a - the first operand
+ * @param b - the second operand
+ * @param x - the output argument `x`
+ * @param y - the output argument `y`
+ * @return g - the greatest common divisor of `a` and `b`
  */
 template<typename T>
 T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
+	T e0 = zeroT<T>::of(a), e1 = identityT<T>::of(a);
 	T r, q, g = a, h = b;
-	T xo = 0, xn = 1;
-//	T yo = 1, yn = 0;
-	while (h != 0) {
+	T xo = e0, xn = e1;
+//	T yo = e1, yn = e0;
+	while (h != e0) {
 		q = g / h;
 		r = g  - q * h;  g  = h;  h  = r;
 		r = xn - q * xo; xn = xo; xo = r;
@@ -69,7 +114,7 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 	}
 	if (x) *x = xn;
 //	if (y) *y = yn;
-	if (y) *y = (b != 0) ? (g - a * xn) / b : 0;
+	if (y) *y = (b != e0) ? (g - a * xn) / b : e0;
 	return g;
 }
 
@@ -81,27 +126,6 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 template<typename T>
 T lcm(const T& a, const T& b) {
 	return a * (b / gcd(a, b));
-}
-
-/**
- * Chinese Remainder
- *
- * Calculates `a` and `n` so that:
- *   n = lcm(n1, n2)
- *   a % n1 == a1
- *   a % n2 == a2
- *   0 <= a < n
- * `n1` and `n2` don't have to be coprime.
- * Correctly handles 64bit result for long long type.
- */
-template<typename T>
-void chinese_remainder(T &a, T&n, T a1, T n1, T a2, T n2) {
-	T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
-	if ((a2 - a1) % g != 0) { n = 0, a = 0; return; }
-	T t1 = (a1 * ni2) % n1;
-	T t2 = (a2 * ni1) % n2;
-	n1 /= g; n2 /= g; n = n1 * n2 * g;
-	a = (t1 * n2 + t2 * n1) % n; if (a < 0) a += n;
 }
 
 /**

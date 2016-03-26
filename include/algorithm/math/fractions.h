@@ -15,15 +15,15 @@ namespace math {
  * if f_prev is the left neighbour or -inf, f_next is the right neighbour of f
  * if f_prev is the right neighbour or +inf, f_next is the left neighbour of f
  */
-template<typename T>
-fraction<T> farey_neighbour(const T& n, const fraction<T>& f_prev, const fraction<T>& f) {
-	T p = f_prev.p, q = f_prev.q;
+template<typename I>
+fraction<I> farey_neighbour(const I& n, const fraction<I>& f_prev, const fraction<I>& f) {
+	I p = f_prev.p, q = f_prev.q;
 	if (f_prev.q == 0) {
 		gcd_ex(f.q, f.p, &p, &q);
 		(f_prev.p < 0) ? p = -p : q = -q;
 	}
-	T k = (n + q) / f.q;
-	return fraction<T>(k * f.p - p, k * f.q - q);
+	I k = (n + q) / f.q;
+	return fraction<I>(k * f.p - p, k * f.q - q);
 }
 
 } // math
