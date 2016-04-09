@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{eeab0636-25f3-410c-b864-9abee7cc7556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\math">
+      <UniqueIdentifier>{2c445ce6-ae8f-4674-b6ea-bb7c41b2cdb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure">
+      <UniqueIdentifier>{5656dea1-70ca-427a-aea2-7af2d4182aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure\math">
+      <UniqueIdentifier>{9238ff7b-5520-4603-8a86-3e8a1cf8fab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\collections">
+      <UniqueIdentifier>{4996bb0e-202c-42b6-ac64-b1340f44f53b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="concurrency">
+      <UniqueIdentifier>{0ec743fa-4978-4a72-b9de-33d1ab42ae2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\random">
+      <UniqueIdentifier>{28632e34-4a8a-46b8-bfad-4c105ddecc2a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\sample\algorithm\random\mersenne_twister_sample.cpp">
+      <Filter>algorithm\random</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sample\main.cpp" />
+    <ClCompile Include="..\..\sample\algorithm\random\xorshift_sample.cpp">
+      <Filter>algorithm\random</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

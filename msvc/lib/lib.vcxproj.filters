@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\algorithm\random\xorshift.cpp">
-      <Filter>src\algorithm\random</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -59,9 +56,6 @@
     </Filter>
     <Filter Include="include\algorithm\random">
       <UniqueIdentifier>{1d163c5b-f6ff-45f5-895a-cf2e8cdd4dd4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\algorithm\random">
-      <UniqueIdentifier>{d8e5df23-be26-442c-b092-532b7fb4a3fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +123,9 @@
       <Filter>include\algorithm\random</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\random\random.h">
+      <Filter>include\algorithm\random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h">
       <Filter>include\algorithm\random</Filter>
     </ClInclude>
   </ItemGroup>

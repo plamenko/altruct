@@ -22,7 +22,6 @@
     <ClCompile Include="..\..\lib\algorithm\math\base.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
-    <ClCompile Include="..\..\lib\algorithm\random\xorshift.cpp" />
     <ClCompile Include="..\..\lib\structure\math\modulo.cpp" />
     <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp" />
   </ItemGroup>
@@ -38,6 +37,7 @@
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
+    <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h" />
     <ClInclude Include="..\..\include\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />

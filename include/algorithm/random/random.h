@@ -14,7 +14,7 @@ namespace random {
  */
 template<typename U>
 double integer_to_double_0_1(U val) {
-	return val / (double)std::numeric_limits<U>::max();
+	return val * (1.0 / (double)std::numeric_limits<U>::max());
 }
 
 /**
@@ -31,6 +31,14 @@ U integer_to_range(U val, U min, U max) {
 }
 
 /**
+ * 2^L - val
+ */
+template<typename U>
+U neg(const U& val) {
+	return U(0) - val;
+}
+
+/**
  * Biggest multiple of `width` that is less than the unsigned integer size.
  *
  * Note: integer size being `2^L`, where `L` is the number of bits.
@@ -39,7 +47,7 @@ U integer_to_range(U val, U min, U max) {
 template<typename U>
 U biggest_multiple(U width) {
 	// 2^L - ((2^L - w) % w)
-	return (width == 0) ? 0 : -(U(-width) % width);
+	return (width == 0) ? 0 : neg(neg(width) % width);
 }
 
 /**
