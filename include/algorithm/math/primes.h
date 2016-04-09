@@ -334,22 +334,23 @@ bool miller_rabin(const T& n) {
  * @param n - number to factor
  * @param k - initial value
  * @param a - parameter of the polynomial g(x) = x^2 + a
+ * @param max_inner_iter - maximum allowed number of iterations
  * @return d - a nontrivial factor of `n`, or `n` if factorization failed
  */
 template<typename I>
-I pollard_rho(const I& n, const I& k = 2, const I& a = 1) {
+I pollard_rho(const I& n, const I& k = 2, const I& a = 1, I max_inner_iter = 1000000) {
 	if (n == 0) return 0;
 	if (n == 1) return 1;
 	if (n % 2 == 0) return 2;
 	typedef moduloX<I> modx;
 	auto g = [a](const modx& x){ return x*x + a; };
 	modx x = modx(k, n), y = modx(k, n); I d = 1;
-	while (d == 1) {
+	while (d == 1 && max_inner_iter-- > 0) {
 		x = g(x);
 		y = g(g(y));
 		d = gcd(absT((x - y).v), n);
 	}
-	return d;
+	return (d == 1) ? n : d;
 }
 
 /**
@@ -360,9 +361,9 @@ I pollard_rho(const I& n, const I& k = 2, const I& a = 1) {
  * factorization failure.
  */
 template<typename I>
-I pollard_rho_repeated(const I& n, I max_iter = 20) {
+I pollard_rho_repeated(const I& n, const I& max_iter = 20, const I& max_inner_iter = 1000000) {
 	for (I k = 2; k <= max_iter; k++) {
-		I d = pollard_rho(n, k, k);
+		I d = pollard_rho(n, k, k, max_inner_iter);
 		if (d != n) return d;
 	}
 	return n;
