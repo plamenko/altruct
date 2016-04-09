@@ -117,7 +117,7 @@ public:
 	
 	modulo  operator +  (const modulo &rhs) const { modulo t(*this); t += rhs; return t; }
 	modulo  operator -  (const modulo &rhs) const { modulo t(*this); t -= rhs; return t; }
-	modulo  operator -  ()                  const { modulo t(-v);              return t; }
+	modulo  operator -  ()                  const { modulo t(-v, M);           return t; }
 	modulo  operator *  (const modulo &rhs) const { modulo t(*this); t *= rhs; return t; }
 	modulo  operator /  (const modulo &rhs) const { modulo t(*this); t /= rhs; return t; }
 	modulo  operator %  (const modulo &rhs) const { modulo t(*this); t %= rhs; return t; }

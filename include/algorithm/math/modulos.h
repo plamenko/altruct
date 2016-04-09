@@ -198,45 +198,58 @@ std::vector<I> kth_roots(I m, I k, I lam, I phi, const std::vector<I> &phi_facto
 std::vector<int> kth_roots(int m, int k, prime_holder& prim);
 
 /**
- * Builds the look-up table for `factorial_mod_p`
+ * Builds the factorial look-up table up to `n`.
  */
-template<typename P>
-void factorial_mod_p_table(P p, P* table) {
-	table[0] = 1;
-	for (P i = 1; i < p; i++) {
-		table[i] = modulo_multiply(table[i - 1], i, p);
+template<typename I, typename T>
+void factorials(I n, T* table, T id = T(1)) {
+	table[0] = id;
+	for (I i = 1; i < n; i++) {
+		table[i] = table[i - 1] * i;
 	}
 }
 
 /**
  * Factorial of n modulo p
  *
- * `(n! / p^e) % p`, where `p^e` is the highest power of `p` dividing `n`.
+ * `(n! / p^e) % p`, where `p^e` is the largest power of `p` dividing `n`.
  * Note, before modulo operation gets applied, all factors `p` are removed.
  *
  * Complexity: O(p + log_p n)
  *
  * @param I - type of the number `n`
- * @param P - type of the prime moduli
+ * @param M - modular type of the result, `M::M` is prime `p`.
  * @param n - number to take factorial of
- * @param p - prime moduli
- * @param table - look-up table of `k! % p` for all `k < p`
+ * @param fact_table - look-up table of `k! % p` for all `k < p`
  * @param e_out - if given, the highest exponent of `p` that divides `n!`
  *                will be stored in it
  */
-template<typename I, typename P>
-P factorial_mod_p(I n, P p, P* table, I *e_out = nullptr) {
-	P r = 1;
-	I e = 0;
+template<typename I, typename M>
+M factorial_mod_p(I n, M* fact_table, I *e_out = nullptr) {
+	I e = 0, p = fact_table->M;
+	M r = identityT<M>::of(*fact_table);
 	while (n > 1) {
-		r = modulo_multiply(r, table[n % p], p);
+		r *= fact_table[n % p];
 		n /= p;
 		e += n;
 		if (n % 2 == 1) r = -r;
 	}
-	modulo_normalize(r, p);
 	if (e_out) *e_out = e;
 	return r;
+}
+
+/**
+ * Binomial of n modulo p
+ *
+ * Calculated as `n! / k! / (n-k)!`. See `factorial_mod_p`.
+ */
+template<typename I, typename M>
+M binomial_mod_p(I n, I k, M* fact_table, I *e_out = nullptr) {
+	I en, ek, el;
+	M fn = factorial_mod_p(n, fact_table, &en);
+	M fk = factorial_mod_p(k, fact_table, &ek);
+	M fl = factorial_mod_p(n-k, fact_table, &el);
+	if (e_out) *e_out = en - ek - el;
+	return fn / (fk * fl);
 }
 
 } // math
