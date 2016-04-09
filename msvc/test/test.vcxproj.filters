@@ -61,6 +61,12 @@
     <ClCompile Include="..\..\test\structure\math\vectorNd_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp">
+      <Filter>algorithm\random</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\random\random_test.cpp">
+      <Filter>algorithm\random</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -80,6 +86,9 @@
     </Filter>
     <Filter Include="concurrency">
       <UniqueIdentifier>{0ec743fa-4978-4a72-b9de-33d1ab42ae2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\random">
+      <UniqueIdentifier>{28632e34-4a8a-46b8-bfad-4c105ddecc2a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
