@@ -49,7 +49,7 @@ struct zeroT {
 };
 
 /**
- * Absolute value
+ * Absolute value.
  */
 template <typename T>
 T absT(const T &x) {
@@ -58,7 +58,23 @@ T absT(const T &x) {
 }
 
 /**
- * Exponentiation by squaring
+ * Minimum.
+ */
+template <typename T>
+T minT(const T &x, const T &y) {
+	return (x < y) ? x : y;
+}
+
+/**
+ * Maximum.
+ */
+template <typename T>
+T maxT(const T &x, const T &y) {
+	return (x < y) ? y : x;
+}
+
+/**
+ * Exponentiation by squaring.
  *
  * @param x - base
  * @param y - exponent
@@ -76,7 +92,7 @@ T powT(T x, I y) {
 }
 
 /**
- * Greatest Common Divisor
+ * Greatest Common Divisor.
  *
  * Note: for integral types and negative input the result might be of incorrect sign!
  */
@@ -88,7 +104,7 @@ T gcd(T a, T b) {
 }
 
 /**
- * Extended Greatest Common Divisor
+ * Extended Greatest Common Divisor.
  *
  * Calculates `x`, `y` and `g` so that: `a * x + b * y = g`.
  * Note: for integral types and negative input the result might be of incorrect sign!
@@ -119,7 +135,7 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 }
 
 /**
- * Least Common Multiple
+ * Least Common Multiple.
  *
  * Note: for integral types and negative input the result might be of incorrect sign!
  */
@@ -129,30 +145,113 @@ T lcm(const T& a, const T& b) {
 }
 
 /**
- * Square
- */
-template<typename T> T sqT(T x) {
-	return x * x;
-}
-
-/**
- * Integer square & square root
+ * Integer square & square root.
  */
 int64_t isq(int64_t x);
 int32_t isqrt(int64_t x);
 int32_t isqrtc(int64_t x);
-bool is_square(int64_t x);
 
 /**
- * Integer cube & cube root
+ * Integer cube & cube root.
  */
 int64_t icb(int64_t x);
 int32_t icbrt(int64_t x);
 int32_t icbrtc(int64_t x);
-bool is_cube(int64_t x);
 
 /**
- * Integer floor & ceil division
+ * Square of `x`.
+ */
+template<typename T>
+T sqT(T x) {
+	return x * x;
+}
+
+/**
+ * Square root of `x`, rounded towards 0.
+ *
+ * Note: for negative `x` result is `-sqrtT(-x)`.
+ * Base implementation uses the Newton-Raphson method.
+ */
+template<typename T>
+T sqrtT(T x, T eps = 1) {
+	if (x < 0) return -sqrtT<T>(-x, eps);
+	if (x == 0) return 0;
+	if (x == 1) return 1;
+	T q1 = x / 2;
+	T q2 = x / q1;
+	while (absT(q1 - q2) > eps) {
+		q1 = (q1 + q2) / 2;
+		q2 = x / q1;
+	}
+	return minT(q1, q2);
+}
+template<> inline float sqrtT(float x, float) { return sqrt(x); }
+template<> inline double sqrtT(double x, double) { return sqrt(x); }
+template<> inline int8_t sqrtT(int8_t x, int8_t) { return isqrt(x); }
+template<> inline uint8_t sqrtT(uint8_t x, uint8_t) { return isqrt(x); }
+template<> inline int16_t sqrtT(int16_t x, int16_t) { return isqrt(x); }
+template<> inline uint16_t sqrtT(uint16_t x, uint16_t) { return isqrt(x); }
+template<> inline int32_t sqrtT(int32_t x, int32_t) { return isqrt(x); }
+template<> inline uint32_t sqrtT(uint32_t x, uint32_t) { return isqrt(x); }
+template<> inline int64_t sqrtT(int64_t x, int64_t) { return isqrt(x); }
+template<> inline uint64_t sqrtT(uint64_t x, uint64_t) { return isqrt(x); }
+
+/**
+ * Tests whether `x` is a square.
+ */
+template<typename I>
+bool is_square(I x) {
+	return (sqT(sqrtT(x)) == x);
+}
+
+/**
+ * Cube of `x`.
+ */
+template<typename T>
+T cbT(T x) {
+	return x * x * x;
+}
+
+/**
+ * Cube root of `x`, rounded towards 0.
+ *
+ * Note: for negative `x` result is `-cbrtT(-x)`.
+ * Base implementation uses the Newton-Raphson method.
+ */
+template<typename T>
+T cbrtT(T x, T eps = 1) {
+	if (x < 0) return -cbrtT<T>(-x);
+	if (x == 0) return 0;
+	if (x == 1) return 1;
+	T r0 = 0;
+	T r1 = x;
+	T r2 = 0;
+	while (r1 != r0 && absT(r1 - r2) > eps) {
+		r0 = r1;
+		r1 = (r1 + r1 + r2) / 3;
+		r2 = x / sqT(r1);
+	}
+	return minT(r1, r2);
+}
+template<> inline float cbrtT(float x, float) { return cbrt(x); }
+template<> inline double cbrtT(double x, double) { return cbrt(x); }
+template<> inline int16_t cbrtT(int16_t x, int16_t) { return icbrt(x); }
+template<> inline uint16_t cbrtT(uint16_t x, uint16_t) { return icbrt(x); }
+template<> inline int32_t cbrtT(int32_t x, int32_t) { return icbrt(x); }
+template<> inline uint32_t cbrtT(uint32_t x, uint32_t) { return icbrt(x); }
+template<> inline int64_t cbrtT(int64_t x, int64_t) { return icbrt(x); }
+template<> inline uint64_t cbrtT(uint64_t x, uint64_t) { return icbrt(x); }
+
+/**
+ * Tests whether `x` is a cube.
+ */
+template<typename I>
+bool is_cube(I x) {
+	return (cbT(cbrtT(x)) == x);
+}
+
+/**
+ * Integer floor & ceil division.
  */
 template<typename I>
 I div_floor(I a, I b) {
