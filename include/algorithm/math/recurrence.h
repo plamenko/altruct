@@ -71,7 +71,7 @@ T lucas_v(T p, T q, long long n) {
 	return linear_recurrence<T, T>({ p, -q }, { 2, p }, n);
 }
 
-/*
+/**
  * First B0...Bn Bernoulli numbers of the second kind
  */
 template<typename T>

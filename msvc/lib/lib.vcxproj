@@ -37,10 +37,12 @@
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
+    <ClInclude Include="..\..\include\algorithm\math\sums.h" />
     <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h" />
     <ClInclude Include="..\..\include\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
+    <ClInclude Include="..\..\include\structure\graph\disjoint_set.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fraction.h" />
     <ClInclude Include="..\..\include\structure\math\matrix.h" />

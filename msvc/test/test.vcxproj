@@ -37,6 +37,7 @@
     <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\reduce_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\random_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />

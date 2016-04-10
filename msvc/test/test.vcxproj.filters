@@ -67,6 +67,9 @@
     <ClCompile Include="..\..\test\algorithm\random\random_test.cpp">
       <Filter>algorithm\random</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

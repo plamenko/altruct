@@ -57,6 +57,9 @@
     <Filter Include="include\algorithm\random">
       <UniqueIdentifier>{1d163c5b-f6ff-45f5-895a-cf2e8cdd4dd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\structure\graph">
+      <UniqueIdentifier>{d812d264-bc4b-4e32-a5d6-2b4f5a2b2a62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -127,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h">
       <Filter>include\algorithm\random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\graph\disjoint_set.h">
+      <Filter>include\structure\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\sums.h">
+      <Filter>include\algorithm\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
