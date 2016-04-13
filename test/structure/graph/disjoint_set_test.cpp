@@ -32,6 +32,10 @@ TEST(disjoint_set_test, clear) {
 	ds.clear(10);
 	EXPECT_EQ(10, ds.size());
 	EXPECT_EQ((vector<size_t>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), get_all(ds));
+	
+	ds.clear();
+	EXPECT_EQ(0, ds.size());
+	EXPECT_EQ((vector<size_t>{}), get_all(ds));
 }
 
 TEST(disjoint_set_test, unite) {
