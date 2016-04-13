@@ -170,7 +170,7 @@ T sqT(T x) {
  * Square root of `x`, rounded towards 0.
  *
  * Note: for negative `x` result is `-sqrtT(-x)`.
- * Base implementation uses the Newton-Raphson method.
+ * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
 T sqrtT(T x, T eps = 1) {
@@ -216,7 +216,7 @@ T cbT(T x) {
  * Cube root of `x`, rounded towards 0.
  *
  * Note: for negative `x` result is `-cbrtT(-x)`.
- * Base implementation uses the Newton-Raphson method.
+ * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
 T cbrtT(T x, T eps = 1) {

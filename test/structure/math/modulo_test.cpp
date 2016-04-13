@@ -117,15 +117,14 @@ TEST(modulo_test, operators_inplace_self) {
 }
 
 TEST(modulo_test, identity) {
-	typedef moduloX<int> modx;
-	modx m1(1000000000, 1000000007);
-	modx e0 = zeroT<modx>::of(m1);
-	modx e1 = identityT<modx>::of(m1);
+	mod m1(1000000000);
+	mod e0 = zeroT<mod>::of(m1);
+	mod e1 = identityT<mod>::of(m1);
 	EXPECT_EQ(0, e0.v);
 	EXPECT_EQ(1000000007, e0.M);
 	EXPECT_EQ(1, e1.v);
 	EXPECT_EQ(1000000007, e1.M);
-	modx mr = powT(m1, 10);
+	mod mr = powT(m1, 10);
 	EXPECT_EQ(282475249, mr.v);
 	EXPECT_EQ(1000000007, mr.M);
 
