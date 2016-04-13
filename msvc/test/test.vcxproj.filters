@@ -70,6 +70,12 @@
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulox_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp">
+      <Filter>structure\graph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -92,6 +98,9 @@
     </Filter>
     <Filter Include="algorithm\random">
       <UniqueIdentifier>{28632e34-4a8a-46b8-bfad-4c105ddecc2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure\graph">
+      <UniqueIdentifier>{6f3821b4-7bd7-46de-b9b3-270daca5f9b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

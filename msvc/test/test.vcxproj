@@ -41,9 +41,11 @@
     <ClCompile Include="..\..\test\algorithm\random\random_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
+    <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fraction_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulox_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polymod_test .cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
