@@ -18,8 +18,8 @@ void modulo_normalize_int(I& v, const I& M) {
 	if (v < 0 || v >= M) v %= M;
 	if (v < 0) v += M;
 }
-void modulo_normalize(long long& v, long long M);
-void modulo_normalize(int& v, int M);
+inline void modulo_normalize(long long& v, long long M) { modulo_normalize_int(v, M); }
+inline void modulo_normalize(int& v, int M) { modulo_normalize_int(v, M); }
 
 // modulo multiplication
 template<typename T>
@@ -36,8 +36,17 @@ I modulo_long_multiply_int(I x, I y, I M) {
 	}
 	return r;
 }
-long long modulo_multiply(long long x, long long y, long long M);
-int modulo_multiply(int x, int y, int M);
+inline long long modulo_multiply(long long x, long long y, long long M) {
+	modulo_normalize_int(x, M);
+	modulo_normalize_int(y, M);
+	bool fit = (x < (1LL << 31) && y < (1LL << 31));
+	return fit ? (x * y) % M : modulo_long_multiply_int(x, y, M);
+}
+inline int modulo_multiply(int x, int y, int M) {
+	modulo_normalize_int(x, M);
+	modulo_normalize_int(y, M);
+	return ((long long)x * y) % M;
+}
 
 // modulo inversion
 template<typename T> T modulo_inverse(const T& v, const T& M) {
@@ -52,8 +61,8 @@ template<typename I> I modulo_inverse_int(I v, I M) {
 	modulo_normalize_int(vi, M);
 	return vi;
 }
-long long modulo_inverse(long long v, long long M);
-int modulo_inverse(int v, int M);
+inline long long modulo_inverse(long long v, long long M) { return modulo_inverse_int(v, M); }
+inline int modulo_inverse(int v, int M) { return modulo_inverse_int(v, M); }
 
 // modulo division
 template<typename T> T modulo_divide(const T& x, const T& y, const T& M) {
@@ -66,8 +75,8 @@ I modulo_divide_int(I x, I y, I M) {
 	modulo_normalize_int(y, M);
 	return (x % y == 0) ? x / y : modulo_multiply(x, modulo_inverse(y, M), M);
 }
-long long modulo_divide(long long x, long long y, long long M);
-int modulo_divide(int x, int y, int M);
+inline long long modulo_divide(long long x, long long y, long long M) { return modulo_divide_int(x, y, M); }
+inline int modulo_divide(int x, int y, int M) { return modulo_divide_int(x, y, M); }
 
 template<typename T, int ID, bool STATIC = true>
 struct modulo_members;
