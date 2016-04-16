@@ -158,5 +158,10 @@ struct zeroT<modulo<T, ID, STATIC>> {
 	}
 };
 
+template<typename T, typename I>
+T modulo_power(const T& x, const I& y, const T& M) {
+	return powT(moduloX<T>(x, M), y).v;
+}
+
 } // math
 } // altruct
