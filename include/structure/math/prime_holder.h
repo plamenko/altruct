@@ -2,6 +2,7 @@
 
 #include "algorithm/math/primes.h"
 
+#include <algorithm>
 #include <vector>
 
 namespace altruct {
@@ -45,10 +46,63 @@ public:
 
 	std::vector<fact_pair> factor_integer(int n);
 	std::vector<fact_pair> factor_integer(std::vector<int> vn);
-	std::vector<long long> divisors(const std::vector<fact_pair> &vf, long long maxd = LLONG_MAX);
-	std::vector<long long> divisors(const std::vector<int> &vn, long long maxd = LLONG_MAX);
-	std::vector<long long> divisors(int n, long long maxd = LLONG_MAX);
+	template<typename I = int>
+	std::vector<I> divisors(int n, I maxd = 0);
+	template<typename I = int>
+	std::vector<I> divisors(const std::vector<int> &vn, I maxd = 0);
+	template<typename I = int>
+	std::vector<I> divisors(const std::vector<fact_pair> &vf, I maxd = 0);
 };
+
+inline void prime_holder::ensure_pq() {
+	if (vp.empty() || vq.empty()) {
+		m = int(1.25 * sz / log(sz)) + 1; // upper bound on pi(sz)
+		vp.resize(m);
+		vq.resize(sz);
+		m = altruct::math::primes(&vp[0], &vq[0], sz);
+		vp.resize(m);
+	}
+}
+
+inline std::vector<int>& prime_holder::ensure(std::vector<int> &v, void(*f)(int*, int, int*, int)) {
+	if (v.empty()) {
+		v.resize(sz);
+		f(&v[0], sz, &p()[0], primes());
+	}
+	return v;
+}
+
+inline std::vector<prime_holder::fact_pair> prime_holder::factor_integer(std::vector<int> vn) {
+	std::vector<prime_holder::fact_pair> vf;
+	altruct::math::factor_integer(vf, vn, &pf()[0]);
+	std::sort(vf.begin(), vf.end());
+	return vf;
+}
+
+inline std::vector<prime_holder::fact_pair> prime_holder::factor_integer(int n) {
+	std::vector<prime_holder::fact_pair> vf;
+	altruct::math::factor_integer(vf, n, &pf()[0]);
+	std::sort(vf.begin(), vf.end());
+	return vf;
+}
+
+template<typename I>
+std::vector<I> prime_holder::divisors(int n, I maxd) {
+	return divisors(factor_integer(n), maxd);
+}
+
+template<typename I>
+std::vector<I> prime_holder::divisors(const std::vector<int> &vn, I maxd) {
+	return divisors(factor_integer(vn), maxd);
+}
+
+template<typename I>
+std::vector<I> prime_holder::divisors(const std::vector<prime_holder::fact_pair> &vf, I maxd) {
+	std::vector<I> vd;
+	altruct::math::divisors(vd, vf, maxd);
+	sort(vd.begin(), vd.end());
+	return vd;
+}
 
 } // math
 } // altruct

@@ -45,12 +45,12 @@ TEST(prime_holder, factor_integer) {
 
 	EXPECT_EQ((vector<fact_pair> {{ 2, 3 }, { 5, 2 }, { 7, 2 } }), prim.factor_integer(vector<int>{ 20, 14, 35 }));
 
-	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5, 10, 20 }), prim.divisors(20));
-	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5 }), prim.divisors(20, 8));
-	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5, 8, 10, 20, 40 }), prim.divisors(vector<int>{ 10, 4 }));
-	EXPECT_EQ((vector<ll>{ 1, 2, 4, 5, 7, 8, 10, 14, 20, 25, 28, 35, 40, 49 }), prim.divisors(vector<int>{ 20, 14, 35 }, 49));
-	EXPECT_EQ((vector<ll>{ 1, 1000000007, 1000000009, 1000000016000000063LL }), prim.divisors(vector<fact_pair>{{ 1000000007, 1 }, { 1000000009, 1 }}));
-	EXPECT_EQ((vector<ll>{ 1, 1000000007, 1000000009 }), prim.divisors(vector<fact_pair>{{ 1000000007, 1 }, { 1000000009, 1 }}, 1000000009));
+	EXPECT_EQ((vector<int>{ 1, 2, 4, 5, 10, 20 }), prim.divisors(20));
+	EXPECT_EQ((vector<int>{ 1, 2, 4, 5 }), prim.divisors(20, 8));
+	EXPECT_EQ((vector<int>{ 1, 2, 4, 5, 8, 10, 20, 40 }), prim.divisors(vector<int>{ 10, 4 }));
+	EXPECT_EQ((vector<int>{ 1, 2, 4, 5, 7, 8, 10, 14, 20, 25, 28, 35, 40, 49 }), prim.divisors(vector<int>{ 20, 14, 35 }, 49));
+	EXPECT_EQ((vector<ll>{ 1, 1000000007, 1000000009, 1000000016000000063LL }), prim.divisors<ll>(vector<fact_pair>{{ 1000000007, 1 }, { 1000000009, 1 }}));
+	EXPECT_EQ((vector<int>{ 1, 1000000007, 1000000009 }), prim.divisors(vector<fact_pair>{{ 1000000007, 1 }, { 1000000009, 1 }}, 1000000009));
 }
 
 TEST(prime_holder_test, other) {
