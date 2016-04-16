@@ -122,9 +122,9 @@ TEST(modulos_test, primitive_root) {
 
 TEST(modulos_test, kth_roots) {
 	prime_holder prim(100);
-	EXPECT_EQ((vector<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, 16, vector<int>{2}));
-	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, 6, 6, vector<int>{2, 3}));
-	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, 6, 6, vector<int>{2, 3}));
+	EXPECT_EQ((vector<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, primitive_root(17, 16, vector<int>{2})));
+	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, 6, primitive_root(18, 6, vector<int>{2, 3})));
+	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, 6, primitive_root(18, 6, vector<int>{2, 3})));
 	EXPECT_EQ((vector<int>{1, 4, 13, 16}), kth_roots(17, 4, prim));
 	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, prim));
 	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, prim));

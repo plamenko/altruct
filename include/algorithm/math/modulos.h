@@ -134,7 +134,7 @@ I sqrt_hensel_lift(const I& y, const I& p, I k) {
 }
 
 /**
- * Primitive root modulo `m`
+ * Primitive root of unity modulo `m`
  *
  * `m` must be 2, 4, p^k or 2p^k.
  *
@@ -157,7 +157,7 @@ I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
 }
 
 /**
- * Primitive root modulo `m`
+ * Primitive root of unity modulo `m`
  *
  * `m` must be 2, 4, p^k or 2p^k.
  */
@@ -171,13 +171,11 @@ int primitive_root(int m, prime_holder& prim);
  * @param m - modulus
  * #param k - k-th root
  * @param lam - `carmichael_lambda(m)`
- * @param phi - `euler_phi(m)`
- * @param phi_factors - unique prime factors of `phi`
+ * @param g - primitive root modulo `m`
  */
 template<typename I>
-std::vector<I> kth_roots(I m, I k, I lam, I phi, const std::vector<I> &phi_factors) {
+std::vector<I> kth_roots(I m, I k, I lam, I g) {
 	typedef moduloX<I> modx;
-	I g = primitive_root(m, phi, phi_factors);
 	I l = gcd(lam, k);
 	modx w = powT(modx(g, m), lam / l);
 	modx r = identityT<modx>::of(w);
