@@ -8,8 +8,7 @@ namespace math {
 /**
  * Fast Fourier Transform of a sequence
  *
- * Result is stored in `data`.
- * Both `data` and `temp` array are modified.
+ * Result is stored in `data`. Both `data` and `temp` are modified.
  *
  * @param data - data to transform, array of length `size`
  * @param temp - temporary storage, array of length `size`
@@ -33,7 +32,7 @@ void fft(T *data, T *temp, int size, const T& root) {
 	fft(data + 0, temp, h, root2);
 	fft(data + h, temp, h, root2);
 	// collect
-	T u, v, g_i = 1;
+	T u, v, g_i = identityT<T>::of(root);
 	for (int i = 0; i < h; i++) {
 		u = data[i + 0], v = data[i + h];
 		v *= g_i; g_i *= root;
@@ -43,10 +42,16 @@ void fft(T *data, T *temp, int size, const T& root) {
 }
 
 /**
- * FFT Convolution of two sequences
+ * FFT Cyclic Convolution of two sequences
  *
- * Result is stored in `dataR`.
- * All `dataR`, `data1` and `data2` array are modified.
+ * Result is stored in `dataR`. All `dataR`, `data1` and `data2` are modified.
+ * dataR[k] = Sum[data1[i] * data2[(k - i) % size], {i, 0, size - 1}]
+ *
+ * Note: in case `z1 + z2 >= size - 1`, where `z1` and `z2` are number of
+ * trailing zero elements in `data1` and `data2` respectively, cyclic
+ * convolution is equal to normal convolution. That means that normal
+ * convolution can be calulated by applying cyclic convolution after the
+ * input is zero padded with a sufficient amount of zeros.
  *
  * @param dataR - result, array of length `size`
  * @param data1 - data1, array of length `size`
@@ -56,7 +61,7 @@ void fft(T *data, T *temp, int size, const T& root) {
  * @param root_order - order k of the root, must be a multiple of `size`
  */
 template<typename T>
-void fft_convolve(T *dataR, T *data1, T *data2, int size, const T& root_base, int root_order) {
+void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const T& root_base, int root_order) {
 	T root = powT(root_base, root_order / size);
 	// convert to frequency domain
 	fft(data1, dataR, size, root);

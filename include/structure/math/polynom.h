@@ -91,7 +91,7 @@ public:
 		std::vector<T> temp1(p1.c); temp1.resize(sizeFFT);
 		std::vector<T> temp2(p2.c); temp2.resize(sizeFFT);
 		pr.c.assign(sizeFFT, ZERO_COEFF);
-		fft_convolve(&pr.c[0], &temp1[0], &temp2[0], sizeFFT, FFT_ROOT, FFT_ORDER);
+		fft_cyclic_convolution(&pr.c[0], &temp1[0], &temp2[0], sizeFFT, FFT_ROOT, FFT_ORDER);
 		pr.c.resize(sizeR, ZERO_COEFF);
 	}
 	
