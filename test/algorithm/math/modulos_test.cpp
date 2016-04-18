@@ -9,7 +9,7 @@ using namespace std;
 using namespace altruct::math;
 
 void crt_test_impl(int a1, int n1, int a2, int n2) {
-	int a, n; chinese_remainder(a, n, a1, n1, a2, n2);
+	int a, n; chinese_remainder(&a, &n, a1, n1, a2, n2);
 	EXPECT_EQ(lcm(n1, n2), n);
 	EXPECT_EQ(a1, a % n1);
 	EXPECT_EQ(a2, a % n2);
@@ -35,7 +35,7 @@ TEST(modulos_test, garner) {
 
 	moduloX<int> r0{ 0, 1 };
 	for (int i = 0; i < a3.size(); i++) {
-		chinese_remainder<int>(r0.v, r0.M, a3[i].v, a3[i].M);
+		chinese_remainder<int>(&r0.v, &r0.M, a3[i].v, a3[i].M);
 	}
 	EXPECT_EQ(1000000000, r0.v);
 	EXPECT_EQ(1009*1013*1019, r0.M);
@@ -122,14 +122,14 @@ TEST(modulos_test, primitive_root) {
 
 TEST(modulos_test, kth_roots) {
 	prime_holder prim(100);
-	EXPECT_EQ((vector<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, primitive_root(17, 16, vector<int>{2})));
-	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, 6, primitive_root(18, 6, vector<int>{2, 3})));
-	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, 6, primitive_root(18, 6, vector<int>{2, 3})));
-	EXPECT_EQ((vector<int>{1, 4, 13, 16}), kth_roots(17, 4, prim));
-	EXPECT_EQ((vector<int>{1, 7, 13}), kth_roots(18, 3, prim));
-	EXPECT_EQ((vector<int>{1, 17}), kth_roots(18, 4, prim));
-	EXPECT_EQ((vector<int>{1}), kth_roots(18, 5, prim));
-	EXPECT_EQ((vector<int>{1, 5, 7, 11, 13, 17}), kth_roots(18, 6, prim));
+	EXPECT_EQ((set<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, primitive_root(17, 16, vector<int>{2})));
+	EXPECT_EQ((set<int>{1, 17}), kth_roots(18, 4, 6, primitive_root(18, 6, vector<int>{2, 3})));
+	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots(18, 3, 6, primitive_root(18, 6, vector<int>{2, 3})));
+	EXPECT_EQ((set<int>{1, 4, 13, 16}), kth_roots(17, 4, prim));
+	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots(18, 3, prim));
+	EXPECT_EQ((set<int>{1, 17}), kth_roots(18, 4, prim));
+	EXPECT_EQ((set<int>{1}), kth_roots(18, 5, prim));
+	EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots(18, 6, prim));
 }
 
 TEST(modulos_test, factorial_mod_p) {

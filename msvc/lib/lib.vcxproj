@@ -22,8 +22,6 @@
     <ClCompile Include="..\..\lib\algorithm\math\base.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
-    <ClCompile Include="..\..\lib\structure\math\modulo.cpp" />
-    <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\collections\collections.h" />
@@ -44,12 +42,14 @@
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
     <ClInclude Include="..\..\include\structure\graph\disjoint_set.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
+    <ClInclude Include="..\..\include\structure\math\fenwick_tree.h" />
     <ClInclude Include="..\..\include\structure\math\fraction.h" />
     <ClInclude Include="..\..\include\structure\math\matrix.h" />
     <ClInclude Include="..\..\include\structure\math\modulo.h" />
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
     <ClInclude Include="..\..\include\structure\math\quadratic.h" />
+    <ClInclude Include="..\..\include\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\structure\math\vectorNd.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

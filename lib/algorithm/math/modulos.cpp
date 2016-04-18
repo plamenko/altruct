@@ -9,7 +9,7 @@ int primitive_root(int m, prime_holder& prim) {
 	return primitive_root(m, phi, phi_factors);
 }
 
-std::vector<int> kth_roots(int m, int k, prime_holder& prim) {
+std::set<int> kth_roots(int m, int k, prime_holder& prim) {
 	int lam = carmichael_lambda(prim.factor_integer(m));
 	int g = primitive_root(m, prim);
 	return kth_roots(m, k, lam, g);

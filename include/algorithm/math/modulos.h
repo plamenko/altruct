@@ -4,6 +4,7 @@
 #include "structure/math/quadratic.h"
 #include "structure/math/prime_holder.h"
 
+#include <set>
 #include <vector>
 #include <algorithm>
 
@@ -22,19 +23,24 @@ namespace math {
  * Correctly handles 64bit result for long long type.
  */
 template<typename T>
-void chinese_remainder(T &a, T&n, T a1, T n1, T a2, T n2) {
-	T e0 = zeroT<T>::of(a);
+void chinese_remainder(T* a, T* n, T a1, T n1, T a2, T n2) {
+	T e0 = zeroT<T>::of(*a);
 	T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
-	if ((a2 - a1) % g != e0) { n = e0, a = e0; return; }
+	if ((a2 - a1) % g != e0) { *n = e0, *a = e0; return; }
 	T t1 = modulo_multiply(a1, ni2, n1);
 	T t2 = modulo_multiply(a2, ni1, n2);
-	n1 /= g; n2 /= g; n = n1 * n2 * g;
-	a = modulo_multiply(t1, n2, n) + modulo_multiply(t2, n1, n);
-	return modulo_normalize(a, n);
+	n1 /= g; n2 /= g; *n = n1 * n2 * g;
+	*a = modulo_multiply(t1, n2, *n) + modulo_multiply(t2, n1, *n);
+	return modulo_normalize(a, *n);
 }
 template<typename T>
-void chinese_remainder(T &ar, T&nr, T a, T n) {
-	chinese_remainder(ar, nr, ar, nr, a, n);
+void chinese_remainder(T* ar, T* nr, T a, T n) {
+	chinese_remainder(ar, nr, *ar, *nr, a, n);
+}
+template<typename T>
+T chinese_remainder(T a1, T n1, T a2, T n2) {
+	T a, n; chinese_remainder(&a, &n, a1, n1, a2, n2);
+	return a;
 }
 
 /**
@@ -169,23 +175,22 @@ int primitive_root(int m, prime_holder& prim);
  * `m` must be 2, 4, p^k or 2p^k.
  *
  * @param m - modulus
- * #param k - k-th root
+ * @param k - k-th root
  * @param lam - `carmichael_lambda(m)`
  * @param g - primitive root modulo `m`
  */
 template<typename I>
-std::vector<I> kth_roots(I m, I k, I lam, I g) {
+std::set<I> kth_roots(I m, I k, I lam, I g) {
 	typedef moduloX<I> modx;
-	I l = gcd(lam, k);
-	modx w = powT(modx(g, m), lam / l);
+	I d = gcd(k, lam);
+	modx w = powT(modx(g, m), lam / d);
 	modx r = identityT<modx>::of(w);
-	std::vector<I> vr;
-	for (I j = 0; j < l; j++) {
-		vr.push_back(r.v);
+	std::set<I> sr;
+	for (I j = 0; j < d; j++) {
+		sr.insert(r.v);
 		r *= w;
 	}
-	sort(vr.begin(), vr.end());
-	return vr;
+	return sr;
 }
 
 /**
@@ -193,7 +198,47 @@ std::vector<I> kth_roots(I m, I k, I lam, I g) {
  *
  * `m` must be 2, 4, p^k or 2p^k.
  */
-std::vector<int> kth_roots(int m, int k, prime_holder& prim);
+std::set<int> kth_roots(int m, int k, prime_holder& prim);
+
+/**
+* `k-th` roots of `n` modulo `m`
+*
+* `m` must be 2, 4, p^k or 2p^k.
+*
+* @param m - modulus
+* @param k - k-th root
+* @param phi - `euler_phi(m)`
+* @param g - primitive root modulo `m`
+* @param l - `l` such that `g ^ l == n  (mod m)`
+*/
+template<typename I>
+std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
+	typedef moduloX<I> modx;
+	I d = gcd(k, phi);
+	if (d == 0 || l % d != 0) return{};
+	phi /= d; l /= d; k /= d;
+	// g^(l/k) == n^(1/k)
+	modx h = modx(l, phi) / k;
+	modx r = powT(modx(g, m), h.v);
+	modx w = powT(modx(g, m), phi);
+	std::set<I> sr;
+	for (int i = 0; i < d; i++) {
+		sr.insert(r.v);
+		r *= w;
+	}
+	return sr;
+}
+
+/**
+ * Builds the powers of `b` look-up table up to `n`.
+ */
+template<typename I, typename T>
+void powers(I n, T b, T* table, T id = T(1)) {
+	table[0] = id;
+	for (I i = 1; i < n; i++) {
+		table[i] = table[i - 1] * b;
+	}
+}
 
 /**
  * Builds the factorial look-up table up to `n`.

@@ -7,12 +7,6 @@
     <ClCompile Include="..\..\lib\algorithm\math\base.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\structure\math\modulo.cpp">
-      <Filter>src\structure\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lib\structure\math\prime_holder.cpp">
-      <Filter>src\structure\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
@@ -136,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\sums.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\vector3d.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\fenwick_tree.h">
+      <Filter>include\structure\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

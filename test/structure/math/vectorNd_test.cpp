@@ -162,7 +162,7 @@ TEST(vectNd_test, identity) {
 	vect3 v3 = powT(v1, 3);
 	modx r;
 	for (int i = 0; i < v3.size(); i++) {
-		chinese_remainder(r.v, r.M, v3[i].v, v3[i].M);
+		chinese_remainder(&r.v, &r.M, v3[i].v, v3[i].M);
 	}
 	EXPECT_EQ(1000000000, r.v);
 	EXPECT_EQ(1009*1013*1019, r.M);

@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\comb_primes_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\fft_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fractions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp" />
@@ -43,6 +44,7 @@
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\fenwick_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fraction_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulox_test.cpp" />

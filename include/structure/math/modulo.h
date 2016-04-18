@@ -9,17 +9,17 @@ namespace math {
 
 // modulo normalization
 template<typename T>
-void modulo_normalize(T& v, const T& M) { v %= M; }
+void modulo_normalize(T* v, const T& M) { *v %= M; }
 // integral type specializations
 template<typename I>
-void modulo_normalize_int(I& v, const I& M) {
-	if (v < 0) v += M;
-	if (v >= M) v -= M;
-	if (v < 0 || v >= M) v %= M;
-	if (v < 0) v += M;
+void modulo_normalize_int(I* v, const I& M) {
+	if (*v < 0) *v += M;
+	if (*v >= M) *v -= M;
+	if (*v < 0 || *v >= M) *v %= M;
+	if (*v < 0) *v += M;
 }
-inline void modulo_normalize(long long& v, long long M) { modulo_normalize_int(v, M); }
-inline void modulo_normalize(int& v, int M) { modulo_normalize_int(v, M); }
+inline void modulo_normalize(long long* v, long long M) { modulo_normalize_int(v, M); }
+inline void modulo_normalize(int* v, int M) { modulo_normalize_int(v, M); }
 
 // modulo multiplication
 template<typename T>
@@ -27,24 +27,24 @@ T modulo_multiply(const T& x, const T& y, const T& M) { return (x * y) % M; }
 // integral type specializations
 template<typename I>
 I modulo_long_multiply_int(I x, I y, I M) {
-	modulo_normalize_int(x, M);
-	modulo_normalize_int(y, M);
+	modulo_normalize_int(&x, M);
+	modulo_normalize_int(&y, M);
 	I r = 0;
 	for (; y > 0; y >>= 1) {
-		if (y & 1) r += x, modulo_normalize_int(r, M);
-		x += x, modulo_normalize_int(x, M);
+		if (y & 1) r += x, modulo_normalize_int(&r, M);
+		x += x, modulo_normalize_int(&x, M);
 	}
 	return r;
 }
 inline long long modulo_multiply(long long x, long long y, long long M) {
-	modulo_normalize_int(x, M);
-	modulo_normalize_int(y, M);
+	modulo_normalize_int(&x, M);
+	modulo_normalize_int(&y, M);
 	bool fit = (x < (1LL << 31) && y < (1LL << 31));
 	return fit ? (x * y) % M : modulo_long_multiply_int(x, y, M);
 }
 inline int modulo_multiply(int x, int y, int M) {
-	modulo_normalize_int(x, M);
-	modulo_normalize_int(y, M);
+	modulo_normalize_int(&x, M);
+	modulo_normalize_int(&y, M);
 	return ((long long)x * y) % M;
 }
 
@@ -56,9 +56,9 @@ template<typename T> T modulo_inverse(const T& v, const T& M) {
 }
 // integral type specializations
 template<typename I> I modulo_inverse_int(I v, I M) {
-	modulo_normalize_int(v, M);
+	modulo_normalize_int(&v, M);
 	I vi; gcd_ex(v, M, &vi);
-	modulo_normalize_int(vi, M);
+	modulo_normalize_int(&vi, M);
 	return vi;
 }
 inline long long modulo_inverse(long long v, long long M) { return modulo_inverse_int(v, M); }
@@ -71,9 +71,9 @@ template<typename T> T modulo_divide(const T& x, const T& y, const T& M) {
 // integral type specializations
 template<typename I>
 I modulo_divide_int(I x, I y, I M) {
-	modulo_normalize_int(x, M);
-	modulo_normalize_int(y, M);
-	return (x % y == 0) ? x / y : modulo_multiply(x, modulo_inverse(y, M), M);
+	modulo_normalize_int(&x, M);
+	modulo_normalize_int(&y, M);
+	return (y != 0 && x % y == 0) ? x / y : modulo_multiply(x, modulo_inverse(y, M), M);
 }
 inline long long modulo_divide(long long x, long long y, long long M) { return modulo_divide_int(x, y, M); }
 inline int modulo_divide(int x, int y, int M) { return modulo_divide_int(x, y, M); }
@@ -115,7 +115,7 @@ public:
 	modulo(const modulo& rhs) : v(rhs.v), modulo_members(rhs.M) {}
 	modulo make(const T& v) const { return modulo(v, M); }
 
-	void normalize() { modulo_normalize(v, M); }
+	void normalize() { modulo_normalize(&v, M); }
 	
 	bool operator == (const modulo &rhs) const { return (v == rhs.v); }
 	bool operator != (const modulo &rhs) const { return (v != rhs.v); }
