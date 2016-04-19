@@ -6,6 +6,34 @@ namespace altruct {
 namespace math {
 
 /**
+ * Inplace Fast Fourier Transform of a sequence
+ *
+ * @param data - data to transform, array of length `size`
+ * @param size - number of elements, must be a power of two
+ * @param root - a principal n-th root of unity in the ring T
+ */
+template<typename T>
+void fft(T *data, int size, T root) {
+	T w, e1 = identityT<T>::of(root);
+	int m, h, i, j, k;
+	for (m = size; h = m / 2, m > 1; m /= 2, root *= root) {
+		for (i = 0, w = e1; i < h; i++, w *= root) {
+			for (j = i; j < size; j += m) {
+				k = j + h;
+				T t = data[j] - data[k];
+				data[j] += data[k];
+				data[k] = t * w;
+			}
+		}
+	}
+	// reorder: swap(a[j], a[bitrev(j)])
+	for (int i = 0, j = 1; j < size - 1; j++) {
+		for (int k = size / 2; (i ^= k) < k; k /= 2);
+		if (j < i) swap(data[i], data[j]);
+	}
+}
+
+/**
  * Fast Fourier Transform of a sequence
  *
  * Result is stored in `data`. Both `data` and `temp` are modified.
@@ -16,7 +44,7 @@ namespace math {
  * @param root - a principal n-th root of unity in the ring T
  */
 template<typename T>
-void fft(T *data, T *temp, int size, const T& root) {
+void fft_rec(T *data, T *temp, int size, const T& root) {
 	if (size <= 1) return;
 	int h = size / 2;
 	// reorder
@@ -29,8 +57,8 @@ void fft(T *data, T *temp, int size, const T& root) {
 	}
 	// recurse
 	T root2 = root * root;
-	fft(data + 0, temp, h, root2);
-	fft(data + h, temp, h, root2);
+	fft_rec(data + 0, temp, h, root2);
+	fft_rec(data + h, temp, h, root2);
 	// collect
 	T u, v, g_i = identityT<T>::of(root);
 	for (int i = 0; i < h; i++) {
@@ -64,8 +92,8 @@ template<typename T>
 void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const T& root_base, int root_order) {
 	T root = powT(root_base, root_order / size);
 	// convert to frequency domain
-	fft(data1, dataR, size, root);
-	fft(data2, dataR, size, root);
+	fft(data1, size, root);
+	fft(data2, size, root);
 	// convolution in time domain is a pointwise
 	// multiplication in frequency domain
 	for (int i = 0; i < size; i++) {
@@ -74,7 +102,7 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const T& roo
 	// inverse transform is same as original transform,
 	// but with inverse root and elements divided by size
 	T e1 = identityT<T>::of(root);
-	fft(dataR, data1, size, e1 / root);
+	fft(dataR, size, e1 / root);
 	T ni = e1 / T(size);
 	for (int i = 0; i < size; i++) {
 		dataR[i] *= ni;
