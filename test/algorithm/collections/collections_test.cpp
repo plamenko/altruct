@@ -9,6 +9,12 @@
 using namespace std;
 using namespace altruct::collections;
 
+TEST(reduce_test, filter) {
+	EXPECT_EQ((vector<int>{}), filter(vector<int>(), [](int x){ return x % 4 == 1; }));
+	EXPECT_EQ((vector<int>{5, 13}), filter(vector<int>{2, 3, 5, 7, 11, 13}, [](int x){ return x % 4 == 1; }));
+	EXPECT_EQ((vector<int>{5, 13}), filter(set<int>{2, 3, 5, 7, 11, 13}, [](int x){ return x % 4 == 1; }));
+}
+
 TEST(reduce_test, transform) {
 	EXPECT_EQ((vector<int>{}), transform(vector<int>(), [](int x){return x*x; }));
 	EXPECT_EQ((vector<int>{4, 9, 25, 49}), transform(vector<int>{-2, 3, 5, 7}, [](int x){return x*x; }));

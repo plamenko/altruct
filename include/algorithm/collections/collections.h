@@ -9,6 +9,34 @@ namespace altruct {
 namespace collections {
 
 /**
+ * Returns the vector of the elements in the range [begin, end) that satisfy predicate `p`.
+ */
+template<
+	typename It,
+	typename P,
+	typename T = typename std::iterator_traits<It>::value_type
+>
+std::vector<T> filter(It begin, It end, const P& p) {
+	std::vector<T> r;
+	for (It it = begin; it != end; ++it) {
+		if (p(*it)) r.push_back(*it);
+	}
+	return r;
+}
+
+/**
+ * Returns the vector of the elements in collection `c` that satisfy predicate `p`.
+ */
+template<
+	typename C,
+	typename P,
+	typename T = typename C::value_type
+>
+std::vector<T> filter(const C& c, const P& p) {
+	return filter(c.begin(), c.end(), p);
+}
+
+/**
  * Returns the vector of the elements in the range [begin, end) transformed by functor `f`.
  */
 template<
