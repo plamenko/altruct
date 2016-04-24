@@ -3,6 +3,7 @@
 #include <cmath>
 #include <climits>
 #include <stdint.h>
+#include <algorithm>
 
 namespace altruct {
 namespace math {
@@ -60,12 +61,27 @@ void moebius_mu(int *mu, int n, int *p, int m) {
 	}
 }
 
+void segmented_q(char* q, ll b, ll e, int *p, int m) {
+	char* _q = q - b;
+	if (b == 0) _q[b++] = 0;
+	if (b == 1) _q[b++] = 0;
+	for (ll a = b; a < e; a++)
+		_q[a] = 1;
+	for (int i = 0; i < m; i++) {
+		b = std::max(b, isq(p[i]));
+		for (ll a = multiple<ll>(p[i], b); a < e; a += p[i]) {
+			_q[a] = 0;
+		}
+	}
+}
+
 void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
 	ll *_phi = phi - b, *_tmp = tmp - b;
+	if (b == 0) _phi[b++] = 0;
 	for (ll q = b; q < e; q++)
 		_phi[q] = 1, _tmp[q] = q;
 	for (int i = 0; i < m; i++) {
-		for (ll q = div_ceil<ll>(b, p[i]) * p[i]; q < e; q += p[i]) {
+		for (ll q = multiple<ll>(p[i], b); q < e; q += p[i]) {
 			_phi[q] *= p[i] - 1, _tmp[q] /= p[i];
 			while (_tmp[q] % p[i] == 0)
 				_phi[q] *= p[i], _tmp[q] /= p[i];
@@ -78,14 +94,15 @@ void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
 
 void segmented_mu(ll *mu, ll b, ll e, int *p, int m) {
 	ll *_mu = mu - b;
+	if (b == 0) _mu[b++] = 0;
 	for (ll q = b; q < e; q++)
 		_mu[q] = 1;
 	for (int i = 0; i < m; i++) {
-		for (ll q = div_ceil<ll>(b, p[i]) * p[i]; q < e; q += p[i]) {
+		for (ll q = multiple<ll>(p[i], b); q < e; q += p[i]) {
 			_mu[q] *= -p[i];
 		}
 		ll p2 = isq(p[i]);
-		for (ll q = div_ceil<ll>(b, p2) * p2; q < e; q += p2) {
+		for (ll q = multiple<ll>(p2, b); q < e; q += p2) {
 			_mu[q] = 0;
 		}
 	}

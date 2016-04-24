@@ -77,11 +77,26 @@ void euler_phi(int *phi, int n, int *p, int m);
 void moebius_mu(int *mu, int n, int *p, int m);
 
 /**
+ * Segmented PrimeQ in range `[b, e)`
+ *
+ * Stores whether `i` is prime for each integer `i` in range `[b, e)`.
+ * Prime numbers up to `sqrt(e)` should be provided. I.e. `p[m-1] >= sqrt(e-1)`.
+ *
+ * Complexity: O((e - b) log log e)
+ *
+ * @param q - array to store the result
+ * @param b, e - range `[b, e)`
+ * @param p - array of prime numbers up to `sqrt(e)`
+ * @param m - number of prime numbers up to `sqrt(e)`
+ */
+void segmented_q(char* q, long long b, long long e, int *p, int m);
+
+/**
  * Segmented Euler's Phi (Number of coprimes; Totient) in range `[b, e)`
  *
  * Stores the number of numbers coprime to `i` up to `i` for each integer `i`
  * in range `[b, e)`.
- * Prime numbers up to `sqrt(e)` should provided. I.e. `p[m-1] >= sqrt(e-1)`.
+ * Prime numbers up to `sqrt(e)` should be provided. I.e. `p[m-1] >= sqrt(e-1)`.
  *
  * Complexity: O((e - b) log log e)
  *
@@ -100,7 +115,7 @@ void segmented_phi(long long *phi, long long *tmp, long long b, long long e, int
  *    0 if `i` is not a square-free positive integer
  *   +1 if `i` is a square-free positive integer with an even number of prime factors
  *   -1 if `i` is a square-free positive integer with an odd number of prime factors
- * Prime numbers up to `sqrt(e)` should provided. I.e. `p[m-1] >= sqrt(e-1)`.
+ * Prime numbers up to `sqrt(e)` should be provided. I.e. `p[m-1] >= sqrt(e-1)`.
  *
  * Complexity: O((e - b) log log e)
  *

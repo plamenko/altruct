@@ -66,6 +66,21 @@ TEST(primes_test, moebius_mu) {
 	EXPECT_EQ((vector<int> { 0, +1, -1, -1, 0, -1, +1, -1, 0, 0, +1, -1, 0, -1, +1, +1, 0, -1, 0, -1, 0, +1, +1, -1, 0, 0, +1, 0, 0, -1 }), vmu);
 }
 
+TEST(primes_test, segmented_q) {
+	int b = 20, e = 30;
+	int q = isqrt(e) + 1;
+	vector<int> vp(q);
+	int m = primes(&vp[0], nullptr, q);
+
+	vector<char> vq(e - b);
+	segmented_q(&vq[0], b, e, &vp[0], m);
+	EXPECT_EQ((vector<char> {0, 0, 0, 1, 0, 0, 0, 0, 0, 1}), vq);
+	
+	vq.resize(e);
+	segmented_q(&vq[0], 0, e, &vp[0], m);
+	EXPECT_EQ((vector<char> {0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1}), vq);
+}
+
 TEST(primes_test, segmented_phi) {
 	int b = 20, e = 30;
 	int q = isqrt(e) + 1;
@@ -76,6 +91,11 @@ TEST(primes_test, segmented_phi) {
 	vector<ll> vtmp(e - b);
 	segmented_phi(&vphi[0], &vtmp[0], b, e, &vp[0], m);
 	EXPECT_EQ((vector<ll> { 8, 12, 10, 22, 8, 20, 12, 18, 12, 28 }), vphi);
+	
+	vphi.resize(e);
+	vtmp.resize(e);
+	segmented_phi(&vphi[0], &vtmp[0], 0, e, &vp[0], m);
+	EXPECT_EQ((vector<ll> {0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8, 12, 10, 22, 8, 20, 12, 18, 12, 28}), vphi);
 }
 
 TEST(primes_test, segmented_mu) {
@@ -87,6 +107,10 @@ TEST(primes_test, segmented_mu) {
 	vector<ll> vmu(e - b);
 	segmented_mu(&vmu[0], b, e, &vp[0], m);
 	EXPECT_EQ((vector<ll> { 0, +1, +1, -1, 0, 0, +1, 0, 0, -1 }), vmu);
+	
+	vmu.resize(e);
+	segmented_mu(&vmu[0], 0, e, &vp[0], m);
+	EXPECT_EQ((vector<ll> {0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, -1, 1, 1, 0, -1, 0, -1, 0, 1, 1, -1, 0, 0, 1, 0, 0, -1}), vmu);
 }
 
 TEST(primes_test, divisor_sigma_0) {
