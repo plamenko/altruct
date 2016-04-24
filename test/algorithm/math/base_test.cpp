@@ -462,6 +462,11 @@ TEST(base_test, is_cube) {
 }
 
 TEST(base_test, div_floor) {
+	EXPECT_EQ(+4, div_floor(+20, +5));
+	EXPECT_EQ(-4, div_floor(+20, -5));
+	EXPECT_EQ(-4, div_floor(-20, +5));
+	EXPECT_EQ(+4, div_floor(-20, -5));
+
 	EXPECT_EQ(+6, div_floor(+20, +3));
 	EXPECT_EQ(-7, div_floor(+20, -3));
 	EXPECT_EQ(-7, div_floor(-20, +3));
@@ -469,10 +474,37 @@ TEST(base_test, div_floor) {
 }
 
 TEST(base_test, div_ceil) {
+	EXPECT_EQ(+4, div_ceil(+20, +5));
+	EXPECT_EQ(-4, div_ceil(+20, -5));
+	EXPECT_EQ(-4, div_ceil(-20, +5));
+	EXPECT_EQ(+4, div_ceil(-20, -5));
+
 	EXPECT_EQ(+7, div_ceil(+20, +3));
 	EXPECT_EQ(-6, div_ceil(+20, -3));
 	EXPECT_EQ(-6, div_ceil(-20, +3));
 	EXPECT_EQ(+7, div_ceil(-20, -3));
+}
+
+TEST(base_test, div_round) {
+	EXPECT_EQ(+2, div_round(+100, +50));
+	EXPECT_EQ(-2, div_round(+100, -50));
+	EXPECT_EQ(-2, div_round(-100, +50));
+	EXPECT_EQ(+2, div_round(-100, -50));
+
+	EXPECT_EQ(+3, div_round(+100, +39));
+	EXPECT_EQ(-3, div_round(+100, -39));
+	EXPECT_EQ(-3, div_round(-100, +39));
+	EXPECT_EQ(+3, div_round(-100, -39));
+
+	EXPECT_EQ(+3, div_round(+100, +40));
+	EXPECT_EQ(-3, div_round(+100, -40));
+	EXPECT_EQ(-3, div_round(-100, +40));
+	EXPECT_EQ(+3, div_round(-100, -40));
+
+	EXPECT_EQ(+2, div_round(+100, +41));
+	EXPECT_EQ(-2, div_round(+100, -41));
+	EXPECT_EQ(-2, div_round(-100, +41));
+	EXPECT_EQ(+2, div_round(-100, -41));
 }
 
 TEST(base_test, multiple) {

@@ -265,6 +265,12 @@ I div_ceil(I a, I b) {
 	return (a > 0) ? (a - 1) / b + 1 : a / b;
 }
 
+template<typename I>
+I div_round(I a, I b) {
+	if (b < 0) a = -a, b = -b;
+	return (a > 0) ? (a + b / 2) / b : (a - b / 2) / b;
+}
+
 /**
  * Multiple of `a`, greater than or equal to `b`.
  */
