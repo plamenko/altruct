@@ -42,7 +42,7 @@ int primes(int *p, char *q, int n);
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
  */
-void prime_pi(int *pi, int n, int *p, int m);
+void prime_pi(int *pi, int n, const int *p, int m);
 
 /**
  * Euler's Phi (Number of coprimes; Totient) up to `n`
@@ -57,7 +57,7 @@ void prime_pi(int *pi, int n, int *p, int m);
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
  */
-void euler_phi(int *phi, int n, int *p, int m);
+void euler_phi(int *phi, int n, const int *p, int m);
 
 /**
  * Moebius Mu (+/-1 if squarefree, 0 otherwise) up to `n`
@@ -74,7 +74,7 @@ void euler_phi(int *phi, int n, int *p, int m);
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
  */
-void moebius_mu(int *mu, int n, int *p, int m);
+void moebius_mu(int *mu, int n, const int *p, int m);
 
 /**
  * Segmented PrimeQ in range `[b, e)`
@@ -89,7 +89,7 @@ void moebius_mu(int *mu, int n, int *p, int m);
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_q(char* q, long long b, long long e, int *p, int m);
+void segmented_q(char* q, long long b, long long e, const int *p, int m);
 
 /**
  * Segmented Euler's Phi (Number of coprimes; Totient) in range `[b, e)`
@@ -106,7 +106,7 @@ void segmented_q(char* q, long long b, long long e, int *p, int m);
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_phi(long long *phi, long long *tmp, long long b, long long e, int *p, int m);
+void segmented_phi(long long *phi, long long *tmp, long long b, long long e, const int *p, int m);
 
 /**
  * Segmented Moebius Mu (+/-1 if squarefree, 0 otherwise) in range `[b, e)`
@@ -124,7 +124,7 @@ void segmented_phi(long long *phi, long long *tmp, long long b, long long e, int
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_mu(long long *mu, long long b, long long e, int *p, int m);
+void segmented_mu(long long *mu, long long b, long long e, const int *p, int m);
 
 /**
  * Divisor Sigma 0 (Number of divisors) up to `n`
@@ -159,7 +159,7 @@ void divisor_sigma1(long long *ds1, int n);
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
  */
-void factor(int *bpf, int n, int *p, int m);
+void factor(int *bpf, int n, const int *p, int m);
 
 /**
  * Prime factorization of integer `n`
@@ -174,7 +174,7 @@ void factor(int *bpf, int n, int *p, int m);
  * @param n - integer to factor
  * @param pf - array of prime factors for integers up to `n` inclusive
  */
-void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf);
+void factor_integer(std::vector<std::pair<int, int>> &vf, int n, const int *pf);
 
 /**
  * Prime factorization of the product of integers `vn`
@@ -190,7 +190,7 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf);
  * @param vn - integers whose product to factor
  * @param pf - array of prime factors for integers up to `n` inclusive
  */
-void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, int *pf);
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, const int *pf);
 
 /**
  * Calculates divisors from a factorization.

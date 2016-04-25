@@ -31,14 +31,14 @@ int primes(int *p, char *q, int n) {
 	return m;
 }
 
-void prime_pi(int *pi, int n, int *p, int m) {
+void prime_pi(int *pi, int n, const int *p, int m) {
 	for (int i = 0, l = 0; i < n; i++) {
 		if (i == p[l]) l++;
 		pi[i] = l;
 	}
 }
 
-void euler_phi(int *phi, int n, int *p, int m) {
+void euler_phi(int *phi, int n, const int *p, int m) {
 	for (int i = 0; i < n; i++)
 		phi[i] = i;
 	for (int i = 0; i < m; i++)
@@ -46,7 +46,7 @@ void euler_phi(int *phi, int n, int *p, int m) {
 			phi[j] = phi[j] / p[i] * (p[i] - 1);
 }
 
-void moebius_mu(int *mu, int n, int *p, int m) {
+void moebius_mu(int *mu, int n, const int *p, int m) {
 	int i, j;
 	mu[0] = 0;
 	for (i = 1; i < n; i++)
@@ -61,21 +61,21 @@ void moebius_mu(int *mu, int n, int *p, int m) {
 	}
 }
 
-void segmented_q(char* q, ll b, ll e, int *p, int m) {
+void segmented_q(char* q, ll b, ll e, const int *p, int m) {
 	char* _q = q - b;
 	if (b == 0) _q[b++] = 0;
 	if (b == 1) _q[b++] = 0;
 	for (ll a = b; a < e; a++)
 		_q[a] = 1;
 	for (int i = 0; i < m; i++) {
-		b = std::max(b, isq(p[i]));
+		b = std::max(b, isq(p[i])); if (b >= e) break;
 		for (ll a = multiple<ll>(p[i], b); a < e; a += p[i]) {
 			_q[a] = 0;
 		}
 	}
 }
 
-void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
+void segmented_phi(ll *phi, ll *tmp, ll b, ll e, const int *p, int m) {
 	ll *_phi = phi - b, *_tmp = tmp - b;
 	if (b == 0) _phi[b++] = 0;
 	for (ll q = b; q < e; q++)
@@ -92,7 +92,7 @@ void segmented_phi(ll *phi, ll *tmp, ll b, ll e, int *p, int m) {
 		if (_tmp[q] > 1) _phi[q] *= _tmp[q] - 1;
 }
 
-void segmented_mu(ll *mu, ll b, ll e, int *p, int m) {
+void segmented_mu(ll *mu, ll b, ll e, const int *p, int m) {
 	ll *_mu = mu - b;
 	if (b == 0) _mu[b++] = 0;
 	for (ll q = b; q < e; q++)
@@ -134,14 +134,14 @@ void divisor_sigma1(ll *ds1, int n) {
 			ds1[j] += i;
 }
 
-void factor(int *bpf, int n, int *p, int m) {
+void factor(int *bpf, int n, const int *p, int m) {
 	bpf[0] = 0, bpf[1] = 1;
 	for (int i = 0; i < m; i++)
 		for (int j = p[i]; j < n; j += p[i])
 			bpf[j] = p[i];
 }
 
-void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf) {
+void factor_integer(std::vector<std::pair<int, int>> &vf, int n, const int *pf) {
 	while (n > 1) {
 		int p = pf[n], e = 0;
 		while (n % p == 0) {
@@ -151,7 +151,7 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, int *pf) {
 	}
 }
 
-void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, int *pf) {
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, const int *pf) {
 	for (auto &n : vn) {
 		while (n > 1) {
 			int p = pf[n], e = 0;

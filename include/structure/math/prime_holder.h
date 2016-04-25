@@ -22,7 +22,7 @@ private:
 	std::vector<int> vmu;  // moebius mu
 
 	void ensure_pq();
-	std::vector<int>& ensure(std::vector<int> &v, void(*f)(int*, int, int*, int));
+	std::vector<int>& ensure(std::vector<int> &v, void(*f)(int*, int, const int*, int));
 
 public:
 	prime_holder(int sz) : sz(sz) {}
@@ -64,7 +64,7 @@ inline void prime_holder::ensure_pq() {
 	}
 }
 
-inline std::vector<int>& prime_holder::ensure(std::vector<int> &v, void(*f)(int*, int, int*, int)) {
+inline std::vector<int>& prime_holder::ensure(std::vector<int> &v, void(*f)(int*, int, const int*, int)) {
 	if (v.empty()) {
 		v.resize(sz);
 		f(&v[0], sz, &p()[0], primes());
