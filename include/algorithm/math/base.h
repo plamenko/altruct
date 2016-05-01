@@ -179,7 +179,7 @@ T sqrtT(T x, T eps = 1) {
 	if (x == 1) return 1;
 	T q1 = x / 2;
 	T q2 = x / q1;
-	while (absT(q1 - q2) > eps) {
+	while (absT(T(q1 - q2)) > eps) {
 		q1 = (q1 + q2) / 2;
 		q2 = x / q1;
 	}
@@ -226,7 +226,7 @@ T cbrtT(T x, T eps = 1) {
 	T r0 = 0;
 	T r1 = x;
 	T r2 = 0;
-	while (r1 != r0 && absT(r1 - r2) > eps) {
+	while (r1 != r0 && absT(T(r1 - r2)) > eps) {
 		r0 = r1;
 		r1 = (r1 + r1 + r2) / 3;
 		r2 = x / sqT(r1);
