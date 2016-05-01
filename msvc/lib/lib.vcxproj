@@ -25,6 +25,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\collections\collections.h" />
+    <ClInclude Include="..\..\include\algorithm\hash\std_hash_combine.h" />
+    <ClInclude Include="..\..\include\algorithm\hash\std_tuple_hash.h" />
     <ClInclude Include="..\..\include\algorithm\math\base.h" />
     <ClInclude Include="..\..\include\algorithm\math\combinatorics.h" />
     <ClInclude Include="..\..\include\algorithm\math\comb_primes.h" />

@@ -54,6 +54,9 @@
     <Filter Include="include\structure\graph">
       <UniqueIdentifier>{d812d264-bc4b-4e32-a5d6-2b4f5a2b2a62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\algorithm\hash">
+      <UniqueIdentifier>{92618945-b6cc-4555-b6c9-3641752fb9ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -136,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h">
       <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\hash\std_hash_combine.h">
+      <Filter>include\algorithm\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\hash\std_tuple_hash.h">
+      <Filter>include\algorithm\hash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
