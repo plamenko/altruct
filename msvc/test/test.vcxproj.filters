@@ -82,6 +82,9 @@
     <ClCompile Include="..\..\test\algorithm\math\fft_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\hash\std_hash_test.cpp">
+      <Filter>algorithm\hash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -107,6 +110,9 @@
     </Filter>
     <Filter Include="structure\graph">
       <UniqueIdentifier>{6f3821b4-7bd7-46de-b9b3-270daca5f9b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\hash">
+      <UniqueIdentifier>{fb4a4bfa-b7c2-4730-bfeb-1e77bf4b5c3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
