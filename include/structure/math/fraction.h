@@ -18,13 +18,16 @@ public:
 		if (g != e1) p /= g, q /= g;
 		if (q < e0) p = -p, q = -q;
 	}
+
+	// WARNING: comparison may overflow!
+	T cmp(const fraction& f) const { return p * f.q - f.p * q; }
 	
-	bool operator == (const fraction &f) const { return (p * f.q == f.p * q); }
-	bool operator != (const fraction &f) const { return (p * f.q != f.p * q); }
-	bool operator <  (const fraction &f) const { return (p * f.q <  f.p * q); }
-	bool operator <= (const fraction &f) const { return (p * f.q <= f.p * q); }
-	bool operator >  (const fraction &f) const { return (p * f.q >  f.p * q); }
-	bool operator >= (const fraction &f) const { return (p * f.q >= f.p * q); }
+	bool operator == (const fraction &f) const { return (p == f.p && q == f.q); }
+	bool operator != (const fraction &f) const { return (p != f.p || q != f.q); }
+	bool operator <  (const fraction &f) const { return cmp(f) <  0; }
+	bool operator <= (const fraction &f) const { return cmp(f) <= 0; }
+	bool operator >  (const fraction &f) const { return cmp(f) >  0; }
+	bool operator >= (const fraction &f) const { return cmp(f) >= 0; }
 	
 	fraction& operator += (const fraction &f) { p = p * f.q + f.p * q; q *= f.q; reduce(); return *this; }
 	fraction& operator -= (const fraction &f) { p = p * f.q - f.p * q; q *= f.q; reduce(); return *this; }
