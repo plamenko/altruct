@@ -44,9 +44,9 @@ public:
 	const T& at(int index) const { return (0 <= index && index < size()) ? c[index] : ZERO_COEFF; }
 	const T& operator [] (int index) const { return at(index); }
 	T& operator [] (int index) { reserve(index + 1); return c[index]; }
-	int deg() const { for (int i = size() - 1; i > 0; i--) if (c[i] != ZERO_COEFF) return i; return 0; }
+	int deg() const { for (int i = size() - 1; i > 0; i--) if (!(c[i] == ZERO_COEFF)) return i; return 0; }
 	const T& leading_coeff() const { return at(deg()); }
-	bool is_power() const { for (int i = deg() - 1; i >= 0; i--) if (c[i] != ZERO_COEFF) return false; return leading_coeff() == identityT<T>::of(ZERO_COEFF); }
+	bool is_power() const { for (int i = deg() - 1; i >= 0; i--) if (!(c[i] == ZERO_COEFF)) return false; return leading_coeff() == identityT<T>::of(ZERO_COEFF); }
 
 	// compares p1 and p2; O(l1 + l2)
 	static int cmp(const polynom &p1, const polynom &p2) {
@@ -220,7 +220,7 @@ public:
 		return r;
 	}
 	
-	polynom integral(const T& c0 = T(0)) const {
+	polynom integral(const T& c0 = ZERO_COEFF) const {
 		polynom r;
 		r[0] = c0;
 		for (int i = deg(); i >= 0; i--) {
@@ -236,14 +236,14 @@ template<typename T> int polynom<T>::FFT_ORDER = 0;
 
 template<typename T>
 struct identityT<polynom<T>> {
-	static polynom<T> of(const polynom<T>& x) {
+	static polynom<T> of(const polynom<T>& p) {
 		return polynom<T>(identityT<T>::of(polynom<T>::ZERO_COEFF));
 	}
 };
 
 template<typename T>
 struct zeroT<polynom<T>> {
-	static polynom<T> of(const polynom<T>& x) {
+	static polynom<T> of(const polynom<T>& p) {
 		return polynom<T>(polynom<T>::ZERO_COEFF);
 	}
 };

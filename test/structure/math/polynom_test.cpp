@@ -435,6 +435,7 @@ TEST(polynom_test, divs) {
 TEST(polynom_test, operators_comparison) {
 	const polynom<int> p1{ 4 };
 	const polynom<int> p2{ 1, 3, 5, 7 };
+	const polynom<int> p3{ 1, 3, 5, 7, 0, 0, 0 };
 	EXPECT_EQ(false, p1 == p2);
 	EXPECT_EQ(true, p1 != p2);
 	EXPECT_EQ(true, p1 < p2);
@@ -453,6 +454,12 @@ TEST(polynom_test, operators_comparison) {
 	EXPECT_EQ(false, p2 > p2);
 	EXPECT_EQ(true, p2 <= p2);
 	EXPECT_EQ(true, p2 >= p2);
+	EXPECT_EQ(true, p2 == p3);
+	EXPECT_EQ(false, p2 != p3);
+	EXPECT_EQ(false, p2 < p3);
+	EXPECT_EQ(false, p2 > p3);
+	EXPECT_EQ(true, p2 <= p3);
+	EXPECT_EQ(true, p2 >= p3);
 }
 
 TEST(polynom_test, operators_arithmetic) {
