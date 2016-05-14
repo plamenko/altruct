@@ -34,6 +34,10 @@ TEST(polynom_test, constructor) {
 	EXPECT_EQ((vector<A>{5.0}), q1.c);
 	polynom<A> q2(A(5.3));
 	EXPECT_EQ((vector<A>{5.3}), q2.c);
+	polynom<int> p8(vector<int>{ 1, 2, 3, 4 });
+	EXPECT_EQ(c, p8.c);
+	polynom<int> p9(polynom<int>{ 1, 2, 3, 4 });
+	EXPECT_EQ(c, p9.c);
 }
 
 TEST(polynom_test, swap) {
@@ -536,6 +540,14 @@ TEST(polynom_test, derivative) {
 	const polynom<int> p1{ 7, 5, -3, 4 };
 	const polynom<int> pd = p1.derivative();
 	EXPECT_EQ((polynom<int>{ 5, -6, 12 }), pd);
+}
+
+TEST(polynom_test, integral) {
+	const polynom<int> p{ 7, 8, 15, -4, 20 };
+	const polynom<int> pi0 = p.integral();
+	const polynom<int> pi3 = p.integral(3);
+	EXPECT_EQ((polynom<int>{ 0, 7, 4, 5, -1, 4 }), pi0);
+	EXPECT_EQ((polynom<int>{ 3, 7, 4, 5, -1, 4 }), pi3);
 }
 
 TEST(polynom_test, identity) {

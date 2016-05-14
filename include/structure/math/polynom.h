@@ -25,8 +25,10 @@ public:
 	std::vector<T> c;
 
 	polynom() {}
+	polynom(polynom&& rhs) : c(std::move(rhs.c)) {}
 	polynom(const polynom& rhs) : c(rhs.c) {}
-	polynom(const std::vector<T>& c) : c(c) {}
+	polynom(std::vector<T>&& rhs) : c(std::move(rhs)) {}
+	polynom(const std::vector<T>& rhs) : c(rhs) {}
 	template<typename It> polynom(It begin, It end) : c(begin, end) {}
 	polynom(const T& c0) { c.push_back(c0); }
 	// construct from int, but only if T is not integral to avoid constructor clashing
@@ -85,20 +87,20 @@ public:
 	
 	// pr = p1 * p2; O(lr log lr)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_fft(polynom &pr, const polynom &p1, const polynom &p2) {
-		int sizeR = p1.deg() + p2.deg() + 1;
-		int sizeFFT = 1; while (sizeFFT < sizeR) sizeFFT *= 2;
+	static void mul_fft(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
+		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
+		int sizeFFT = 1; while (sizeFFT <= lr) sizeFFT *= 2;
 		std::vector<T> temp1(p1.c); temp1.resize(sizeFFT);
 		std::vector<T> temp2(p2.c); temp2.resize(sizeFFT);
 		pr.c.assign(sizeFFT, ZERO_COEFF);
 		fft_cyclic_convolution(&pr.c[0], &temp1[0], &temp2[0], sizeFFT, FFT_ROOT, FFT_ORDER);
-		pr.c.resize(sizeR, ZERO_COEFF);
+		pr.c.resize(lr + 1, ZERO_COEFF);
 	}
 	
 	// pr = p1 * p2; O(l1 * l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2, int lr = 0) {
-		int l1 = p1.deg(), l2 = p2.deg(); if (!lr) lr = l1 + l2;
+	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
+		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
 		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = lr; i >= 0; i--) {
 			T r = ZERO_COEFF;
@@ -109,13 +111,13 @@ public:
 	}
 
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul(polynom &pr, const polynom &p1, const polynom &p2) {
-		int sizeR = p1.deg() + p2.deg() + 1;
-		long long cost = (long long) p1.deg() * p2.deg();
-		if (FFT_ORDER >= sizeR && cost > 10000) {
-			mul_fft(pr, p1, p2);
+	static void mul(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
+		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
+		auto cost = min<long long>(l1, lr) * min(l2, lr);
+		if (FFT_ORDER > lr && cost > 10000) {
+			mul_fft(pr, p1, p2, lr);
 		} else {
-			mul_long(pr, p1, p2);
+			mul_long(pr, p1, p2, lr);
 		}
 	}
 
@@ -214,6 +216,15 @@ public:
 		polynom r;
 		for (int i = deg(); i > 0; i--) {
 			r[i - 1] = c[i] * i;
+		}
+		return r;
+	}
+	
+	polynom integral(const T& c0 = T(0)) const {
+		polynom r;
+		r[0] = c0;
+		for (int i = deg(); i >= 0; i--) {
+			r[i + 1] = c[i] / (i + 1);
 		}
 		return r;
 	}
