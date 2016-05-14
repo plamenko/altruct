@@ -60,7 +60,7 @@ public:
 	series& operator /= (const T &val) { p /= val; return *this; }
 
 	series derivative() const { return series(p.derivative()); }
-	series integral(const T& c0 = T(0)) const { return series(p.integral(c0)); }
+	series integral(const T& c0 = polynom<T>::ZERO_COEFF) const { return series(p.integral(c0)); }
 
 	// t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N) log N)
 	series inverse() const {
@@ -79,6 +79,11 @@ public:
 			}
 		}
 		return series(r);
+	}
+
+	// series expansion of natural logarithm of s(x)
+	series ln(const T& c0 = polynom<T>::ZERO_COEFF) const {
+		return (derivative() / *this).integral(c0);
 	}
 };
 
