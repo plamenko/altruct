@@ -1,4 +1,5 @@
 #include "algorithm/math/modulos.h"
+#include "algorithm/math/ranges.h"
 #include "algorithm/collections/collections.h"
 
 #include "gtest/gtest.h"
@@ -136,7 +137,7 @@ TEST(modulos_test, factorial_mod_p) {
 	const int P = 37;
 	typedef modulo<int, P> mod;
 	vector<mod> fact_table(P);
-	factorials(P, &fact_table[0], mod(1, P));
+	factorials(fact_table.begin(), fact_table.end(), mod(1, P));
 	EXPECT_EQ((vector<mod>{1, 1, 2, 6, 24, 9, 17, 8, 27, 21, 25, 16, 7, 17, 16, 18, 29, 12, 31, 34, 14, 35, 30, 24, 21, 7, 34, 30, 26, 14, 13, 33, 20, 31, 18, 1, 36}), fact_table);
 	
 	long long e = 0;

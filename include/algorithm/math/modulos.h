@@ -230,28 +230,6 @@ std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
 }
 
 /**
- * Builds the powers of `b` look-up table up to `n`.
- */
-template<typename I, typename T>
-void powers(I n, T b, T* table, T id = T(1)) {
-	table[0] = id;
-	for (I i = 1; i < n; i++) {
-		table[i] = table[i - 1] * b;
-	}
-}
-
-/**
- * Builds the factorial look-up table up to `n`.
- */
-template<typename I, typename T>
-void factorials(I n, T* table, T id = T(1)) {
-	table[0] = id;
-	for (I i = 1; i < n; i++) {
-		table[i] = table[i - 1] * i;
-	}
-}
-
-/**
  * Factorial of n modulo p
  *
  * `(n! / p^e) % p`, where `p^e` is the largest power of `p` dividing `n`.

@@ -35,6 +35,7 @@
     <ClInclude Include="..\..\include\algorithm\math\modulos.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
+    <ClInclude Include="..\..\include\algorithm\math\ranges.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
     <ClInclude Include="..\..\include\algorithm\math\sums.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
     <ClInclude Include="..\..\include\structure\math\quadratic.h" />
+    <ClInclude Include="..\..\include\structure\math\series.h" />
     <ClInclude Include="..\..\include\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\structure\math\vectorNd.h" />
   </ItemGroup>

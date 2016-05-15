@@ -37,6 +37,7 @@
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\ranges_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\reduce_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\prime_holder_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\quadratic_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\series_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\vectorNd_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
