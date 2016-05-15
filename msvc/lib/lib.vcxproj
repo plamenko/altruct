@@ -32,8 +32,10 @@
     <ClInclude Include="..\..\include\algorithm\math\comb_primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\fft.h" />
     <ClInclude Include="..\..\include\algorithm\math\fractions.h" />
+    <ClInclude Include="..\..\include\algorithm\math\gmp_helpers.h" />
     <ClInclude Include="..\..\include\algorithm\math\modulos.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
+    <ClInclude Include="..\..\include\algorithm\math\polynom_mod.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
     <ClInclude Include="..\..\include\algorithm\math\ranges.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
