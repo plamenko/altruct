@@ -1,4 +1,5 @@
-﻿#include "structure/math/polynom.h"
+﻿#include "algorithm/math/fft.h"
+#include "structure/math/polynom.h"
 #include "structure/math/modulo.h"
 
 #include "gtest/gtest.h"
@@ -12,6 +13,20 @@ public:
 	A(double v) : v(v) {}
 	A(int v) : v(v) {}
 	bool operator == (const A& rhs) const { return v == rhs.v; }
+};
+
+typedef modulo<int, 1012924417> mod;
+template<>
+struct altruct::math::polynom_mul<mod> {
+	static int threshold() { return 17000; }
+	static void impl(polynom<mod> &pr, const polynom<mod> &p1, const polynom<mod> &p2, int lr = -1) {
+		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
+		// We can do FFT because of a suitable modulus; 198 ^ (1 << 21) == 1 (mod 1012924417)
+		// For a general modulus, we would need to compute several convolutions,
+		// each with a suitable modulus, and then combine the results with CRT.
+		pr.c = convolution(p1.c.cbegin(), p1.c.cend(), p2.c.cbegin(), p2.c.cend(), mod(198), 1 << 21);
+		pr.c.resize(lr + 1);
+	}
 };
 
 TEST(polynom_test, constructor) {
@@ -297,9 +312,6 @@ TEST(polynom_test, mul) {
 }
 
 TEST(polynom_test, mul_size) {
-	typedef modulo<int, 1012924417> mod;
-	polynom<mod>::FFT_ROOT = 198;
-	polynom<mod>::FFT_ORDER = 1 << 21;
 	polynom<mod> p; for (int l = 100; l >= 0; l--) p[l] = mod(l) * (l - 1) / 2;
 	polynom<mod> q = p * p;
 	polynom<mod> q_long; polynom<mod>::mul_long(q_long, p, p);
@@ -310,9 +322,9 @@ TEST(polynom_test, mul_size) {
 	EXPECT_EQ(q, q_kar);
 	polynom<mod> q_kar_inplace = p; polynom<mod>::mul_karatsuba(q_kar_inplace, q_kar_inplace, q_kar_inplace);
 	EXPECT_EQ(q, q_kar_inplace);
-	polynom<mod> q_fft; polynom<mod>::mul_fft(q_fft, p, p);
+	polynom<mod> q_fft; polynom_mul<mod>::impl(q_fft, p, p);
 	EXPECT_EQ(q, q_fft);
-	polynom<mod> q_fft_inplace = p; polynom<mod>::mul_fft(q_fft_inplace, q_fft_inplace, q_fft_inplace);
+	polynom<mod> q_fft_inplace = p; polynom_mul<mod>::impl(q_fft_inplace, q_fft_inplace, q_fft_inplace);
 	EXPECT_EQ(q, q_fft_inplace);
 	polynom<mod> q_150(q.c.begin(), q.c.begin() + 150 + 1);
 	polynom<mod> q_long_150; polynom<mod>::mul_long(q_long_150, p, p, 150);
@@ -323,9 +335,9 @@ TEST(polynom_test, mul_size) {
 	EXPECT_EQ(q_150, q_kar_150);
 	polynom<mod> q_kar_inplace_150 = p; polynom<mod>::mul_karatsuba(q_kar_inplace_150, q_kar_inplace_150, q_kar_inplace_150, 150);
 	EXPECT_EQ(q_150, q_kar_inplace_150);
-	polynom<mod> q_fft_150; polynom<mod>::mul_fft(q_fft_150, p, p, 150);
+	polynom<mod> q_fft_150; polynom_mul<mod>::impl(q_fft_150, p, p, 150);
 	EXPECT_EQ(q_150, q_fft_150);
-	polynom<mod> q_fft_inplace_150 = p; polynom<mod>::mul_fft(q_fft_inplace_150, q_fft_inplace_150, q_fft_inplace_150, 150);
+	polynom<mod> q_fft_inplace_150 = p; polynom_mul<mod>::impl(q_fft_inplace_150, q_fft_inplace_150, q_fft_inplace_150, 150);
 	EXPECT_EQ(q_150, q_fft_inplace_150);
 }
 

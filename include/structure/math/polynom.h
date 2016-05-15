@@ -1,12 +1,14 @@
 #pragma once
 
-#include "algorithm/math/fft.h"
-
+#include "algorithm/math/base.h"
+#include <limits>
 #include <type_traits>
 #include <vector>
 
 namespace altruct {
 namespace math {
+
+template<typename T> struct polynom_mul;
 
 template<typename T>
 class polynom {
@@ -17,10 +19,6 @@ public:
 	// Right now we have issues with polynom<moduloX>.
 	static T ZERO_COEFF;
 	
-	// FFT root and order; if set, FFT will be used for multiplication
-	static T FFT_ROOT;
-	static int FFT_ORDER;
-
 	// p(x) = sum{c[i] * x^i}
 	std::vector<T> c;
 
@@ -88,18 +86,6 @@ public:
 		}
 	}
 	
-	// pr = p1 * p2; O(lr log lr)
-	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_fft(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
-		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		int sizeFFT = 1; while (sizeFFT <= lr) sizeFFT *= 2;
-		std::vector<T> temp1(p1.c); temp1.resize(sizeFFT);
-		std::vector<T> temp2(p2.c); temp2.resize(sizeFFT);
-		pr.c.assign(sizeFFT, ZERO_COEFF);
-		fft_cyclic_convolution(&pr.c[0], &temp1[0], &temp2[0], sizeFFT, FFT_ROOT, FFT_ORDER);
-		pr.c.resize(lr + 1, ZERO_COEFF);
-	}
-	
 	// pr = p1 * p2; O(lr ^ 1.59); or more accurate: O(l1 * l2 ^ 0.59) for l1 >= l2
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul_karatsuba(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
@@ -153,9 +139,9 @@ public:
 	static void mul(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
 		auto cost = min<long long>(l1, lr) * min(l2, lr);
-		if (FFT_ORDER > lr && cost > 10000) {
-			mul_fft(pr, p1, p2, lr);
-		} else if (cost > 300) {
+		if (cost > isq(polynom_mul<T>::threshold())) {
+			polynom_mul<T>::impl(pr, p1, p2, lr);
+		} else if (cost > isq(17)) {
 			mul_karatsuba(pr, p1, p2, lr);
 		} else {
 			mul_long(pr, p1, p2, lr);
@@ -275,9 +261,13 @@ public:
 	}
 };
 
+template<typename T>
+struct polynom_mul {
+	static int threshold() { return std::numeric_limits<int>::max(); }
+	static void impl(polynom<T> &pr, const polynom<T> &p1, const polynom<T> &p2, int lr = -1) { }
+};
+
 template<typename T> T polynom<T>::ZERO_COEFF = 0;
-template<typename T> T polynom<T>::FFT_ROOT = 0;
-template<typename T> int polynom<T>::FFT_ORDER = 0;
 
 template<typename T>
 struct identityT<polynom<T>> {

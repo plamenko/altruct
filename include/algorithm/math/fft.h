@@ -1,6 +1,8 @@
 #pragma once
 
 #include "base.h"
+#include <iterator>
+#include <vector>
 
 namespace altruct {
 namespace math {
@@ -107,6 +109,27 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const T& roo
 	for (int i = 0; i < size; i++) {
 		dataR[i] *= ni;
 	}
+}
+
+/**
+ * FFT Ordinary Convolution of two sequences
+ *
+ * @param u_begin, u_end - iterators of sequence u; u_size = u_end - u_begin
+ * @param v_begin, v_end - iterators of sequence v; v_size = v_end - v_begin
+ * @param root_base - a principal k-th root of unity in the ring T
+ * @param root_order - order k of the root, must be a multiple of 2 not less than size
+ * @return - result, array of length size = u_size + v_size - 1
+ */
+template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+std::vector<T> convolution(It u_begin, It u_end, It v_begin, It v_end, const T& root_base, int root_order) {
+	T e0 = zeroT<T>::of(root_base);
+	std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
+	int n = (int)(u.size() + v.size() - 1);
+	int l = 1; while (l < n) l *= 2;
+	r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
+	fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
+	r.resize(n);
+	return r;
 }
 
 } // math
