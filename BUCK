@@ -1,7 +1,5 @@
 HEADERS = subdir_glob([
-    #('include', '**/*.h'),
-    ('include', '**/base.h'),
-    ('include', '**/modulo.h'),
+    ('include', '**/*.h'),
   ],
   excludes = [
     'include/concurrency/concurrency.h',
@@ -11,9 +9,7 @@ HEADERS = subdir_glob([
 cxx_library(
   name = 'altruct_lib',
   srcs = glob([
-    #'lib/**/*.cpp',
-    'lib/**/base.cpp',
-    'lib/**/modulo.cpp',
+    'lib/**/*.cpp',
   ],
   excludes=[
   ]),
@@ -23,9 +19,7 @@ cxx_library(
 cxx_test(
   name = 'altruct_tests',
   srcs = glob([
-    #'test/**/*.cpp',
-    'test/**/base_test.cpp',
-    'test/**/modulo_test.cpp',
+    'test/**/*.cpp',
   ],
   excludes=[
     'test/concurrency/concurrency_test.cpp'

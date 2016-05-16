@@ -32,14 +32,15 @@ struct quadratic_members<T, ID, true> {
  */
 template<typename T, int ID, bool STATIC = true>
 class quadratic : public quadratic_members<T, ID, STATIC> {
+	typedef quadratic_members<T, ID, STATIC> my_quadratic_members;
 public:
 	T a, b;
 
 	// construct from int, but only if T is not integral to avoid constructor clashing
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
-	quadratic(int a) : a(a), b(0), quadratic_members(0) {}
-	quadratic(const T& a = 0, const T& b = 0, const T& D = 0) : a(a), b(b), quadratic_members(D) {}
-	quadratic(const quadratic& rhs) : a(rhs.a), b(rhs.b), quadratic_members(rhs.D) {}
+	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
+	quadratic(int a) : a(a), b(0), my_quadratic_members(0) {}
+	quadratic(const T& a = 0, const T& b = 0, const T& D = 0) : a(a), b(b), my_quadratic_members(D) {}
+	quadratic(const quadratic& rhs) : a(rhs.a), b(rhs.b), my_quadratic_members(rhs.D) {}
 
 	bool operator == (const quadratic& rhs) const { return (a == rhs.a && b == rhs.b); }
 	bool operator != (const quadratic& rhs) const { return (a != rhs.a || b != rhs.b); }
@@ -50,7 +51,7 @@ public:
 	
 	quadratic  operator +  (const quadratic& rhs) const { quadratic t(*this); t += rhs; return t; }
 	quadratic  operator -  (const quadratic& rhs) const { quadratic t(*this); t -= rhs; return t; }
-	quadratic  operator -  ()                     const { quadratic t(-a, -b, D);          return t; }
+	quadratic  operator -  ()                     const { quadratic t(-a, -b, this->D); return t; }
 	quadratic  operator *  (const quadratic& rhs) const { quadratic t(*this); t *= rhs; return t; }
 	quadratic  operator /  (const quadratic& rhs) const { quadratic t(*this); t /= rhs; return t; }
 	quadratic  operator %  (const quadratic& rhs) const { quadratic t(*this); t %= rhs; return t; }
@@ -60,15 +61,15 @@ public:
 	
 	quadratic& operator += (const quadratic& rhs) { a += rhs.a; b += rhs.b; return *this; }
 	quadratic& operator -= (const quadratic& rhs) { a -= rhs.a; b -= rhs.b; return *this; }
-	quadratic& operator *= (const quadratic& rhs) { return *this = quadratic(a * rhs.a + b * rhs.b * D, a * rhs.b + b * rhs.a, D); }
+	quadratic& operator *= (const quadratic& rhs) { return *this = quadratic(a * rhs.a + b * rhs.b * this->D, a * rhs.b + b * rhs.a, this->D); }
 	quadratic& operator /= (const quadratic& rhs) { return *this = *this * rhs.conjugate() / rhs.norm(); }
 	quadratic& operator %= (const quadratic& rhs) { return *this = *this - rhs * (*this / rhs); }
 	
 	quadratic& operator *= (const T& rhs) { a *= rhs; b *= rhs; return *this; }
 	quadratic& operator /= (const T& rhs) { a /= rhs; b /= rhs; return *this; }
 
-	quadratic conjugate() const { return quadratic(a, -b, D); }
-	T norm() const { return a * a - b * b * D; }
+	quadratic conjugate() const { return quadratic(a, -b, this->D); }
+	T norm() const { return a * a - b * b * this->D; }
 };
 
 template<typename T>

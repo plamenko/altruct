@@ -25,7 +25,7 @@ TEST(vectorNd_test, constructor) {
 	vect5 v5(7.5);
 	EXPECT_EQ(5, v5.size());
 	EXPECT_EQ((array<double, 5>{{ 7.5, 7.5, 7.5, 7.5, 7.5 }}), v5.a);
-	vect4 v6({ { 1, 2, 3, 4 } });
+	vect4 v6(vect4{ 1, 2, 3, 4 });
 	EXPECT_EQ(4, v6.size());
 	EXPECT_EQ((array<int, 4>{{ 1, 2, 3, 4 }}), v6.a);
 	vect4 v7(array<int, 4>{{ 1, 2, 3, 4 }});

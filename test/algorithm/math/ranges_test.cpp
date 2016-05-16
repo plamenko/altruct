@@ -37,7 +37,7 @@ TEST(ranges_test, invert) {
 TEST(ranges_test, negate) {
 	vector<modx> table(16);
 	range(table.begin(), table.end(), modx(1, P));
-	negate(table.begin(), table.end());
+	altruct::math::negate(table.begin(), table.end());
 	EXPECT_EQ((vector<modx>{0, 1000000006, 1000000005, 1000000004, 1000000003, 1000000002, 1000000001, 1000000000, 999999999, 999999998, 999999997, 999999996, 999999995, 999999994, 999999993, 999999992}), table);
 }
 

@@ -10,7 +10,7 @@ double round(double val, double mul) {
 	return round(val / mul) * mul;
 }
 
-vector<double>& round(vector<double>& vz, double mul) {
+vector<double> round(vector<double> vz, double mul) {
 	for (auto &z : vz) {
 		z = round(z, mul);
 	}

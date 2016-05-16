@@ -31,7 +31,7 @@ void fft(T *data, int size, T root) {
 	// reorder: swap(a[j], a[bitrev(j)])
 	for (int i = 0, j = 1; j < size - 1; j++) {
 		for (int k = size / 2; (i ^= k) < k; k /= 2);
-		if (j < i) swap(data[i], data[j]);
+		if (j < i) std::swap(data[i], data[j]);
 	}
 }
 

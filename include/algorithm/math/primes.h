@@ -190,7 +190,7 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, const int *pf);
  * @param vn - integers whose product to factor
  * @param pf - array of prime factors for integers up to `n` inclusive
  */
-void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, const int *pf);
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> vn, const int *pf);
 
 /**
  * Calculates divisors from a factorization.

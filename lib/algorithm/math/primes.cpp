@@ -151,7 +151,7 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, const int *pf) 
 	}
 }
 
-void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> &vn, const int *pf) {
+void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> vn, const int *pf) {
 	for (auto &n : vn) {
 		while (n > 1) {
 			int p = pf[n], e = 0;

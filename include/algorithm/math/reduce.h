@@ -30,7 +30,7 @@ T reduce(const C& c, const F& f, T id) {
  * @param c - container to apply sum over
  * @param id - identity element, default 0
  */
-template<typename C, typename T = C::value_type>
+template<typename C, typename T = typename C::value_type>
 T reduce_sum(const C& c, T id = T(0)) {
 	return reduce(c, [](const T& r, const T& e) { return r + e;  }, id);
 }
@@ -41,7 +41,7 @@ T reduce_sum(const C& c, T id = T(0)) {
  * @param c - container to apply product over
  * @param id - identity element, default 1
  */
-template<typename C, typename T = C::value_type>
+template<typename C, typename T = typename C::value_type>
 T reduce_product(const C& c, T id = T(1)) {
 	return reduce(c, [](const T& r, const T& e) { return r * e;  }, id);
 }
@@ -52,7 +52,7 @@ T reduce_product(const C& c, T id = T(1)) {
  * @param c - container to apply minimum over
  * @param id - identity element, default +infinity
  */
-template<typename C, typename T = C::value_type>
+template<typename C, typename T = typename C::value_type>
 T reduce_min(const C& c, T id = +std::numeric_limits<T>::max()) {
 	return reduce(c, [](const T& r, const T& e) { return e < r ? e : r; }, id);
 }
@@ -63,7 +63,7 @@ T reduce_min(const C& c, T id = +std::numeric_limits<T>::max()) {
  * @param c - container to apply maximum over
  * @param id - identity element, default -infinity
  */
-template<typename C, typename T = C::value_type>
+template<typename C, typename T = typename C::value_type>
 T reduce_max(const C& c, T id = -std::numeric_limits<T>::max()) {
 	return reduce(c, [](const T& r, const T& e) { return r < e ? e : r; }, id);
 }
@@ -74,7 +74,7 @@ T reduce_max(const C& c, T id = -std::numeric_limits<T>::max()) {
  * @param c - a sorted container to apply mex over
  * @param id - identity element, default 0
  */
-template<typename C, typename T = C::value_type>
+template<typename C, typename T = typename C::value_type>
 T reduce_mex(const C& c, T id = 0) {
 	return reduce(c, [](const T& r, const T& e) { return r < e ? r : r + 1; }, id);
 }

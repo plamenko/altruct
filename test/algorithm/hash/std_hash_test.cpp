@@ -9,11 +9,20 @@
 using namespace std;
 
 TEST(std_hash_test, hash_combine) {
+	// std::hash is implementation-dependent
+	// so the best we can do is to check that
+	// the hash changes
 	size_t seed = 0x1234;
-	hash_combine(seed, 0x5678);
-	EXPECT_EQ(0xccf8a653c6a270baULL, seed);
+	size_t seed0 = seed;
+	hash_combine(seed, uint64_t(0x5678));
+	EXPECT_NE(seed0, seed);
+	EXPECT_NE(0, seed);
+	EXPECT_NE(0x5678, seed);
+	size_t seed1 = seed;
 	hash_combine(seed, 0xaaaaaaaaaaaaaaaa);
-	EXPECT_EQ(0x8e390c1b98f4ba31ULL, seed);
+	EXPECT_NE(seed1, seed);
+	EXPECT_NE(0, seed);
+	EXPECT_NE(0xaaaaaaaaaaaaaaaa, seed);
 }
 
 TEST(std_hash_test, tuple_hash) {

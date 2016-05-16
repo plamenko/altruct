@@ -24,9 +24,10 @@ public:
 	template<typename It> series(It begin, It end) : p(begin, end) { p.reserve(N); }
 	series(const T& c0) : p(c0) { p.reserve(N); }
 	// construct from int, but only if T is not integral to avoid constructor clashing
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
+	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
 	series(int c0) : p(c0) { p.reserve(N); } // to allow constructing from 0 and 1
 	series(std::initializer_list<T> list) : p(list) { p.reserve(N); }
+	series& operator = (const series& rhs) { p = rhs.p; return *this; }
 
 	series& swap(series& rhs) { p.swap(rhs.p); return *this; }
 
@@ -69,7 +70,7 @@ public:
 		if (p[0] != identityT<T>::of(p[0])) return (*this / p[0]).inverse() / p[0];
 		polynom<T> r{1}, t;
 		for (int l = 1; l < N * 2; l *= 2) {
-			int m = min(N - 1, l), k = l / 2 + 1;
+			int m = std::min(N - 1, l), k = l / 2 + 1;
 			t.c.assign(p.c.begin(), p.c.begin() + m + 1);
 			polynom<T>::mul(t, t, r, l + 1);
 			t.c.erase(t.c.begin(), t.c.begin() + k);

@@ -20,7 +20,7 @@ public:
 	vectorNd(const vectorNd& rhs) : a(rhs.a) { }
 	vectorNd(const T& a0) { a.fill(a0); }
 	// construct from int, but only if T is not integral to avoid constructor clashing
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
+	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
 	vectorNd(int a0) { a.fill(a0); } // to allow constructing from 0 and 1
 	vectorNd(std::initializer_list<T> list) { assign(list.begin()); }
 

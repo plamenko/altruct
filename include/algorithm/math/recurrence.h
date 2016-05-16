@@ -23,7 +23,7 @@ A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init,
 	T e0 = zeroT<T>::of(f_coeff[0]), e1 = identityT<T>::of(f_coeff[0]);
 	// characteristic polynomial: p(x) = 0
 	int L = (int) f_coeff.size();
-	polynom<T> p(vector<T>(L + 1));
+	polynom<T> p(std::vector<T>(L + 1));
 	p[L] = 1;
 	for (int i = 0; i < L; i++)
 		p[L - 1 - i] = -f_coeff[i];

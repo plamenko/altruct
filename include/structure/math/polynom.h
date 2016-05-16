@@ -30,9 +30,10 @@ public:
 	template<typename It> polynom(It begin, It end) : c(begin, end) {}
 	polynom(const T& c0) { c.push_back(c0); }
 	// construct from int, but only if T is not integral to avoid constructor clashing
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
+	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
 	polynom(int c0) { c.push_back(c0); } // to allow constructing from 0 and 1
 	polynom(std::initializer_list<T> list) : c(list) {}
+	polynom& operator = (const polynom& rhs) { c = rhs.c; return *this; }
 
 	polynom& swap(polynom &rhs) { c.swap(rhs.c); return *this; }
 	polynom& shrink_to_fit() { c.resize(deg() + 1, ZERO_COEFF); return *this; }
@@ -48,7 +49,7 @@ public:
 
 	// compares p1 and p2; O(l1 + l2)
 	static int cmp(const polynom &p1, const polynom &p2) {
-		int l1 = p1.deg(), l2 = p2.deg(); int l = max(l1, l2);
+		int l1 = p1.deg(), l2 = p2.deg(); int l = std::max(l1, l2);
 		for (int i = l; i >= 0; i--) {
 			if (p1[i] < p2[i]) return -1;
 			if (p2[i] < p1[i]) return +1;
@@ -69,7 +70,7 @@ public:
 	// pr = p1 + p2; O(l1 + l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void add(polynom &pr, const polynom &p1, const polynom &p2) {
-		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
+		int l1 = p1.deg(), l2 = p2.deg(); int lr = std::max(l1, l2);
 		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++) {
 			pr[i] = p1[i] + p2[i];
@@ -79,7 +80,7 @@ public:
 	// pr = p1 - p2; O(l1 + l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void sub(polynom &pr, const polynom &p1, const polynom &p2) {
-		int l1 = p1.deg(), l2 = p2.deg(); int lr = max(l1, l2);
+		int l1 = p1.deg(), l2 = p2.deg(); int lr = std::max(l1, l2);
 		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = 0; i <= lr; i++) {
 			pr[i] = p1[i] - p2[i];
@@ -91,7 +92,7 @@ public:
 	static void mul_karatsuba(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
 		if (l1 < l2) return mul_karatsuba(pr, p2, p1, lr); // ensure l1 >= l2
-		l1 = min(l1, lr), l2 = min(l2, lr); int k = l1 / 2 + 1;
+		l1 = std::min(l1, lr), l2 = std::min(l2, lr); int k = l1 / 2 + 1;
 		if (l2 == 0) {
 			pr.c.resize(lr + 1, ZERO_COEFF);
 			for (int i = lr; i > l1; i--) pr[i] = ZERO_COEFF;
@@ -100,7 +101,7 @@ public:
 			polynom lo(p1.c.begin(), p1.c.begin() + k);
 			polynom hi(p1.c.begin() + k, p1.c.begin() + l1 + 1);
 			mul(lo, lo, p2, l2 + k - 1);
-			mul(hi, hi, p2, min(lr, l2 + l1) - k);
+			mul(hi, hi, p2, std::min(lr, l2 + l1) - k);
 			pr.c.assign(lr + 1, ZERO_COEFF);
 			for (int i = lo.deg(); i >= 0; i--) pr[i] = lo[i];
 			for (int i = hi.deg(); i >= 0; i--) pr[k + i] += hi[i];
@@ -111,14 +112,14 @@ public:
 			polynom hi2(p2.c.begin() + k, p2.c.begin() + l2 + 1);
 			polynom m0; mul(m0, lo1, lo2);
 			lo1 += hi1; lo2 += hi2;
-			polynom m1; mul(m1, lo1, lo2, min(lr - k, l1));
-			polynom m2; mul(m2, hi1, hi2, min(lr - k, l2));
+			polynom m1; mul(m1, lo1, lo2, std::min(lr - k, l1));
+			polynom m2; mul(m2, hi1, hi2, std::min(lr - k, l2));
 			pr.c.assign(lr + 1, ZERO_COEFF);
 			for (int i = m0.deg(); i >= 0; i--) pr[i] = m0[i];
-			for (int i = min(lr - k, m0.deg()); i >= 0; i--) pr[k + i] -= m0[i];
-			for (int i = min(lr - k, m1.deg()); i >= 0; i--) pr[k + i] += m1[i];
-			for (int i = min(lr - k, m2.deg()); i >= 0; i--) pr[k + i] -= m2[i];
-			for (int i = min(lr - k - k, m2.deg()); i >= 0; i--) pr[k + k + i] += m2[i];
+			for (int i = std::min(lr - k, m0.deg()); i >= 0; i--) pr[k + i] -= m0[i];
+			for (int i = std::min(lr - k, m1.deg()); i >= 0; i--) pr[k + i] += m1[i];
+			for (int i = std::min(lr - k, m2.deg()); i >= 0; i--) pr[k + i] -= m2[i];
+			for (int i = std::min(lr - k - k, m2.deg()); i >= 0; i--) pr[k + k + i] += m2[i];
 		}
 	}
 
@@ -129,7 +130,7 @@ public:
 		pr.c.resize(lr + 1, ZERO_COEFF);
 		for (int i = lr; i >= 0; i--) {
 			T r = ZERO_COEFF;
-			for (int j = min(i, l1); j >= max(0, i - l2); j--)
+			for (int j = std::min(i, l1); j >= std::max(0, i - l2); j--)
 				r += p1[j] * p2[i - j];
 			pr[i] = r;
 		}
@@ -138,7 +139,7 @@ public:
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void mul(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		auto cost = min<long long>(l1, lr) * min(l2, lr);
+		auto cost = std::min<long long>(l1, lr) * std::min(l2, lr);
 		if (cost > isq(polynom_mul<T>::threshold())) {
 			polynom_mul<T>::impl(pr, p1, p2, lr);
 		} else if (cost > isq(17)) {

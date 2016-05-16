@@ -156,13 +156,13 @@ TEST(modulo_test, long_long) {
 }
 
 template<typename T, typename F>
-void modulo_test_perf_impl(T a, T b, int n, char *msg, const F& func) {
+void modulo_test_perf_impl(T a, T b, int n, const char *msg, const F& func) {
 	double clocks_per_sec = 1000;
 	auto T0 = clock();
 	for (int i = 0; i < n; i++) func(a, b);
 	double dT = (clock() - T0) / clocks_per_sec;
 	double Mops = n / dT / 1000000;
-	printf("%s: %0.2lf Mops  %0.2lf s\n", msg, Mops, dT, a);
+	printf("%s: %0.2lf Mops  %0.2lf s\n", msg, Mops, dT);
 }
 
 TEST(modulo_test, perf) {

@@ -104,18 +104,18 @@ struct modulo_members<T, ID, true> {
  */
 template<typename T, int ID, bool STATIC = true>
 class modulo : public modulo_members<T, ID, STATIC> {
+	typedef modulo_members<T, ID, STATIC> my_modulo_members;
 public:
 	T v;
 
 	// construct from int, but only if T is not integral to avoid constructor clashing
-	template <typename = std::enable_if_t<!std::is_integral<T>::value>>
-	modulo(int v) : v(v), modulo_members(1) { if (STATIC) normalize(); }
-	modulo(const T& v = 0) : v(v), modulo_members(1) { if (STATIC) normalize(); }
-	modulo(const T& v, const T& M) : v(v), modulo_members(M) { normalize(); }
-	modulo(const modulo& rhs) : v(rhs.v), modulo_members(rhs.M) {}
-	modulo make(const T& v) const { return modulo(v, M); }
+	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
+	modulo(int v) : v(v), my_modulo_members(1) { if (STATIC) normalize(); }
+	modulo(const T& v = 0) : v(v), my_modulo_members(1) { if (STATIC) normalize(); }
+	modulo(const T& v, const T& M) : v(v), my_modulo_members(M) { normalize(); }
+	modulo(const modulo& rhs) : v(rhs.v), my_modulo_members(rhs.M) {}
 
-	void normalize() { modulo_normalize(&v, M); }
+	void normalize() { modulo_normalize(&v, this->M); }
 	
 	bool operator == (const modulo &rhs) const { return (v == rhs.v); }
 	bool operator != (const modulo &rhs) const { return (v != rhs.v); }
@@ -126,15 +126,15 @@ public:
 	
 	modulo  operator +  (const modulo &rhs) const { modulo t(*this); t += rhs; return t; }
 	modulo  operator -  (const modulo &rhs) const { modulo t(*this); t -= rhs; return t; }
-	modulo  operator -  ()                  const { modulo t(-v, M);           return t; }
+	modulo  operator -  ()                  const { modulo t(-v, this->M);     return t; }
 	modulo  operator *  (const modulo &rhs) const { modulo t(*this); t *= rhs; return t; }
 	modulo  operator /  (const modulo &rhs) const { modulo t(*this); t /= rhs; return t; }
 	modulo  operator %  (const modulo &rhs) const { modulo t(*this); t %= rhs; return t; }
 
 	modulo& operator += (const modulo &rhs) { v += rhs.v;     normalize(); return *this; }
 	modulo& operator -= (const modulo &rhs) { v -= rhs.v;     normalize(); return *this; }
-	modulo& operator *= (const modulo &rhs) { v = modulo_multiply(v, rhs.v, M); return *this; }
-	modulo& operator /= (const modulo &rhs) { v = modulo_divide(v, rhs.v, M); return *this; }
+	modulo& operator *= (const modulo &rhs) { v = modulo_multiply(v, rhs.v, this->M); return *this; }
+	modulo& operator /= (const modulo &rhs) { v = modulo_divide(v, rhs.v, this->M); return *this; }
 	modulo& operator %= (const modulo &rhs) { v %= rhs.v;     normalize(); return *this; }
 };
 
