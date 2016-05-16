@@ -16,7 +16,7 @@ namespace math {
 template<int ID>
 struct altruct::math::polynom_mul<modulo<int, ID, true>> {
 	typedef modulo<int, ID, true> mod;
-	static int threshold() { return 17000; /* karatsuba is better for smaller size */ }
+	static int threshold() { return 9000; /* karatsuba is better for smaller size */ }
 	static void impl(polynom<mod> &pr, const polynom<mod> &p1, const polynom<mod> &p2, int lr = -1) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
 		// separate convolutions
