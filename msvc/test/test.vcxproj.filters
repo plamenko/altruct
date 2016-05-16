@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\structure\math\polymod_test .cpp">
-      <Filter>structure\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
@@ -90,6 +87,9 @@
     </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\ranges_test.cpp">
       <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\polymod_test.cpp">
+      <Filter>structure\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ TEST(std_hash_test, hash_combine) {
 	// the hash changes
 	size_t seed = 0x1234;
 	size_t seed0 = seed;
-	hash_combine(seed, uint64_t(0x5678));
+	hash_combine(seed, 0x5678);
 	EXPECT_NE(seed0, seed);
 	EXPECT_NE(0, seed);
 	EXPECT_NE(0x5678, seed);
