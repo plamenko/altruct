@@ -1,0 +1,16 @@
+# Third-party libraries that are not part of this repo
+third-party/
+
+# Top-level files and directories used by buck.
+/buck-cache/
+/buck-out/
+/.buckconfig.local
+/.buckconfig.local.header
+/.buckjavaargs.local
+/.buckd
+/.nobuckcheck
+/.bucktestselectors
+/.bucklogging.local.properties
+
+# Metadata files created by Mac OS.
+.DS_Store

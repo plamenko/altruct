@@ -1,0 +1,26 @@
+[cxx]
+  gtest_dep = //third-party/googletest/googletest:googletest
+  cppflags = \
+      -stdlib=libc++ \
+      -std=gnu14 \
+      -pthread \
+      -O0 \
+      -g3
+  cflags = \
+      -stdlib=libc++ \
+      -std=gnu14 \
+      -pthread \
+      -O0 \
+      -g3
+  cxxppflags = \
+      -stdlib=libc++ \
+      -std=gnu++14 \
+      -pthread \
+      -O0 \
+      -g3
+  cxxflags = \
+      -stdlib=libc++ \
+      -std=gnu++14 \
+      -pthread \
+      -O0 \
+      -g3
