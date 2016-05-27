@@ -158,5 +158,8 @@
     <ClInclude Include="..\..\include\algorithm\math\gmp_helpers.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\nimber.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
