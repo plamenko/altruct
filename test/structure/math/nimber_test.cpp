@@ -152,6 +152,26 @@ TEST(nimber_test, mul_perf) {
 		}
 	}
 	printf("m2: %d ms  %d\n", clock() - T2, m2);
+}
 
-	for (;;);
+TEST(nimber_test, nim8) {
+	return; // skip slow test
+	typedef nimber<int8_t> nim8;
+	for (int a = 0; a < 256; a++) {
+		for (int b = 0; b < 256; b++) {
+			nim m0 = nim(a) * nim(b);
+			nim8 m1 = nim8(a) * nim8(b);
+			EXPECT_EQ(m0.v, (int)m1.v) << "a: " << a << ", b: " << b;
+			nim8 m2 = nim8::mul2(nim8(a), nim8(b));
+			EXPECT_EQ(m0.v, (int)m2.v) << "a: " << a << ", b: " << b;
+			nim8 d1 = nim8(a) / nim8(b);
+			if (b != 0) EXPECT_EQ(nim8(a), d1 * nim8(b)) << "a: " << a << ", b: " << b;
+			nim8 d2 = nim8(b) / nim8(a);
+			if (a != 0) EXPECT_EQ(nim8(b), d2 * nim8(a)) << "a: " << a << ", b: " << b;
+		}
+		nim8 ai = nim8(a).inverse();
+		if (a != 0) EXPECT_EQ(nim8(1), ai * nim8(a)) << "a: " << a;
+		nim8 aq = nim8(a).sqrt();
+		EXPECT_EQ(nim8(a), aq * aq) << "a: " << a;
+	}
 }
