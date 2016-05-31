@@ -120,17 +120,17 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 	T e0 = zeroT<T>::of(a), e1 = identityT<T>::of(a);
 	T r, q, g = a, h = b;
 	T xo = e0, xn = e1;
-//	T yo = e1, yn = e0;
+	T yo = e1, yn = e0;
 	while (h != e0) {
 		q = g / h;
 		r = g  - q * h;  g  = h;  h  = r;
 		r = xn - q * xo; xn = xo; xo = r;
-//		r = yn - q * yo; yn = yo; yo = r;
+		r = yn - q * yo; yn = yo; yo = r;
 //		T gn = a * xn + b * yn;
 	}
 	if (x) *x = xn;
-//	if (y) *y = yn;
-	if (y) *y = (b != e0) ? (g - a * xn) / b : e0;
+	if (y) *y = yn;
+//	if (y) *y = (b != e0) ? (g - a * xn) / b : e0;
 	return g;
 }
 
