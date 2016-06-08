@@ -57,8 +57,21 @@ TEST(sums_test, sum_sqrt) {
 	auto sf2 = [](int k, int m) { return sum_pow<int>(2, k) * m * m; };
 	vector<int> ve2, va2;
 	for (int n = 0; n < 100; n++) {
-		ve1.push_back(sum<int>([&](int k) { return f2(k, n / k); }, 1, n));
-		va1.push_back(sum_sqrt2<int>(sf2, n));
+		ve2.push_back(sum<int>([&](int k) { return f2(k, n / k); }, 1, n));
+		va2.push_back(sum_sqrt2<int>(sf2, n));
 	}
-	EXPECT_EQ(ve1, va1);
+	EXPECT_EQ(ve2, va2);
+	
+	// Sum[(k+3)*[n/k+2]^2, {k,1,n}]
+	auto f3 = [](int k) { return k + 3; };
+	auto sf3 = [](int k) { return sum_pow<int>(1, k) + 3 * k; };
+	auto g3 = [](int m) { return m + 2; };
+	vector<int> ve3, va3a, va3b;
+	for (int n = 0; n < 100; n++) {
+		ve3.push_back(sum<int>([&](int k) { return f3(k) * g3(n / k); }, 1, n));
+		va3a.push_back(sum_sqrt2m<int>(sf3, g3, n));
+		va3b.push_back(sum_sqrt2m<int>(f3, sf3, g3, n, 0));
+	}
+	EXPECT_EQ(ve3, va3a);
+	EXPECT_EQ(ve3, va3b);
 }
