@@ -73,7 +73,17 @@ template<typename I>
 I modulo_divide_int(I x, I y, I M) {
 	modulo_normalize_int(&x, M);
 	modulo_normalize_int(&y, M);
-	return (y != 0 && x % y == 0) ? x / y : modulo_multiply(x, modulo_inverse(y, M), M);
+	if (y != 0 && x % y == 0) return x / y; // fast path if y divides x
+	I yi; I g = gcd_ex(y, M, &yi);
+	if (g != 1) { // uh oh, y and M are not coprime, try common gcd
+		g = gcd(x, g);
+		x /= g; y /= g;
+		gcd_ex(y, M / g, &yi); // k
+		// if (k != 1), there is no result, or more precisely,
+		// the result will be `k` times bigger than it should.
+		modulo_normalize_int(&yi, M / g);
+	}
+	return modulo_multiply(x, yi, M);
 }
 inline long long modulo_divide(long long x, long long y, long long M) { return modulo_divide_int(x, y, M); }
 inline int modulo_divide(int x, int y, int M) { return modulo_divide_int(x, y, M); }

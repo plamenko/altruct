@@ -8,6 +8,7 @@ using namespace std;
 using namespace altruct::math;
 
 typedef modulo<int, 1000000007> mod;
+typedef moduloX<int> modx;
 
 TEST(modulo_test, constructor) {
 	mod m1;
@@ -114,6 +115,29 @@ TEST(modulo_test, operators_inplace_self) {
 	EXPECT_EQ(mod(1), mr);
 	mr = m1; mr %= mr;
 	EXPECT_EQ(mod(0), mr);
+}
+
+TEST(modulo_test, division) {
+	// 18 directly divisible by 6
+	EXPECT_EQ(modx(3, 1000), modx(18, 1000) / modx(6, 1000));
+	EXPECT_EQ(modx(18, 1000), modx(3, 1000) * modx(6, 1000));
+
+	// 7 is invertible modulo 1000
+	EXPECT_EQ(modx(430, 1000), modx(10, 1000) / modx(7, 1000));
+	EXPECT_EQ(modx(10, 1000), modx(430, 1000) * modx(7, 1000));
+
+	// 48 is not invertible modulo 1000,
+	// but after dividing all three (56, 48 and 1000)
+	// by their GCD 8,  48/8=6 is invertible modulo 1000/8=125
+	EXPECT_EQ(modx(147, 1000), modx(56, 1000) / modx(48, 1000));
+	EXPECT_EQ(modx(56, 1000), modx(147, 1000) * modx(48, 1000));
+
+	// 48 is not invertible modulo 1000,
+	// and even after dividing all three (28, 48 and 1000)
+	// by their GCD 4,  48/4=12 is still not invertible modulo 1000/4=250
+	// hence the result is g times bigger where g = gcd(12, 250) = 2
+	EXPECT_EQ(modx(147, 1000), modx(28, 1000) / modx(48, 1000));
+	EXPECT_EQ(modx(28*2, 1000), modx(147, 1000) * modx(48, 1000));
 }
 
 TEST(modulo_test, identity) {
