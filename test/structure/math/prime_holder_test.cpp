@@ -67,4 +67,7 @@ TEST(prime_holder_test, other) {
 	EXPECT_EQ((vector<int>{0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, -1, 1, 1, 0, -1, 0, -1, 0, 1, 1, -1, 0, 0, 1, 0, 0, -1}), prim.mu());
 	EXPECT_EQ(0, prim.mu(0));
 	EXPECT_EQ(-1, prim.mu(29));
+	EXPECT_EQ((vector<int>{0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2}), prim.mertens());
+	EXPECT_EQ(0, prim.mertens(0));
+	EXPECT_EQ(-2, prim.mertens(29));
 }

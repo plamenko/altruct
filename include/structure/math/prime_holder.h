@@ -1,6 +1,7 @@
 #pragma once
 
 #include "algorithm/math/primes.h"
+#include "algorithm/math/ranges.h"
 
 #include <algorithm>
 #include <vector>
@@ -20,6 +21,7 @@ private:
 	std::vector<int> vpi;  // prime pi
 	std::vector<int> vphi; // euler phi (totient)
 	std::vector<int> vmu;  // moebius mu
+	std::vector<int> vmer; // mertens
 
 	void ensure_pq();
 	std::vector<int>& ensure(std::vector<int> &v, void(*f)(int*, int, const int*, int));
@@ -36,6 +38,7 @@ public:
 	std::vector<int>& pi() { return ensure(vpi, altruct::math::prime_pi); }
 	std::vector<int>& phi() { return ensure(vphi, altruct::math::euler_phi); }
 	std::vector<int>& mu() { return ensure(vmu, altruct::math::moebius_mu); }
+	std::vector<int>& mertens() { if (vmer.empty()) { vmer = mu(); altruct::math::accumulate(vmer.begin(), vmer.end()); } return vmer; }
 
 	int p(int i) { return p().at(i); }
 	int q(int i) { return q().at(i); }
@@ -43,6 +46,7 @@ public:
 	int pi(int i) { return pi().at(i); }
 	int phi(int i) { return phi().at(i); }
 	int mu(int i) { return mu().at(i); }
+	int mertens(int i) { return mertens().at(i); }
 
 	std::vector<fact_pair> factor_integer(int n);
 	std::vector<fact_pair> factor_integer(std::vector<int> vn);
