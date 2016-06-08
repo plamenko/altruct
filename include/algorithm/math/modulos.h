@@ -230,47 +230,69 @@ std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
 }
 
 /**
- * Factorial of n modulo p
+ * Generates table of factorials modulo p^k up to p^k
  *
- * `(n! / p^e) % p`, where `p^e` is the largest power of `p` dividing `n`.
+ * Note, multiples of `p` are skipped as required by `factorial_mod_pp`.
+ */
+template<typename I>
+std::vector<moduloX<I>> factorial_table(int p, int k = 1) {
+	int pk = powT(p, k);
+	moduloX<I> v(1, pk);
+	std::vector<moduloX<I>> tbl(pk);
+	for (int i = 0; i < pk; i++) {
+		if (i % p) v *= i;
+		tbl[i] = v;
+	}
+	return tbl;
+}
+
+/**
+ * Factorial of n modulo prime power p^k
+ *
+ * `f = (n! / p^e) % p^k`, where `p^e` is the largest power of `p` dividing `n!`.
  * Note, before modulo operation gets applied, all factors `p` are removed.
  *
  * Complexity: O(p + log_p n)
  *
  * @param I - type of the number `n`
- * @param M - modular type of the result, `M::M` is prime `p`.
- * @param n - number to take factorial of
- * @param fact_table - look-up table of `k! % p` for all `k < p`
- * @param e_out - if given, the highest exponent of `p` that divides `n!`
- *                will be stored in it
+ * @param M - modular type of the result, modulus is prime power `p^k`.
+ * @param n - number to take the factorial of
+ * @param fact_table - look-up table of `n! % p^k` up to 'p^k', see `factorial_table`
+ * @return - the pair {f, e}
  */
 template<typename I, typename M>
-M factorial_mod_p(I n, M* fact_table, I *e_out = nullptr) {
-	I e = 0, p = fact_table->M;
-	M r = identityT<M>::of(*fact_table);
+std::pair<M, I> factorial_mod_pp(I n, int p, int k, const M* fact_table) {
+	// tbl[pk] == (p == 2 && k != 2) +1 : -1;
+	bool s = !(p == 2 && k != 2);
+	int pk = powT(p, k);
+	M f = fact_table[0]; I e = 0;
 	while (n > 1) {
-		r *= fact_table[n % p];
+		I q = n / pk, r = n % pk;
+		if (s && (q % 2 != 0)) f = -f;
+		f *= fact_table[r];
 		n /= p;
 		e += n;
-		if (n % 2 == 1) r = -r;
 	}
-	if (e_out) *e_out = e;
-	return r;
+	return{ f, e };
 }
 
 /**
- * Binomial of n modulo p
+ * Binomial of (n, m) modulo prime power p^k
  *
- * Calculated as `n! / k! / (n-k)!`. See `factorial_mod_p`.
+ * Calculated as `n! / m! / (n - m)!`. See `factorial_mod_pp`.
+ * `b = (binomial(n, m) / p^e) % p^k`, where `p^e` is the largest power of `p`.
+ * Note, before modulo operation gets applied, all factors `p` are removed.
+ *
+ * Complexity: O(p + log_p n)
+ *
+ * @return - the pair {b, e}
  */
 template<typename I, typename M>
-M binomial_mod_p(I n, I k, M* fact_table, I *e_out = nullptr) {
-	I en, ek, el;
-	M fn = factorial_mod_p(n, fact_table, &en);
-	M fk = factorial_mod_p(k, fact_table, &ek);
-	M fl = factorial_mod_p(n-k, fact_table, &el);
-	if (e_out) *e_out = en - ek - el;
-	return fn / (fk * fl);
+std::pair<M, I> binomial_mod_pp(I n, I m, int p, int k, const M* fact_table) {
+	auto rn = factorial_mod_pp(n, p, k, fact_table);
+	auto rm = factorial_mod_pp(m, p, k, fact_table);
+	auto ro = factorial_mod_pp(n - m, p, k, fact_table);
+	return{ rn.first / (rm.first * ro.first), rn.second - (rm.second + ro.second) };
 }
 
 } // math
