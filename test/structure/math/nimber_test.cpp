@@ -135,23 +135,23 @@ TEST(nimber_test, mul_perf) {
 	}
 	printf("%d ms\n", clock() - T0);
 
-	int T1 = clock();
+	double T1 = clock();
 	nim m1;
 	for (int a = 0; a <= sz; a++) {
 		for (int b = 0; b <= sz; b++) {
 			m1 = nim(a) * nim(b);
 		}
 	}
-	printf("m1: %d ms  %d\n", clock() - T1, m1);
+	printf("m1: %.2lf s  %d\n", (clock() - T1) / CLOCKS_PER_SEC, m1.v);
 
-	int T2 = clock();
+	double T2 = clock();
 	nim m2;
 	for (int a = 0; a <= sz; a++) {
 		for (int b = 0; b <= sz; b++) {
 			m2 = nim::mul2(nim(a), nim(b));
 		}
 	}
-	printf("m2: %d ms  %d\n", clock() - T2, m2);
+	printf("m2: %.2lf s  %d\n", (clock() - T2) / CLOCKS_PER_SEC, m2.v);
 }
 
 TEST(nimber_test, nim8) {
