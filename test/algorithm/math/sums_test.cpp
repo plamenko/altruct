@@ -75,3 +75,31 @@ TEST(sums_test, sum_sqrt) {
 	EXPECT_EQ(ve3, va3a);
 	EXPECT_EQ(ve3, va3b);
 }
+
+vector<field> calc_sum_phi(int p, int n) {
+	vector<field> v;
+	for (int k = 0; k <= n; k++) {
+		v.push_back(sum_euler_phi<field>(p, k));
+	}
+	return v;
+
+}
+TEST(sums_test, sum_euler_phi) {
+	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_phi(0, 20));
+	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_phi(1, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_phi(2, 20));
+}
+
+vector<field> calc_sum_phi2(int p, int n) {
+	vector<field> v;
+	for (int k = 0; k <= n; k++) {
+		v.push_back(sum_euler_phi2<field>(p, k));
+	}
+	return v;
+
+}
+TEST(sums_test, sum_euler_phi2) {
+	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_phi2(0, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_phi2(1, 20));
+	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_phi2(2, 20));
+}
