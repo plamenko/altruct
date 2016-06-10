@@ -70,11 +70,9 @@ void euler_phi(int *phi, int n, const int *p, int m);
  * Complexity: O(n log log n)
  *
  * @param mu - array to store the result
- * @param n - calculate number of coprimes up to `n` (exclusive)
- * @param p - array of prime numbers up to `n`
- * @param m - number of prime numbers up to `n`
+ * @param n - calculate moebius mu up to `n` (exclusive)
  */
-void moebius_mu(int *mu, int n, const int *p, int m);
+void moebius_mu(int *mu, int n, const int* p = 0, int m = 0);
 
 /**
  * Segmented PrimeQ in range `[b, e)`
@@ -191,6 +189,24 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, int n, const int *pf);
  * @param pf - array of prime factors for integers up to `n` inclusive
  */
 void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> vn, const int *pf);
+
+/**
+ * Moebius transform of `f` in the range [0, n) in `O(n log n)`.
+ */
+template<typename T, typename F>
+std::vector<T> moebius_transform(int n, F f) {
+	T e0 = zeroT<T>::of(f(1));
+	std::vector<int> mu(n); moebius_mu(&mu[0], n);
+	std::vector<T> g(n, e0);
+	for (int d = 1; d < n; d++) {
+		T f_d = f(d);
+		for (int i = d, e = 1; i < n; i += d, e++) {
+			if (mu[e] > 0) g[i] += f_d;
+			if (mu[e] < 0) g[i] -= f_d;
+		}
+	}
+	return g;
+}
 
 /**
  * Calculates divisors from a factorization.

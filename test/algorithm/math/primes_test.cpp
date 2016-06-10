@@ -58,11 +58,8 @@ TEST(primes_test, euler_phi) {
 
 TEST(primes_test, moebius_mu) {
 	int n = 30;
-	vector<int> vp(n);
-	int m = primes(&vp[0], nullptr, n);
-
 	vector<int> vmu(n);
-	moebius_mu(&vmu[0], n, &vp[0], m);
+	moebius_mu(&vmu[0], n);
 	EXPECT_EQ((vector<int> { 0, +1, -1, -1, 0, -1, +1, -1, 0, 0, +1, -1, 0, -1, +1, +1, 0, -1, 0, -1, 0, +1, +1, -1, 0, 0, +1, 0, 0, -1 }), vmu);
 }
 
@@ -252,4 +249,8 @@ TEST(primes_test, integer_digits) {
 	EXPECT_EQ(77, (polynom<int>{ 1, 0, 1, 1, 0, 0, 1 }(2)));
 	EXPECT_EQ(123, (polynom<int>{ 11, 7 }(16)));
 	EXPECT_EQ(123, (polynom<int>{ 3, 2, 1 }(10)));
+}
+
+TEST(primes_test, moebius_transform) {
+	EXPECT_EQ((vector<int>{0, 1, 2, 5, 7, 14, 13, 27, 26, 39, 38, 65, 50, 90, 75}), moebius_transform<int>(15, [](int d){ return d * (d + 1) / 2; }));
 }

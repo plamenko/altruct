@@ -46,18 +46,23 @@ void euler_phi(int *phi, int n, const int *p, int m) {
 			phi[j] = phi[j] / p[i] * (p[i] - 1);
 }
 
-void moebius_mu(int *mu, int n, const int *p, int m) {
-	int i, j;
+void moebius_mu(int *mu, int n, const int* p, int m) {
 	mu[0] = 0;
-	for (i = 1; i < n; i++)
+	for (int i = 1; i < n; i++)
 		mu[i] = 1;
-	for (i = 0; i < m; i++)
-	for (j = 0; j < n; j += p[i])
-		mu[j] = -mu[j];
-	for (i = 0; i < m; i++) {
-		int p2 = p[i] * p[i]; if (p2 >= n) break;
-		for (j = 0; j < n; j += p2)
+	for (int i = 2; i * i < n; i++) {
+		if (mu[i] != 1) continue;
+		int i2 = i * i;
+		for (int j = 0; j < n; j += i2)
 			mu[j] = 0;
+		for (int j = 0; j < n; j += i)
+			mu[j] *= -i;
+	}
+	for (int i = 2; i < n; i++) {
+		     if (mu[i] == +i) mu[i] = +1;
+		else if (mu[i] == -i) mu[i] = -1;
+		else if (mu[i] < 0) mu[i] = +1; // correction for a big prime factor
+		else if (mu[i] > 0) mu[i] = -1; // correction for a big prime factor
 	}
 }
 
