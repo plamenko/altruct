@@ -110,17 +110,44 @@ vector<field> calc_sum_m(int e, const poly& g, int n) {
 TEST(sums_test, sum_s) {
 	// Sum[k^p euler_phi(k), { k, 1, n }]
 	// euler_phi(x) is Euler Totient function defined as:
-	// Sum[[GCD(x, y)==1], {y,1,x}]
-	poly phi = poly{ 0, 1 };
-	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_m(0, phi, 20));
-	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_m(1, phi, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_m(2, phi, 20));
+	//   Sum[[GCD(x, y)==1], {y,1,x}]
+	//   Sum[mu(n/d) * d, {d|x}]
+	poly g_phi = poly{ 0, 1 }; // d
+	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_m(0, g_phi, 20));
+	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_m(1, g_phi, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_m(2, g_phi, 20));
 	
 	// Sum[k^p euler_phi2(k), { k, 1, n }]
 	// euler_phi2(x) is Euler Totient function in 2D defined as:
-	// Sum[[GCD(x, y, z)==1], {y,1,x}, {z,1,y}]
-	poly phi2 = poly{ 0, 1, 1 } / field(2);
-	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_m(0, phi2, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_m(1, phi2, 20));
-	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_m(2, phi2, 20));
+	//   Sum[[GCD(x, y, z)==1], {y,1,x}, {z,1,y}]
+	//   Sum[mu(n/d) * d * (d + 1) / 2, {d|x}]
+	poly g_phi2 = poly{ 0, 1, 1 } / field(2); // d * (d + 1) / 2
+	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_m(0, g_phi2, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_m(1, g_phi2, 20));
+	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_m(2, g_phi2, 20));
+}
+
+TEST(sums_test, sum_primes) {
+	vector<int> vp(isqrt(1030) + 1);
+	int m = primes(&vp[0], nullptr, (int)vp.size());
+	vector<field> va1, va2;
+	for (int n = 0; n < 30; n++) {
+		va1.push_back(sum_primes(n, &vp[0], field(1)));
+		va2.push_back(sum_primes(1000 + n, &vp[0], field(1)) - 76127);
+	}
+	EXPECT_EQ((vector<field>{0, 0, 2, 5, 5, 10, 10, 17, 17, 17, 17, 28, 28, 41, 41, 41, 41, 58, 58, 77, 77, 77, 77, 100, 100, 100, 100, 100, 100, 129}), va1);
+	EXPECT_EQ((vector<field>{0, 0, 0, 0, 0, 0, 0, 0, 0, 1009, 1009, 1009, 1009, 2022, 2022, 2022, 2022, 2022, 2022, 3041, 3041, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062}), va2);
+}
+
+TEST(sums_test, sum_primes2) {
+	vector<int> vp(1000);
+	vector<char> vq(1000);
+	int m = primes(&vp[0], &vq[0], (int)vq.size());
+	vector<int> ve, va;
+	int c = 0;
+	for (int n = 0; n < vp.size(); n++) {
+		ve.push_back(c += n * vq[n]);
+		va.push_back(sum_primes(n, &vp[0], 1));
+	}
+	EXPECT_EQ(ve, va);
 }

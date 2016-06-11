@@ -21,7 +21,7 @@ T sum(F f, I a, I b, T zero = T(0)) {
 }
 
 /**
- * Calculates `Sum[k^p, {k, 1, n}]` in `O(p^2)`.
+ * Calculates sum of powers: `Sum[k^p, {k, 1, n}]` in `O(p^2)`.
  *
  * Note: for powers bigger than 3, T must be a field.
  * Example fields that are suitable: double, fraction, modulo.
@@ -162,9 +162,10 @@ T sum_sqrt2(F sf, I n, T zero = T(0)) {
  * Then the following relation holds and is used for calculation:
  *   st(n) = Sum[p(k) sum_m(n/k), {k, 1, n}]
  *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl`
- * values smaller than `O(n^(2/3))` have to be precomputed with sieve.
+ * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
+ * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
  *
+ * @param tbl - table to store the calculated values
  */
 template<typename T, typename I, typename F1, typename F2, typename MAP>
 T sum_m(I n, F1 st, F2 sp, MAP& tbl) {
@@ -197,6 +198,42 @@ T sum_m(I n, F st, MAP& tbl) {
 		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, st, tbl);
 	}
 	return tbl[n] = r;
+}
+
+/**
+ * Calculates sum of primes: `Sum[p(k), {k, 1, n}]` in `O(n^(5/7))`.
+ *
+ * @param p - array of prime numbers up to `sqrt(n)` inclusive
+ */
+template<typename T, typename I>
+T sum_primes(I n, const int* p, T id = T(1)) {
+	if (n < 1) return zeroT<T>::of(id);
+	// Initially, we start with the sum of all numbers:
+	// d(i) =  Sum[k, {2 <= k <= i}]
+	// After each round j, all multiples of a prime p(j) get eliminated:
+	// d(i) = Sum[k, {2 <= k <= i, spf(k) > p(j) || is_prime(k)}]
+	// spf(k) = smallest prime factor of k
+	I q = sqrtT(n);
+	unordered_map<I, T> d; // TODO: replace with sqrt_map
+	for (int l = 1; l <= q; l++) {
+		I i = n / l;
+		d[i] = id * i * (i + 1) / 2 - 1;
+	}
+	for (int i = n / q - 1; i >= 1; i--) {
+		d[i] = id * i * (i + 1) / 2 - 1;
+	}
+	for (int j = 0; p[j] && p[j] <= q; j++) {
+		I pj = p[j]; I p2 = sqT(pj);
+		I l_max = min(q, n / p2);
+		for (I l = 1; l <= l_max; l++) {
+			I i = n / l;
+			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
+		}
+		for (I i = n / q - 1; i >= p2; i--) {
+			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
+		}
+	}
+	return d[n];
 }
 
 } // math

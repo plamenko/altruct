@@ -28,6 +28,7 @@ int primes(int *p, char *q, int n) {
 		for (int j = i * i; j < n; j += i)
 			q[j] = 0;
 	}
+	if (p) p[m] = 0;
 	return m;
 }
 
