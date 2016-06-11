@@ -2,7 +2,6 @@
 
 #include "algorithm/math/base.h"
 #include "algorithm/math/recurrence.h"
-#include <unordered_map>
 
 namespace altruct {
 namespace math {
@@ -13,9 +12,9 @@ namespace math {
  * @param f - `f[n]`
  */
 template<typename T, typename I, typename F>
-T sum(const F& f, I a, I b, T zero = T(0)) {
+T sum(F f, I a, I b, T zero = T(0)) {
 	T r = zero;
-	for (I k = a; k <= b; k++) {
+	for (I k = b; k >= a; k--) {
 		r += f(k);
 	}
 	return r;
@@ -71,11 +70,11 @@ T sum_pow(int p, I n, T id = T(1)) {
  * @param f - `f[n]`
  */
 template<typename T, typename I, typename F>
-T sum_sqrt(const F& f, I n, T zero = T(0)) {
+T sum_sqrt(F f, I n, T zero = T(0)) {
 	if (n < 1) return zero;
 	I q = sqrtT(n);
 	T r = zero;
-	for (I k = n / q; k > 0; k--) {
+	for (I k = 1; k <= n / q; k++) {
 		r += f(n / k);
 	}
 	for (I m = 1; m < q; m++) {
@@ -90,14 +89,14 @@ T sum_sqrt(const F& f, I n, T zero = T(0)) {
  * @param sf - `sf[n] = Sum[f[k], {k, 1, n}]`
  */
 template<typename T, typename I, typename F1, typename F2>
-T sum_sqrt2m(const F1& sf, const F2& g, I n, T zero = T(0)) {
+T sum_sqrt2m(F1 sf, F2 g, I n, T zero = T(0)) {
 	if (n < 1) return zero;
 	I q = sqrtT(n);
 	T r = zero;
-	for (I k = n / q; k > 0; k--) {
+	T sf0 = sf(n);
+	for (I k = 1; k <= n / q; k++) {
 		r += (sf(k) - sf(k - 1)) * g(n / k); // f(k) * g(n / k)
 	}
-	T sf0 = sf(n);
 	for (I m = 1; m < q; m++) {
 		T sf1 = sf(n / (m + 1));
 		r += (sf0 - sf1) * g(m);
@@ -112,14 +111,14 @@ T sum_sqrt2m(const F1& sf, const F2& g, I n, T zero = T(0)) {
  * @param sf - `sf[n] = Sum[f[k], {k, 1, n}]`
  */
 template<typename T, typename I, typename F1, typename F2, typename F3>
-T sum_sqrt2m(const F1& f, const F2& sf, const F3& g, I n, T zero = T(0)) {
+T sum_sqrt2m(F1 f, F2 sf, F3 g, I n, T zero = T(0)) {
 	if (n < 1) return zero;
 	I q = sqrtT(n);
 	T r = zero;
-	for (I k = n / q; k > 0; k--) {
+	T sf0 = sf(n);
+	for (I k = 1; k <= n / q; k++) {
 		r += f(k) * g(n / k);
 	}
-	T sf0 = sf(n);
 	for (I m = 1; m < q; m++) {
 		T sf1 = sf(n / (m + 1));
 		r += (sf0 - sf1) * g(m);
@@ -134,11 +133,12 @@ T sum_sqrt2m(const F1& f, const F2& sf, const F3& g, I n, T zero = T(0)) {
  * @param sf - `sf[n, m] = Sum[f[k, m], {k, 1, n}]`
  */
 template<typename T, typename I, typename F>
-T sum_sqrt2(const F& sf, I n, T zero = T(0)) {
+T sum_sqrt2(F sf, I n, T zero = T(0)) {
 	if (n < 1) return zero;
 	I q = sqrtT(n);
 	T r = zero;
-	for (I k = n / q; k > 0; k--) {
+	T sf0 = sf(n, 1);
+	for (I k = 1; k <= n / q; k++) {
 		r += sf(k, n / k) - sf(k - 1, n / k); // f(k, n / k)
 	}
 	for (I m = 1; m < q; m++) {
@@ -148,47 +148,53 @@ T sum_sqrt2(const F& sf, I n, T zero = T(0)) {
 }
 
 /**
- * Calculates `Sum[k^p euler_phi(k), {k, 1, n}]` in `O(n^(3/4))`.
+ * Calculates `sum_m(n) = Sum[p(k) * f(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
  *
- * euler_phi(x) is Euler Totient function defined as:
- * Sum[[GCD(x, y)==1], {y,1,x}]
+ * Where:
+ *   `p` is a completely-multiplicative function:
+ *       p(n * m) = p(n) * p(m)
+ *   `g` and `f` are Moebius transforms of each other:
+ *       g(n) = Sum[f(d), {d|n}]
+ *       f(n) = Sum[mu(n/d) * g(d), {d|n}]
+ *   sp(n) = Sum[p(k), {k, 1, n}]
+ *   st(n) = Sum[p(k) * g(k), {k, 1, n}]
+ *
+ * Then the following relation holds and is used for calculation:
+ *   st(n) = Sum[p(k) sum_m(n/k), {k, 1, n}]
+ *
+ * Note, to achieve the better `O(n^(2/3))` complexity, `tbl`
+ * values smaller than `O(n^(2/3))` have to be precomputed with sieve.
+ *
  */
-template<typename T, typename I>
-T sum_euler_phi(int p, I n, T id = T(1)) {
-	if (n < 1) return zeroT<T>::of(id);
-	static unordered_map<int, unordered_map<I, T>> tables;
-	auto& tbl = tables[p];
+template<typename T, typename I, typename F1, typename F2, typename MAP>
+T sum_m(I n, F1 st, F2 sp, MAP& tbl) {
+	if (n < 1) return zeroT<T>::of(st(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = sum_pow(p + 1, n, id);
+	T r = st(n);
 	I q = sqrtT(n);
-	for (I k = n / q; k >= 2; k--) {
-		r -= powT(id * k, p) * sum_euler_phi(p, n / k, id);
+	for (I k = 2; k <= n / q; k++) {
+		r -= (sp(k) - sp(k - 1)) * sum_m<T>(n / k, st, sp, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= (sum_pow(p, n / m, id) - sum_pow(p, n / (m + 1), id)) * sum_euler_phi(p, m, id);
+		r -= (sp(n / m) - sp(n / (m + 1))) * sum_m<T>(m, st, sp, tbl);
 	}
 	return tbl[n] = r;
 }
 
 /**
- * Calculates `Sum[k^p euler_phi2(k), {k, 1, n}]` in `O(n^(3/4))`.
- *
- * euler_phi(x) is Euler Totient function in 2D defined as:
- * Sum[[GCD(x, y, z)==1], {y,1,x}, {z,1,y}]
+ * Same as `sum_m(n, st, sp, tbl)` with `p(n) = 1`, `sp(n) = n`.
  */
-template<typename T, typename I>
-T sum_euler_phi2(int p, I n, T id = T(1)) {
-	if (n < 1) return zeroT<T>::of(id);
-	static unordered_map<int, unordered_map<I, T>> tables;
-	auto& tbl = tables[p];
+template<typename T, typename I, typename F, typename MAP>
+T sum_m(I n, F st, MAP& tbl) {
+	if (n < 1) return zeroT<T>::of(st(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = (sum_pow(p + 2, n, id) + sum_pow(p + 1, n, id)) / 2;
+	T r = st(n);
 	I q = sqrtT(n);
-	for (I k = n / q; k >= 2; k--) {
-		r -= powT(id * k, p) * sum_euler_phi2(p, n / k, id);
+	for (I k = 2; k <= n / q; k++) {
+		r -= sum_m<T>(n / k, st, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= (sum_pow(p, n / m, id) - sum_pow(p, n / (m + 1), id)) * sum_euler_phi2(p, m, id);
+		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, st, tbl);
 	}
 	return tbl[n] = r;
 }

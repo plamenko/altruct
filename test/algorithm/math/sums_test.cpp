@@ -1,4 +1,8 @@
 #include "algorithm/math/sums.h"
+#include "algorithm/math/primes.h"
+#include "algorithm/math/polynoms.h"
+#include "structure/math/polynom.h"
+#include <unordered_map>
 
 #include "gtest/gtest.h"
 
@@ -6,6 +10,7 @@ using namespace std;
 using namespace altruct::math;
 
 typedef modulo<int, 1000000007> field;
+typedef polynom<field> poly;
 
 TEST(sums_test, sum) {
 	auto f = [](int k) { return k*k; };
@@ -76,30 +81,46 @@ TEST(sums_test, sum_sqrt) {
 	EXPECT_EQ(ve3, va3b);
 }
 
-vector<field> calc_sum_phi(int p, int n) {
+vector<field> calc_sum_m(int e, const poly& g, int n) {
+	// initialize polynomials
+	poly p = powT(poly{ 0, 1 }, e);
+	poly sp = polynom_sum(p);
+	poly st = polynom_sum(g * p);
+	// wrapping functions that evaluate polynomials
+	auto _g = [&](int n){ return g(field(n)); };
+	auto _p = [&](int n){ return p(field(n)); };
+	auto _sp = [&](int n){ return sp(field(n)); };
+	auto _st = [&](int n){ return st(field(n)); };
+	
+	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
+	int U = (int)isq(icbrt(n));
+	unordered_map<int, field> msf(U);
+	std::vector<int> mu(U); moebius_mu(&mu[0], U);
+	moebius_transform(msf, U, _g, &mu[0]);
+	for (int k = 1; k < U; k++) msf[k] = _p(k) * msf[k] + msf[k - 1];
+
+	// calculate all values
 	vector<field> v;
 	for (int k = 0; k <= n; k++) {
-		v.push_back(sum_euler_phi<field>(p, k));
+		v.push_back(sum_m<field>(k, _st, _sp, msf));
 	}
 	return v;
 
 }
-TEST(sums_test, sum_euler_phi) {
-	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_phi(0, 20));
-	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_phi(1, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_phi(2, 20));
-}
-
-vector<field> calc_sum_phi2(int p, int n) {
-	vector<field> v;
-	for (int k = 0; k <= n; k++) {
-		v.push_back(sum_euler_phi2<field>(p, k));
-	}
-	return v;
-
-}
-TEST(sums_test, sum_euler_phi2) {
-	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_phi2(0, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_phi2(1, 20));
-	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_phi2(2, 20));
+TEST(sums_test, sum_s) {
+	// Sum[k^p euler_phi(k), { k, 1, n }]
+	// euler_phi(x) is Euler Totient function defined as:
+	// Sum[[GCD(x, y)==1], {y,1,x}]
+	poly phi = poly{ 0, 1 };
+	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_m(0, phi, 20));
+	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_m(1, phi, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_m(2, phi, 20));
+	
+	// Sum[k^p euler_phi2(k), { k, 1, n }]
+	// euler_phi2(x) is Euler Totient function in 2D defined as:
+	// Sum[[GCD(x, y, z)==1], {y,1,x}, {z,1,y}]
+	poly phi2 = poly{ 0, 1, 1 } / field(2);
+	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_m(0, phi2, 20));
+	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_m(1, phi2, 20));
+	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_m(2, phi2, 20));
 }
