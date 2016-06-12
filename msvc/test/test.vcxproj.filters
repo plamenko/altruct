@@ -100,6 +100,9 @@
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\search\binary_search_test.cpp">
+      <Filter>algorithm\search</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -131,6 +134,9 @@
     </Filter>
     <Filter Include="structure\container">
       <UniqueIdentifier>{2b5cb71f-1a0c-4389-ac58-ddabc8058666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\search">
+      <UniqueIdentifier>{6c2c12a3-a376-46f9-86c2-fe016be9bab1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -43,6 +43,7 @@
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\random_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\search\binary_search_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />
