@@ -211,6 +211,7 @@ T sum_m(I n, F st, MAP& tbl) {
  */
 template<typename T, typename I, typename MAP>
 T mertens(I n, MAP& tbl, T id = T(1)) {
+	// p = 1, f = mu, g = delta, st = 1
 	return sum_m<T>(n, [&](I k){ return id; }, tbl);
 }
 
