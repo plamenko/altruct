@@ -94,6 +94,12 @@
     <ClCompile Include="..\..\test\structure\math\nimber_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -122,6 +128,9 @@
     </Filter>
     <Filter Include="algorithm\hash">
       <UniqueIdentifier>{fb4a4bfa-b7c2-4730-bfeb-1e77bf4b5c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="structure\container">
+      <UniqueIdentifier>{2b5cb71f-1a0c-4389-ac58-ddabc8058666}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

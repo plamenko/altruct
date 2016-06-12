@@ -57,6 +57,9 @@
     <Filter Include="include\algorithm\hash">
       <UniqueIdentifier>{92618945-b6cc-4555-b6c9-3641752fb9ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\structure\container">
+      <UniqueIdentifier>{cf5d0bed-1d40-421e-aab1-30537cdea569}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -160,6 +163,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\structure\math\nimber.h">
       <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\sqrt_map.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\lohi_map.h">
+      <Filter>include\structure\container</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

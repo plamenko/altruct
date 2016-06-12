@@ -2,12 +2,13 @@
 #include "algorithm/math/primes.h"
 #include "algorithm/math/polynoms.h"
 #include "structure/math/polynom.h"
-#include <unordered_map>
+#include "structure/container/sqrt_map.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
 typedef polynom<field> poly;
@@ -94,7 +95,7 @@ vector<field> calc_sum_m(int e, const poly& g, int n) {
 	
 	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
 	int U = (int)isq(icbrt(n));
-	unordered_map<int, field> msf(U);
+	sqrt_map<int, field> msf(U, n);
 	std::vector<int> mu(U); moebius_mu(&mu[0], U);
 	moebius_transform(msf, U, _g, &mu[0]);
 	for (int k = 1; k < U; k++) msf[k] = _p(k) * msf[k] + msf[k - 1];
@@ -102,12 +103,13 @@ vector<field> calc_sum_m(int e, const poly& g, int n) {
 	// calculate all values
 	vector<field> v;
 	for (int k = 0; k <= n; k++) {
+		msf.reset_max(k);
 		v.push_back(sum_m<field>(k, _st, _sp, msf));
 	}
 	return v;
 
 }
-TEST(sums_test, sum_s) {
+TEST(sums_test, sum_m) {
 	// Sum[k^p euler_phi(k), { k, 1, n }]
 	// euler_phi(x) is Euler Totient function defined as:
 	//   Sum[[GCD(x, y)==1], {y,1,x}]
@@ -131,12 +133,13 @@ TEST(sums_test, mertens) {
 	int n = 30;
 	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
 	int U = (int)isq(icbrt(n));
-	unordered_map<int, field> mm(U);
+	sqrt_map<int, field> mm(U, n);
 	std::vector<int> mu(U); moebius_mu(&mu[0], U);
 	for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + mu[k];
 	
 	vector<field> va;
 	for (int k = 0; k <= n; k++) {
+		mm.reset_max(k);
 		va.push_back(mertens(k, mm, field(1)));
 	}
 	EXPECT_EQ((vector<field>{0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3}), va);

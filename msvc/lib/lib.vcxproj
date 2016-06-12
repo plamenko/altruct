@@ -45,6 +45,8 @@
     <ClInclude Include="..\..\include\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
+    <ClInclude Include="..\..\include\structure\container\lohi_map.h" />
+    <ClInclude Include="..\..\include\structure\container\sqrt_map.h" />
     <ClInclude Include="..\..\include\structure\graph\disjoint_set.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h" />

@@ -2,6 +2,7 @@
 
 #include "algorithm/math/base.h"
 #include "algorithm/math/recurrence.h"
+#include "structure/container/sqrt_map.h"
 
 namespace altruct {
 namespace math {
@@ -227,7 +228,7 @@ T sum_primes(I n, const int* p, T id = T(1)) {
 	// d(i) = Sum[k, {2 <= k <= i, spf(k) > p(j) || is_prime(k)}]
 	// spf(k) = smallest prime factor of k
 	I q = sqrtT(n);
-	unordered_map<I, T> d; // TODO: replace with sqrt_map
+	container::sqrt_map<I, T> d(q, n);
 	for (int l = 1; l <= q; l++) {
 		I i = n / l;
 		d[i] = id * i * (i + 1) / 2 - 1;
