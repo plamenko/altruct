@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -39,4 +40,13 @@ TEST(comb_primes_test, multinomial_prime_exponent) {
 	vector<int> e = { 4, 5, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 0, 0, 0 };
 	vector<int> a; for (int p : vp) a.push_back(multinomial_prime_exponent(p, vector<int>{ 8, 17, 11, 2 }));
 	EXPECT_EQ(e, a);
+}
+
+TEST(comb_primes_test, elements_multinomial) {
+	EXPECT_EQ(1.0, elements_multinomial(vector<string>{}, 1.0));
+	EXPECT_EQ(1.0, elements_multinomial(vector<string>{ "aa" }, 1.0));
+	EXPECT_EQ(1.0, elements_multinomial(vector<string>{ "aa", "aa", "aa", "aa" }, 1.0));
+	EXPECT_EQ(24.0, elements_multinomial(vector<string>{ "aa", "bbb", "c", "dddd" }, 1.0));
+	EXPECT_EQ(60.0, elements_multinomial(vector<string>{ "aa", "aa", "b", "b", "b", "ccc" }, 1.0));
+	EXPECT_EQ(60, elements_multinomial(vector<string>{ "aa", "aa", "b", "b", "b", "ccc" }, 1));
 }
