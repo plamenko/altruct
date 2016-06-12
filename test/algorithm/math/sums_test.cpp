@@ -127,6 +127,21 @@ TEST(sums_test, sum_s) {
 	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_m(2, g_phi2, 20));
 }
 
+TEST(sums_test, mertens) {
+	int n = 30;
+	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
+	int U = (int)isq(icbrt(n));
+	unordered_map<int, field> mm(U);
+	std::vector<int> mu(U); moebius_mu(&mu[0], U);
+	for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + mu[k];
+	
+	vector<field> va;
+	for (int k = 0; k <= n; k++) {
+		va.push_back(mertens(k, mm, field(1)));
+	}
+	EXPECT_EQ((vector<field>{0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3}), va);
+}
+
 TEST(sums_test, sum_primes) {
 	vector<int> vp(isqrt(1030) + 1);
 	int m = primes(&vp[0], nullptr, (int)vp.size());

@@ -201,6 +201,19 @@ T sum_m(I n, F st, MAP& tbl) {
 }
 
 /**
+ * Mertens function: `Sum[moebius_mu(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
+ *
+ * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
+ * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
+ *
+ * @param tbl - table to store the calculated values
+ */
+template<typename T, typename I, typename MAP>
+T mertens(I n, MAP& tbl, T id = T(1)) {
+	return sum_m<T>(n, [&](I k){ return id; }, tbl);
+}
+
+/**
  * Calculates sum of primes: `Sum[p(k), {k, 1, n}]` in `O(n^(5/7))`.
  *
  * @param p - array of prime numbers up to `sqrt(n)` inclusive
