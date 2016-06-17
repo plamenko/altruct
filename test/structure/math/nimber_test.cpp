@@ -124,7 +124,7 @@ TEST(nimber_test, sqrt) {
 
 TEST(nimber_test, mul_perf) {
 	return; // skip perf test
-	int T0 = clock();
+	double T0 = clock();
 	int sz = 10000;
 	for (int a = 0; a <= sz; a++) {
 		for (int b = 0; b <= sz; b++) {
@@ -133,7 +133,7 @@ TEST(nimber_test, mul_perf) {
 			EXPECT_EQ(m1.v, m2.v) << "a: " << a << ", b: " << b;
 		}
 	}
-	printf("%d ms\n", clock() - T0);
+	printf("m1: %.2lf s  %d\n", (clock() - T0) / CLOCKS_PER_SEC, sz);
 
 	double T1 = clock();
 	nim m1;

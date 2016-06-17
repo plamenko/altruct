@@ -26,9 +26,9 @@ class lohi_map {
 	int get_and_set(int& cnt, int new_cnt) { int prev_cnt = cnt; cnt = new_cnt; return prev_cnt; }
 
 public:
-	typedef typename I key_type;
-	typedef typename T mapped_type;
-	typedef typename std::pair<I, T> value_type;
+	typedef I key_type;
+	typedef T mapped_type;
+	typedef std::pair<I, T> value_type;
 
 	lohi_map(I max_lo_key) :
 		max_lo_key(max_lo_key),

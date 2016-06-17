@@ -60,7 +60,7 @@ T sum_pow(int p, I n, T id = T(1)) {
 	static std::vector<T> B;
 	if (B.size() < p + 1) {
 		int sz = (int)(B.size() + B.size() / 2);
-		B = bernoulli_b<T>(max(p, sz), id);
+		B = bernoulli_b<T>(std::max(p, sz), id);
 	}
 	return sum_pow(p, n, B);
 }
@@ -239,7 +239,7 @@ T sum_primes(I n, const int* p, T id = T(1)) {
 	}
 	for (int j = 0; p[j] && p[j] <= q; j++) {
 		I pj = p[j]; I p2 = sqT(pj);
-		I l_max = min(q, n / p2);
+		I l_max = std::min(q, n / p2);
 		for (I l = 1; l <= l_max; l++) {
 			I i = n / l;
 			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
