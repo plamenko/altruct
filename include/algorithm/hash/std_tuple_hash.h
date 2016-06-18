@@ -32,4 +32,14 @@ struct hash<std::tuple<TT...>> {
 	}
 };
 
+template <typename T1, typename T2>
+struct hash<std::pair<T1, T2>> {
+	size_t operator()(std::pair<T1, T2> const& tt) const {
+		size_t seed = 0;
+		hash_combine(seed, tt.first);
+		hash_combine(seed, tt.second);
+		return seed;
+	}
+};
+
 } // std

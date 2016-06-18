@@ -32,3 +32,11 @@ TEST(std_hash_test, tuple_hash) {
 	EXPECT_EQ(5, m[make_tuple(2.5, "abc")]);
 	EXPECT_EQ(11, m[make_tuple(-4, "xxx")]);
 }
+
+TEST(std_hash_test, pair_hash) {
+	unordered_map<pair<double, string>, int> m;
+	m[make_pair(2.5, "abc")] = 5;
+	m[make_pair(-4, "xxx")] = 11;
+	EXPECT_EQ(5, m[make_pair(2.5, "abc")]);
+	EXPECT_EQ(11, m[make_pair(-4, "xxx")]);
+}
