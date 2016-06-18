@@ -37,6 +37,7 @@
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\primes_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\prime_pi_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\ranges_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\reduce_test.cpp" />

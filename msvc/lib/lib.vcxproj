@@ -37,6 +37,7 @@
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynom_mod.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
+    <ClInclude Include="..\..\include\algorithm\math\prime_pi.h" />
     <ClInclude Include="..\..\include\algorithm\math\ranges.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
