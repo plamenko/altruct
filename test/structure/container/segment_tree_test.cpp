@@ -17,6 +17,7 @@ T slow_get(const vector<T>& v, size_t begin, size_t end, F f, const T& id = T())
 template<typename T, typename F>
 void verify_all(const segment_tree<T>& st, const vector<T>& v, F f, const T& id = T()) {
 	for (size_t begin = 0; begin < v.size(); begin++) {
+		EXPECT_EQ(v[begin], st.get(begin)) << " unexpected result of get(" << begin << ")";
 		for (size_t end = begin; end < v.size(); end++) {
 			EXPECT_EQ(slow_get(v, begin, end, f, id), st.get(begin, end)) << " unexpected result of get(" << begin << ", " << end << ")";
 		}
@@ -69,4 +70,17 @@ TEST(segment_tree_test, modify_int_min) {
 		st1.set(j, v[j]);
 		verify_all(st1, v1, min_f, inf);
 	}
+}
+
+TEST(segment_tree_test, modify_rebuild) {
+	int inf = numeric_limits<int>::max();
+	auto min_f = [](int v1, int v2){ return std::min(v1, v2); };
+	vector<int> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
+
+	segment_tree<int> st(v.begin(), v.end(), min_f, inf);
+	st[3] = v[3] = 9;
+	st[6] = v[6] = 2;
+	st[8] = v[8] = -7;
+	st.rebuild();
+	verify_all(st, v, min_f, inf);
 }

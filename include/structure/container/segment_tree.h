@@ -28,9 +28,11 @@ public:
 	std::vector<T> v;
 	std::function<T(T, T)> f;
 
+	segment_tree() {}
+	
 	segment_tree(size_t sz, std::function<T(T, T)> f, T id = T()) : f(f) {
 		v.resize(make_pow2(sz) * 2, id);
-		build(id);
+		rebuild();
 	}
 
 	template<typename It>
@@ -38,7 +40,7 @@ public:
 		auto sz = std::distance(begin, end);
 		v.resize(make_pow2(sz) * 2, id);
 		std::copy(begin, end, v.begin() + size());
-		build(id);
+		rebuild();
 	}
 
 	void set(size_t index, const T& t) {
@@ -49,6 +51,25 @@ public:
 		}
 	}
 
+	// If the returned element is being modified,
+	// the index won't be updated automatically.
+	// Use `set` instead to update immediately,
+	// or `rebuild` after all modifications.
+	T& operator[] (size_t index) {
+		index += size();
+		return v[index];
+	}
+
+	const T& operator[] (size_t index) const {
+		index += size();
+		return v[index];
+	}
+
+	T get(size_t index) const {
+		index += size();
+		return v[index];
+	}
+	
 	T get(size_t begin, size_t end) const {
 		T tl = v[0], tr = v[0]; // id
 		size_t i = size();
@@ -64,14 +85,13 @@ public:
 		return v.size() / 2;
 	}
 
-private:
-	void build(const T& id) {
+	void rebuild() {
 		for (size_t i = size() - 1; i > 0; i--) {
 			update(i);
 		}
-		v[0] = id;
 	}
 
+private:
 	void update(size_t i) {
 		v[i] = f(v[2 * i + 0], v[2 * i + 1]);
 	}
