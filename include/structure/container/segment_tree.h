@@ -31,14 +31,14 @@ public:
 	segment_tree() {}
 	
 	segment_tree(size_t sz, std::function<T(T, T)> f, T id = T()) : f(f) {
-		v.resize(make_pow2(sz) * 2, id);
-		rebuild();
+		v.resize(calc_pow2(sz) * 2, id);
+		//rebuild();
 	}
 
 	template<typename It>
 	segment_tree(It begin, It end, std::function<T(T, T)> f, T id = T()) : f(f) {
 		auto sz = std::distance(begin, end);
-		v.resize(make_pow2(sz) * 2, id);
+		v.resize(calc_pow2(sz) * 2, id);
 		std::copy(begin, end, v.begin() + size());
 		rebuild();
 	}
@@ -96,7 +96,7 @@ private:
 		v[i] = f(v[2 * i + 0], v[2 * i + 1]);
 	}
 
-	static size_t make_pow2(size_t sz) {
+	static size_t calc_pow2(size_t sz) {
 		size_t w = 1; while (w < sz) w *= 2;
 		return w;
 	}
