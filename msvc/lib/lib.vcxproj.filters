@@ -63,6 +63,9 @@
     <Filter Include="include\algorithm\search">
       <UniqueIdentifier>{f87e2f96-d6d2-42cc-bafe-3774bf5cc0fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\io">
+      <UniqueIdentifier>{1279d389-d147-4357-b6ca-7d28e151016d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\prime_pi.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\io\fast_io.h">
+      <Filter>include\io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

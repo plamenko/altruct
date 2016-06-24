@@ -47,6 +47,7 @@
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
     <ClInclude Include="..\..\include\algorithm\search\binary_search.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
+    <ClInclude Include="..\..\include\io\fast_io.h" />
     <ClInclude Include="..\..\include\structure\container\lohi_map.h" />
     <ClInclude Include="..\..\include\structure\container\segment_tree.h" />
     <ClInclude Include="..\..\include\structure\container\sqrt_map.h" />

@@ -109,6 +109,9 @@
     <ClCompile Include="..\..\test\algorithm\math\prime_pi_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\io\fast_io_test.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -143,6 +146,9 @@
     </Filter>
     <Filter Include="algorithm\search">
       <UniqueIdentifier>{6c2c12a3-a376-46f9-86c2-fe016be9bab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{fe1271b4-dc36-49c5-9ff4-7b2e6173bc02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
