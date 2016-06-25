@@ -112,6 +112,12 @@
     <ClCompile Include="..\..\test\io\fast_io_test.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp">
+      <Filter>algorithm\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\interval_tree_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -149,6 +155,9 @@
     </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{fe1271b4-dc36-49c5-9ff4-7b2e6173bc02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\graph">
+      <UniqueIdentifier>{e668ac73-3685-472b-9840-c636e22544ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -66,6 +66,9 @@
     <Filter Include="include\io">
       <UniqueIdentifier>{1279d389-d147-4357-b6ca-7d28e151016d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\algorithm\graph">
+      <UniqueIdentifier>{a06ea75e-7a4e-45fa-a9b8-337d3315e87e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -143,9 +146,6 @@
     <ClInclude Include="..\..\include\algorithm\math\sums.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\vector3d.h">
-      <Filter>include\structure\math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
@@ -176,9 +176,6 @@
     <ClInclude Include="..\..\include\structure\container\lohi_map.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\vector2d.h">
-      <Filter>include\structure\math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\algorithm\search\binary_search.h">
       <Filter>include\algorithm\search</Filter>
     </ClInclude>
@@ -190,6 +187,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\io\fast_io.h">
       <Filter>include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\math\vector2d.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\math\vector3d.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\interval_tree.h">
+      <Filter>include\structure\container</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

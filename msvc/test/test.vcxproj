@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\hash\std_hash_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="..\..\test\algorithm\search\binary_search_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
     <ClCompile Include="..\..\test\io\fast_io_test.cpp" />
+    <ClCompile Include="..\..\test\structure\container\interval_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\segment_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />
@@ -160,7 +162,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\experimental\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -180,7 +182,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\experimental\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -198,7 +200,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\experimental\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -219,7 +221,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\experimental\include;..\..\..\GoogleTest\googletest;..\..\..\GoogleTest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
