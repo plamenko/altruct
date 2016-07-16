@@ -240,6 +240,21 @@ TEST(primes_test, factor_integer_general_purpose_first_1000) {
 	}
 }
 
+TEST(primes_test, factor_integer_trial_division_first_1000) {
+	typedef vector<pair<int, int>> fact;
+
+	int n = 1000;
+	vector<int> vp(n);
+	int m = primes(&vp[0], nullptr, n);
+	vector<int> vpf(n);
+	factor(&vpf[0], n, &vp[0], m);
+
+	for (int i = 1; i < n; i++) {
+		fact vf; factor_integer(vf, i, &vpf[0]);
+		EXPECT_EQ(sorted(vf), sorted(factor_integer_slow(i)));
+	}
+}
+
 TEST(primes_test, integer_digits) {
 	EXPECT_EQ((vector<int>{}), integer_digits(0, 10));
 	EXPECT_EQ((vector<int>{1}), integer_digits(1, 10));

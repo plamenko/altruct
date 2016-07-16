@@ -449,6 +449,21 @@ std::vector<std::pair<I, int>> factor_integer(const I& n, int max_iter = 20) {
 }
 
 /**
+ * Factors integer `n` by trial division.
+ */
+template<typename I>
+std::vector<std::pair<I, int>> factor_integer_slow(I n) {
+	std::vector<std::pair<I, int>> vf;
+	for (I i = 2; i <= n / i; i += 1) {
+		if (n % i != 0) continue;
+		int e = 0; while (n % i == 0) n /= i, e++;
+		vf.push_back({ i, e });
+	}
+	if (n > 1) vf.push_back({ n, 1 });
+	return vf;
+}
+
+/**
  * Gives the vector of digits of `n` in base `b`.
  *
  * @param n - number to extract the digits of
