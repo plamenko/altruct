@@ -10,6 +10,7 @@
 using namespace std;
 using namespace altruct::io;
 
+namespace {
 string read_file(const char* name) {
 	ifstream is(name);
 	stringstream ss;
@@ -48,6 +49,7 @@ public:
 		fclose(file);
 	}
 };
+}
 
 TEST(fast_io_test, fast_read) {
 	temp_read_file tmp("fast_io_test_temp_file",
@@ -103,7 +105,7 @@ TEST(fast_io_test, fast_read) {
 	EXPECT_EQ("skip", fin.read_string());
 
 	int x;
-	sscanf_s(fin.ptr, "%x%n", &x, fin.reserve_cnt(8));
+	sscanf_s(fin.data(8), "%x%n", &x, &fin.counter());
 	fin.advance();
 	EXPECT_EQ(0xa1b2cde, x);
 
@@ -195,7 +197,8 @@ TEST(fast_io_test, fast_write) {
 
 	EXPECT_EQ("random_prefix_xyz 12345678 suffix", do_write([](fast_write& fout){ 
 		fout << "random_prefix_xyz ";
-		sprintf_s(fout.ptr, fout.reserve(9), "%x", 0x12345678);
+		fout.reserve(9);
+		sprintf_s(fout.data(), fout.available(), "%x", 0x12345678);
 		fout.advance();
 		fout << " suffix";
 	}));

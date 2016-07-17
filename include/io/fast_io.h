@@ -19,11 +19,10 @@ namespace io {
  *   fin >> x >> s;
  *
  * Example of formatted input:
- *   sscanf_s(fin.ptr, "%x %d %f %n", &v1, &v2, &v3, fin.reserve_cnt(100));
+ *   sscanf_s(fin.data(100), "%x %d %f %n", &v1, &v2, &v3, &fin.counter());
  *   fin.advance();
  */
 class fast_read {
-public:
 	FILE* fin;
 	char* buff;
 	char* ptr;
@@ -31,6 +30,7 @@ public:
 	size_t capacity;
 	int cnt; // used for formatted input
 
+public:
 	fast_read(FILE* fin = stdin, size_t buffer_size = 1 << 20) : fin(fin) {
 		capacity = buffer_size;
 		buff = new char[capacity+1];
@@ -45,40 +45,66 @@ public:
 	// Refills the buffer.
 	// Returns the number of available characters.
 	size_t refill() {
-		if (ptr >= end) {
-			ptr = end = buff;
+		// move the available characters to the beginning of the buffer
+		size_t available = end - ptr;
+		std::copy(ptr, end, buff);
+		ptr = buff;
+		end = buff + available;
+		// refill
+		while (available < capacity) {
+			size_t len = fread(end, 1, capacity - available, fin);
+			if (len == 0) break;
+			available += len;
+			end += len;
 		}
-		end += fread(end, 1, capacity - (end - buff), fin);
+		return available;
+	}
+
+	// Tries to reserve at least `count` characters.
+	// Returns the number of available characters.
+	size_t reserve(size_t count = 1024) {
+		size_t available = end - ptr;
+		return (available >= count) ? available : refill();
+	}
+
+	// Returns the number of available characters.
+	size_t available() {
 		return end - ptr;
 	}
 
-	// Tries to reserve at least `size` characters.
-	// Returns the number of available characters.
-	size_t reserve(size_t size = 1024) {
-		size_t available = end - ptr;
-		if (available >= size) return available;
-		// move the available characters to the
-		// beginning of the buffer and refill
-		memcpy(buff, ptr, available);
-		ptr = buff;
-		end = buff + available;
-		return refill();
-	}
-	
-	// Same as reserve, but returns the address of `cnt`.
-	// This is convenient for `sscanf` usages.
-	int* reserve_cnt(size_t size = 1024) {
-		reserve(size);
-		return &cnt;
+	// Returns a pointer to the raw character buffer,
+	// provided that there are at least `count` characters
+	// available, or `nullptr` otherwise.
+	const char* data(size_t count = 0) {
+		size_t available = reserve(count);
+		return (available >= count) ? ptr : nullptr;
 	}
 
-	// Advances the read pointer by `cnt`.
+	// Returns the reference to `cnt` variable.
+	// This is convenient for `sscanf` usages.
+	int& counter() {
+		return cnt;
+	}
+
+	// Skips `cnt` characters.
 	// This is convenient for `sscanf` usages.
 	void advance() {
-		ptr += cnt;
+		skip(cnt);
 		cnt = 0;
 	}
-	
+
+	// Skips `count` characters.
+	void skip(size_t count) {
+		ptr += count;
+	}
+
+	// Unreads the last read character.
+	// Allowed to be called only immediately
+	// after a sucessfull `read_char()`.
+	void unread_char() {
+		--ptr;
+	}
+
 	// Reads and returns the next character.
 	// Returns -1 if there are no more characters.
 	int read_char() {
@@ -98,7 +124,7 @@ public:
 			s.push_back((char)c);
 			c = read_char();
 		}
-		if (c != -1) --ptr; // unread_char();
+		if (c != -1) unread_char();
 		return s;
 	}
 
@@ -108,7 +134,7 @@ public:
 		while (0x00 <= c && c <= 0x20) { // \t \n ' ' ...
 			c = read_char();
 		}
-		if (c != -1) --ptr; // unread_char();
+		if (c != -1) unread_char();
 	}
 
 	// Reads a sign.
@@ -117,7 +143,7 @@ public:
 		int c = read_char();
 		if (c == '-') return -1;
 		if (c == '+') return +1;
-		if (c != -1) --ptr; // unread_char();
+		if (c != -1) unread_char();
 		return +1;
 	}
 
@@ -131,7 +157,7 @@ public:
 			l++;
 			c = read_char();
 		}
-		if (c != -1) --ptr; // unread_char();
+		if (c != -1) unread_char();
 		if (cnt) *cnt = l;
 		return d;
 	}
@@ -164,7 +190,7 @@ public:
 			e += z * read_digits<int>();
 			c = read_char();
 		}
-		if (c != -1) --ptr; // unread_char();
+		if (c != -1) unread_char();
 		f *= pow(F(10), e);
 		return (s < 0) ? -f : f;
 	}
@@ -209,11 +235,11 @@ public:
  *   fout << 42 << "abc";
  *
  * Example of formatted output:
- *   sprintf_s(fout.ptr, fout.reserve(100), "some numbers: %x %d %f", 0x123, 42, 123.45f);
+ *   fout.reserve(100);
+ *   sprintf_s(fout.data(), fout.available(), "some numbers: %x %d %f", 0x123, 42, 123.45f);
  *   fout.advance();
  */
 class fast_write {
-public:
 	FILE* fout;
 	char* buff;
 	char* ptr;
@@ -221,6 +247,7 @@ public:
 	size_t capacity;
 	int cnt; // used for formatted input
 
+public:
 	fast_write(FILE* fout = stdout, size_t buffer_size = 1 << 20) : fout(fout) {
 		capacity = buffer_size;
 		buff = new char[capacity + 1];
@@ -242,12 +269,24 @@ public:
 		return end - ptr;
 	}
 
-	// Tries to reserve space for at least `size` characters.
+	// Tries to reserve space for at least `count` characters.
 	// Returns the number of characters that can be written.
-	size_t reserve(size_t size = 1024) {
+	size_t reserve(size_t count = 1024) {
 		size_t available = end - ptr;
-		if (available >= size) return available;
-		return flush();
+		return (available >= count) ? available : flush();
+	}
+
+	// Returns the number of characters that can be written.
+	size_t available() {
+		return end - ptr;
+	}
+
+	// Returns a pointer to the raw character buffer,
+	// provided that there is space for at least `count` characters
+	// available to be written, or `nullptr` otherwise.
+	char* data(size_t count = 0) {
+		size_t available = reserve(count);
+		return (available >= count) ? ptr : nullptr;
 	}
 
 	// Advances the write pointer till the '\0'.
@@ -356,9 +395,9 @@ public:
 	fast_write& operator << (const double& v) { write_double(v); return *this; }
 };
 
-fast_read& fast_in() { static fast_read fin(stdin); return fin; }
-fast_write& fast_out() { static fast_write fout(stdout); return fout; }
-fast_write& fast_err() { static fast_write ferr(stderr); return ferr; }
+template<typename V = void> fast_read& fast_in() { static fast_read fin(stdin); return fin; }
+template<typename V = void> fast_write& fast_out() { static fast_write fout(stdout); return fout; }
+template<typename V = void> fast_write& fast_err() { static fast_write ferr(stderr); return ferr; }
 
 }
 }

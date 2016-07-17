@@ -118,6 +118,12 @@
     <ClCompile Include="..\..\test\structure\container\interval_tree_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\io\reader_test.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\io\writer_test.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

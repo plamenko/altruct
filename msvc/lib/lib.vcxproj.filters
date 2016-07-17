@@ -209,5 +209,11 @@
     <ClInclude Include="..\..\include\structure\container\interval_tree.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\io\reader.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\io\writer.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
