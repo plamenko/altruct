@@ -57,5 +57,25 @@ bool next_partition(BidIt begin, BidIt end) {
 	return false;
 }
 
+/**
+ * Gives the n-th permutation of the elements in the range [begin, end).
+ * Note, elements are expected to be in the sorted order.
+ * I.e. elements are in their 0-th permutation.
+ */
+template<typename It, typename I>
+void nth_permutation(It begin, It end, I o) {
+	auto d = distance(begin, end);
+	int i = 0; I f = 1;
+	while (i < d && f <= o) f *= ++i;
+	while (i > 1) {
+		o %= f;
+		while (i > 1 && f > o) f /= i--;
+		It it = end - i - 1;
+		for (int k = int(o / f); k > 0; k--) {
+			swap(*(it + k), *(it + k - 1));
+		}
+	}
+}
+
 } // math
 } // altruct

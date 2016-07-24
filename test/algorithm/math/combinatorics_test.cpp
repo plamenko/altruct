@@ -78,3 +78,18 @@ TEST(combinatorics_test, next_combination) {
 	EXPECT_EQ(false, next_combination(v.begin(), v.end(), v.end()));
 	EXPECT_EQ((vector<int>{1, 2, 3, 4, 5}), v);
 }
+
+TEST(combinatorics_test, nth_permutation) {
+	char p0[] = "abcd";
+	int l0 = (int)strlen(p0);
+	for (int l = l0; l >= 0; l--) {
+		p0[l] = 0;
+		string s = p0;
+		for (int k = 0; k < 100; k++) {
+			string p = p0;
+			nth_permutation(p.begin(), p.end(), k);
+			EXPECT_EQ(s, p);
+			next_permutation(s.begin(), s.end());
+		}
+	}
+}
