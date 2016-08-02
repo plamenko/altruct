@@ -2,6 +2,7 @@
 
 #include "algorithm/math/base.h"
 #include "algorithm/math/recurrence.h"
+#include "structure/math/polynom.h"
 #include "structure/container/sqrt_map.h"
 
 namespace altruct {
@@ -34,7 +35,7 @@ T sum_pow(int p, I n, const std::vector<T>& B) {
 	T e0 = zeroT<T>::of(B[0]), e1 = identityT<T>::of(B[0]);
 	if (p == 0) return e1 * n;
 	if (p == 1) return e1 * n * (n + 1) / 2;
-	if (p == 2) return e1 * n * (n + 1) * (2 * n + 1) / 6;
+	if (p == 2) return e1 * n * (n + 1) * (n * 2 + 1) / 6;
 	if (p == 3) return sqT<T>(sum_pow<T, I>(1, n, B));
 	//Faulhaber's formula
 	T r = e0;
@@ -63,6 +64,24 @@ T sum_pow(int p, I n, T id = T(1)) {
 		B = bernoulli_b<T>(std::max(p, sz), id);
 	}
 	return sum_pow(p, n, B);
+}
+
+/**
+ * Calculates `Sum[k^m x^k, {k, 1, n}]` in `O(m^2)`.
+ *
+ * Note: `x != 1` must hold. For `x == 1` use `sum_pow`.
+ */
+template<typename T, typename I>
+T sum_powx(int m, I n, T x) {
+	T T0 = zeroT<T>::of(x), T1 = identityT<T>::of(x);
+	auto Tn = T1 * n;
+	polynom<T> p{ 0, 1 }, q{ 1 }, z{ 0, -1, 1 };
+	for (int k = 1; k <= m; k++) {
+		auto Tk = T1 * k;
+		p = z * p.derivative() - (polynom<T>{Tn, Tk - Tn}) * p;
+		q = z * q.derivative() - (polynom<T>{T0, Tk - T0}) * q;
+	}
+	return (powT(x, n) * p(x) - q(x)) / (powT(x - T1, m + 1)) - (m == 0 ? T1 : T0);
 }
 
 /**

@@ -38,6 +38,22 @@ TEST(sums_test, sum_pow) {
 	EXPECT_EQ((vector<field>{ 0, 1, 129, 2316, 18700, 96825, 376761, 1200304, 3297456, 8080425, 18080425 }), calc_sum_pow(7, 10));
 }
 
+vector<field> calc_sum_powx(int p, int n, field x) {
+	vector<field> v;
+	for (int k = 0; k <= n; k++) {
+		v.push_back(sum_powx<field>(p, k, x));
+	}
+	return v;
+
+}
+TEST(sums_test, sum_powx) {
+	EXPECT_EQ((vector<field>{0, 2, 6, 14, 30, 62, 126, 254, 510, 1022, 2046}), calc_sum_powx(0, 10, 2));
+	EXPECT_EQ((vector<field>{0, 3, 21, 102, 426, 1641, 6015, 21324, 73812, 250959, 841449}), calc_sum_powx(1, 10, 3));
+	EXPECT_EQ((vector<field>{0, 4, 68, 644, 4740, 30340, 177796, 980612, 5174916, 26408580, 131266180}), calc_sum_powx(2, 10, 4));
+	EXPECT_EQ((vector<field>{0, 5, 205, 3580, 43580, 434205, 3809205, 30606080, 230606080, 654434198, 420059128}), calc_sum_powx(3, 10, 5));
+	EXPECT_EQ((vector<field>{0, 6, 4614, 477006, 21710670, 629210670, 689904595, 229236226, 639265204, 946487221, 702254587}), calc_sum_powx(7, 10, 6));
+}
+
 TEST(sums_test, sum_sqrt) {
 	// Sum[[n/k], {k,1,n}]
 	auto f0 = [](int m) { return m; };
