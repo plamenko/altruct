@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\experimental\include\structure\math\vector2d.h" />
     <ClInclude Include="..\..\experimental\include\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\algorithm\collections\collections.h" />
+    <ClInclude Include="..\..\include\algorithm\hash\polynomial_hash.h" />
     <ClInclude Include="..\..\include\algorithm\hash\std_hash_combine.h" />
     <ClInclude Include="..\..\include\algorithm\hash\std_tuple_hash.h" />
     <ClInclude Include="..\..\include\algorithm\math\base.h" />

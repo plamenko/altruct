@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\hash\polynomial_hash_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\hash\std_hash_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp" />

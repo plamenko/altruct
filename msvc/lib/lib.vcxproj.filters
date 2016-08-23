@@ -215,5 +215,8 @@
     <ClInclude Include="..\..\include\io\writer.h">
       <Filter>include\io</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\hash\polynomial_hash.h">
+      <Filter>include\algorithm\hash</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
