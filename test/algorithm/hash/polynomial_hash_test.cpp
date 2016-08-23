@@ -34,41 +34,41 @@ TEST(polynomial_hash_test, polynomial_hash_ensure) {
 	phash2 h;
 	EXPECT_EQ(0, h.W[0].size());
 	EXPECT_EQ(0, h.W[1].size());
-	h.append(1111, 10);
+	h.add(1111, 10);
 	EXPECT_EQ(10 + 1, h.W[0].size());
 	EXPECT_EQ(10 + 1, h.W[1].size());
-	h.append(2222, 5);
+	h.add(2222, 5);
 	EXPECT_EQ(10 + 1, h.W[0].size());
 	EXPECT_EQ(10 + 1, h.W[1].size());
-	h.append(3333, 20);
+	h.add(3333, 20);
 	EXPECT_EQ(20 + 1, h.W[0].size());
 	EXPECT_EQ(20 + 1, h.W[1].size());
-	h.append(4444, 19);
+	h.add(4444, 19);
 	EXPECT_EQ(20 + 1, h.W[0].size());
 	EXPECT_EQ(20 + 1, h.W[1].size());
 }
 
-TEST(polynomial_hash_test, polynomial_hash_append) {
+TEST(polynomial_hash_test, polynomial_hash_add) {
 	phash2 h, h2;
-	h.append(1111, 10);
+	h.add(1111, 10);
 	EXPECT_EQ(363095428, h.h[0]);
 	EXPECT_EQ(500424796, h.h[1]);
-	h.append(2222, 5);
+	h.add(2222, 5);
 	EXPECT_EQ(94197494, h.h[0]);
 	EXPECT_EQ(596589649, h.h[1]);
 
-	h.append(h2, 7);
+	h.add(h2, 7);
 	EXPECT_EQ(94197494, h.h[0]);
 	EXPECT_EQ(596589649, h.h[1]);
 	
-	h2.append(3333, 20);
+	h2.add(3333, 20);
 	EXPECT_EQ(461023273, h2.h[0]);
 	EXPECT_EQ(648151220, h2.h[1]);
-	h2.append(4444, 19);
+	h2.add(4444, 19);
 	EXPECT_EQ(400641131, h2.h[0]);
 	EXPECT_EQ(639934933, h2.h[1]);
 
-	h.append(h2, 7);
+	h.add(h2, 7);
 	EXPECT_EQ(437201974, h.h[0]);
 	EXPECT_EQ(641593066, h.h[1]);
 }
@@ -76,15 +76,15 @@ TEST(polynomial_hash_test, polynomial_hash_append) {
 TEST(polynomial_hash_test, polynomial_hash_subtract) {
 	phash2 h1{ 2414915, 934336517 };
 	phash2 h2 = h1;
-	h2.append(44, 4);
-	h2.append(55, 5);
+	h2.add(44, 4);
+	h2.add(55, 5);
 	h2.subtract(h1, 4);
 	EXPECT_EQ(503775743, h2.h[0]);
 	EXPECT_EQ(790138442, h2.h[1]);
 
 	phash2 h;
-	h.append(44, 0);
-	h.append(55, 1);
+	h.add(44, 0);
+	h.add(55, 1);
 	EXPECT_EQ(503775743, h.h[0]);
 	EXPECT_EQ(790138442, h.h[1]);
 }

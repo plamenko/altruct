@@ -72,7 +72,7 @@ public:
 		return true;
 	}
 
-	polynomial_hash& append(I rhs, size_t pos) {
+	polynomial_hash& add(I rhs, size_t pos) {
 		_ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
 			h[k] = (h[k] + rhs * W[k][pos]) % M[k];
@@ -81,7 +81,7 @@ public:
 	}
 
 	// H = H + (RHS << pos)
-	polynomial_hash& append(const polynomial_hash& rhs, size_t pos) {
+	polynomial_hash& add(const polynomial_hash& rhs, size_t pos) {
 		_ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
 			h[k] = (h[k] + rhs.h[k] * W[k][pos]) % M[k];
@@ -111,7 +111,7 @@ std::vector<I> polynomial_hash<K, I>::WI[K];
 /**
  * Cumulative hashes of a sequence (e.g. of a string).
  *
- * @param HASH - the underlying hash type that supports append and subtract
+ * @param HASH - the underlying hash type that supports `add` and `subtract`
  *               (e.g. `polynomial_hash`).
  * 
  * Space complexity: `O(n)`.
@@ -132,7 +132,7 @@ public:
 		HASH h;
 		size_t pos = 0;
 		for (It it = begin; it != end; ++it) {
-			h.append(*it, pos++);
+			h.add(*it, pos++);
 			vh.push_back(h);
 		}
 	}
@@ -144,7 +144,7 @@ public:
 	template<typename I>
 	void push_back(I rhs) {
 		HASH h = vh.empty() ? HASH() : vh.back();
-		h.append(rhs, vh.size());
+		h.add(rhs, vh.size());
 		vh.push_back(h);
 	}
 
@@ -154,7 +154,7 @@ public:
 
 	HASH get(size_t begin, size_t end) {
 		HASH r;
-		if (end > 0) r.append(vh.at(end - 1), 0);
+		if (end > 0) r.add(vh.at(end - 1), 0);
 		if (begin > 0) r.subtract(vh.at(begin - 1), begin);
 		return r;
 	}
