@@ -127,6 +127,9 @@
     <ClCompile Include="..\..\test\algorithm\hash\polynomial_hash_test.cpp">
       <Filter>algorithm\hash</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\search\kmp_search_test.cpp">
+      <Filter>algorithm\search</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

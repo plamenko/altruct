@@ -218,5 +218,8 @@
     <ClInclude Include="..\..\include\algorithm\hash\polynomial_hash.h">
       <Filter>include\algorithm\hash</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\search\kmp_search.h">
+      <Filter>include\algorithm\search</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

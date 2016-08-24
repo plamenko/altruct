@@ -53,6 +53,7 @@
     <ClInclude Include="..\..\include\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
     <ClInclude Include="..\..\include\algorithm\search\binary_search.h" />
+    <ClInclude Include="..\..\include\algorithm\search\kmp_search.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
     <ClInclude Include="..\..\include\io\fast_io.h" />
     <ClInclude Include="..\..\include\io\reader.h" />
