@@ -152,6 +152,8 @@ void mersenne_twister_sample_4(const char* filename) {
 	unsigned long k9 = rng4.randInt();
 
 	cout << "Restored from a stream:  " << k7 << ", " << k8 << ", " << k9 << endl;
+
+	remove(filename);
 }
 
 void mersenne_twister_sample_5() {

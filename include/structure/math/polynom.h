@@ -4,6 +4,7 @@
 #include <limits>
 #include <type_traits>
 #include <vector>
+#include <algorithm>
 
 namespace altruct {
 namespace math {
