@@ -7,10 +7,10 @@
 using namespace std;
 using namespace altruct::hash;
 
-typedef polynomial_hash<2, int64_t> phash2;
-template<> int64_t phash2::M[2] = { 758986603, 1000000007 };
-template<> int64_t phash2::B[2] = { 36759071, 32547971 };
-template<> int64_t phash2::BI[2] = { 366621061, 624567078 };
+typedef polynomial_hash<2> phash2;
+template<> int32_t phash2::M[2] = { 758986603, 1000000007 };
+template<> int32_t phash2::B[2] = { 36759071, 32547971 };
+template<> int32_t phash2::BI[2] = { 366621061, 624567078 };
 
 TEST(polynomial_hash_test, polynomial_hash_constructor) {
 	phash2 h0;
@@ -111,7 +111,19 @@ TEST(polynomial_hash_test, polynomial_hash_comparison) {
 	EXPECT_TRUE((phash2{ 123, 456 }) < (phash2{ 999, 789 }));
 }
 
-TEST(polynomial_hash_test, cumulative_hash) {
+TEST(polynomial_hash_test, cumulative_hash_constructor) {
+	string s = "banana";
+	cumulative_hash<phash2> h1(s.begin(), s.end());
+	cumulative_hash<phash2> h2;
+	for (const auto& c : s) h2.push_back(c);
+	for (size_t b = 0; b < s.size(); b++) {
+		for (size_t e = b; e <= s.size(); e++) {
+			EXPECT_EQ(h1.get(b, e), h2.get(b, e)) << "[" << b << ", " << e << ")";
+		}
+	}
+}
+
+TEST(polynomial_hash_test, cumulative_hash_online) {
 	cumulative_hash<phash2> h;
 	EXPECT_EQ(0, h.size());
 	EXPECT_EQ(phash2{}, h.get(0, 0));

@@ -13,7 +13,7 @@ namespace hash {
  *
  * `M`, `B`, `BI` must be defined by the client.
  */
-template<size_t K, typename I = int64_t>
+template<size_t K, typename I = int32_t, typename IT = int64_t>
 class polynomial_hash {
 public:
 	static I M[K];  // modulos
@@ -23,6 +23,9 @@ public:
 	static std::vector<I> W[K];
 	static std::vector<I> WI[K];
 
+	static I mul(I a, I b, I m) { return (I)((a * (IT)b) % m); }
+	static I mul(I s, I a, I b, I m) { return (I)((s + a * (IT)b) % m); }
+
 	static void _ensure(std::vector<I>& w, size_t sz, I b, I m) {
 		size_t i0 = w.size();
 		w.resize(sz);
@@ -30,13 +33,14 @@ public:
 			w[i0++] = 1;
 		}
 		for (size_t i = i0; i < sz; i++) {
-			w[i] = (w[i - 1] * b) % m;
+			w[i] = mul(w[i - 1], b, m);
 		}
 	}
 
-	static void _ensure(size_t size) {
+	static void ensure(size_t size) {
 		size_t curr_size = W[0].size();
 		if (curr_size >= size) return;
+		size = std::max(size, curr_size + curr_size / 2);
 		for (int k = 0; k < K; k++) {
 			_ensure(W[k], size, B[k], M[k]);
 			_ensure(WI[k], size, BI[k], M[k]);
@@ -73,27 +77,27 @@ public:
 	}
 
 	polynomial_hash& add(I rhs, size_t pos) {
-		_ensure(pos + 1);
+		ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
-			h[k] = (h[k] + rhs * W[k][pos]) % M[k];
+			h[k] = mul(h[k], rhs, W[k][pos], M[k]);
 		}
 		return *this;
 	}
 
 	// H = H + (RHS << pos)
 	polynomial_hash& add(const polynomial_hash& rhs, size_t pos) {
-		_ensure(pos + 1);
+		ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
-			h[k] = (h[k] + rhs.h[k] * W[k][pos]) % M[k];
+			h[k] = mul(h[k], rhs.h[k], W[k][pos], M[k]);
 		}
 		return *this;
 	}
 
 	// H = (H - RHS) >> pos
 	polynomial_hash& subtract(const polynomial_hash& rhs, size_t pos) {
-		_ensure(pos + 1);
+		ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
-			h[k] = (h[k] + M[k] - rhs.h[k]) * WI[k][pos] % M[k];
+			h[k] = mul(h[k] + M[k] - rhs.h[k], WI[k][pos], M[k]);
 		}
 		return *this;
 	}
@@ -103,10 +107,10 @@ public:
 	}
 };
 
-template<size_t K, typename I>
-std::vector<I> polynomial_hash<K, I>::W[K];
-template<size_t K, typename I>
-std::vector<I> polynomial_hash<K, I>::WI[K];
+template<size_t K, typename I, typename IT>
+std::vector<I> polynomial_hash<K, I, IT>::W[K];
+template<size_t K, typename I, typename IT>
+std::vector<I> polynomial_hash<K, I, IT>::WI[K];
 
 /**
  * Cumulative hashes of a sequence (e.g. of a string).
@@ -131,6 +135,7 @@ public:
 	cumulative_hash(It begin, It end) {
 		HASH h;
 		size_t pos = 0;
+		h.ensure(std::distance(begin, end));
 		for (It it = begin; it != end; ++it) {
 			h.add(*it, pos++);
 			vh.push_back(h);

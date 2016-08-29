@@ -1,5 +1,7 @@
 #pragma once
 
+#include "algorithm/collections/collections.h"
+
 #include <vector>
 #include <iterator>
 #include <functional>
@@ -58,16 +60,11 @@ public:
 		_total = 0;
 	}
 
-	template<typename C>
-	void reserve_more(C& c, size_t sz) {
-		c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
-	}
-
 	template<typename It, typename F>
 	index_t add_all(It begin, It end, F ordinal) {
 		auto len = distance(begin, end);
-		reserve_more(_string, len);
-		reserve_more(_nodes, len);
+		collections::reserve_more(_string, len);
+		collections::reserve_more(_nodes, len);
 		index_t c = 0;
 		for (auto it = begin; it != end; ++it) {
 			c += add(*it, ordinal);

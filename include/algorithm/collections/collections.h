@@ -112,5 +112,14 @@ int compare(It b1, It e1, It b2, It e2, size_t max_len = -1) {
 	return 0;
 }
 
+/**
+ * Reserves space for at least `c.size() + sz` elements,
+ * while maintaining exponential growth.
+ */
+template<typename C>
+void reserve_more(C& c, size_t sz) {
+	c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
+}
+
 } // collections
 } // altruct
