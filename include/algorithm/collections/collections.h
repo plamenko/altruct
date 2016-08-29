@@ -94,5 +94,23 @@ std::vector<std::pair<T, int>> run_length(const C& c) {
 	return run_length(c.begin(), c.end());
 }
 
+/**
+ * Compares two sequences.
+ *
+ * @param max_len - compares at most `max_len` elements.
+ * @return - integer `-1`, `0`, `+1`, based on the comparison result.
+ */
+template<typename It>
+int compare(It b1, It e1, It b2, It e2, size_t max_len = -1) {
+	while (b1 != e1 && b2 != e2 && max_len != 0) {
+		if (!(*b1 == *b2)) return (*b1 < *b2) ? -1 : +1;
+		++b1, ++b2, --max_len;
+	}
+	if (max_len == 0) return 0;
+	if (b2 != e2) return -1;
+	if (b1 != e1) return +1;
+	return 0;
+}
+
 } // collections
 } // altruct
