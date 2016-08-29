@@ -14,30 +14,30 @@ namespace container {
  * Time complexities:
  *   build: `O(n)`
  */
-template<int ALPHABET_SIZE = 26>
+template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ORDINAL_T = char>
 class palindrome_tree {
+	typedef INDEX_T index_t;
+	typedef ORDINAL_T ordinal_t;
 public:
-	typedef char ordinal_t;
-
 	// node that represents a palindromic substring
 	struct node_t {
-		size_t len;      // length of this palindromic substring
-		size_t pos;      // position of the first occurence of this palindromic substring within the string
-		size_t cnt;      // multiplicity of this palindromic substring
-		size_t depth;    // depth in the suffix chain of this node
-		size_t suff;     // node-index of the largest palindromic suffix of this node
-		size_t next[ALPHABET_SIZE]; // "A".next['x'] --> "xAx"
+		index_t len;      // length of this palindromic substring
+		index_t pos;      // position of the first occurence of this palindromic substring within the string
+		index_t cnt;      // multiplicity of this palindromic substring
+		index_t depth;    // depth in the suffix chain of this node
+		index_t suff;     // node-index of the largest palindromic suffix of this node
+		index_t next[ALPHABET_SIZE]; // "A".next['x'] --> "xAx"
 	};
 
-	static const size_t NIL = 0;
-	static const size_t NEGAT = 1;
-	static const size_t EMPTY = 2;
-	static const size_t RESERVED = 3;
+	static const index_t NIL = 0;
+	static const index_t NEGAT = 1;
+	static const index_t EMPTY = 2;
+	static const index_t RESERVED = 3;
 
 	std::vector<ordinal_t> _string; // string of letter ordinals (e.g. 'a' is 0)
 	std::vector<node_t> _nodes;     // node container
-	size_t _suff;                   // node-index of the current longest palindromic suffix
-	size_t _total;                  // total number of palindromic substrings (counting multiplicities)
+	index_t _suff;                  // node-index of the current longest palindromic suffix
+	int64_t _total;                 // total number of palindromic substrings (counting multiplicities), can be quadratic in string length
 
 	palindrome_tree() {
 		_init();
@@ -58,9 +58,17 @@ public:
 		_total = 0;
 	}
 
+	template<typename C>
+	void reserve_more(C& c, size_t sz) {
+		c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
+	}
+
 	template<typename It, typename F>
-	size_t add_all(It begin, It end, F ordinal) {
-		size_t c = 0;
+	index_t add_all(It begin, It end, F ordinal) {
+		auto len = distance(begin, end);
+		reserve_more(_string, len);
+		reserve_more(_nodes, len);
+		index_t c = 0;
 		for (auto it = begin; it != end; ++it) {
 			c += add(*it, ordinal);
 		}
@@ -68,40 +76,40 @@ public:
 	}
 
 	template<typename T, typename F>
-	size_t add(const T& t, F ordinal) {
+	index_t add(const T& t, F ordinal) {
 		return add(ordinal(t));
 	}
 	
-	size_t add(ordinal_t ord) {
+	index_t add(ordinal_t ord) {
 		_string.push_back(ord);
-		auto i = _find_suffix(_suff, ord);
+		index_t i = _find_suffix(_suff, ord);
 		_suff = _nodes[i].next[ord];
 		if (_suff != NIL) {
 			_nodes[_suff].cnt++;
 			_total += _nodes[_suff].depth;
 			return 0;
 		}
-		_suff = _nodes.size();
+		index_t suff2 = _find_suffix2(i, ord);
+		_suff = (index_t)_nodes.size();
 		_nodes.push_back({});
-		_nodes[i].next[ord] = _suff;
-		auto suff2 = _find_suffix2(i, ord);
 		_nodes[_suff].len = _nodes[i].len + 2;
-		_nodes[_suff].pos = _string.size() - _nodes[_suff].len;
+		_nodes[_suff].pos = (index_t)_string.size() - _nodes[_suff].len;
 		_nodes[_suff].cnt = 1;
 		_nodes[_suff].suff = suff2;
 		_nodes[_suff].depth = _nodes[suff2].depth + 1;
+		_nodes[i].next[ord] = _suff;
 		_total += _nodes[_suff].depth;
 		return 1;
 	}
 
-	size_t _find_suffix2(size_t i, ordinal_t ord) {
+	index_t _find_suffix2(index_t i, ordinal_t ord) {
 		if (i == NEGAT) return EMPTY;
 		i = _find_suffix(_nodes[i].suff, ord);
 		return _nodes[i].next[ord];
 	}
 
-	size_t _find_suffix(size_t i, ordinal_t ord) {
-		auto sz = _string.size();
+	index_t _find_suffix(index_t i, ordinal_t ord) {
+		index_t sz = (index_t)_string.size();
 		while (sz < _nodes[i].len + 2 || _string[sz - _nodes[i].len - 2] != ord) {
 			i = _nodes[i].suff;
 		}
@@ -110,34 +118,34 @@ public:
 
 	// This should be called only once after all elements are added!
 	void propagate() {
-		for (auto i = _nodes.size() - 1; i >= RESERVED; i--) {
-			auto suff = _nodes[i].suff;
+		for (index_t i = (index_t)_nodes.size() - 1; i >= RESERVED; i--) {
+			index_t suff = _nodes[i].suff;
 			_nodes[suff].cnt += _nodes[i].cnt;
 		}
 	}
 
 	// Returns the number of total palindromic substrings, counting their multiplicities.
-	size_t total() const {
+	int64_t total() const {
 		return _total;
 	}
 
 	// Returns the number of distinct palindromic substrings, each counted only once.
-	size_t distinct() const {
-		return _nodes.size() - RESERVED;
+	index_t distinct() const {
+		return (index_t)_nodes.size() - RESERVED;
 	}
 
 	// Returns the index of the first node.
-	size_t first() const {
+	index_t first() const {
 		return RESERVED;
 	}
 
 	// Returns the number of nodes.
-	size_t size() const {
-		return _nodes.size();
+	index_t size() const {
+		return (index_t)_nodes.size();
 	}
 
 	// Accesses node by its index.
-	node_t& operator[] (size_t index) {
+	node_t& operator[] (index_t index) {
 		return _nodes[index];
 	}
 };

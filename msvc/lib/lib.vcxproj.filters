@@ -221,5 +221,8 @@
     <ClInclude Include="..\..\include\algorithm\search\kmp_search.h">
       <Filter>include\algorithm\search</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
