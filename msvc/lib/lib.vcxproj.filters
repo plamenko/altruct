@@ -224,5 +224,11 @@
     <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\container\range_minimum_query.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

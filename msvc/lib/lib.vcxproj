@@ -29,6 +29,8 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h" />
+    <ClInclude Include="..\..\experimental\include\structure\container\range_minimum_query.h" />
+    <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h" />
     <ClInclude Include="..\..\experimental\include\structure\math\vector2d.h" />
     <ClInclude Include="..\..\experimental\include\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\algorithm\collections\collections.h" />
