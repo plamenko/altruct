@@ -10,6 +10,9 @@ namespace container {
 /**
  * Range minimum query structure.
  *
+ * Note: to guarantee the given time and space complexities,
+ * `BLOCK_SIZE` must be at most `log2(n)/2`. See the table below.
+ *
  * Space complexity: `O(n)`.
  * Time complexities:
  *   build: `O(n)`
@@ -22,7 +25,25 @@ public:
 	typedef COMPARE_T compare_t;
 	typedef INDEX_T index_t;
 	typedef char small_index_t;
-	
+
+	/**
+	 *       Number of elements  BLOCK_SIZE  Time & Memory
+	 *       4^L <= n < 4^(L+1)        L     L^2 Catalan[L]
+	 *         4             16        1                  1
+	 *        16             64        2                  8
+	 *        64            256        3                 45
+	 *       256           1024        4                224
+	 *      1024           4096        5               1050
+	 *      4096          16384        6               4752
+	 *     16384          65536        7              21021
+	 *     65536         262144        8              91520
+	 *    262144        1048576        9             393822
+	 *   1048576        4194304       10            1679600
+	 *   4194304       16777216       11            7113106
+	 *  16777216       67108864       12           29953728
+	 *  67108864      268435456       13          125550100
+	 * 268435456     1073741824       14          524190240
+	 */
 	struct tree_t {
 		small_index_t idx[BLOCK_SIZE][BLOCK_SIZE];
 	};
