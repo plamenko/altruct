@@ -118,6 +118,7 @@ int compare(It b1, It e1, It b2, It e2, size_t max_len = -1) {
  */
 template<typename C>
 void reserve_more(C& c, size_t sz) {
+	if (c.size() + sz <= c.capacity()) return;
 	c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
 }
 

@@ -56,3 +56,46 @@ TEST(collections_test, compare) {
 	EXPECT_EQ(0, compare(s1.begin(), s1.end(), s4.begin(), s4.end(), 6));
 	EXPECT_EQ(0, compare(s1.begin(), s1.end(), s4.begin(), s4.end(), 0));
 }
+
+TEST(collections_test, reserve_more) {
+	vector<int> v;
+	// set initial capacity to 100
+	v.reserve(100);
+	EXPECT_EQ(0, v.size());
+	EXPECT_EQ(100, v.capacity());
+	
+	// no-op, vector already has enough capacity to accomodate 10 new elements
+	reserve_more(v, 10);
+	EXPECT_EQ(0, v.size());
+	EXPECT_EQ(100, v.capacity());
+	
+	// vector doesn't have enough capacity to accomodate 110 new elements, perform exponential growth
+	reserve_more(v, 110);
+	EXPECT_EQ(0, v.size());
+	EXPECT_EQ(150, v.capacity());
+
+	// vector doesn't have enough capacity to accomodate 1000 new elements, reserve necessary space
+	reserve_more(v, 1000);
+	EXPECT_EQ(0, v.size());
+	EXPECT_EQ(1000, v.capacity());
+
+	// no reallocation, vector already has enough capacity to accomodate 900 new elements
+	for (int i = 0; i < 900; i++) v.push_back(i);
+	EXPECT_EQ(900, v.size());
+	EXPECT_EQ(1000, v.capacity());
+
+	// vector doesn't have enough capacity to accomodate 500 new elements, perform exponential growth
+	reserve_more(v, 500);
+	EXPECT_EQ(900, v.size());
+	EXPECT_EQ(1500, v.capacity());
+
+	// vector doesn't have enough capacity to accomodate 5000 new elements, reserve necessary space
+	reserve_more(v, 5000);
+	EXPECT_EQ(900, v.size());
+	EXPECT_EQ(5900, v.capacity());
+
+	// no reallocation, vector already has enough capacity to accomodate 5000 new elements
+	for (int i = 0; i < 5000; i++) v.push_back(i);
+	EXPECT_EQ(5900, v.size());
+	EXPECT_EQ(5900, v.capacity());
+}
