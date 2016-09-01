@@ -16,10 +16,10 @@ namespace container {
  * Time complexities:
  *   build: `O(n)`
  */
-template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ORDINAL_T = char>
+template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ALPHA_T = char>
 class palindrome_tree {
 	typedef INDEX_T index_t;
-	typedef ORDINAL_T ordinal_t;
+	typedef ALPHA_T alpha_t;
 public:
 	// node that represents a palindromic substring
 	struct node_t {
@@ -36,7 +36,7 @@ public:
 	static const index_t EMPTY = 2;
 	static const index_t RESERVED = 3;
 
-	std::vector<ordinal_t> _string; // string of letter ordinals (e.g. 'a' is 0)
+	std::vector<alpha_t> _string;   // string of letter ordinals (e.g. 'a' is 0)
 	std::vector<node_t> _nodes;     // node container
 	index_t _suff;                  // node-index of the current longest palindromic suffix
 	int64_t _total;                 // total number of palindromic substrings (counting multiplicities), can be quadratic in string length
@@ -77,16 +77,16 @@ public:
 		return add(ordinal(t));
 	}
 	
-	index_t add(ordinal_t ord) {
-		_string.push_back(ord);
-		index_t i = _find_suffix(_suff, ord);
-		_suff = _nodes[i].next[ord];
+	index_t add(alpha_t let) {
+		_string.push_back(let);
+		index_t i = _find_suffix(_suff, let);
+		_suff = _nodes[i].next[let];
 		if (_suff != NIL) {
 			_nodes[_suff].cnt++;
 			_total += _nodes[_suff].depth;
 			return 0;
 		}
-		index_t suff2 = _find_suffix2(i, ord);
+		index_t suff2 = _find_suffix2(i, let);
 		_suff = (index_t)_nodes.size();
 		_nodes.push_back({});
 		_nodes[_suff].len = _nodes[i].len + 2;
@@ -94,20 +94,20 @@ public:
 		_nodes[_suff].cnt = 1;
 		_nodes[_suff].suff = suff2;
 		_nodes[_suff].depth = _nodes[suff2].depth + 1;
-		_nodes[i].next[ord] = _suff;
+		_nodes[i].next[let] = _suff;
 		_total += _nodes[_suff].depth;
 		return 1;
 	}
 
-	index_t _find_suffix2(index_t i, ordinal_t ord) {
+	index_t _find_suffix2(index_t i, alpha_t let) {
 		if (i == NEGAT) return EMPTY;
-		i = _find_suffix(_nodes[i].suff, ord);
-		return _nodes[i].next[ord];
+		i = _find_suffix(_nodes[i].suff, let);
+		return _nodes[i].next[let];
 	}
 
-	index_t _find_suffix(index_t i, ordinal_t ord) {
+	index_t _find_suffix(index_t i, alpha_t let) {
 		index_t sz = (index_t)_string.size();
-		while (sz < _nodes[i].len + 2 || _string[sz - _nodes[i].len - 2] != ord) {
+		while (sz < _nodes[i].len + 2 || _string[sz - _nodes[i].len - 2] != let) {
 			i = _nodes[i].suff;
 		}
 		return i;
