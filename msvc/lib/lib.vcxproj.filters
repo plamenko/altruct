@@ -230,5 +230,8 @@
     <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\container\aho_corasick_trie.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h" />
+    <ClInclude Include="..\..\experimental\include\structure\container\aho_corasick_trie.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\range_minimum_query.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h" />
