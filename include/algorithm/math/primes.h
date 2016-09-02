@@ -276,6 +276,18 @@ std::vector<int> prime_exponents(const std::vector<std::pair<P, int>> &vf) {
 }
 
 /**
+ * Calculates number of divisors from a factorization.
+ */
+template<typename P>
+int divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
+	int r = 1;
+	for (const auto& f : vf) {
+		r *= f.second + 1;
+	}
+	return r;
+}
+
+/**
  * Calculates Euler Phi from a factorization.
  */
 template<typename P>
