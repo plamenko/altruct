@@ -100,8 +100,8 @@ std::vector<std::pair<T, int>> run_length(const C& c) {
  * @param max_len - compares at most `max_len` elements.
  * @return - integer `-1`, `0`, `+1`, based on the comparison result.
  */
-template<typename It>
-int compare(It b1, It e1, It b2, It e2, size_t max_len = -1) {
+template<typename It1, typename It2>
+int compare(It1 b1, It1 e1, It2 b2, It2 e2, size_t max_len = -1) {
 	while (b1 != e1 && b2 != e2 && max_len != 0) {
 		if (!(*b1 == *b2)) return (*b1 < *b2) ? -1 : +1;
 		++b1, ++b2, --max_len;
