@@ -167,6 +167,13 @@ TEST(primes_test, factor_integer) {
 	EXPECT_EQ((vector<int>{5, 2, 7}), prime_factors(vf9800));
 	EXPECT_EQ((vector<int>{1, 2}), prime_exponents(vf20));
 	EXPECT_EQ((vector<int>{2, 3, 2}), prime_exponents(vf9800));
+	
+	EXPECT_EQ(1, divisor_sigma0(vf0));
+	EXPECT_EQ(1, divisor_sigma0(vf1));
+	EXPECT_EQ(2, divisor_sigma0(vf2));
+	EXPECT_EQ(2, divisor_sigma0(vf17));
+	EXPECT_EQ(6, divisor_sigma0(vf20));
+	EXPECT_EQ(36, divisor_sigma0(vf9800));
 }
 
 TEST(primes_test, carmichael_lambda) {
