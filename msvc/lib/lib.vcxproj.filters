@@ -233,5 +233,8 @@
     <ClInclude Include="..\..\experimental\include\structure\container\aho_corasick_trie.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\permutation.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -73,6 +73,7 @@
     <ClInclude Include="..\..\include\structure\math\matrix.h" />
     <ClInclude Include="..\..\include\structure\math\modulo.h" />
     <ClInclude Include="..\..\include\structure\math\nimber.h" />
+    <ClInclude Include="..\..\include\structure\math\permutation.h" />
     <ClInclude Include="..\..\include\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\structure\math\prime_holder.h" />
     <ClInclude Include="..\..\include\structure\math\quadratic.h" />

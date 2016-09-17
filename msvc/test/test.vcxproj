@@ -64,6 +64,7 @@
     <ClCompile Include="..\..\test\structure\math\modulox_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\nimber_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\permutation_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polymod_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\prime_holder_test.cpp" />
