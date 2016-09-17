@@ -131,6 +131,11 @@ public:
 		return (index_t)_nodes.size() - RESERVED;
 	}
 
+	// Returns the index of the node representing the longest palindromic suffix.
+	index_t longest_suffix() const {
+		return _suff;
+	}
+
 	// Returns the index of the first node.
 	index_t first() const {
 		return RESERVED;
@@ -145,6 +150,10 @@ public:
 	node_t& operator[] (index_t index) {
 		return _nodes[index];
 	}
+
+	static alpha_t ordinal_digit(char c) { return alpha_t(c - '0'); }
+	static alpha_t ordinal_lower_alpha(char c) { return alpha_t(c - 'a'); }
+	static alpha_t ordinal_upper_alpha(char c) { return alpha_t(c - 'A'); }
 };
 
 } // container
