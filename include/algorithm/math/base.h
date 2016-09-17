@@ -145,7 +145,7 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 template<typename T>
 T gcd_max(T a, T b) {
 	T e0 = zeroT<T>::of(b);
-	if (b == e0) return e0;
+	if (b == e0) return a;
 	T go = e0, g = 1;
 	while (go != g) {
 		go = g; g = gcd(g * a, b);
