@@ -120,6 +120,47 @@ TEST(permutation_test, power) {
 	EXPECT_EQ(pi * pi * pi, p.pow(-3));
 }
 
+perm split_to_cycles(const std::vector<int>& a, const std::vector<int>& lengths) {
+	int i = 0;
+	perm::cycles_t vc;
+	for (auto l : lengths) {
+		perm::cycle_t c;
+		while (l-- > 0) c.push_back(a[i++]);
+		vc.push_back(c);
+	}
+	return perm(vc, (int)a.size());
+}
+
+TEST(permutation_test, root) {
+	const auto a = perm::identity_line(100);
+	const perm p14 = split_to_cycles(a, { 2, 8, 20, 9, 49 }).pow(14);
+	auto p14_14 = p14.root(14);
+	EXPECT_EQ(p14.to_line(), p14_14.pow(14).to_line());
+	auto p14_7 = p14.root(7);
+	EXPECT_EQ(p14.to_line(), p14_7.pow(7).to_line());
+	auto p14_2 = p14.root(2);
+	EXPECT_EQ(p14.to_line(), p14_2.pow(2).to_line());
+
+	auto p14_14_0 = p14.root(14, 0);
+	EXPECT_EQ(0, p14_14_0.to_transpositions().size() % 2);
+	EXPECT_EQ(p14.to_line(), p14_14_0.pow(14).to_line());
+	auto p14_7_0 = p14.root(7, 0);
+	EXPECT_EQ(0, p14_7_0.to_transpositions().size() % 2);
+	EXPECT_EQ(p14.to_line(), p14_7_0.pow(7).to_line());
+	auto p14_2_0 = p14.root(2, 0);
+	EXPECT_EQ(0, p14_2_0.to_transpositions().size() % 2);
+	EXPECT_EQ(p14.to_line(), p14_2_0.pow(2).to_line());
+
+	auto p14_14_1 = p14.root(14, 1);
+	EXPECT_EQ(1, p14_14_1.to_transpositions().size() % 2);
+	EXPECT_EQ(p14.to_line(), p14_14_1.pow(14).to_line());
+	auto p14_7_1 = p14.root(7, 1);
+	EXPECT_EQ(perm(), p14_7_1) << "there should be no such root";
+	auto p14_2_1 = p14.root(2, 1);
+	EXPECT_EQ(1, p14_2_1.to_transpositions().size() % 2);
+	EXPECT_EQ(p14.to_line(), p14_2_1.pow(2).to_line());
+}
+
 TEST(permutation_test, conversion) {
 	const perm p(perm::cycles_t{{ 0, 2, 3 }, { 5, 6 }}, 7);
 	EXPECT_EQ((perm::cycles_t{ { 0, 2, 3 }, { 5, 6 } }), p.to_cycles());

@@ -67,16 +67,16 @@ public:
 	// applies this permutation onto a line
 	line_t& apply_to(line_t& line) const { return apply_cycles_to_line(line, cycles, n); }
 
-	// this permutation applied `t` times
-	permutation pow(int64_t t) const {
-		if (t < 0) return inv().pow(-t);
+	// this permutation applied `T` times
+	permutation pow(int64_t T) const {
+		if (T < 0) return inv().pow(-T);
 		cycles_t vc;
 		std::vector<bool> u(n);
 		for (const auto& cycle : cycles) {
 			I L = (I)cycle.size();
 			for (I i = 0; i < L; i++) {
 				cycle_t c;
-				for (I j = i; !u[cycle[j]]; j = (I)((j + t) % L)) {
+				for (I j = i; !u[cycle[j]]; j = I((j + T) % L)) {
 					c.push_back(cycle[j]);
 					u[cycle[j]] = true;
 				}
@@ -93,6 +93,50 @@ public:
 			std::reverse(c.begin() + 1, c.end());
 		}
 		return permutation(vc, n);
+	}
+
+	// `T-th` root of this permutation, with specified parity 
+	// @param parity - {-1: optimal, 0: force_even, 1: force_odd}
+	permutation root(int64_t T, int parity = -1) const {
+		auto vc = to_all_cycles();
+		std::vector<cycles_t> len_to_cycles(n + 1);
+		for (const auto& c : vc) len_to_cycles[c.size()].push_back(c);
+		// calc min number of transpositions, and parity changing length
+		I parity_len = -1;
+		I transpositions = 0;
+		for (I l = 0; l <= n; l++) {
+			if (len_to_cycles[l].empty()) continue;
+			I m = (I)len_to_cycles[l].size();
+			int64_t L = l * gcd_max<int64_t>(l, T);
+			int64_t g = gcd(L, T), G = gcd(L * 2, T);
+			if (m % g != 0) return permutation(); // root doesn't exist
+			if (G == g * 2 && m >= G) parity_len = l;
+			transpositions += I((L - 1) * (m / g));
+		}
+		int wrong_parity = (parity >= 0) && (transpositions % 2 != parity);
+		if (wrong_parity && parity_len == -1) return permutation(); // root doesn't exist
+		// build result
+		permutation result(n);
+		for (I l = 0; l <= n; l++) {
+			if (len_to_cycles[l].empty()) continue;
+			I m = (I)len_to_cycles[l].size();
+			int64_t L = l * gcd_max<int64_t>(l, T);
+			int64_t g = gcd(L, T), G;
+			for (I i = 0; i < m; i += I(G)) {
+				G = (wrong_parity && l == parity_len && i == 0) ? g * 2 : g;
+				int64_t o = (T / G) % l;
+				// combine G l-cycles into one G*l-cycle
+				cycle_t c(G * l);
+				for (I h = 0; h < l; h++) {
+					I k = I((h * o) % l * G);
+					for (I j = 0; j < G; j++) {
+						c[k + j] = len_to_cycles[l][i + j][h];
+					}
+				}
+				result.cycles.push_back(c);
+			}
+		}
+		return result;
 	}
 
 	// static methods
