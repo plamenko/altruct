@@ -135,6 +135,25 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
 }
 
 /**
+ * Maximal divisor `g` of `b`, such that `squarefree_kernel(g)` divides `a`.
+ *
+ * Formula: `g = gcd_max(a, b) = gcd(a ^ inf, b)`
+ * The following holds: `gcd(a, b / g) = 1`
+ * In comparison, regular `gcd` function returns the
+ * maximal divisor `g` of `b`, such that `g` divides `a`.
+ */
+template<typename T>
+T gcd_max(T a, T b) {
+	T e0 = zeroT<T>::of(b);
+	if (b == e0) return e0;
+	T go = e0, g = 1;
+	while (go != g) {
+		go = g; g = gcd(g * a, b);
+	}
+	return g;
+}
+
+/**
  * Least Common Multiple.
  *
  * Note: for integral types and negative input the result might be of incorrect sign!

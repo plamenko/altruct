@@ -539,6 +539,15 @@ TEST(base_test, gcd_ex) {
 	gcd_ex_test_impl(1, 11 * 13, 7);
 }
 
+TEST(base_test, gcd_max) {
+	EXPECT_EQ(0, gcd_max(15, 0));
+	EXPECT_EQ(15, gcd_max(0, 15));
+	EXPECT_EQ(25, gcd_max(5 * 5 * 5 * 7, 5 * 5 * 11 * 13));
+	EXPECT_EQ(625, gcd_max(5 * 5 * 11, 5 * 5 * 5 * 5 * 7));
+	EXPECT_EQ(1, gcd_max(7, 11 * 13));
+	EXPECT_EQ(1, gcd_max(11 * 13, 7));
+}
+
 TEST(base_test, lcm) {
 	EXPECT_EQ(0, lcm(15, 0));
 	EXPECT_EQ(0, lcm(0, 15));
