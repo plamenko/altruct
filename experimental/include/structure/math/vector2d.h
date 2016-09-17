@@ -46,6 +46,7 @@ public:
 	
 	vector2d<T>  unit        (const vector2d<T>& v0 = vector2d()) const { T d = abs1(); return (d > EPS) ? *this / d : v0; }
 	vector2d<T>  rot         (const vector2d<T>& r)               const { return vector2d(x * r.x - y * r.y, y * r.x + x * r.y); }
+	vector2d<T>  irot        (const vector2d<T>& r)               const { return vector2d(x * r.x + y * r.y, y * r.x - x * r.y); }
 	vector2d<T>  perp        ()                                   const { return vector2d(-y, x); }
 	
 	T            abs1        () const { return (sqrtT(abs2())); }
