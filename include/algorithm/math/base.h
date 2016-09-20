@@ -206,6 +206,7 @@ T sqrtT(T x, T eps = 1) {
 }
 template<> inline float sqrtT(float x, float) { return sqrt(x); }
 template<> inline double sqrtT(double x, double) { return sqrt(x); }
+template<> inline long double sqrtT(long double x, long double) { return sqrt(x); }
 template<> inline int8_t sqrtT(int8_t x, int8_t) { return isqrt(x); }
 template<> inline uint8_t sqrtT(uint8_t x, uint8_t) { return isqrt(x); }
 template<> inline int16_t sqrtT(int16_t x, int16_t) { return isqrt(x); }
