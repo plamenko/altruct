@@ -7,6 +7,7 @@
 using namespace std;
 using namespace altruct::math;
 
+typedef modulo<int, 1000000000, modulo_storage::CONSTANT> modc;
 typedef modulo<int, 1000000007> mod;
 typedef moduloX<int> modx;
 
@@ -51,7 +52,7 @@ TEST(modulo_test, operators_comparison) {
 TEST(modulo_test, operators_arithmetic) {
 	const mod m1(1000000000);
 	const mod m2(2000000023);
-	const mod m3(3000000000LL % mod::M);
+	const mod m3(3000000000LL % mod::M());
 	EXPECT_EQ(mod(-7), m1);
 	EXPECT_EQ(mod(9), m2);
 	EXPECT_EQ(mod(-21), m3);
@@ -74,7 +75,7 @@ TEST(modulo_test, operators_arithmetic) {
 TEST(modulo_test, operators_inplace) {
 	const mod m1(1000000000);
 	const mod m2(2000000023);
-	const mod m3(3000000000LL % mod::M);
+	const mod m3(3000000000LL % mod::M());
 	mod mr;
 	mr = m1; mr += m2;
 	EXPECT_EQ(mod(2), mr);
@@ -138,6 +139,8 @@ TEST(modulo_test, division) {
 	// hence the result is g times bigger where g = gcd(12, 250) = 2
 	EXPECT_EQ(modx(147, 1000), modx(28, 1000) / modx(48, 1000));
 	EXPECT_EQ(modx(28*2, 1000), modx(147, 1000) * modx(48, 1000));
+
+	EXPECT_EQ(modx(53, 100), modx(17, 100).inv());
 }
 
 TEST(modulo_test, identity) {
@@ -145,18 +148,18 @@ TEST(modulo_test, identity) {
 	mod e0 = zeroT<mod>::of(m1);
 	mod e1 = identityT<mod>::of(m1);
 	EXPECT_EQ(0, e0.v);
-	EXPECT_EQ(1000000007, e0.M);
+	EXPECT_EQ(1000000007, e0.M());
 	EXPECT_EQ(1, e1.v);
-	EXPECT_EQ(1000000007, e1.M);
+	EXPECT_EQ(1000000007, e1.M());
 	mod mr = powT(m1, 10);
 	EXPECT_EQ(282475249, mr.v);
-	EXPECT_EQ(1000000007, mr.M);
+	EXPECT_EQ(1000000007, mr.M());
 
 }
 
-TEST(modulo_test, long_long) {
-	typedef modulo<long long, 1> modl;
-	modl::M = 1000000000000000003LL;
+TEST(modulo_test, int64) {
+	typedef modulo<int64_t, 1> modl;
+	modl::M() = 1000000000000000003LL;
 	const modl m1(1000000000000000000LL);
 	const modl m2(2000000000000000008LL);
 	const modl m4(4000000000000000000LL);
@@ -186,14 +189,14 @@ void modulo_test_perf_impl(T a, T b, int n, const char *msg, const F& func) {
 	for (int i = 0; i < n; i++) func(a, b);
 	double dT = (clock() - T0) / clocks_per_sec;
 	double Mops = n / dT / 1000000;
-	printf("%s: %0.2lf Mops  %0.2lf s\n", msg, Mops, dT);
+	printf("%s: %0.2lf Mops  %0.2lf s   %p\n", msg, Mops, dT, &a);
 }
 
 TEST(modulo_test, perf) {
 	return; // do not run perf test by default
 
-	typedef modulo<long long, 1> modl;
-	modl::M = 1000000000000000003LL;
+	typedef modulo<int64_t, 1> modl;
+	modl::M() = 1000000000000000003LL;
 	
 	int ni = 1000000000;
 	int ai(12345678);
@@ -203,6 +206,15 @@ TEST(modulo_test, perf) {
 	modulo_test_perf_impl(ai, bi, ni, "int neg", [](int &a, int &b){a = -b; b--; });
 	modulo_test_perf_impl(ai, bi, ni / 3, "int mul", [](int &a, int &b){a *= b; b++; });
 	modulo_test_perf_impl(ai, bi, ni / 10, "int div", [](int &a, int &b){a /= b; a += 1000000000; });
+
+	int nmc = 100000000;
+	modc amc(12345678);
+	modc bmc(13456789);
+	modulo_test_perf_impl(amc, bmc, nmc, "modc<int> add", [](modc &a, modc &b){a += b; b.v++; });
+	modulo_test_perf_impl(amc, bmc, nmc, "modc<int> sub", [](modc &a, modc &b){a -= b; b.v++; });
+	modulo_test_perf_impl(amc, bmc, nmc, "modc<int> neg", [](modc &a, modc &b){a = -b; b.v++; });
+	modulo_test_perf_impl(amc, bmc, nmc / 3, "modc<int> mul", [](modc &a, modc &b){a *= b; b.v++; });
+	modulo_test_perf_impl(amc, bmc, nmc / 30, "modc<int> div", [](modc &a, modc &b){a /= b; a.v++; });
 
 	int nmi = 100000000;
 	mod ami(12345678);

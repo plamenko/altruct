@@ -61,7 +61,7 @@ TEST(matrix_test, constructor) {
 	EXPECT_EQ((vector<vector<int>>{{ 21, 22, 23 }, { 31, 32, 33 } }), m7.a);
 }
 
-TEST(modulo_test, swap) {
+TEST(matrix_test, swap) {
 	matrix<int> m1({ { 1, 2, 3 }, { 4, 5, 6 } });
 	matrix<int> m2({ { 7, 8 }, { 9, 0 }, { 1, 2 } });
 	m1.swap(m2);
@@ -69,7 +69,7 @@ TEST(modulo_test, swap) {
 	EXPECT_EQ((vector<vector<int>>{ { 1, 2, 3 }, { 4, 5, 6 } }), m2.a);
 }
 
-TEST(modulo_test, brackets) {
+TEST(matrix_test, brackets) {
 	const matrix<int> m1({ { 1, 2, 3 }, { 4, 5, 6 } });
 	EXPECT_EQ((vector<int>{ 1, 2, 3 }), m1[0]);
 	EXPECT_EQ(4, m1[1][0]);

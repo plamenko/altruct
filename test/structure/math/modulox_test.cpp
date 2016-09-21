@@ -12,25 +12,25 @@ typedef moduloX<int> modx;
 TEST(modulox_test, constructor) {
 	modx m1;
 	EXPECT_EQ(0, m1.v);
-	EXPECT_EQ(1, m1.M);
+	EXPECT_EQ(1, m1.M());
 	modx m2(10);
 	EXPECT_EQ(10, m2.v);
-	EXPECT_EQ(1, m2.M);
+	EXPECT_EQ(1, m2.M());
 	modx m3(m2);
 	EXPECT_EQ(10, m3.v);
-	EXPECT_EQ(1, m3.M);
+	EXPECT_EQ(1, m3.M());
 	modx m4(2000000008, 1000000007);
 	EXPECT_EQ(1000000001, m4.v);
-	EXPECT_EQ(1000000007, m4.M);
+	EXPECT_EQ(1000000007, m4.M());
 	modx m5(-6, 1000000011);
 	EXPECT_EQ(1000000005, m5.v);
-	EXPECT_EQ(1000000011, m5.M);
+	EXPECT_EQ(1000000011, m5.M());
 	modx m6(-1000000013, 1000000007);
 	EXPECT_EQ(1000000001, m6.v);
-	EXPECT_EQ(1000000007, m6.M);
+	EXPECT_EQ(1000000007, m6.M());
 	modx m7(m6);
 	EXPECT_EQ(1000000001, m7.v);
-	EXPECT_EQ(1000000007, m7.M);
+	EXPECT_EQ(1000000007, m7.M());
 }
 
 TEST(modulox_test, operators_comparison) {
@@ -130,17 +130,17 @@ TEST(modulox_test, identity) {
 	modx e0 = zeroT<modx>::of(m1);
 	modx e1 = identityT<modx>::of(m1);
 	EXPECT_EQ(0, e0.v);
-	EXPECT_EQ(1000000007, e0.M);
+	EXPECT_EQ(1000000007, e0.M());
 	EXPECT_EQ(1, e1.v);
-	EXPECT_EQ(1000000007, e1.M);
+	EXPECT_EQ(1000000007, e1.M());
 	modx mr = powT(m1, 10);
 	EXPECT_EQ(282475249, mr.v);
-	EXPECT_EQ(1000000007, mr.M);
+	EXPECT_EQ(1000000007, mr.M());
 
 }
 
-TEST(modulox_test, long_long) {
-	typedef moduloX<long long> modxl;
+TEST(modulox_test, int64) {
+	typedef moduloX<int64_t> modxl;
 	const modxl m1(1000000000000000000LL, 1000000000000000003LL);
 	const modxl m2(2000000000000000008LL, 1000000000000000003LL);
 	const modxl m4(4000000000000000000LL, 1000000000000000003LL);

@@ -9,7 +9,7 @@ namespace math {
  * Complex numbers
  */
 template<typename T>
-using complex = quadratic<T, -1>;
+using complex = quadratic<T, -1, quadratic_storage::CONSTANT>;
 
 } // math
 } // altruct

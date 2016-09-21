@@ -115,11 +115,11 @@ TEST(fraction_test, identity) {
 	const fracx e0 = zeroT<fracx>::of(f1);
 	const fracx e1 = identityT<fracx>::of(f1);
 	EXPECT_EQ(0, e0.p.v);
-	EXPECT_EQ(1009, e0.p.M);
+	EXPECT_EQ(1009, e0.p.M());
 	EXPECT_EQ(1, e0.q.v);
-	EXPECT_EQ(1009, e0.q.M);
+	EXPECT_EQ(1009, e0.q.M());
 	EXPECT_EQ(1, e1.p.v);
-	EXPECT_EQ(1009, e1.p.M);
+	EXPECT_EQ(1009, e1.p.M());
 	EXPECT_EQ(1, e1.q.v);
-	EXPECT_EQ(1009, e1.q.M);
+	EXPECT_EQ(1009, e1.q.M());
 }

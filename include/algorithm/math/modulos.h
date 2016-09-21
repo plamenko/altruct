@@ -27,10 +27,12 @@ void chinese_remainder(T* a, T* n, T a1, T n1, T a2, T n2) {
 	T e0 = zeroT<T>::of(*a);
 	T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
 	if ((a2 - a1) % g != e0) { *n = e0, *a = e0; return; }
-	T t1 = modulo_multiply(a1, ni2, n1);
-	T t2 = modulo_multiply(a2, ni1, n2);
+	modulo_normalize(&ni2, n1);
+	modulo_normalize(&ni1, n2);
+	T t1 = modulo_mul(a1, ni2, n1);
+	T t2 = modulo_mul(a2, ni1, n2);
 	n1 /= g; n2 /= g; *n = n1 * n2 * g;
-	*a = modulo_multiply(t1, n2, *n) + modulo_multiply(t2, n1, *n);
+	*a = modulo_mul(t1, n2, *n) + modulo_mul(t2, n1, *n);
 	return modulo_normalize(a, *n);
 }
 template<typename T>
@@ -61,7 +63,7 @@ V garner(const V& vap) {
 		auto y = vap[i];
 		for (int j = 0; j < i; j++) {
 			y -= vx[j];
-			y /= vap[j].M;
+			y /= vap[j].M();
 		}
 		vx[i] = y;
 	}
@@ -108,9 +110,9 @@ M sqrt_cipolla(const M& y) {
 	M a = e0, d = e0;
 	do {
 		a += 1, d = a * a - y;
-	} while (powT(d, (y.M - 1) / 2) == 1); // jacobi(d, p) == 1
+	} while (powT(d, (y.M() - 1) / 2) == 1); // jacobi(d, p) == 1
 	// r = (a + sqrt(d)) ^ ((p + 1) / 2)
-	return powT(quadraticX<M>(a, e1, d), (y.M + 1) / 2).a;
+	return powT(quadraticX<M>(a, e1, d), (y.M() + 1) / 2).a;
 }
 
 /**
@@ -130,9 +132,9 @@ I sqrt_hensel_lift(const I& y, const I& p, I k) {
 	// f(r) == r^2 - y; f'(r) == 2r;
 	modx r = sqrt_cipolla(modx(y, p));
 	for (I i = 1; i < k; i *= 2) {
-		I phi = r.M / p * (p - 1); // euler_phi(r.M)
+		I phi = r.M() / p * (p - 1); // euler_phi(r.M)
 		modx u = powT(r * 2, phi - 1); // f'(r) ^-1
-		r.M = (i * 2 < k) ? r.M * r.M : powT(p, k); // lift modulus
+		r.M() = (i * 2 < k) ? r.M() * r.M() : powT(p, k); // lift modulus
 		modx v = r * r - y; // f(r)
 		r -= v * u;
 	}

@@ -11,7 +11,7 @@ typedef polynom<mod> poly;
 typedef modulo<poly, 1> polymod;
 
 TEST(polymod_test, constructor) {
-	polymod::M = poly{ 0, 0, 0, 0, 1 };
+	polymod::M() = poly{ 0, 0, 0, 0, 1 };
 	polymod p0;
 	EXPECT_EQ((poly{}), p0.v);
 	polymod p1(7);
@@ -20,7 +20,7 @@ TEST(polymod_test, constructor) {
 
 TEST(polymod_test, division) {
 	// irreducible polynomial M(x) = x^2 - x^1 - x^0
-	polymod::M = poly{ -1, -1, 1 };
+	polymod::M() = poly{ -1, -1, 1 };
 	const polymod x(poly{ 0, 1 });
 	const polymod x20 = powT(x, 20);
 	const polymod x100 = powT(x, 100);
@@ -35,7 +35,7 @@ TEST(polymod_test, fibonacci) {
 	// f(n+2) - f(n+1) - f(n) = 0;
 	// p(x) = x^2 - x^1 - x^0
 	// f(n) = x^n % p(x)
-	polymod::M = poly{ -1, -1, 1 };
+	polymod::M() = poly{ -1, -1, 1 };
 	polymod x(poly{0, 1});
 	vector<mod> vf;
 	for (int i = 0; i < 13; i++) {

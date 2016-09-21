@@ -36,19 +36,19 @@ TEST(modulos_test, garner) {
 
 	moduloX<int> r0{ 0, 1 };
 	for (int i = 0; i < a3.size(); i++) {
-		chinese_remainder<int>(&r0.v, &r0.M, a3[i].v, a3[i].M);
+		chinese_remainder<int>(&r0.v, &r0.M(), a3[i].v, a3[i].M());
 	}
 	EXPECT_EQ(1000000000, r0.v);
-	EXPECT_EQ(1009*1013*1019, r0.M);
+	EXPECT_EQ(1009 * 1013 * 1019, r0.M());
 
 	modv x3 = garner(a3);
 	moduloX<int> r1{ 0, 1 };
 	for (int i = 0; i < x3.size(); i++) {
-		r1.v += r1.M * x3[i].v;
-		r1.M *= x3[i].M;
+		r1.v += r1.M() * x3[i].v;
+		r1.M() *= x3[i].M();
 	}
 	EXPECT_EQ(1000000000, r1.v);
-	EXPECT_EQ(1009 * 1013 * 1019, r1.M);
+	EXPECT_EQ(1009 * 1013 * 1019, r1.M());
 }
 
 TEST(modulos_test, jacobi) {

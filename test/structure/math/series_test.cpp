@@ -200,19 +200,19 @@ TEST(series_test, identity) {
 	polyx::ZERO_COEFF = modx(0, 1009);
 	serx s1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
 	EXPECT_EQ(2, s1[0].v);
-	EXPECT_EQ(1009, s1[0].M);
+	EXPECT_EQ(1009, s1[0].M());
 	EXPECT_EQ(3, s1[1].v);
-	EXPECT_EQ(1009, s1[1].M);
+	EXPECT_EQ(1009, s1[1].M());
 	EXPECT_EQ(5, s1[2].v);
-	EXPECT_EQ(1009, s1[2].M);
+	EXPECT_EQ(1009, s1[2].M());
 	EXPECT_EQ(0, s1[3].v);
-	EXPECT_EQ(1009, s1[3].M);
+	EXPECT_EQ(1009, s1[3].M());
 	serx e0 = zeroT<serx>::of(s1);
 	EXPECT_EQ(0, e0[0].v);
-	EXPECT_EQ(1009, e0[0].M);
+	EXPECT_EQ(1009, e0[0].M());
 	EXPECT_EQ(0, e0.p.deg());
 	serx e1 = identityT<serx>::of(s1);
 	EXPECT_EQ(1, e1[0].v);
-	EXPECT_EQ(1009, e1[0].M);
+	EXPECT_EQ(1009, e1[0].M());
 	EXPECT_EQ(0, e1.p.deg());
 }
