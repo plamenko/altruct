@@ -26,6 +26,8 @@ struct identityT {
 		return T(1);
 	}
 };
+template<typename T>
+T identityOf(const T& x) { return identityT<T>::of(x); }
 
 /**
  * Gives the additive identity element (multiplicative zero) for the element `x`.
@@ -47,6 +49,8 @@ struct zeroT {
 		return T(0);
 	}
 };
+template<typename T>
+T zeroOf(const T& x) { return zeroT<T>::of(x); }
 
 /**
  * Absolute value.

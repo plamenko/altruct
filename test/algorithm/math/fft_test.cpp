@@ -34,7 +34,7 @@ TEST(fft_test, perf) {
 	for (int i = 0; i < n; i++) a[i] = i * i;
 	auto T0 = clock();
 	for (int i = 0; i < 100; i++)
-		fft_rec(&a[0], &t[0], n, root);
+		fft_rec(&t[0], &a[0], n, root);
 	cout << "fft_rec: " << clock() - T0 << " ms" << endl;
 	
 	for (int i = 0; i < n; i++) a[i] = i * i;
@@ -47,10 +47,10 @@ TEST(fft_test, perf) {
 TEST(fft_test, fft_rec_inverse) {
 	typedef modulo<int, 12289> mod;
 	const int n = 16;
-	mod t[n], a[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144 };
-	fft_rec(a, t, n, powT(mod(41), (1 << 12) / n));
-	EXPECT_EQ((vector<mod>{ 2321, 2621, 3262, 4649, 3137, 4957, 7242, 3878, 1612, 11833, 6116, 150, 9509, 964, 35, 9895 }), vector<mod>(a, a + n));
-	fft_rec(a, t, n, powT(mod(1) / mod(41), (1 << 12) / n));
+	mod A[n], a[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144 };
+	fft_rec(A, a, n, powT(mod(41), (1 << 12) / n));
+	EXPECT_EQ((vector<mod>{ 2321, 2621, 3262, 4649, 3137, 4957, 7242, 3878, 1612, 11833, 6116, 150, 9509, 964, 35, 9895 }), vector<mod>(A, A + n));
+	fft_rec(a, A, n, powT(mod(1) / mod(41), (1 << 12) / n));
 	for (auto& v : a) v /= n;
 	EXPECT_EQ((vector<mod>{ 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144, 0, 0, 0, 0, 0, 0 }), vector<mod>(a, a + n));
 }
