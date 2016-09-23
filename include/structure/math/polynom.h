@@ -11,6 +11,9 @@ namespace math {
 
 template<typename T> struct polynom_mul;
 
+/**
+ * Polynomial with coefficients in T.
+ */
 template<typename T>
 class polynom {
 public:
@@ -87,66 +90,91 @@ public:
 			pr[i] = p1[i] - p2[i];
 		}
 	}
-	
-	// pr = p1 * p2; O(lr ^ 1.59); or more accurate: O(l1 * l2 ^ 0.59) for l1 >= l2
-	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_karatsuba(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
-		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		if (l1 < l2) return mul_karatsuba(pr, p2, p1, lr); // ensure l1 >= l2
-		l1 = std::min(l1, lr), l2 = std::min(l2, lr); int k = l1 / 2 + 1;
-		if (l2 == 0) {
-			pr.c.resize(lr + 1, ZERO_COEFF);
-			for (int i = lr; i > l1; i--) pr[i] = ZERO_COEFF;
-			for (int i = l1; i >= 0; i--) pr[i] = p1[i] * p2[0];
-		} else if (l2 < k) {
-			polynom lo(p1.c.begin(), p1.c.begin() + k);
-			polynom hi(p1.c.begin() + k, p1.c.begin() + l1 + 1);
-			mul(lo, lo, p2, l2 + k - 1);
-			mul(hi, hi, p2, std::min(lr, l2 + l1) - k);
-			pr.c.assign(lr + 1, ZERO_COEFF);
-			for (int i = lo.deg(); i >= 0; i--) pr[i] = lo[i];
-			for (int i = hi.deg(); i >= 0; i--) pr[k + i] += hi[i];
-		} else {
-			polynom lo1(p1.c.begin(), p1.c.begin() + k);
-			polynom hi1(p1.c.begin() + k, p1.c.begin() + l1 + 1);
-			polynom lo2(p2.c.begin(), p2.c.begin() + k);
-			polynom hi2(p2.c.begin() + k, p2.c.begin() + l2 + 1);
-			polynom m0; mul(m0, lo1, lo2);
-			lo1 += hi1; lo2 += hi2;
-			polynom m1; mul(m1, lo1, lo2, std::min(lr - k, l1));
-			polynom m2; mul(m2, hi1, hi2, std::min(lr - k, l2));
-			pr.c.assign(lr + 1, ZERO_COEFF);
-			for (int i = m0.deg(); i >= 0; i--) pr[i] = m0[i];
-			for (int i = std::min(lr - k, m0.deg()); i >= 0; i--) pr[k + i] -= m0[i];
-			for (int i = std::min(lr - k, m1.deg()); i >= 0; i--) pr[k + i] += m1[i];
-			for (int i = std::min(lr - k, m2.deg()); i >= 0; i--) pr[k + i] -= m2[i];
-			for (int i = std::min(lr - k - k, m2.deg()); i >= 0; i--) pr[k + k + i] += m2[i];
-		}
+
+	// pr[lm + 1 : lr] = 0; O(l)
+	static void _zero(T* pr, int lm, int lr) {
+		for (int i = lm + 1; i <= lr; i++) pr[i] = ZERO_COEFF;
+	}
+
+	// pr += p2; O(l2)
+	// it is allowed for `pr` and `p2` to be the same instance
+	static void _add_to(T* pr, const T* p2, int l2) {
+		for (int i = 0; i <= l2; i++) pr[i] += p2[i];
+	}
+
+	// pr -= p2; O(l2)
+	// it is allowed for `pr` and `p2` to be the same instance
+	static void _sub_from(T* pr, const T* p2, int l2) {
+		for (int i = 0; i <= l2; i++) pr[i] -= p2[i];
 	}
 
 	// pr = p1 * p2; O(l1 * l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
-	static void mul_long(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
-		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		pr.c.resize(lr + 1, ZERO_COEFF);
+	static void _mul_long(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
 		for (int i = lr; i >= 0; i--) {
 			T r = ZERO_COEFF;
-			for (int j = std::min(i, l1); j >= std::max(0, i - l2); j--)
+			int jmax = std::min(i, l1);
+			int jmin = std::max(0, i - l2);
+			for (int j = jmax; j >= jmin; j--) {
 				r += p1[j] * p2[i - j];
+			}
 			pr[i] = r;
 		}
 	}
 
+	// pr = p1 * p2; O(lr ^ 1.59); or more accurate: O(l1 * l2 ^ 0.59)
+	// `0 <= l2 <= l1 <= lr <= l1 + l2` must hold
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
+	static void _mul_karatsuba(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
+		int k = l1 / 2 + 1; // k > l1 - k >= 0
+		if (l2 == 0) {
+			for (int i = lr; i >= 0; i--) pr[i] = p1[i] * p2[0];
+		} else if (l2 < k) {
+			std::vector<T> MM(lr - k + 1, ZERO_COEFF);
+			_mul(MM.data(), lr - k, p1 + k, l1 - k, p2, l2);
+			_mul(pr, std::min(lr, l2 + k - 1), p1, k - 1, p2, l2);
+			_zero(pr, l2 + k - 1, lr);
+			_add_to(pr + k, MM.data(), lr - k);
+		} else {
+			std::vector<T> S1(p1, p1 + k);
+			_add_to(S1.data(), p1 + k, l1 - k);
+			std::vector<T> S2(p2, p2 + k);
+			_add_to(S2.data(), p2 + k, l2 - k);
+			int mm_l = std::min(lr - k, k - 1 + k - 1);
+			std::vector<T> MM(mm_l + 1);
+			_mul(MM.data(), mm_l, S1.data(), k - 1, S2.data(), k - 1);
+			int hh_l = std::min(mm_l, l1 - k + l2 - k);
+			std::vector<T> HH(hh_l + 1, ZERO_COEFF);
+			_mul(HH.data(), hh_l, p1 + k, l1 - k, p2 + k, l2 - k);
+			_mul(pr, k - 1 + k - 1, p1, k - 1, p2, k - 1);
+			_zero(pr, k - 1 + k - 1, lr);
+			_sub_from(MM.data(), pr, std::min(mm_l, k - 1 + k - 1));
+			_sub_from(MM.data(), HH.data(), hh_l);
+			_add_to(pr + k, MM.data(), mm_l);
+			_add_to(pr + k + k, HH.data(), lr - k - k);
+		}
+	}
+
+	// ensures `l2 <= l1 <= lr <= l1 + l2` and delegates to `polynom_mul<T>::impl`
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
+	static void _mul(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
+		if (l2 > l1) return _mul(pr, lr, p2, l2, p1, l1);   // ensure `l2 <= l1`
+		l1 = std::min(l1, lr); l2 = std::min(l2, lr);       // ensure `l2 <= l1 <= lr`
+		_zero(pr, l1 + l2, lr); lr = std::min(lr, l1 + l2); // ensure `lr <= l1 + l2`
+		polynom_mul<T>::impl(pr, lr, p1, l1, p2, l2);
+	}
+
+	// pr = p1 * p2;
+	// it is allowed for `p1`, `p2` and `pr` to be the same instance
+	// @param lr - the required degree of the resulting polynomial;
+	//             if -1, the result will be of degree l1 + l2
 	static void mul(polynom &pr, const polynom &p1, const polynom &p2, int lr = -1) {
 		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		auto cost = std::min<long long>(l1, lr) * std::min(l2, lr);
-		if (cost > isq(polynom_mul<T>::threshold())) {
-			polynom_mul<T>::impl(pr, p1, p2, lr);
-		} else if (cost > isq(17)) {
-			mul_karatsuba(pr, p1, p2, lr);
+		pr.c.resize(lr + 1, ZERO_COEFF);
+		if (p1.size() == 0 || p2.size() == 0) {
+			_zero(pr.c.data(), -1, lr);
 		} else {
-			mul_long(pr, p1, p2, lr);
+			_mul(pr.c.data(), lr, p1.c.data(), l1, p2.c.data(), l2);
 		}
 	}
 
@@ -263,10 +291,33 @@ public:
 	}
 };
 
+/**
+ * `polynom<T>` multiplication implementation.
+ *
+ * Specialize this template for a custom or tweaked implementation.
+ *
+ * If you need to call multiplication recursively, don't call
+ * `impl` directly, but call `polynom<T>::_mul` instead as it
+ * ensures the invariants before delegating to this `impl`.
+ *
+ * You may also call one of the already provided implementations:
+ * `polynom<T>::_mul_long` or `polynom<T>::_mul_karatsuba`,
+ * or the utility methods: `_add_to`, `_sub_from` and `_zero`.
+ */
 template<typename T>
 struct polynom_mul {
-	static int threshold() { return std::numeric_limits<int>::max(); }
-	static void impl(polynom<T> &pr, const polynom<T> &p1, const polynom<T> &p2, int lr = -1) { }
+	// @param pX - The polynomials to perform multiplication on: `pr = p1 * p2`.
+	//             It is allowed for `p1`, `p2` and `pr` to be the same instance.
+	// @param lX - The lengths of the polynomials: `0 <= l2 <= l1 <= lr <= l1 + l2`.
+	//             Coefficients of `pr` in the range [0, lr] inclusive must be set.
+	//             Truncate or pad with 0 if necessary.
+	static void impl(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
+		if (l2 < 15 || int64_t(l1) * l2 < 300) {  // just l2 < 16 ???
+			polynom<T>::_mul_long(pr, lr, p1, l1, p2, l2);
+		} else {
+			polynom<T>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
+		}
+	}
 };
 
 template<typename T> T polynom<T>::ZERO_COEFF = 0;

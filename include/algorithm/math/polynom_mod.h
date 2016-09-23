@@ -1,7 +1,9 @@
 #pragma once
 
-#include "gmp_helpers.h"
 #include "modulos.h"
+#include "algorithm/math/fft.h"
+#include "structure/math/root_wrapper.h"
+#include "structure/math/complex.h"
 #include "structure/math/modulo.h"
 #include "structure/math/polynom.h"
 
@@ -10,32 +12,61 @@ namespace math {
 
 /**
  * polynom<modulo<int>> specialization
- *
- * Important: not thread-safe as mod::M gets modified.
  */
 template<int ID>
-struct altruct::math::polynom_mul<modulo<int, ID, true>> {
-	typedef modulo<int, ID, true> mod;
-	static int threshold() { return 9000; /* karatsuba is better for smaller size */ }
-	static void impl(polynom<mod> &pr, const polynom<mod> &p1, const polynom<mod> &p2, int lr = -1) {
-		int l1 = p1.deg(), l2 = p2.deg(); if (lr < 0) lr = l1 + l2;
-		// separate convolutions
-		int M = mod::M; // store M
-		const int P1 = 1012924417, R1 = 198, O1 = 1 << 21;
-		const int P2 = 1004535809, R2 = 4172, O2 = 1 << 21;
-		const int P3 = 985661441, R3 = 210, O3 = 1 << 22;
-		mod::M = P1; vector<mod> r1 = convolution(p1.c.cbegin(), p1.c.cend(), p2.c.cbegin(), p2.c.cend(), mod(R1), O1);
-		mod::M = P2; vector<mod> r2 = convolution(p1.c.cbegin(), p1.c.cend(), p2.c.cbegin(), p2.c.cend(), mod(R2), O2);
-		mod::M = P3; vector<mod> r3 = convolution(p1.c.cbegin(), p1.c.cend(), p2.c.cbegin(), p2.c.cend(), mod(R3), O3);
-		mod::M = M; // restore M
-		// combine with CRT
-		pr.c.resize(lr + 1);
+struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
+	typedef modulo<int, ID, modulo_storage::CONSTANT> mod;
+	typedef complex<double> cplx;
+
+	static int64_t rnd(const cplx& z, int n) { return llround(z.a / n) % mod::M(); }
+
+	// splits coefficients into two 16bit blocks each to avoid overflow
+	// works for `mod::M < 2^30` and `l2 <= l1 <= 2^17`; e.g.: `M = 10^9+7, l = 10^5`
+	static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
+		int n = 1; while (n < l1 + l2 + 1) n *= 2;
+		auto root = complex_root_wrapper<double>(n);
+		root = powT(root, root.size / n);
+		auto iroot = powT(root, n - 1);
+		std::vector<cplx> hi1(n), lo1(n), hi2(n), lo2(n), tmp(n);
+		for (int i = 0; i <= l1; i++) hi1[i] = p1[i].v >> 16, lo1[i] = p1[i].v & 0xFFFF;
+		for (int i = 0; i <= l2; i++) hi2[i] = p2[i].v >> 16, lo2[i] = p2[i].v & 0xFFFF;
+		fft_rec(tmp.data(), hi1.data(), n, root); std::swap(hi1, tmp);
+		fft_rec(tmp.data(), lo1.data(), n, root); std::swap(lo1, tmp);
+		fft_rec(tmp.data(), hi2.data(), n, root); std::swap(hi2, tmp);
+		fft_rec(tmp.data(), lo2.data(), n, root); std::swap(lo2, tmp);
+		for (int i = 0; i < n; i++) {
+			auto h = hi1[i] * hi2[i], l = lo1[i] * lo2[i];
+			auto m = lo1[i] * hi2[i] + lo2[i] * hi1[i];
+			lo1[i] = l, hi1[i] = m, hi2[i] = h;
+		}
+		fft_rec(tmp.data(), hi1.data(), n, iroot); std::swap(hi1, tmp);
+		fft_rec(tmp.data(), lo1.data(), n, iroot); std::swap(lo1, tmp);
+		fft_rec(tmp.data(), hi2.data(), n, iroot); std::swap(hi2, tmp);
 		for (int i = 0; i <= lr; i++) {
-			mpz zr = r1[i].v, zm = P1;
-			chinese_remainder<mpz>(&zr, &zm, r2[i].v, P2);
-			chinese_remainder<mpz>(&zr, &zm, r3[i].v, P3);
-			zr %= mod::M;
-			pr.c[i].v = zr.get_si();
+			auto h = rnd(hi2[i], n), m = rnd(hi1[i], n), l = rnd(lo1[i], n);
+			pr[i] = ((l << 0) + (m << 16) + (h << 32)) % mod::M();
+		}
+	}
+
+	static void _mul_long(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
+		for (int i = lr; i >= 0; i--) {
+			int64_t r = 0;
+			int jmax = std::min(i, l1);
+			int jmin = std::max(0, i - l2);
+			for (int j = jmax; j >= jmin; j--) {
+				r += (int64_t(p1[j].v) * p2[i - j].v) % mod::M();
+			}
+			pr[i] = r % mod::M();
+		}
+	}
+
+	static void impl(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
+		if (l2 < 16) {
+			_mul_long(pr, lr, p1, l1, p2, l2);
+		} else if (int64_t(l1) * l2 < 300000) {
+			polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
+		} else {
+			_mul_fft(pr, lr, p1, l1, p2, l2);
 		}
 	}
 };
