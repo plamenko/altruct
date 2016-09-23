@@ -18,12 +18,13 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
 	typedef modulo<int, ID, modulo_storage::CONSTANT> mod;
 	typedef complex<double> cplx;
 
+	static int next_pow2(int l) { int n = 1; while (n < l) n *= 2; return n; }
 	static int64_t rnd(const cplx& z, int n) { return llround(z.a / n) % mod::M(); }
 
 	// splits coefficients into two 16bit blocks each to avoid overflow
 	// works for `mod::M < 2^30` and `l2 <= l1 <= 2^17`; e.g.: `M = 10^9+7, l = 10^5`
 	static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
-		int n = 1; while (n < l1 + l2 + 1) n *= 2;
+		int n = next_pow2(l1 + l2 + 1);
 		auto root = complex_root_wrapper<double>(n);
 		root = powT(root, root.size / n);
 		auto iroot = powT(root, n - 1);
@@ -60,10 +61,13 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
 		}
 	}
 
+	static double cost_karatsuba(int l1, int l2) { return 0.25 * l1 * pow(l2, 0.5849625); }
+	static double cost_fft(int l1, int l2) { int n = next_pow2(l1 + l2 + 1); return 0.5 * n * log2(n); }
+
 	static void impl(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
 		if (l2 < 16) {
 			_mul_long(pr, lr, p1, l1, p2, l2);
-		} else if (int64_t(l1) * l2 < 300000) {
+		} else if (l2 < 300 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
 			polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
 		} else {
 			_mul_fft(pr, lr, p1, l1, p2, l2);
