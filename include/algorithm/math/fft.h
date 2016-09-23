@@ -16,7 +16,7 @@ namespace math {
  */
 template<typename T, typename R>
 void fft(T *data, int size, R root) {
-	T w, e1 = identityT<R>::of(root);
+	R w, e1 = identityT<R>::of(root);
 	int m, h, i, j, k;
 	for (m = size; h = m / 2, m > 1; m /= 2, root *= root) {
 		for (i = 0, w = e1; i < h; i++, w *= root) {
@@ -24,7 +24,7 @@ void fft(T *data, int size, R root) {
 				k = j + h;
 				T t = data[j] - data[k];
 				data[j] += data[k];
-				data[k] = t * w;
+				data[k] = t * T(w);
 			}
 		}
 	}
@@ -54,7 +54,7 @@ void fft_rec(T *dest, T *src, int size, const R& root, int off = 1) {
 	fft_rec(dest, src, h, root2, off * 2);
 	fft_rec(dest + h, src + off, h, root2, off * 2);
 	for (int i = 0; i < h; i++, rooti *= root) {
-		T z = dest[i + h] * rooti;
+		T z = dest[i + h] * T(rooti);
 		dest[i + h] = dest[i] - z;
 		dest[i] += z;
 	}
@@ -91,9 +91,9 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const R& roo
 	for (int i = 0; i < size; i++) dataR[i] = data1[i] * data2[i];
 	// inverse transform is same as original transform,
 	// but with inverse root and elements divided by size
-	T e1 = identityT<R>::of(root);
+	R e1 = identityT<R>::of(root);
 	std::swap(data1, dataR); fft_rec(dataR, data1, size, iroot);
-	T isize = e1 / T(size);
+	T isize = T(e1) / T(size);
 	for (int i = 0; i < size; i++) dataR[i] *= isize;
 }
 
@@ -108,7 +108,7 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const R& roo
  */
 template<typename T, typename R, typename It>
 std::vector<T> convolution(It u_begin, It u_end, It v_begin, It v_end, const R& root_base, int root_order) {
-	T e1 = identityT<R>::of(root_base), e0 = zeroT<T>::of(e1);
+	R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
 	std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
 	int n = (int)(u.size() + v.size() - 1);
 	int l = 1; while (l < n) l *= 2;
