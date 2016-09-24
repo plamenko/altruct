@@ -10,6 +10,9 @@
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\algorithm\math\bits.cpp">
+      <Filter>src\algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -234,6 +237,12 @@
       <Filter>include\structure\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\structure\math\permutation.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\bits.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\root_wrapper.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
   </ItemGroup>

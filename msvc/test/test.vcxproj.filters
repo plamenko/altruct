@@ -82,9 +82,6 @@
     <ClCompile Include="..\..\test\structure\math\series_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\structure\math\complex_test.cpp">
-      <Filter>algorithm\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\ranges_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
@@ -132,6 +129,15 @@
     </ClCompile>
     <ClCompile Include="..\..\test\structure\math\permutation_test.cpp">
       <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\complex_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\root_wrapper_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\bits_test.cpp">
+      <Filter>algorithm\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
