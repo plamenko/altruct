@@ -104,7 +104,7 @@ I xor_down(I x) {
  */
 template<typename I>
 I neg(I x) {
-	typedef std::make_signed<I>::type SI;
+	typedef typename std::make_signed<I>::type SI;
 	return I(-SI(x));
 }
 
