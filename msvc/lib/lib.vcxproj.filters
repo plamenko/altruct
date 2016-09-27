@@ -245,5 +245,8 @@
     <ClInclude Include="..\..\include\structure\math\root_wrapper.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\bit_vector.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

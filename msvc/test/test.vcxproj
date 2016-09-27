@@ -53,6 +53,7 @@
     <ClCompile Include="..\..\test\io\fast_io_test.cpp" />
     <ClCompile Include="..\..\test\io\reader_test.cpp" />
     <ClCompile Include="..\..\test\io\writer_test.cpp" />
+    <ClCompile Include="..\..\test\structure\container\bit_vector_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\interval_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\segment_tree_test.cpp" />

@@ -139,6 +139,9 @@
     <ClCompile Include="..\..\test\algorithm\math\bits_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\bit_vector_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

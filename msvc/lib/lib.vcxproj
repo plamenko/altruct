@@ -64,6 +64,7 @@
     <ClInclude Include="..\..\include\io\fast_io.h" />
     <ClInclude Include="..\..\include\io\reader.h" />
     <ClInclude Include="..\..\include\io\writer.h" />
+    <ClInclude Include="..\..\include\structure\container\bit_vector.h" />
     <ClInclude Include="..\..\include\structure\container\interval_tree.h" />
     <ClInclude Include="..\..\include\structure\container\lohi_map.h" />
     <ClInclude Include="..\..\include\structure\container\segment_tree.h" />
