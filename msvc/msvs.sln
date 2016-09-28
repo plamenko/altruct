@@ -4,12 +4,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{A68D7B06-18AD-4B03-B5E1-17B377D2CF62}"
+	ProjectSection(ProjectDependencies) = postProject
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE} = {606A6D46-B8C9-4BC1-A580-73E41724F2DE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib", "lib\lib.vcxproj", "{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "googletest", "googletest\googletest.vcxproj", "{277A38C2-6D7D-4CF6-89AC-84D617260AAA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample", "sample\sample.vcxproj", "{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_util", "test_util\test_util.vcxproj", "{606A6D46-B8C9-4BC1-A580-73E41724F2DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +74,18 @@ Global
 		{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}.Release|Win32.Build.0 = Release|Win32
 		{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}.Release|x64.ActiveCfg = Release|x64
 		{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}.Release|x64.Build.0 = Release|x64
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|Win32.Build.0 = Debug|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|x64.ActiveCfg = Debug|x64
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Debug|x64.Build.0 = Debug|x64
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|Win32.ActiveCfg = Release|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|Win32.Build.0 = Release|Win32
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|x64.ActiveCfg = Release|x64
+		{606A6D46-B8C9-4BC1-A580-73E41724F2DE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
