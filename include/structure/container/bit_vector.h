@@ -25,14 +25,6 @@ public:
 	static const W WW = ~W0;
 	static const int L = math::bit_size<W>::value;
 
-	// TODO: add shifts
-	// TODO: add operators
-	//	bit_vector ^ bit_vector
-	//	bit_vector | bit_vector
-	//	bit_vector & bit_vector
-	//  comparison
-	// TODO: unit tests
-
 	// a proxy used as a bit getter/setter
 	class bit_proxy {
 	public:
@@ -57,78 +49,175 @@ public:
 	bit_vector(It begin, It end) {
 		size_t pos = 0;
 		resize(std::distance(begin, end));
-		for (auto it = begin; it != end; i++) {
-			set(pos++, *it);
+		for (auto it = begin; it != end; ++it) {
+			set(pos++, (*it) & 1);
 		}
 	}
 
-	// sets the bits in the given range; 0=clear, 1=set, -1=flip
-	void set(size_t begin, size_t end, int val) {
+	// constructs a new bit-vector from an initializer list
+	template<typename I>
+	bit_vector(std::initializer_list<I> list) : bit_vector(list.begin(), list.end()) {}
+
+	// returns a clone of this vector
+	bit_vector clone() const {
+		return bit_vector(*this);
+	}
+
+	// comparison operators
+	bool operator == (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) == 0; }
+	bool operator != (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) != 0; }
+	bool operator <  (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) <  0; }
+	bool operator >  (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) >  0; }
+	bool operator <= (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) <= 0; }
+	bool operator >= (const bit_vector& that) const { return compare(0, sz, that, 0, that.sz) >= 0; }
+
+	// logical operators
+	bit_vector operator & (const bit_vector& that) const { return clone() &= that; }
+	bit_vector operator | (const bit_vector& that) const { return clone() |= that; }
+	bit_vector operator ^ (const bit_vector& that) const { return clone() ^= that; }
+
+	bit_vector operator ~ () const { return clone().apply(0, sz, op_flip); }
+
+	bit_vector& operator &= (const bit_vector& that) { reserve(that.sz); return apply(0, that.sz, that, 0, op_and); }
+	bit_vector& operator |= (const bit_vector& that) { reserve(that.sz); return apply(0, that.sz, that, 0, op_or); }
+	bit_vector& operator ^= (const bit_vector& that) { reserve(that.sz); return apply(0, that.sz, that, 0, op_xor); }
+
+	// scans the range from left to right
+	// i.e.: `visitor(this[begin:end])`
+	// `bool visitor(W w, size_t pos, int l)` operates on words;
+	template<typename F>
+	bool scan(size_t begin, size_t end, F visitor) const {
 		size_t ib = begin / L, ie = end / L;
-		W mb = WW << (begin % L), me = (W1 << (end % L)) - 1;
-		if (ib == ie) mb = me = mb & me;
-		if (val == 0) {
-			if (ib != ie) words[ib] &= ~mb;
-			for (size_t i = ib + 1; i < ie; i++) words[i] = W0;
-			words[ie] &= ~me;
-		} else if (val == 1) {
-			if (ib != ie) words[ib] |= mb;
-			for (size_t i = ib + 1; i < ie; i++) words[i] = WW;
-			words[ie] |= me;
-		} else if (val == -1) {
-			if (ib != ie) words[ib] ^= mb;
-			for (size_t i = ib + 1; i < ie; i++) words[i] ^= WW;
-			words[ie] ^= me;
-		}
+		int lb = begin % L, le = end % L;
+		bool r = visitor(words[ib] >> lb, 0, ((ib != ie) ? L : le) - lb);
+		for (size_t i = ib + 1; r && i < ie; i++) r &= visitor(words[i], i * L - begin, L);
+		if (r && ib != ie) r &= visitor(words[ie], end - begin - le, le);
+		return r;
 	}
 
-	// flips the bits in the given range
-	void flip(size_t begin, size_t end) {
-		set(begin, end, -1);
+	// scans the two ranges from left to right
+	// i.e.: `visitor(this[begin1:end1], that[begin2:end2])`
+	// `bool visitor(W w1, W w2, int l)` operates on words;
+	// it is allowed for `bv` to be `this`;
+	template<typename F>
+	bool scan(size_t begin1, size_t end1, const bit_vector& that, size_t begin2, F visitor) const {
+		auto visitor2 = [&](W w, size_t pos, int len){
+			return visitor(w, that.word_at(begin2 + pos), len);
+		};
+		return scan(begin1, end1, visitor2);
+	}
+
+	// applies the operation on the range
+	// i.e.: `this[begin:end] = op(this[begin:end])`
+	// `op(W w, size_t pos, int len)` operates on words;
+	template<typename F>
+	bit_vector& apply(size_t begin, size_t end, F op, bool backwards = false) {
+		size_t ib = begin / L, ie = end / L;
+		int lb = begin % L, le = end % L;
+		// calculate the boundary words
+		W mb = WW << lb, me = first_bits(le);
+		if (ib == ie) mb = me = mb & me;
+		W wb = (words[ib] & ~mb) | ((op(words[ib] >> lb, 0, L - lb) << lb) & mb);
+		if (ib == ie) { words[ib] = wb; return *this; }
+		W we = (words[ie] & ~me) | (op(words[ie], end - begin - le, le) & me);
+		// perform the operation on the whole words
+		if (backwards) {
+			for (size_t i = ie - 1; i > ib; i--) words[i] = op(words[i], i * L - begin, L);
+		} else {
+			for (size_t i = ib + 1; i < ie; i++) words[i] = op(words[i], i * L - begin, L);
+		}
+		// set the boundary words
+		words[ib] = wb;
+		words[ie] = we;
+		return *this;
+	}
+
+	// applies the operation on the two ranges
+	// i.e.: `this[begin1:end1] = op(this[begin1:end1], that[begin2:end2])`
+	// `op(W w1, W w2, int len)` operates on words;
+	// it is allowed for `bv` to be `this`;
+	template<typename F>
+	bit_vector& apply(size_t begin1, size_t end1, const bit_vector& that, size_t begin2, F op) {
+		auto op2 = [&](W w, size_t pos, int len){
+			return op(w, that.word_at(begin2 + pos), len);
+		};
+		// `bv` can be `this`, so loop forward / backwards accordingly
+		return apply(begin1, end1, op2, begin2 < begin1);
 	}
 
 	// reverses the given range (position-wise)
-	void reverse(size_t begin, size_t end) {
+	bit_vector& reverse(size_t begin, size_t end) {
 		size_t ib = begin / L, ie = end / L;
-		size_t lb = begin % L, le = end % L;
+		int lb = begin % L, le = end % L, l = lb + le;
 		// calculate the boundary words
-		W mb = WW << (begin % L), me = (W1 << (end % L)) - 1;
+		W mb = WW << lb, me = first_bits(le);
 		if (ib == ie) mb = me = mb & me;
 		W we = words[ie] & ~me;
 		if (le != 0) we |= math::bit_reverse(word_at(begin) << (L - le)) & me;
-		if (ib == ie) { words[ie] = we; return; }
+		if (ib == ie) { words[ie] = we; return *this; }
 		W wb = words[ib] & ~mb;
 		wb |= math::bit_reverse(word_at(end - (L - lb))) & mb;
 		// reverse bits within the words
-		int rot_cnt = int(le - (L - lb));
-		if (rot_cnt < 0) {
-			for (size_t i = ie - 1; i > ib; i--) words[i] = math::bit_reverse(word_at(i * L + rot_cnt));
+		if (l < L) {
+			for (size_t i = ie - 1; i > ib; i--) words[i] = math::bit_reverse(word_at(i - 1, l));
 		} else {
-			for (size_t i = ib + 1; i < ie; i++) words[i] = math::bit_reverse(word_at(i * L + rot_cnt));
+			for (size_t i = ib + 1; i < ie; i++) words[i] = math::bit_reverse(word_at(i, l - L));
 		}
 		// reverse whole words
 		for (size_t i = ib + 1, j = ie - 1; i < j; i++, j--) std::swap(words[i], words[j]);
 		// set the boundary words
 		words[ib] = wb;
 		words[ie] = we;
+		return *this;
 	}
 	
+	// swaps the two ranges
 	// result is undefined if the two ranges overlap
-	void swap(size_t begin1, size_t end1, size_t begin2, size_t end2) {
+	bit_vector& swap(size_t begin1, size_t end1, size_t begin2, size_t end2) {
 		if (begin1 > begin2) return swap(begin2, end2, begin1, end1);
 		reverse(begin1, end1); reverse(end1, begin2); reverse(begin2, end2); reverse(begin1, end2);
+		return *this;
 	}
 
 	// rotates the given range left
-	void rotate_left(size_t begin, size_t end, size_t cnt) {
+	bit_vector& rotate_left(size_t begin, size_t end, size_t cnt) {
 		size_t mid = begin + cnt % (end - begin);
 		reverse(begin, mid); reverse(mid, end); reverse(begin, end);
+		return *this;
 	}
 
 	// rotates the given range right
-	void rotate_right(size_t begin, size_t end, size_t cnt) {
+	bit_vector& rotate_right(size_t begin, size_t end, size_t cnt) {
 		size_t mid = end - cnt % (end - begin);
 		reverse(begin, mid); reverse(mid, end); reverse(begin, end);
+		return *this;
+	}
+
+	// returns the number of bits that differ in the two ranges
+	size_t hamming_distance(size_t begin1, size_t begin2, size_t len) const {
+		size_t dist = 0;
+		scan(begin1, begin1 + len, *this, begin2, [&](W w1, W w2, int l) {
+			W w = w1 ^ w2;
+			if (l < L) w &= first_bits(l);
+			dist += math::bit_cnt1(w);
+			return true;
+		});
+		return dist;
+	}
+
+	// copares the two ranges
+	int compare(size_t begin1, size_t end1, const bit_vector& that, size_t begin2, size_t end2) const {
+		size_t len1 = end1 - begin1, len2 = end2 - begin2, len = std::min(len1, len2);
+		int ret = 0;
+		scan(begin1, begin1 + len, that, begin2, [&](W w1, W w2, int l) {
+			if (l < L) w1 &= first_bits(l);
+			if (l < L) w2 &= first_bits(l);
+			if (w1 != w2) ret = (math::bit_reverse(w1) < math::bit_reverse(w2)) ? -1 : +1;
+			return w1 == w2;
+		});
+		if (ret != 0) return ret;
+		if (len1 != len2) return (len1 < len2) ? -1 : +1;
+		return 0;
 	}
 
 	// converts the given range to a string
@@ -144,27 +233,10 @@ public:
 		return s;
 	}
 
-	// returns the number of bits that differ in the two ranges
-	size_t hamming_distance(size_t begin1, size_t begin2, size_t len) const {
-		size_t dist = 0;
-		for (size_t pos = 0; pos + L <= len; pos += L) {
-			W w1 = word_at(begin1 + pos);
-			W w2 = word_at(begin2 + pos);
-			dist += math::bit_cnt1(w1 ^ w2);
-		}
-		size_t l = len % L;
-		if (l > 0) {
-			W m = WW >> (L - l);
-			W w1 = word_at(begin1 + len - l) & m;
-			W w2 = word_at(begin2 + len - l) & m;
-			dist += math::bit_cnt1(w1 ^ w2);
-		}
-		return dist;
-	}
-
 	// sets the bit at the given bit-position
 	void set(size_t pos, int val) {
-		size_t i = pos / L, l = pos % L;
+		size_t i = pos / L;
+		int l = pos % L;
 		W m = W1 << l;
 		if (val == 0) {
 			words[i] &= ~m;
@@ -177,13 +249,17 @@ public:
 
 	// returns the bit at the given bit-position
 	int bit_at(size_t pos) const {
-		size_t i = pos / L, l = pos % L;
+		size_t i = pos / L; int l = pos % L;
 		return int((words[i] >> l) & 1);
 	}
 
 	// returns the word at the given bit-position
 	W word_at(size_t pos) const {
-		size_t i = pos / L, l = pos % L;
+		return word_at(pos / L, pos % L);
+	}
+	
+	// returns the word at the given word-index and offset within it
+	W word_at(size_t i, int l) const {
 		return (l == 0) ? words[i] : ((words[i] >> l) | (words[i + 1] << (L - l)));
 	}
 
@@ -203,10 +279,17 @@ public:
 		resize(sz - 1);
 	}
 
+	// reserves space for at least new_size bits
+	void reserve(size_t new_size) {
+		if (sz < new_size) resize(new_size);
+	}
+	
 	// resizes the container to the new size
 	void resize(size_t new_size) {
 		sz = new_size;
 		words.resize(num_words(sz) + 1);
+		words[sz / L] &= first_bits(sz % L);
+		words.back() = W0;
 	}
 
 	// returns the number of bits in this bit-array
@@ -218,6 +301,25 @@ public:
 	static size_t num_words(size_t sz) {
 		return (sz + L - 1) / L;
 	}
+
+	// returns the word with first l` bits set; `0 <= l < L`
+	static W first_bits(int l) {
+		return (W1 << l) - 1;
+	}
+
+	// operations
+	static W op_set0(W w, size_t pos, int len){ return W0; }
+	static W op_set1(W w, size_t pos, int len){ return WW; }
+	static W op_nop(W w, size_t pos, int len){ return w; }
+	static W op_flip(W w, size_t pos, int len){ return ~w; }
+	static W op_set(W w1, W w2, int len){ return w2; }
+	static W op_setn(W w1, W w2, int len){ return ~w2; }
+	static W op_and(W w1, W w2, int len){ return w1 & w2; }
+	static W op_or(W w1, W w2, int len){ return w1 | w2; }
+	static W op_xor(W w1, W w2, int len){ return w1 ^ w2; }
+	static W op_nand(W w1, W w2, int len){ return ~(w1 & w2); }
+	static W op_nor(W w1, W w2, int len){ return ~(w1 | w2); }
+	static W op_eq(W w1, W w2, int len){ return ~(w1 ^ w2); }
 };
 
 } // container
