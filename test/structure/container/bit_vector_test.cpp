@@ -427,43 +427,22 @@ TEST(bit_vector_test, logic_operators) {
 	// TODO
 }
 
-//TEST(bit_vector_test, perf) {
-//	int n = 50000;
-//	bit_vector<> v(n);
-//	uint64_t r = 0;
-//	for (int i = 0; i < 75000; i++) {
-//		int b = i % 100, c = i % 101, e = n - i % 103;
-//		//v.set(b, e, 0);  // 16 ms
-//		//v.set(b, e, 1);  // 16 ms
-//		//v.flip(b, e);    // 64 ms
-//		//v.reverse(b, e);                  // 340 ms
-//		//r += v.hamming_distance(b, c, e); // 390 ms
-//		//v.rotate_left(b, e, n / 3);       // 680 ms
-//		//v.rotate_right(b, e, n / 3);      // 680 ms
-//		v.swap(b, n / 3, n * 2 / 3, e);     // 680 ms
-//	}
-//	fprintf(stderr, "%d ms    %llx\n", clock(), v.words[0] + r);
-//}
-//
-//TEST(bit_vector_test, correctness) {
-//	return;
-//	//xorshift_64star rng(12345);
-//	int n = 1000;
-//	vector<int> va(n);
-//	bit_vector<> vb(n);
-//	for (int i = 0; i < n; i++) {
-//		va[i] = vb[i] = rand() % 2;
-//	}
-//	for (;;) {
-//		int b = rand() % (n + 1);
-//		int e = rand() % (n + 1 - b) + b;
-//		vb.reverse(b, e);
-//		reverse(va.data() + b, va.data() + e);
-//		string sa = vec_to_string(va);
-//		string sb = vb.to_string(0, vb.size());
-//		if (sa != sb) {
-//			printf("ERROR\n");
-//			int e = 1;
-//		}
-//	}
-//}
+TEST(bit_vector_test, perf) {
+	return; // do not test perf by default
+	int n = 50000;
+	bit_vector<> v(n);
+	uint64_t r = 0;
+	auto T0 = clock();
+	for (int i = 0; i < 75000; i++) {
+		int b = i % 100, c = i % 101, e = n - i % 103;
+		//v.apply(b, e, v.op_set0); // 16 ms
+		//v.apply(b, e, v.op_set1); // 16 ms
+		//v.apply(b, e, v.op_flip); // 66 ms
+		//v.reverse(b, e);                  // 315 ms
+		//r += v.hamming_distance(v, b, v, c, e - 150); // 460 ms
+		//v.rotate_left(b, e, n / 3);       // 630 ms
+		//v.rotate_right(b, e, n / 3);      // 630 ms
+		//v.swap(b, n/3, n*2/3, e);         // 630 ms
+	}
+	fprintf(stderr, "%d ms    %llx\n", clock() - T0, v.words[0] + r);
+}
