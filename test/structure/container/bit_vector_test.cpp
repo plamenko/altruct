@@ -62,7 +62,7 @@ void test_scan(const bit_vector<W>& v1, size_t begin1, const bit_vector<W>& v2, 
 	}
 	vector<int> actual_values1;
 	vector<int> actual_values2;
-	v1.scan(begin1, begin1 + len, v2, begin2, [&](W w1, W w2, int l){
+	bit_vector<W>::scan(v1, begin1, v2, begin2, len, [&](W w1, W w2, int l){
 		while (l > 0) {
 			actual_values1.push_back(w1 & 1);
 			actual_values2.push_back(w2 & 1);
@@ -96,7 +96,7 @@ void test_apply(const vector<int>& a, size_t begin1, size_t begin2, size_t len, 
 	bit_vector<W> v_actual(a.begin(), a.end());
 	// use v_actual both as destination and source in order to test iteration direction;
 	// since v_actual is both reading and overwriting itself, direction matters;
-	v_actual.apply(begin1, begin1 + len, v_actual, begin2, op);
+	bit_vector<W>::apply(v_actual, begin1, v_actual, begin2, len, op);
 	ASSERT_EQ(v_expected.words, v_actual.words);
 }
 
@@ -303,9 +303,9 @@ TEST(bit_vector_test, bit_proxy) {
 
 TEST(bit_vector_test, to_string) {
 	auto a = random_vec(100); auto s = vec_to_string(a);
-	bit_vector<> v(a.begin(), a.end());
-	for (int b = 0; b <= (int)a.size(); b++) {
-		for (int e = b; e <= (int)a.size(); e++) {
+	bit_vector<uint8_t> v(a.begin(), a.end());
+	for (size_t b = 0; b <= a.size(); b++) {
+		for (size_t e = b; e <= a.size(); e++) {
 			EXPECT_EQ(s.substr(b, e - b), v.to_string(b, e)) << b << " " << e;
 		}
 	}
@@ -361,12 +361,51 @@ TEST(bit_vector_test, compare) {
 			for (size_t b2 = 0; b2 <= v2.size(); b2++) {
 				for (size_t e2 = b2; e2 <= v2.size(); e2++) {
 					int r_expected = compare(a1.data() + b1, a1.data() + e1, a2.data() + b2, a2.data() + e2);
-					int r_actual = v1.compare(b1, e1, v2, b2, e2);
+					int r_actual = bit_vector<uint8_t>::compare(v1, b1, e1, v2, b2, e2);
 					EXPECT_EQ(r_expected, r_actual) << b1 << " " << e1 << " " << b2 << " " << e2;
 				}
 			}
 		}
 	}
+}
+
+TEST(bit_vector_test, reverse) {
+	auto a = random_vec(100);
+	bit_vector<uint8_t> v(a.begin(), a.end());
+	for (size_t b = 0; b <= a.size(); b++) {
+		for (size_t e = b; e <= a.size(); e++) {
+			reverse(a.data() + b, a.data() + e);
+			bit_vector<uint8_t> v_expected(a.begin(), a.end());
+			v.reverse(b, e);
+			EXPECT_EQ(v_expected.words, v.words);
+		}
+	}
+}
+
+TEST(bit_vector_test, rotate) {
+	auto a = random_vec(40);
+	for (size_t b = 0; b <= a.size(); b++) {
+		for (size_t m = b; m <= a.size(); m++) {
+			for (size_t e = m; e <= a.size(); e++) {
+				bit_vector<uint8_t> v(a.begin(), a.end());
+				bit_vector<uint8_t> v_expected0(a.begin(), a.end());
+				rotate(a.data() + b, a.data() + m, a.data() + e);
+				bit_vector<uint8_t> v_expected1(a.begin(), a.end());
+				v.rotate_left(b, e, m - b);
+				EXPECT_EQ(v_expected1.words, v.words);
+				v.rotate_right(b, e, m - b);
+				EXPECT_EQ(v_expected0.words, v.words);
+			}
+		}
+	}
+}
+
+TEST(bit_vector_test, swap) {
+	// TODO
+}
+
+TEST(bit_vector_test, hamming) {
+	// TODO
 }
 
 TEST(bit_vector_test, comparison_operators) {
@@ -385,22 +424,6 @@ TEST(bit_vector_test, comparison_operators) {
 }
 
 TEST(bit_vector_test, logic_operators) {
-	// TODO
-}
-
-TEST(bit_vector_test, reverse) {
-	// TODO
-}
-
-TEST(bit_vector_test, swap) {
-	// TODO
-}
-
-TEST(bit_vector_test, rotate) {
-	// TODO
-}
-
-TEST(bit_vector_test, hamming) {
 	// TODO
 }
 
