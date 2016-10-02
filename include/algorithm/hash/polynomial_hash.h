@@ -62,6 +62,10 @@ public:
 		std::fill_n(h.begin() + sz, h.size() - sz, 0);
 	}
 
+	polynomial_hash clone() const {
+		return polynomial_hash(*this);
+	}
+
 	bool operator < (const polynomial_hash& rhs) const {
 		for (int k = 0; k < K; k++) {
 			if (h[k] != rhs.h[k]) return h[k] < rhs.h[k];
@@ -76,6 +80,76 @@ public:
 		return true;
 	}
 
+	polynomial_hash operator * (I rhs) const { return clone() *= rhs; }
+	polynomial_hash& operator *= (I rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = mul(h[k], rhs, M[k]);
+		}
+		return *this;
+	}
+
+	polynomial_hash operator * (const polynomial_hash& rhs) const { return clone() *= rhs; }
+	polynomial_hash& operator *= (const polynomial_hash& rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = mul(h[k], rhs.h[k], M[k]);
+		}
+		return *this;
+	}
+
+	polynomial_hash operator + (I rhs) const { return clone() += rhs; }
+	polynomial_hash& operator += (I rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = (h[k] + rhs) % M[k];
+		}
+		return *this;
+	}
+
+	polynomial_hash operator + (const polynomial_hash& rhs) const { return clone() += rhs; }
+	polynomial_hash& operator += (const polynomial_hash& rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = (h[k] + rhs.h[k]) % M[k];
+		}
+		return *this;
+	}
+
+	polynomial_hash operator - (I rhs) const { return clone() -= rhs; }
+	polynomial_hash& operator -= (I rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = (h[k] + M[k] - rhs) % M[k];
+		}
+		return *this;
+	}
+
+	polynomial_hash operator - (const polynomial_hash& rhs) const { return clone() -= rhs; }
+	polynomial_hash& operator -= (const polynomial_hash& rhs) {
+		for (int k = 0; k < K; k++) {
+			h[k] = (h[k] + M[k] - rhs.h[k]) % M[k];
+		}
+		return *this;
+	}
+
+	// divide by B^cnt
+	polynomial_hash operator >> (int cnt) const { return clone() >>= cnt; }
+	polynomial_hash& operator >>= (int cnt) {
+		ensure(cnt + 1);
+		for (int k = 0; k < K; k++) {
+			h[k] = mul(h[k], WI[k][cnt], M[k]);
+		}
+		return *this;
+	}
+
+	// multiply by B^cnt
+	polynomial_hash operator << (int cnt) const { return clone() <<= cnt; }
+	polynomial_hash& operator <<= (int cnt) {
+		ensure(cnt + 1);
+		for (int k = 0; k < K; k++) {
+			h[k] = mul(h[k], W[k][cnt], M[k]);
+		}
+		return *this;
+	}
+
+
+	// H = H + (RHS << pos)
 	polynomial_hash& add(I rhs, size_t pos) {
 		ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
@@ -94,7 +168,16 @@ public:
 	}
 
 	// H = (H - RHS) >> pos
-	polynomial_hash& subtract(const polynomial_hash& rhs, size_t pos) {
+	polynomial_hash& sub_shr(I rhs, size_t pos) {
+		ensure(pos + 1);
+		for (int k = 0; k < K; k++) {
+			h[k] = mul(h[k] + M[k] - rhs, WI[k][pos], M[k]);
+		}
+		return *this;
+	}
+
+	// H = (H - RHS) >> pos
+	polynomial_hash& sub_shr(const polynomial_hash& rhs, size_t pos) {
 		ensure(pos + 1);
 		for (int k = 0; k < K; k++) {
 			h[k] = mul(h[k] + M[k] - rhs.h[k], WI[k][pos], M[k]);
@@ -115,7 +198,7 @@ std::vector<I> polynomial_hash<K, I, IT>::WI[K];
 /**
  * Cumulative hashes of a sequence (e.g. of a string).
  *
- * @param HASH - the underlying hash type that supports `add` and `subtract`
+ * @param HASH - the underlying hash type that supports `add` and `sub_shr`
  *               (e.g. `polynomial_hash`).
  * 
  * Space complexity: `O(n)`.
@@ -133,6 +216,11 @@ public:
 
 	template<typename It>
 	cumulative_hash(It begin, It end) {
+		assign(begin, end);
+	}
+	
+	template<typename It>
+	void assign(It begin, It end) {
 		HASH h;
 		size_t pos = 0;
 		h.ensure(std::distance(begin, end));
@@ -140,10 +228,6 @@ public:
 			h.add(*it, pos++);
 			vh.push_back(h);
 		}
-	}
-
-	size_t size() {
-		return vh.size();
 	}
 
 	template<typename I>
@@ -157,11 +241,15 @@ public:
 		vh.pop_back();
 	}
 
-	HASH get(size_t begin, size_t end) {
+	HASH get(size_t begin, size_t end) const {
 		HASH r;
 		if (end > 0) r.add(vh.at(end - 1), 0);
-		if (begin > 0) r.subtract(vh.at(begin - 1), begin);
+		if (begin > 0) r.sub_shr(vh.at(begin - 1), begin);
 		return r;
+	}
+
+	size_t size() const {
+		return vh.size();
 	}
 };
 

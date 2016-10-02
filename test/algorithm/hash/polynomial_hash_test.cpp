@@ -73,12 +73,12 @@ TEST(polynomial_hash_test, polynomial_hash_add) {
 	EXPECT_EQ(641593066, h.h[1]);
 }
 
-TEST(polynomial_hash_test, polynomial_hash_subtract) {
+TEST(polynomial_hash_test, polynomial_hash_sub_shr) {
 	phash2 h1{ 2414915, 934336517 };
 	phash2 h2 = h1;
 	h2.add(44, 4);
 	h2.add(55, 5);
-	h2.subtract(h1, 4);
+	h2.sub_shr(h1, 4);
 	EXPECT_EQ(503775743, h2.h[0]);
 	EXPECT_EQ(790138442, h2.h[1]);
 
@@ -109,6 +109,53 @@ TEST(polynomial_hash_test, polynomial_hash_comparison) {
 	EXPECT_TRUE((phash2{ 123, 456 }) < (phash2{ 999, 234 }));
 	EXPECT_TRUE((phash2{ 123, 456 }) < (phash2{ 999, 456 }));
 	EXPECT_TRUE((phash2{ 123, 456 }) < (phash2{ 999, 789 }));
+}
+
+TEST(polynomial_hash_test, polynomial_hash_operators) {
+	phash2 h1{ 1000000, 2000000 };
+	phash2 h2{ 100000, 200000 };
+	EXPECT_EQ((phash2{ 1100000, 2200000 }).h, (h1 + h2).h);
+	EXPECT_EQ((phash2{ 1300000, 2300000 }).h, (h1 + 300000).h);
+	EXPECT_EQ((phash2{ 900000, 1800000 }).h, (h1 - h2).h);
+	EXPECT_EQ((phash2{ 700000, 1700000 }).h, (h1 - 300000).h);
+	EXPECT_EQ((phash2{ 572755007, 999997207 }).h, (h1 * h2).h);
+	EXPECT_EQ((phash2{ 200291815, 999995807 }).h, (h1 * 300000).h);
+	EXPECT_EQ((phash2{ 416902469, 242891385 }).h, (h1 << 5).h);
+	EXPECT_EQ((phash2{ 667139015, 214851611 }).h, (h1 >> 5).h);
+
+	phash2 r;
+	r = h1; r += h2;
+	EXPECT_EQ((phash2{ 1100000, 2200000 }).h, r.h);
+	r = h1; r += 300000;
+	EXPECT_EQ((phash2{ 1300000, 2300000 }).h, r.h);
+	r = h1; r -= h2;
+	EXPECT_EQ((phash2{ 900000, 1800000 }).h, r.h);
+	r = h1; r -= 300000;
+	EXPECT_EQ((phash2{ 700000, 1700000 }).h, r.h);
+	r = h1; r *= h2;
+	EXPECT_EQ((phash2{ 572755007, 999997207 }).h, r.h);
+	r = h1; r *= 300000;
+	EXPECT_EQ((phash2{ 200291815, 999995807 }).h, r.h);
+	r = h1; r <<= 5;
+	EXPECT_EQ((phash2{ 416902469, 242891385 }).h, r.h);
+	r = h1; r >>= 5;
+	EXPECT_EQ((phash2{ 667139015, 214851611 }).h, r.h);
+
+	r = h1; r += r;
+	EXPECT_EQ((phash2{ 2000000, 4000000 }).h, r.h);
+	r = h1; r -= r;
+	EXPECT_EQ((phash2{ 0, 0 }).h, r.h);
+	r = h1; r *= r;
+	EXPECT_EQ((phash2{ 414643849, 999972007 }).h, r.h);
+
+	r = h1; r.add(h2, 100);
+	EXPECT_EQ((h1 + (h2 << 100)).h, r.h);
+	r = h1; r.sub_shr(h2, 100);
+	EXPECT_EQ(((h1 - h2) >> 100).h, r.h);
+	r = h1; r.add(300000, 100);
+	EXPECT_EQ((h1 + (phash2{ 300000, 300000 } << 100)).h, r.h);
+	r = h1; r.sub_shr(300000, 100);
+	EXPECT_EQ(((h1 - phash2{ 300000, 300000 }) >> 100).h, r.h);
 }
 
 TEST(polynomial_hash_test, cumulative_hash_constructor) {
