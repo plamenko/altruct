@@ -35,6 +35,7 @@
     <ClCompile Include="..\..\test\algorithm\math\bits_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\combinatorics_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\comb_primes_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\convolutions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fft_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fractions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
