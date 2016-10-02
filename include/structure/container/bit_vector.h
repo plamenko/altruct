@@ -78,7 +78,7 @@ public:
 
 	bit_vector operator ~ () const { return clone().apply(0, sz, op_flip); }
 
-	bit_vector& operator &= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_and); }
+	bit_vector& operator &= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_and), apply(that.sz, sz, op_set0); }
 	bit_vector& operator |= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_or); }
 	bit_vector& operator ^= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_xor); }
 

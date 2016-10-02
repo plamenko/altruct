@@ -99,7 +99,6 @@ void test_apply(const vector<int>& a, size_t begin1, size_t begin2, size_t len, 
 	bit_vector<W>::apply(v_actual, begin1, v_actual, begin2, len, op);
 	ASSERT_EQ(v_expected.words, v_actual.words);
 }
-
 }
 
 TEST(bit_vector_test, constructor_64bit) {
@@ -342,7 +341,7 @@ TEST(bit_vector_test, apply) {
 	for (size_t b1 = 0; b1 <= a1.size(); b1++) {
 		for (size_t b2 = 0; b2 <= a1.size(); b2++) {
 			for (size_t len = 0; len <= min(a1.size() - b1, a1.size() - b2); len++) {
-				test_apply<uint8_t>(a1, b1, b2, len, bit_vector<uint8_t>::op_set);
+				test_apply<uint8_t>(a1, b1, b2, len, bit_vector<uint8_t>::op_set); // copy
 				test_apply<uint8_t>(a1, b1, b2, len, bit_vector<uint8_t>::op_and);
 				test_apply<uint8_t>(a1, b1, b2, len, bit_vector<uint8_t>::op_or);
 				test_apply<uint8_t>(a1, b1, b2, len, bit_vector<uint8_t>::op_xor);
@@ -401,11 +400,41 @@ TEST(bit_vector_test, rotate) {
 }
 
 TEST(bit_vector_test, swap) {
-	// TODO
+	auto a = random_vec(30);
+	auto a_expected = a;
+	for (size_t b1 = 0; b1 <= a.size(); b1++) {
+		for (size_t e1 = b1; e1 <= a.size(); e1++) {
+			for (size_t b2 = e1; b2 <= a.size(); b2++) {
+				for (size_t e2 = b2; e2 <= a.size(); e2++) {
+					copy(a.data() + 0, a.data() + b1, a_expected.data());
+					copy(a.data() + b2, a.data() + e2, a_expected.data() + b1);
+					copy(a.data() + e1, a.data() + b2, a_expected.data() + b1 + e2 - b2);
+					copy(a.data() + b1, a.data() + e1, a_expected.data() + b1 + e2 - e1);
+					copy(a.data() + e2, a.data() + a.size(), a_expected.data() + e2);
+					bit_vector<uint8_t> v_expected0(a_expected.begin(), a_expected.end());
+					bit_vector<uint8_t> v(a.begin(), a.end());
+					v.swap(b1, e1, b2, e2);
+					EXPECT_EQ(v_expected0.words, v.words);
+				}
+			}
+		}
+	}
 }
 
 TEST(bit_vector_test, hamming) {
-	// TODO
+	auto a1 = random_vec(40);
+	auto a2 = random_vec(30);
+	bit_vector<uint8_t> v1(a1.begin(), a1.end());
+	bit_vector<uint8_t> v2(a2.begin(), a2.end());
+	for (size_t b1 = 0; b1 <= v1.size(); b1++) {
+		for (size_t b2 = 0; b2 <= v2.size(); b2++) {
+			for (size_t len = 0; len <= min(v1.size() - b1, v2.size() - b2); len++) {
+				int d0 = 0; for (int i = 0; i < len; i++) d0 += a1[b1 + i] ^ a2[b2 + i];
+				int d1 = v1.hamming_distance(v1, b1, v2, b2, len);
+				EXPECT_EQ(d0, d1);
+			}
+		}
+	}
 }
 
 TEST(bit_vector_test, comparison_operators) {
@@ -424,7 +453,45 @@ TEST(bit_vector_test, comparison_operators) {
 }
 
 TEST(bit_vector_test, logic_operators) {
-	// TODO
+	const bit_vector<uint8_t> v1{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1 };
+	const bit_vector<uint8_t> v2{ 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1 };
+
+	const bit_vector<uint8_t> va{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };
+	const bit_vector<uint8_t> vo{ 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1 };
+	const bit_vector<uint8_t> vx{ 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
+	const bit_vector<uint8_t> vn{ 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0 };
+
+	EXPECT_EQ(va.words, (v1 & v2).words);
+	EXPECT_EQ(vo.words, (v1 | v2).words);
+	EXPECT_EQ(vx.words, (v1 ^ v2).words);
+	EXPECT_EQ(vn.words, (~v2).words);
+
+	EXPECT_EQ(va.words, (v2 & v1).words);
+	EXPECT_EQ(vo.words, (v2 | v1).words);
+	EXPECT_EQ(vx.words, (v2 ^ v1).words);
+
+	bit_vector<uint8_t> t;
+	t = v1; t &= v2;
+	EXPECT_EQ(va.words, t.words);
+	t = v1; t |= v2;
+	EXPECT_EQ(vo.words, t.words);
+	t = v1; t ^= v2;
+	EXPECT_EQ(vx.words, t.words);
+	
+	t = v2; t &= v1;
+	EXPECT_EQ(va.words, t.words);
+	t = v2; t |= v1;
+	EXPECT_EQ(vo.words, t.words);
+	t = v2; t ^= v1;
+	EXPECT_EQ(vx.words, t.words);
+
+	t = v2; t &= t;
+	EXPECT_EQ(v2.words, t.words);
+	t = v2; t |= t;
+	EXPECT_EQ(v2.words, t.words);
+	t = v2; t ^= t;
+	bit_vector<uint8_t> zero(21);
+	EXPECT_EQ(zero.words, t.words);
 }
 
 TEST(bit_vector_test, perf) {
