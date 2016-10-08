@@ -191,12 +191,6 @@
     <ClInclude Include="..\..\include\io\fast_io.h">
       <Filter>include\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\math\vector2d.h">
-      <Filter>include\structure\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\math\vector3d.h">
-      <Filter>include\structure\math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
@@ -250,6 +244,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\convolutions.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\vector2d.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\vector3d.h">
+      <Filter>include\structure\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

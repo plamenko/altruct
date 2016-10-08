@@ -74,6 +74,8 @@
     <ClCompile Include="..\..\test\structure\math\quadratic_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\root_wrapper_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\series_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\vector2d_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\vector3d_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\vectorNd_test.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
