@@ -100,6 +100,8 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const R& roo
 /**
  * FFT Ordinary Convolution of two sequences
  *
+ * Mathematica equivalent: `ListConvolve[u, v, {1, -1}, 0]`
+
  * @param u_begin, u_end - iterators of sequence u; u_size = u_end - u_begin
  * @param v_begin, v_end - iterators of sequence v; v_size = v_end - v_begin
  * @param root_base - a principal k-th root of unity in the ring T
@@ -114,6 +116,36 @@ std::vector<T> convolution(It u_begin, It u_end, It v_begin, It v_end, const R& 
 	int l = 1; while (l < n) l *= 2;
 	r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
 	fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
+	r.resize(n);
+	return r;
+}
+
+/**
+ * FFT Cyclic Convolution of two sequences
+ *
+ * Note, `u` is the kernel and `v` is the cyclic list.
+ * Mathematica equivalent: `ListConvolve[u, v, {1, -1}]`
+ *
+ * @param u_begin, u_end - iterators of sequence u; u_size = u_end - u_begin
+ * @param v_begin, v_end - iterators of sequence v; v_size = v_end - v_begin
+ * @param root_base - a principal k-th root of unity in the ring T
+ * @param root_order - order `k` of the root, must be a power of 2 not less than `size`
+ * @return - result, array of length size = u_size + v_size - 1
+ */
+template<typename T, typename R, typename It>
+std::vector<T> cyclic_convolution(It u_begin, It u_end, It v_begin, It v_end, const R& root_base, int root_order) {
+	R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
+	std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
+	int u_size = (int)u.size(), v_size = (int)v.size();
+	int vv_size = multiple(v_size, u_size);
+	int n = v_size + u_size - 1;
+	int nn = vv_size + u_size - 1;
+	int l = 1; while (l < nn) l *= 2;
+	r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
+	for (int i = v_size; i < vv_size; i++) v[i] = v[i - v_size];
+	for (int i = 1; i < u_size; i++) v[l - i] = v[vv_size - i];
+	fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
+	for (int i = 1; i < u_size; i++) r[n - i] = r[u_size - 1 - i];
 	r.resize(n);
 	return r;
 }

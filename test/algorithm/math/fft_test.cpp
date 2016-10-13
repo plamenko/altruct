@@ -23,6 +23,8 @@ using namespace altruct::math;
  * {     12289,   41,  2^12}
  */
 
+typedef modulo<int, 12289> mod;
+
 TEST(fft_test, perf) {
 	return; // skip perf tests
 
@@ -45,7 +47,6 @@ TEST(fft_test, perf) {
 }
 
 TEST(fft_test, fft_rec_inverse) {
-	typedef modulo<int, 12289> mod;
 	const int n = 16;
 	mod A[n], a[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144 };
 	fft_rec(A, a, n, powT(mod(41), (1 << 12) / n));
@@ -56,7 +57,6 @@ TEST(fft_test, fft_rec_inverse) {
 }
 
 TEST(fft_test, fft_inverse) {
-	typedef modulo<int, 12289> mod;
 	const int n = 16;
 	mod a[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144 };
 	fft(a, n, powT(mod(41), (1 << 12) / n));
@@ -67,8 +67,6 @@ TEST(fft_test, fft_inverse) {
 }
 
 TEST(fft_test, fft_cyclic_convolution) {
-	typedef modulo<int, 12289> mod;
-
 	const int n = 16;
 	mod u[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144 };
 	mod v[n] = { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531 };
@@ -76,7 +74,7 @@ TEST(fft_test, fft_cyclic_convolution) {
 	mod e[n] = { 0 };
 	for (int k = 0; k < n; k++) {
 		for (int i = 0; i < n; i++) {
-			e[k] += u[i] * v[(k - i + n) % n];
+			e[k] += u[i] * v[modT(k - i, n)];
 		}
 	}
 
@@ -86,8 +84,6 @@ TEST(fft_test, fft_cyclic_convolution) {
 }
 
 TEST(fft_test, fft_convolution) {
-	typedef modulo<int, 12289> mod;
-
 	const int n = 16;
 	mod u[n] = { 671, 9230, 3302, 4764, 6135, 7750, 9881 };
 	mod v[n] = { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531 };
@@ -106,4 +102,42 @@ TEST(fft_test, fft_convolution) {
 	mod a[n] = { 0 };
 	fft_cyclic_convolution(a, u, v, n, mod(41), 1 << 12);
 	EXPECT_EQ(vector<mod>(e, e + n), vector<mod>(a, a + n));
+}
+
+void test_ordinary_convolution(const vector<mod>& u, const vector<mod>& v) {
+	vector<mod> eo(u.size() + v.size() - 1);
+	for (int k = 0; k < (int)eo.size(); k++) {
+		for (int i = 0; i < (int)u.size(); i++) {
+			if (0 <= k - i && k - i < v.size()) {
+				eo[k] += u[i] * v[k - i];
+			}
+		}
+	}
+	auto ao = convolution<mod>(u.begin(), u.end(), v.begin(), v.end(), mod(41), 1 << 12);
+	EXPECT_EQ(eo, ao);
+}
+void test_cyclic_convolution(const vector<mod>& u, const vector<mod>& v) {
+	vector<mod> ec(u.size() + v.size() - 1);
+	for (int k = 0; k < (int)ec.size(); k++) {
+		for (int i = 0; i < (int)u.size(); i++) {
+			ec[k] += u[i] * v[modT(k - i, (int)v.size())];
+		}
+	}
+	auto ac = cyclic_convolution<mod>(u.begin(), u.end(), v.begin(), v.end(), mod(41), 1 << 12);
+	EXPECT_EQ(ec, ac);
+}
+
+void test_convolutions(const vector<mod>& u, const vector<mod>& v) {
+	test_ordinary_convolution(u, v);
+	test_cyclic_convolution(u, v);
+}
+
+TEST(fft_test, convolutions) {
+	test_convolutions({ 671, 9230, 3302, 4764, 6135, 7750, 9881, 2930 }, { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54 });
+	test_convolutions({ 671, 9230, 3302, 4764, 6135, 7750, 9881 }, { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 });
+	test_convolutions({ 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 }, { 671, 9230, 3302, 4764, 6135, 7750, 9881 });
+	test_convolutions({ 671, 9230, 3302 }, { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 });
+	test_convolutions({ 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 }, { 671, 9230, 3302 });
+	test_convolutions({ 671 }, { 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 });
+	test_convolutions({ 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 12, 3407, 551 }, { 671 });
 }
