@@ -40,6 +40,19 @@ A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init,
 }
 
 /**
+ * The next element of a linear recurrence
+ */
+template<typename T, typename A>
+A linear_recurrence_next(const std::vector<T> &f_coeff, const std::vector<A> &f_init) {
+	int L = (int)f_coeff.size();
+	A r = zeroT<A>::of(f_init[0]);
+	for (int i = 0; i < L; i++) {
+		r += f_init[f_init.size() - 1 - i] * f_coeff[i];
+	}
+	return r;
+}
+
+/**
  * n-th Fibonacci number
  */
 template<typename T>

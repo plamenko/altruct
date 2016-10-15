@@ -18,6 +18,14 @@ TEST(recurrence_test, linear_recurrence) {
 	EXPECT_EQ((vector<int> {2, 3, 5, 7, 11, 14, 18, 26, 41, 44, 42, 91, 173, 88, -37, 460, 1035, -509, -1787, 4361}), f);
 }
 
+TEST(recurrence_test, linear_recurrence_next) {
+	std::vector<int> f{ 2, 3, 5, 7, 11 };
+	while (f.size() < 20) {
+		f.push_back(linear_recurrence_next<int>({ 1, -2, 3, 4, -5 }, f));
+	}
+	EXPECT_EQ((vector<int> {2, 3, 5, 7, 11, 14, 18, 26, 41, 44, 42, 91, 173, 88, -37, 460, 1035, -509, -1787, 4361}), f);
+}
+
 TEST(recurrence_test, linear_recurrence_on_matrix) {
 	std::vector<mat> a;
 	mat a0 = { { 1, 0 }, { 0, 1 } };
