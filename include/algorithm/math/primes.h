@@ -307,7 +307,7 @@ P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
 	P r = 1;
 	for (const auto& f : vf) {
 		int e = (f.first == 2 && f.second > 2) ? f.second - 1 : f.second;
-		r = lcm(r, powT(f.first, e - 1) * (f.first - 1));
+		r = lcm<P>(r, powT(f.first, e - 1) * (f.first - 1));
 	}
 	return r;
 }

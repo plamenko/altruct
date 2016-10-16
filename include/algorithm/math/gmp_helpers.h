@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <gmpxx.h>
+#include "algorithm/math/base.h"
 #include "structure/math/modulo.h"
 
 typedef mpz_class mpz;
@@ -36,3 +37,4 @@ inline mpf& f_set(mpf &x, const mpf &val, int prec) { x.set_prec(prec ? prec : v
 inline mpz z_div_floor(mpz a, mpz b) { mpz q; mpz_fdiv_q(q.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t()); return q; }
 inline mpz z_div_ceil(mpz a, mpz b) { mpz q; mpz_cdiv_q(q.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t()); return q; }
 template<> inline void altruct::math::modulo_normalize(mpz* v, const mpz& M) { altruct::math::modulo_normalize_int<mpz>(v, M); }
+template<> inline mpz altruct::math::sqrtT(mpz x, mpz) { return z_sqrt(x); }

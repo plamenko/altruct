@@ -430,7 +430,7 @@ TEST(bit_vector_test, hamming) {
 		for (size_t b2 = 0; b2 <= v2.size(); b2++) {
 			for (size_t len = 0; len <= min(v1.size() - b1, v2.size() - b2); len++) {
 				int d0 = 0; for (int i = 0; i < len; i++) d0 += a1[b1 + i] ^ a2[b2 + i];
-				int d1 = v1.hamming_distance(v1, b1, v2, b2, len);
+				int d1 = (int)v1.hamming_distance(v1, b1, v2, b2, len);
 				EXPECT_EQ(d0, d1);
 			}
 		}

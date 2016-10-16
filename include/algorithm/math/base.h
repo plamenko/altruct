@@ -196,7 +196,7 @@ T sqT(T x) {
  * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
-T sqrtT(T x, T eps = 1) {
+T sqrtT(T x, T eps = T(1)) {
 	if (x < 0) return -sqrtT<T>(-x, eps);
 	if (x == 0) return 0;
 	if (x == 1) return 1;
@@ -243,7 +243,7 @@ T cbT(T x) {
  * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
-T cbrtT(T x, T eps = 1) {
+T cbrtT(T x, T eps = T(1)) {
 	if (x < 0) return -cbrtT<T>(-x, eps);
 	if (x == 0) return 0;
 	if (x == 1) return 1;
