@@ -33,6 +33,7 @@
     <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\range_minimum_query.h" />
     <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h" />
+    <ClInclude Include="..\..\experimental\include\structure\math\double_int.h" />
     <ClInclude Include="..\..\include\algorithm\collections\collections.h" />
     <ClInclude Include="..\..\include\algorithm\hash\polynomial_hash.h" />
     <ClInclude Include="..\..\include\algorithm\hash\std_hash_combine.h" />
@@ -72,6 +73,7 @@
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h" />
     <ClInclude Include="..\..\include\structure\math\fraction.h" />
+    <ClInclude Include="..\..\include\structure\math\galois_field_2.h" />
     <ClInclude Include="..\..\include\structure\math\matrix.h" />
     <ClInclude Include="..\..\include\structure\math\modulo.h" />
     <ClInclude Include="..\..\include\structure\math\nimber.h" />

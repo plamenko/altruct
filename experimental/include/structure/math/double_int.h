@@ -1,9 +1,12 @@
 #pragma once
 
 #include "algorithm/math/base.h"
+#include "algorithm/math/bits.h"
 
 #include <stdint.h>
 #include <algorithm>
+#include <string>
+#include <typeinfo>
 #include <type_traits>
 
 namespace altruct {
@@ -11,29 +14,24 @@ namespace math {
 
 /** TODO **
 
-add/sub ?
-	add_lo, add_hi
-	add_l0 -> add
-	add_hi -> adc (add with carry)
-	no other instructions may be done there in order to preserve the carry flag
-
 mul
-	mul_full(a, b) -> (hi, lo)
-	mull_mw; long multiplication by a single machine word
+	mulw; long multiplication by a single machine word
 
 div
 	half machine-word size step; (O(n) m-w divisions, O(n^2) m-w multiplications)
+	div_full
 
-lzc ?
-	built-in instruction for primitive_int
-	
+to string
+	add buffer length to be safe
+	use proper format specifier for printf: <inttypes.h>
+	use divide-and-conquer to achieve O(n log^2 n) instead O(n^2) time
 */
 
 template<typename T>
 class double_int {
 public:
-	// STATIC
-	static inline int type_bits() { return T::type_bits() * 2; }
+	typedef T half_type;
+	static const int type_bits = half_type::type_bits * 2;
 	static inline int sign(bool is_negative) { return is_negative ? -1 : 0; }
 
 	// DATA
@@ -65,103 +63,63 @@ public:
 	bool unsigned_lte(const double_int& rhs) const { return hi.unsigned_lt(rhs.hi) || (hi == rhs.hi && lo.unsigned_lte(rhs.lo)); }
 	bool unsigned_gte(const double_int& rhs) const { return hi.unsigned_gt(rhs.hi) || (hi == rhs.hi && lo.unsigned_gte(rhs.lo)); }
 	
-	//INCREMENT
+	// ADDITION / SUBTRACTION WITH CARRY
+	double_int& assign_adc(const double_int& rhs, int& carry) {
+		lo.assign_adc(rhs.lo, carry);
+		hi.assign_adc(rhs.hi, carry);
+		return *this;
+	}
+	double_int& assign_sbb(const double_int& rhs, int& borrow) {
+		lo.assign_sbb(rhs.lo, borrow);
+		hi.assign_sbb(rhs.hi, borrow);
+		return *this;
+	}
 	
-	double_int& operator ++ () { // ++double_int
-		++lo;
-		if (lo.unsigned_lt(1)) ++hi; // carry
-		return *this;
-	}
+	// INCREMENT / DECREMENT
+	double_int& operator ++ () { int carry = 1; assign_adc(0, carry); return *this; }
+	double_int& operator -- () { int borrow = 1; assign_sbb(0, borrow); return *this; }
+	double_int operator ++ (int) { double_int r(*this); return ++r; }
+	double_int operator -- (int) { double_int r(*this); return --r; }
 
-	double_int operator ++ (int) { // double_int++
-		double_int t = *this; ++*this; return t;
-	}
-	
-	// ADDITION
-
-	double_int& operator += (const double_int& rhs) {
-		T t = lo; hi += rhs.hi; lo += rhs.lo;
-		if (lo.unsigned_lt(t)) ++hi; // carry
-		return *this;
-	}
-
-	double_int& operator += (const T& rhs) {
-		T t = lo; lo += rhs;
-		if (lo.unsigned_lt(t)) ++hi; // carry
-		return *this;
-	}
-
-	double_int& operator += (int rhs) {
-		T t = lo; lo += rhs;
-		if (lo.unsigned_lt(t)) ++hi; // carry
-		return *this;
-	}
-
+	// ADDITION / SUBTRACTION
+	double_int& operator += (const double_int& rhs) { int carry = 0; return assign_adc(rhs, carry); }
+	double_int& operator -= (const double_int& rhs) { int borrow = 0; return assign_sbb(rhs, borrow); }
 	double_int operator + (const double_int& rhs) const { double_int r(*this); return r += rhs; }
-
-	double_int operator + () const { return *this; }
-
-	// DECREMENT
-	
-	double_int& operator -- () { // --double_int
-		T t = lo; --lo;
-		if (lo.unsigned_gt(t)) --hi; // borrow
-		return *this;
-	}
-	
-	double_int operator -- (int) { // double_int--
-		double_int t = *this; --*this; return t;
-	}
-
-	// SUBTRACTION
-	
-	double_int& operator -= (const double_int& rhs) {
-		T t = lo; hi -= rhs.hi; lo -= rhs.lo;
-		if (lo.unsigned_gt(t)) --hi; // borrow
-		return *this;
-	}
-	
 	double_int operator - (const double_int& rhs) const { double_int r(*this); return r -= rhs; }
-
-	double_int operator - () const { return double_int(0) - *this; }
+	double_int operator + () const { return *this; }
+	double_int operator - () const { return double_int(0) -= *this; }
+	double_int& negate() { return *this = -*this; }
 	
 	// MULTIPLICATION
-	
-	static std::pair<double_int, double_int> unsigned_mul_full(const double_int& lhs, const double_int& rhs) const {
-		// 2^(3*L/2) (hm2) + 2^(2*L/2) (lm2 +  hm2 + hm0 - hm1) + 2 ^ (1 * L / 2) (hm0 + lm0 + lm2 - lm1) + 2 ^ (0 * L / 2) (lm0)
-		auto m2 = T::unsigned_mul_full(lhs.hi, rhs.hi);
-		auto m1 = T::unsigned_mul_full(lhs.hi - lhs.lo, rhs.hi - rhs.lo); // TODO: addition / subtraction can overflow
+	static double_int<double_int> unsigned_mul_full(const double_int& lhs, const double_int& rhs) {
+		int lhs_cy = 0; auto lhs_su = lhs.lo; lhs_su.assign_adc(lhs.hi, lhs_cy);
+		int rhs_cy = 0; auto rhs_su = rhs.lo; rhs_su.assign_adc(rhs.hi, rhs_cy);
 		auto m0 = T::unsigned_mul_full(lhs.lo, rhs.lo);
-		//int64_t x = to_int64();
-		//int64_t y = rhs.to_int64();
-		//double_int r;
-		//T a(0, lo.get_hi()), b(0, lo.get_lo());
-		//T c(0, rhs.lo.get_hi()), d(0, rhs.lo.get_lo());
-		//r.lo = b.unsigned_mul(d);
-		//T ad = a.unsigned_mul(d);
-		//r += T(0, ad.get_lo()) << (T::type_bits() / 2);
-		//r.hi += T(0, ad.get_hi());
-		//T bc = b.unsigned_mul(c);
-		//r += T(0, bc.get_lo()) << (T::type_bits() / 2);
-		//r.hi += T(0, bc.get_hi());
-		//r.hi += a.unsigned_mul(c);
-		//r.hi += hi.unsigned_mul(rhs.lo);
-		//r.hi += lo.unsigned_mul(rhs.hi);
+		auto m2 = T::unsigned_mul_full(lhs.hi, rhs.hi);
+		auto m1 = T::unsigned_mul_full(lhs_su, rhs_su);
+		int borrow0 = 0; m1.assign_sbb(m0, borrow0);
+		int borrow2 = 0; m1.assign_sbb(m2, borrow2);
+		double_int<double_int> r(m2, m0);
+		int carry = 0;
+		r.lo.hi.assign_adc(m1.lo, carry);
+		r.hi.lo.assign_adc(m1.hi, carry);
+		r.hi.hi += (lhs_cy & rhs_cy) + carry - borrow0 - borrow2;
+		if (rhs_cy) r.hi += double_int(0, lhs_su);
+		if (lhs_cy) r.hi += double_int(0, rhs_su);
 		return r;
 	}
 
-	static std::pair<double_int, double_int> unsigned_mul(const double_int& lhs, const double_int& rhs) const {
-	
-	}
-	
-	double_int operator * (const double_int& rhs) const {
-		return unsigned_mul(rhs);
+	static double_int unsigned_mul(const double_int& lhs, const double_int& rhs) {
+		auto r = T::unsigned_mul_full(lhs.lo, rhs.lo);
+		r.hi += T::unsigned_mul(lhs.lo, rhs.hi);
+		r.hi += T::unsigned_mul(lhs.hi, rhs.lo);
+		return r;
 	}
 
+	double_int operator * (const double_int& rhs) const { return unsigned_mul(*this, rhs); }
 	double_int& operator *= (const double_int& rhs) { return *this = *this * rhs; }
 
 	// DIVISION
-
 	static double_int unsigned_div(const double_int& a0, const double_int& b0, double_int *r = 0) {
 		if (a0.unsigned_lt(b0)) return 0;
 		double_int q = 0, a = a0, b = b0;
@@ -175,8 +133,8 @@ public:
 		//	int b_lzc = b.leading_zeros_count(); b <<= a_lzc;
 		//	r_shift += a_lzc;
 		//	if (b_lzc == a_lzc) { a -= b; q += 1; continue; }
-		//  // shifting b left so that (b << k).hi >= 2^(T::type_bits()/2-1)
-		//	int k = max(0, b_lzc - a_lzc - T::type_bits() / 2);
+		//  // shifting b left so that (b << k).hi >= 2^(T::type_bits/2-1)
+		//	int k = max(0, b_lzc - a_lzc - T::type_bits / 2);
 		//	double_int c = b << k;
 		//	double_int t = T::unsigned_div(a.get_hi(), c.get_hi() + 1);
 		//	t <<= k; // correcting the quotient because shifting b left shifted the quotient right
@@ -186,56 +144,44 @@ public:
 		//if (r) *r = a >> r_shift;
 		return q;
 	}
+
+	static double_int signed_div(const double_int& a0, const double_int& b0, double_int *r = 0) {
+		double_int a = a0; if (a0.is_negative()) a.negate();
+		double_int b = b0; if (b0.is_negative()) b.negate();
+		double_int q = unsigned_div(a, b, r);
+		if (r && a0.is_negative()) r->negate();
+		return (a0.is_negative() != b0.is_negative()) ? -q : q;
+	}
 	
-	double_int operator / (const double_int& rhs) const {
-		int s = 1;
-		double_int a = *this; if (a.is_negative()) a = -a, s =-s;
-		double_int b = rhs;   if (b.is_negative()) b = -b, s =-s;
-		double_int q = unsigned_div(a, b);
-		return (s < 0) ? -q : q;
-	}
-
+	double_int operator / (const double_int& rhs) const { return signed_div(*this, rhs); }
+	double_int operator % (const double_int& rhs) const { double_int r; signed_div(*this, rhs, &r); return r; }
 	double_int& operator /= (const double_int& rhs) { return *this = *this / rhs; }
-
-	double_int operator % (const double_int& rhs) const {
-		int s = 1;
-		double_int r;
-		double_int a = *this; if (a.is_negative()) a = -a, s =-s;
-		double_int b = rhs;   if (b.is_negative()) b = -b;
-		unsigned_div(a, b, &r);
-		return (s < 0) ? -r : r;
-	}
-
 	double_int& operator %= (const double_int& rhs) { return *this = *this % rhs; }
 
 	// BITWISE
-	
-	double_int operator ~ () const { return double_int(~hi, ~lo); }
-	
 	double_int& operator &= (const double_int& rhs) { hi &= rhs.hi; lo &= rhs.lo; return *this; }
 	double_int& operator |= (const double_int& rhs) { hi |= rhs.hi; lo |= rhs.lo; return *this; }
 	double_int& operator ^= (const double_int& rhs) { hi ^= rhs.hi; lo ^= rhs.lo; return *this; }
-
 	double_int operator & (const double_int& rhs) const { double_int r(*this); return r &= rhs; }
 	double_int operator | (const double_int& rhs) const { double_int r(*this); return r |= rhs; }
 	double_int operator ^ (const double_int& rhs) const { double_int r(*this); return r ^= rhs; }
+	double_int operator ~ () const { return double_int(~hi, ~lo); }
 
 	// SHIFTS
-	
 	double_int& operator <<= (int cnt) {
-		if (cnt >= 2 * T::type_bits()) {
+		if (cnt >= 2 * T::type_bits) {
 			hi = 0;
 			lo = 0;
-		} else if (cnt > T::type_bits()) {
+		} else if (cnt > T::type_bits) {
 			hi = lo;
-			hi <<= cnt - T::type_bits();
+			hi <<= cnt - T::type_bits;
 			lo = 0;
-		} else if (cnt == T::type_bits()) {
+		} else if (cnt == T::type_bits) {
 			hi = lo;
 			lo = 0;
 		} else if (cnt > 0) {
 			hi <<= cnt;
-			hi |= double_int(lo).assign_unsigned_shr(T::type_bits() - cnt);
+			hi |= double_int(lo).assign_unsigned_shr(T::type_bits - cnt);
 			lo <<= cnt;
 		}
 		return *this;
@@ -250,19 +196,19 @@ public:
 	}
 	
 	double_int& assign_extended_shr(int cnt, int ext) {
-		if (cnt >= 2 * T::type_bits()) {
+		if (cnt >= 2 * T::type_bits) {
 			lo = ext;
 			hi = ext;
-		} else if (cnt > T::type_bits()) {
+		} else if (cnt > T::type_bits) {
 			lo = hi;
-			lo.assign_extended_shr(cnt - T::type_bits(), ext);
+			lo.assign_extended_shr(cnt - T::type_bits, ext);
 			hi = ext;
-		} else if (cnt == T::type_bits()) {
+		} else if (cnt == T::type_bits) {
 			lo = hi;
 			hi = ext;
 		} else if (cnt > 0) {
 			lo.assign_unsigned_shr(cnt);
-			lo |= hi << (T::type_bits() - cnt);
+			lo |= hi << (T::type_bits - cnt);
 			hi.assign_extended_shr(cnt, ext);
 		}
 		return *this;
@@ -273,108 +219,121 @@ public:
 
 	int leading_zeros_count() const {
 		int hi_lzc = hi.leading_zeros_count();
-		return (hi_lzc < T::type_bits()) ? hi_lzc : T::type_bits() + lo.leading_zeros_count();
+		return (hi_lzc < T::type_bits) ? hi_lzc : T::type_bits + lo.leading_zeros_count();
 	}
 
 	// INPUT / OUTPUT
 
-	int64_t to_int64() const {
-		if (T::type_bits() >= 64) return lo.to_int64();
-		int64_t lo_mask = (1LL << T::type_bits()) - 1;
-		return (hi.to_int64() << T::type_bits()) | (lo.to_int64() & lo_mask);
+	uint64_t to_uint64() const {
+		if (T::type_bits >= 64) return lo.to_uint64();
+		return (hi.to_uint64() << T::type_bits) | lo.to_uint64();
 	}
 	
-	static double_int pow10(int e) {
-		double_int r = 1;
-		while (e-- > 0) {
-			r += r;  if (r.is_negative()) return r;
-			double_int r2 = r;
-			r += r;  if (r.is_negative()) return r;
-			r += r;  if (r.is_negative()) return r;
-			r += r2; if (r.is_negative()) return r;
-		}
-		return r;
-	}
+	//static double_int pow10(int e) {
+	//	double_int r = 1;
+	//	while (e-- > 0) {
+	//		r += r;  if (r.is_negative()) return r;
+	//		double_int r2 = r;
+	//		r += r;  if (r.is_negative()) return r;
+	//		r += r;  if (r.is_negative()) return r;
+	//		r += r2; if (r.is_negative()) return r;
+	//	}
+	//	return r;
+	//}
 
-	// WARNING: does not check for buffer overflow!
-	// LIMITATION: outputs "-OF" for minimum value
-	char *to_string10(char *buff) const {
-		char *wr = buff;
-		double_int t = *this;
-		if (t == 0) {
-			*(wr++) = '0';
-			*(wr++) = 0;
-			return buff;
-		}
-		if (t.is_negative()) {
-			*(wr++) = '-';
-			t = -t;
-		}
-		if (t.is_negative()) {
-			*(wr++) = 'O';
-			*(wr++) = 'F';
-			*(wr++) = 0;
-			return buff;
-		}
-		int digits = 0;
-		double_int p10;
-		do {
-			digits++;
-			p10 = pow10(digits);
-		} while (!p10.is_negative() && p10 <= t);
-		while (digits-- > 0) {
-			p10 = pow10(digits);
-			int d = 0;
-			while (t >= p10) {
-				t -= p10;
-				d++;
-			}
-			*(wr++) = '0' + d;
-		}
-		*(wr++) = 0;
-		return buff;
-	}
+	//// WARNING: does not check for buffer overflow!
+	//// LIMITATION: outputs "-OF" for minimum value
+	//char *to_string10(char *buff) const {
+	//	char *wr = buff;
+	//	double_int t = *this;
+	//	if (t == 0) {
+	//		*(wr++) = '0';
+	//		*(wr++) = 0;
+	//		return buff;
+	//	}
+	//	if (t.is_negative()) {
+	//		*(wr++) = '-';
+	//		t = -t;
+	//	}
+	//	if (t.is_negative()) {
+	//		*(wr++) = 'O';
+	//		*(wr++) = 'F';
+	//		*(wr++) = 0;
+	//		return buff;
+	//	}
+	//	int digits = 0;
+	//	double_int p10;
+	//	do {
+	//		digits++;
+	//		p10 = pow10(digits);
+	//	} while (!p10.is_negative() && p10 <= t);
+	//	while (digits-- > 0) {
+	//		p10 = pow10(digits);
+	//		int d = 0;
+	//		while (t >= p10) {
+	//			t -= p10;
+	//			d++;
+	//		}
+	//		*(wr++) = '0' + d;
+	//	}
+	//	*(wr++) = 0;
+	//	return buff;
+	//}
 
-	static double_int from_string10(const char *buff) {
-		double_int r = 0;
-		bool is_neg = false;
-		if (*buff == '-') {
-			buff++;
-			is_neg = true;
-		}
-		while (*buff) {
-			int d = *(buff++) -'0';
-			r += r;
-			double_int r2 = r;
-			r += r;
-			r += r;
-			r += r2;
-			r += d;
-		}
-		return is_neg ? -r : r;
+	//static double_int from_string10(const char *buff) {
+	//	double_int r = 0;
+	//	bool is_neg = false;
+	//	if (*buff == '-') {
+	//		buff++;
+	//		is_neg = true;
+	//	}
+	//	while (*buff) {
+	//		int d = *(buff++) -'0';
+	//		r += r;
+	//		double_int r2 = r;
+	//		r += r;
+	//		r += r;
+	//		r += r2;
+	//		r += d;
+	//	}
+	//	return is_neg ? -r : r;
+	//}
+
+	std::string to_string16() const {
+		return hi.to_string16() + lo.to_string16();
 	}
 };
 
 
-// Wrapper around signed primitive integral type
-// that adds some unsigned facilities.
-// Accepts:
-//   int8_t, uint8_t
-//   int16_t, uint16_t
-//   int32_t, uint32_t
-//   int64_t, uint64_t
-template<typename sT, typename uT>
+/**
+ * A wrapper around a signed primitive integral type
+ * that adds some unsigned facilities.
+ *
+ * Accepts:
+ *   int8_t, uint8_t, uint16_t
+ *   int16_t, uint16_t, uint32_t
+ *   int32_t, uint32_t, uint64_t
+ *   int64_t, uint64_t, <uint128_t>
+ *
+ * @param sT - signed variant of the wrapped type
+ * @param uT - unsigned variant of the wrapped type
+ * @param INTR - intrinsics for `adc`, `sbb` and `umul`.
+ */
+template<typename sT, typename uT, typename INTR>
 class prim_int {
 public:
-	// STATIC
-	static inline int type_bits() { return sizeof(sT) * 8; }
+	static const int type_bits = sizeof(sT) * 8;
 
 	// DATA
 	sT v;
 
 	// CONSTRUCTORS
-	prim_int(const sT& val = 0) : v(val) {}
-	prim_int(const sT& hi, const sT& lo) : v(lo) {}
+	prim_int() : v(0) {}
+	prim_int(const sT& val) : v(val) {}
+	prim_int(const uT& val) : v(sT(val)) {}
+	// construct from int, but only if sT is not int itself to avoid constructor clashing
+	template <typename sI = sT, typename = std::enable_if_t<!std::is_same<sI, int>::value>>
+	prim_int(int val) : v(sT(val)) {}
 
 	// GETTERS
 	bool is_negative() const { return v < 0; }
@@ -418,6 +377,8 @@ public:
 	prim_int& operator /= (const prim_int& rhs) { v /= rhs.v; return *this; }
 	prim_int& operator %= (const prim_int& rhs) { v %= rhs.v; return *this; }
 
+	prim_int& negate() { return prim_int(-v); }
+
 	prim_int& operator &= (const prim_int& rhs) { v &= rhs.v; return *this; }
 	prim_int& operator |= (const prim_int& rhs) { v |= rhs.v; return *this; }
 	prim_int& operator ^= (const prim_int& rhs) { v ^= rhs.v; return *this; }
@@ -425,77 +386,62 @@ public:
 	prim_int& operator <<= (int cnt) { v <<= cnt; return *this; }
 	prim_int& operator >>= (int cnt) { v >>= cnt; return *this; }
 
+	// UNSIGNED COMPARISON
+	bool unsigned_lt(const prim_int& rhs) const { return (uT(v) < uT(rhs.v)); }
+	bool unsigned_gt(const prim_int& rhs) const { return (uT(v) > uT(rhs.v)); }
+	bool unsigned_lte(const prim_int& rhs) const { return (uT(v) <= uT(rhs.v)); }
+	bool unsigned_gte(const prim_int& rhs) const { return (uT(v) >= uT(rhs.v)); }
+
+	// UNSIGNED SHIFT RIGHT
+	prim_int& assign_unsigned_shr(int cnt) { v = uT(v) >> cnt; return *this; }
+	prim_int& assign_extended_shr(int cnt, int ext) { v = (uT(v) >> cnt) | (uT(ext) << (type_bits - cnt)); return *this; } // undefined for cnt = 0
+	int leading_zeros_count() const { return lzc(uT(v)); }
+
+	// ADDITION / SUBTRACTION WITH CARRY
+	prim_int& assign_adc(const prim_int& rhs, int& carry) {
+		v = INTR().adc(uT(v), uT(rhs.v), carry);
+		return *this;
+	}
+	prim_int& assign_sbb(const prim_int& rhs, int& borrow) {
+		v = INTR().sbb(uT(v), uT(rhs.v), borrow);
+		return *this;
+	}
+
 	// UNSIGNED MULTIPLICATION
-	static void _add(uT& hi, uT& lo, uT hi2, uT lo2) {
-		lo += lo2; if (lo < lo2) hi++; hi += hi2;
+	static double_int<prim_int> unsigned_mul_full(const prim_int& lhs, const prim_int& rhs) {
+		double_int<prim_int> r;
+		r.lo = INTR().umul(uT(lhs.v), uT(rhs.v), (uT*)&(r.hi.v));
+		return r;
 	}
-	static std::pair<prim_int, prim_int> unsigned_mul_full(const prim_int& lhs, const prim_int& rhs) const {
-		const int L2 = type_bits() / 2;
-		uT hi1 = lhs.get_hi(), lo1 = lhs.get_lo(), hi2 = rhs.get_hi(), lo2 = rhs.get_lo();
-		uT hi(hi1 * hi2), lo(lo1 * lo2), m1(hi1 * lo2), m2(lo1 * hi2);
-		_add(hi, lo, m1 >> L2, m1 << L2); _add(hi, lo, m2 >> L2, m2 << L2);
-		return{ hi, lo };
-	}
-	static prim_int unsigned_mul(const prim_int& lhs, const prim_int& rhs) const {
-		return (uT)lhs.v * (uT)rhs.v;
+	static prim_int unsigned_mul(const prim_int& lhs, const prim_int& rhs) {
+		return uT(lhs.v) * uT(rhs.v);
 	}
 
 	// UNSIGNED DIVISION
+	static prim_int unsigned_div_full(const prim_int& lhs_hi, const prim_int& lhs_lo, const prim_int& rhs, prim_int *r = 0) {
+		// TODO
+	}
 	static prim_int unsigned_div(const prim_int& lhs, const prim_int& rhs, prim_int *r = 0) {
-		if (r) *r = (uT) lhs.v % (uT) rhs.v;
-		return (uT) lhs.v / (uT) rhs.v;
-	}
-	
-	// UNSIGNED COMPARISON
-	bool unsigned_lt(const prim_int& rhs) const { return ((uT)v < (uT)rhs.v); }
-	bool unsigned_gt(const prim_int& rhs) const { return ((uT)v >(uT)rhs.v); }
-	bool unsigned_lte(const prim_int& rhs) const { return ((uT)v <= (uT)rhs.v); }
-	bool unsigned_gte(const prim_int& rhs) const { return ((uT)v >= (uT)rhs.v); }
-
-	// UNSIGNED SHIFT RIGHT
-	static uT _ushr(uT v, int cnt) { return v >> cnt; }
-	prim_int& assign_unsigned_shr(int cnt) { v = _ushr(v, cnt); return *this; }
-	prim_int& assign_extended_shr(int cnt, int ext) { v = _ushr(v, cnt) | (ext << (type_bits() - cnt)); return *this; }
-
-	int leading_zeros_count() const {
-		uT u = (uT) v;
-		switch (type_bits()) {
-			case 64:
-				if (u >> 3*16) return 1*16 - len_lookup(int(u >> 3*16));
-				if (u >> 2*16) return 2*16 - len_lookup(int(u >> 2*16));
-				if (u >> 1*16) return 3*16 - len_lookup(int(u >> 1*16));
-				               return 4*16 - len_lookup(int(u));
-			case 32:
-				if (u >> 16) return 16 - len_lookup(int(u >> 16));
-				             return 32 - len_lookup(int(u));
-			case 16:
-				return 16 - len_lookup(int(u));
-			case 8:
-				return 8 - len_lookup(int(u));
-			default:
-				return 0;
-		}
-	}
-
-	static int len_lookup(int index) {
-		static bool len_lookup_initialized = false;
-		static char len_lookup_table[1 << 16] = {};
-		if (!len_lookup_initialized) {
-			for (int i = 0; i < (1 << 16); i++) {
-				int cnt = 0;
-				for (int j = i; j > 0; j >>= 1) {
-					cnt++;
-				}
-				len_lookup_table[i] = cnt;
-			}
-			len_lookup_initialized = true;
-		}
-		return len_lookup_table[index];
+		if (r) *r = uT(lhs.v) % uT(rhs.v);
+		return uT(lhs.v) / uT(rhs.v);
 	}
 	
 	// OUTPUT
-	int64_t to_int64() const { return int64_t(v); }
-	char *to_string10(char *buff) const { sprintf(buff, "%lld", int64_t(v)); return buff;}
+	uint64_t to_uint64() const { return uT(v); }
+	
+	std::string to_string16() const {
+		static const char hex_digits[16] = {
+			'0', '1', '2', '3', '4', '5', '6', '7',
+			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		int num_digits = type_bits / 4;
+		std::string s(num_digits, '0');
+		auto u = to_uint64();
+		for (int i = num_digits - 1; i >= 0; i--) {
+			s[i] = hex_digits[u & 0xF];
+			u >>= 4;
+		}
+		return s;
+	}
 };
 
 template<typename T>
@@ -508,7 +454,7 @@ struct identityT<double_int<T>> {
 template<typename T>
 struct zeroT<double_int<T>> {
 	static double_int<T> of(const double_int<T>& x) {
-		return double_int<T>(1);
+		return double_int<T>(0);
 	}
 };
 

@@ -251,5 +251,11 @@
     <ClInclude Include="..\..\include\structure\math\vector3d.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\math\double_int.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\math\galois_field_2.h">
+      <Filter>include\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

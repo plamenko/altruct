@@ -61,8 +61,10 @@
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\double_int_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fenwick_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fraction_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\galois_field_2_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulox_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />

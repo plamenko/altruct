@@ -151,6 +151,12 @@
     <ClCompile Include="..\..\test\structure\math\vector3d_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\galois_field_2_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\double_int_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
