@@ -9,10 +9,17 @@ int primitive_root(int m, prime_holder& prim) {
 	return primitive_root(m, phi, phi_factors);
 }
 
-std::set<int> kth_roots(int m, int k, prime_holder& prim) {
+int primitive_root_of_unity(int m, prime_holder& prim) {
 	int lam = carmichael_lambda(prim.factor_integer(m));
-	int g = primitive_root(m, prim);
-	return kth_roots(m, k, lam, g);
+	auto lam_factors = prime_factors(prim.factor_integer(lam));
+	return primitive_root_of_unity(m, lam, lam_factors);
+}
+
+std::set<int> kth_roots_of_unity(int m, int k, prime_holder& prim) {
+	int lam = carmichael_lambda(prim.factor_integer(m));
+	auto lam_factors = prime_factors(prim.factor_integer(lam));
+	int g = primitive_root_of_unity(m, lam, lam_factors);
+	return kth_roots_of_unity(m, k, lam, g);
 }
 
 } // math

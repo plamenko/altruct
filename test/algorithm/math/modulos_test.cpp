@@ -114,6 +114,7 @@ TEST(modulos_test, primitive_root) {
 	EXPECT_EQ(3, primitive_root(10, 4, vector<int>{ 2 }));
 	EXPECT_EQ(2, primitive_root(11, 10, vector<int>{ 2, 5 }));
 	EXPECT_EQ(5, primitive_root(18, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(0, primitive_root(120120, 23040, vector<int>{ 2, 3, 5 }));
 	vector<int> vg;
 	for (int m = 2; m <= 20; m++) {
 		vg.push_back(primitive_root(m, prim));
@@ -121,16 +122,37 @@ TEST(modulos_test, primitive_root) {
 	EXPECT_EQ((vector<int>{1, 2, 3, 2, 5, 3, 0, 2, 3, 2, 0, 2, 3, 0, 0, 3, 5, 2, 0}), vg);
 }
 
-TEST(modulos_test, kth_roots) {
+TEST(modulos_test, primitive_root_of_unity) {
 	prime_holder prim(100);
-	EXPECT_EQ((set<int>{ 1, 4, 13, 16 }), kth_roots(17, 4, 16, primitive_root(17, 16, vector<int>{2})));
-	EXPECT_EQ((set<int>{1, 17}), kth_roots(18, 4, 6, primitive_root(18, 6, vector<int>{2, 3})));
-	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots(18, 3, 6, primitive_root(18, 6, vector<int>{2, 3})));
-	EXPECT_EQ((set<int>{1, 4, 13, 16}), kth_roots(17, 4, prim));
-	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots(18, 3, prim));
-	EXPECT_EQ((set<int>{1, 17}), kth_roots(18, 4, prim));
-	EXPECT_EQ((set<int>{1}), kth_roots(18, 5, prim));
-	EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots(18, 6, prim));
+	EXPECT_EQ(1, primitive_root_of_unity(2, 1, vector<int>{ }));
+	EXPECT_EQ(2, primitive_root_of_unity(3, 2, vector<int>{ 2 }));
+	EXPECT_EQ(3, primitive_root_of_unity(4, 2, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root_of_unity(5, 4, vector<int>{ 2 }));
+	EXPECT_EQ(5, primitive_root_of_unity(6, 2, vector<int>{ 2 }));
+	EXPECT_EQ(3, primitive_root_of_unity(7, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(3, primitive_root_of_unity(8, 2, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root_of_unity(9, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(3, primitive_root_of_unity(10, 4, vector<int>{ 2 }));
+	EXPECT_EQ(2, primitive_root_of_unity(11, 10, vector<int>{ 2, 5 }));
+	EXPECT_EQ(5, primitive_root_of_unity(18, 6, vector<int>{ 2, 3 }));
+	EXPECT_EQ(17, primitive_root_of_unity(120120, 60, vector<int>{ 2, 3, 5 }));
+	vector<int> vg;
+	for (int m = 2; m <= 20; m++) {
+		vg.push_back(primitive_root_of_unity(m, prim));
+	}
+	EXPECT_EQ((vector<int>{1, 2, 3, 2, 5, 3, 3, 2, 3, 2, 5, 2, 3, 2, 3, 3, 5, 2, 3}), vg);
+}
+
+TEST(modulos_test, kth_roots_of_unity) {
+	prime_holder prim(100);
+	EXPECT_EQ((set<int>{ 1, 4, 13, 16 }), kth_roots_of_unity(17, 4, 16, primitive_root_of_unity(17, 16, vector<int>{2})));
+	EXPECT_EQ((set<int>{1, 17}), kth_roots_of_unity(18, 4, 6, primitive_root_of_unity(18, 6, vector<int>{2, 3})));
+	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots_of_unity(18, 3, 6, primitive_root_of_unity(18, 6, vector<int>{2, 3})));
+	EXPECT_EQ((set<int>{1, 4, 13, 16}), kth_roots_of_unity(17, 4, prim));
+	EXPECT_EQ((set<int>{1, 7, 13}), kth_roots_of_unity(18, 3, prim));
+	EXPECT_EQ((set<int>{1, 17}), kth_roots_of_unity(18, 4, prim));
+	EXPECT_EQ((set<int>{1}), kth_roots_of_unity(18, 5, prim));
+	EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots_of_unity(18, 6, prim));
 }
 
 TEST(modulos_test, factorial_mod_p) {

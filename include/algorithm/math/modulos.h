@@ -142,13 +142,14 @@ I sqrt_hensel_lift(const I& y, const I& p, I k) {
 }
 
 /**
- * Primitive root of unity modulo `m`
+ * Primitive root modulo `m`
  *
  * `m` must be 2, 4, p^k or 2p^k.
  *
  * @param m - modulus
  * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
  * @param phi_factors - unique prime factors of `phi`
+ * @return - root or 0 if there is none
  */
 template<typename I>
 I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
@@ -157,7 +158,7 @@ I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
 		if (gcd(g, m) > 1) continue;
 		bool primitive = true;
 		for (const I& p : phi_factors) {
-			primitive &= (powT(modx(g, m), phi / p) != 1);
+			primitive &= (powT(modx(g, m), I(phi / p)) != 1);
 		}
 		if (primitive) return g;
 	}
@@ -167,9 +168,27 @@ I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
 /**
  * Primitive root of unity modulo `m`
  *
+ * @param m - modulus
+ * @param lam - `carmichael_lambda(m)`;
+ * @param lam_factors - unique prime factors of `lam`
+ * @return - root or 0 if there is none
+ */
+template<typename I>
+I primitive_root_of_unity(I m, I lam, const std::vector<I> &lam_factors) {
+	return primitive_root(m, lam, lam_factors);
+}
+
+/**
+ * Primitive root modulo `m`
+ *
  * `m` must be 2, 4, p^k or 2p^k.
  */
 int primitive_root(int m, prime_holder& prim);
+
+/**
+ * Primitive root of unity modulo `m`
+ */
+int primitive_root_of_unity(int m, prime_holder& prim);
 
 /**
  * `k-th` roots of unity modulo `m`
@@ -179,13 +198,13 @@ int primitive_root(int m, prime_holder& prim);
  * @param m - modulus
  * @param k - k-th root
  * @param lam - `carmichael_lambda(m)`
- * @param g - primitive root modulo `m`
+ * @param g - primitive root of unity modulo `m`
  */
 template<typename I>
-std::set<I> kth_roots(I m, I k, I lam, I g) {
+std::set<I> kth_roots_of_unity(I m, I k, I lam, I g) {
 	typedef moduloX<I> modx;
 	I d = gcd(k, lam);
-	modx w = powT(modx(g, m), lam / d);
+	modx w = powT(modx(g, m), I(lam / d));
 	modx r = identityT<modx>::of(w);
 	std::set<I> sr;
 	for (I j = 0; j < d; j++) {
@@ -197,10 +216,8 @@ std::set<I> kth_roots(I m, I k, I lam, I g) {
 
 /**
  * `k-th` roots of unity modulo `m`
- *
- * `m` must be 2, 4, p^k or 2p^k.
  */
-std::set<int> kth_roots(int m, int k, prime_holder& prim);
+std::set<int> kth_roots_of_unity(int m, int k, prime_holder& prim);
 
 /**
 * `k-th` roots of `n` modulo `m`
