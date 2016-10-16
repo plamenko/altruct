@@ -89,7 +89,7 @@ T powT(T x, I y) {
 	T e1 = identityT<T>::of(x);
 	T r = e1;
 	for (; y > 0; y /= 2) {
-		if (y % 2) r *= x;
+		if (y % 2 != 0) r *= x;
 		x *= x;
 	}
 	return r;
@@ -244,12 +244,12 @@ T cbT(T x) {
  */
 template<typename T>
 T cbrtT(T x, T eps = 1) {
-	if (x < 0) return -cbrtT<T>(-x);
+	if (x < 0) return -cbrtT<T>(-x, eps);
 	if (x == 0) return 0;
 	if (x == 1) return 1;
 	T r0 = 0;
-	T r1 = x;
-	T r2 = 0;
+	T r1 = sqrtT(x, eps);
+	T r2 = x / sqT(r1);
 	while (r1 != r0 && absT(T(r1 - r2)) > eps) {
 		r0 = r1;
 		r1 = (r1 + r1 + r2) / 3;

@@ -5,11 +5,14 @@
 using namespace std;
 using namespace altruct::math;
 
+const int num_iterations = 3000;
+#define EXPECT_NEAR2(expected, actual, eps) EXPECT_TRUE(absT((actual) - (expected)) <= absT(eps))
+
 template<typename T>
 class wrapped {
 public:
 	T v;
-	wrapped(const T& v) : v(v) {}
+	wrapped(const T& v = 0) : v(v) {}
 	
 	bool operator == (const wrapped& rhs) const { return v == rhs.v; }
 	bool operator != (const wrapped& rhs) const { return v != rhs.v; }
@@ -20,6 +23,7 @@ public:
 
 	wrapped  operator +  (const wrapped &rhs) const { return wrapped(v + rhs.v); }
 	wrapped  operator -  (const wrapped &rhs) const { return wrapped(v - rhs.v); }
+	wrapped  operator +  ()                   const { return wrapped(+v); }
 	wrapped  operator -  ()                   const { return wrapped(-v); }
 	wrapped  operator *  (const wrapped &rhs) const { return wrapped(v * rhs.v); }
 	wrapped  operator /  (const wrapped &rhs) const { return wrapped(v / rhs.v); }
@@ -116,6 +120,16 @@ TEST(base_test, powT) {
 	EXPECT_EQ(-8.0f, powT(-2.0f, 3));
 	EXPECT_EQ(+8.0, powT(+2.0, 3));
 	EXPECT_EQ(-8.0, powT(-2.0, 3));
+	int x = 1;
+	for (int i = 0; i < 20; i++) {
+		EXPECT_EQ(x, powT(3, i)) << "powT(3, " << i << ")";
+		x *= 3;
+	}
+	double y = 1;
+	for (int i = 0; i < 20; i++) {
+		EXPECT_NEAR(y, powT(2.5, i), 1e-6) << "powT(2.5, " << i << ")";
+		y *= 2.5;
+	}
 }
 
 template<typename I>
@@ -124,26 +138,31 @@ void test_sqT_uint() {
 	EXPECT_EQ(I(1), sqT<I>(+1));
 	EXPECT_EQ(I(4), sqT<I>(+2));
 	EXPECT_EQ(I(100), sqT<I>(+10));
-}
-
-template<typename I>
-void test_sqT_sint() {
-	EXPECT_EQ(I(1), sqT<I>(-1));
-	EXPECT_EQ(I(4), sqT<I>(-2));
-	EXPECT_EQ(I(100), sqT<I>(-10));
+	for (int i = 0; i < num_iterations; i++) {
+		EXPECT_EQ(I(i * i), sqT(I(i))) << "sqT(" << i << ")";
+	}
 }
 
 template<typename I>
 void test_sqT_int() {
-	test_sqT_uint<I>();
-	test_sqT_sint<I>();
+	EXPECT_EQ(I(1), sqT<I>(-1));
+	EXPECT_EQ(I(4), sqT<I>(-2));
+	EXPECT_EQ(I(100), sqT<I>(-10));
+	for (int i = -num_iterations; i < num_iterations; i++) {
+		EXPECT_EQ(I(i * i), sqT(I(-i))) << "sqT(" << i << ")";
+	}
 }
 
 template<typename F>
 void test_sqT_float() {
-	test_sqT_int<F>();
+	float eps = 1e-6;
 	EXPECT_EQ(F(6.25), sqT<F>(+2.5));
 	EXPECT_EQ(F(6.25), sqT<F>(-2.5));
+	for (int i = -num_iterations; i < num_iterations; i++) {
+		F epsi = eps * (abs(i) + 1);
+		EXPECT_NEAR2(F(i + 0.0f) * F(i + 0.0f), sqT(F(i + 0.0f)), epsi) << "sqT(" << (i + 0.0f) << ")";
+		EXPECT_NEAR2(F(i + 0.5f) * F(i + 0.5f), sqT(F(i + 0.5f)), epsi) << "sqT(" << (i + 0.5f) << ")";
+	}
 }
 
 TEST(base_test, sqT) {
@@ -166,7 +185,7 @@ TEST(base_test, sqT) {
 }
 
 template<typename I>
-void test_sqrtT_uint() {
+void test_sqrtT_uint(int max_val = num_iterations) {
 	EXPECT_EQ(I(0), sqrtT<I>(0));
 	EXPECT_EQ(I(+1), sqrtT<I>(+1));
 	EXPECT_EQ(I(+1), sqrtT<I>(+2));
@@ -176,10 +195,13 @@ void test_sqrtT_uint() {
 	EXPECT_EQ(I(+3), sqrtT<I>(+10));
 	EXPECT_EQ(I(+3), sqrtT<I>(+15));
 	EXPECT_EQ(I(+4), sqrtT<I>(+16));
+	for (int i = 0; i <= max_val; i++) {
+		EXPECT_EQ(I(int(floor(sqrt(double(i))))), sqrtT(I(i))) << "sqrtT(" << i << ")";
+	}
 }
 
 template<typename I>
-void test_sqrtT_sint() {
+void test_sqrtT_int(int max_val = num_iterations) {
 	EXPECT_EQ(I(-1), sqrtT<I>(-1));
 	EXPECT_EQ(I(-1), sqrtT<I>(-2));
 	EXPECT_EQ(I(-1), sqrtT<I>(-3));
@@ -188,32 +210,35 @@ void test_sqrtT_sint() {
 	EXPECT_EQ(I(-3), sqrtT<I>(-10));
 	EXPECT_EQ(I(-3), sqrtT<I>(-15));
 	EXPECT_EQ(I(-4), sqrtT<I>(-16));
-}
-
-template<typename I>
-void test_sqrtT_int() {
-	test_sqrtT_uint<I>();
-	test_sqrtT_sint<I>();
+	for (int i = 0; i <= max_val; i++) {
+		EXPECT_EQ(I(+int(floor(sqrt(double(i))))), sqrtT(I(+i))) << "sqrtT(" << (+i) << ")";
+		EXPECT_EQ(I(-int(floor(sqrt(double(i))))), sqrtT(I(-i))) << "sqrtT(" << (-i) << ")";
+	}
 }
 
 template<typename F>
-void test_sqrtT_float() {
+void test_sqrtT_float(int max_val = num_iterations) {
 	F eps(1e-6f);
 	EXPECT_EQ(F(0), sqrtT<F>(0, eps));
 	EXPECT_EQ(F(1), sqrtT<F>(1, eps));
-	EXPECT_TRUE(absT<F>(F(1.414213562373095) - sqrtT<F>(2, eps)) <= eps);
-	EXPECT_TRUE(absT<F>(F(1.732050807568877) - sqrtT<F>(3, eps)) <= eps);
+	EXPECT_NEAR2(F(1.414213562373095), sqrtT(F(2), eps), eps);
+	EXPECT_NEAR2(F(1.732050807568877), sqrtT(F(3), eps), eps);
 	EXPECT_EQ(F(2), sqrtT<F>(4, eps));
-	EXPECT_TRUE(absT<F>(F(2.5) - sqrtT<F>(6.25, eps)) <= eps);
+	EXPECT_NEAR2(F(2.5), sqrtT(F(6.25), eps), eps);
+	for (int i = 0; i <= max_val; i++) {
+		F epsi = eps * (abs(i) + 1);
+		EXPECT_NEAR2(F(+sqrt(i + 0.0)), sqrtT(F(+(i + 0.0)), eps), epsi) << "sqrtT(" << (+(i + 0.0)) << ")";
+		EXPECT_NEAR2(F(+sqrt(i + 0.5)), sqrtT(F(+(i + 0.5)), eps), epsi) << "sqrtT(" << (+(i + 0.5)) << ")";
+	}
 }
 
 TEST(base_test, sqrtT) {
-	test_sqrtT_int<int8_t>();
+	test_sqrtT_int<int8_t>(127);
 	test_sqrtT_int<int16_t>();
 	test_sqrtT_int<int32_t>();
 	test_sqrtT_int<int64_t>();
 	test_sqrtT_int<wrapped<int>>();
-	test_sqrtT_uint<uint8_t>();
+	test_sqrtT_uint<uint8_t>(127);
 	test_sqrtT_uint<uint16_t>();
 	test_sqrtT_uint<uint32_t>();
 	test_sqrtT_uint<uint64_t>();
@@ -299,16 +324,11 @@ void test_cbT_uint() {
 }
 
 template<typename I>
-void test_cbT_sint() {
+void test_cbT_int() {
+	test_cbT_uint<I>();
 	EXPECT_EQ(I(-1), cbT<I>(-1));
 	EXPECT_EQ(I(-8), cbT<I>(-2));
 	EXPECT_EQ(I(-125), cbT<I>(-5));
-}
-
-template<typename I>
-void test_cbT_int() {
-	test_cbT_uint<I>();
-	test_cbT_sint<I>();
 }
 
 template<typename F>
@@ -338,7 +358,7 @@ TEST(base_test, cbT) {
 }
 
 template<typename I>
-void test_cbrtT_uint() {
+void test_cbrtT_uint(int max_val = num_iterations) {
 	EXPECT_EQ(I(0), cbrtT<I>(0));
 	EXPECT_EQ(I(+1), cbrtT<I>(+1));
 	EXPECT_EQ(I(+1), cbrtT<I>(+2));
@@ -348,10 +368,13 @@ void test_cbrtT_uint() {
 	EXPECT_EQ(I(+3), cbrtT<I>(+28));
 	EXPECT_EQ(I(+3), cbrtT<I>(+63));
 	EXPECT_EQ(I(+4), cbrtT<I>(+64));
+	for (int i = 0; i <= max_val; i++) {
+		EXPECT_EQ(I(int(cbrt(double(i)))), cbrtT(I(i))) << "cbrtT(" << i << ")";
+	}
 }
 
 template<typename I>
-void test_cbrtT_sint() {
+void test_cbrtT_int(int max_val = num_iterations) {
 	EXPECT_EQ(I(-1), cbrtT<I>(-1));
 	EXPECT_EQ(I(-1), cbrtT<I>(-2));
 	EXPECT_EQ(I(-1), cbrtT<I>(-3));
@@ -360,31 +383,36 @@ void test_cbrtT_sint() {
 	EXPECT_EQ(I(-3), cbrtT<I>(-28));
 	EXPECT_EQ(I(-3), cbrtT<I>(-63));
 	EXPECT_EQ(I(-4), cbrtT<I>(-64));
-}
-
-template<typename I>
-void test_cbrtT_int() {
-	test_cbrtT_uint<I>();
-	test_cbrtT_sint<I>();
+	for (int i = 0; i <= max_val; i++) {
+		EXPECT_EQ(I(+int(cbrt(double(i)))), cbrtT(I(+i))) << "cbrtT(" << (+i) << ")";
+		EXPECT_EQ(I(-int(cbrt(double(i)))), cbrtT(I(-i))) << "cbrtT(" << (-i) << ")";
+	}
 }
 
 template<typename F>
-void test_cbrtT_float() {
+void test_cbrtT_float(int max_val = num_iterations) {
 	F eps(1e-6f);
 	EXPECT_EQ(F(0), cbrtT<F>(0, eps));
 	EXPECT_EQ(F(1), cbrtT<F>(1, eps));
-	EXPECT_TRUE(absT<F>(F(1.25992104989487) - cbrtT<F>(2, eps)) <= eps);
-	EXPECT_TRUE(absT<F>(F(2) - cbrtT<F>(8, eps)) <= eps);
-	EXPECT_TRUE(absT<F>(F(2.5) - cbrtT<F>(15.625, eps)) <= eps);
+	EXPECT_NEAR2(F(1.25992104989487), cbrtT(F(2), eps), eps);
+	EXPECT_NEAR2(F(2), cbrtT(F(8), eps), eps);
+	EXPECT_NEAR2(F(2.5), cbrtT(F(15.625f), eps), eps);
+	for (int i = 0; i <= max_val; i++) {
+		F epsi = eps * (abs(i) + 1);
+		EXPECT_NEAR2(F(+cbrt(i + 0.0)), cbrtT(F(+(i + 0.0)), eps), epsi) << "cbrtT(" << (+(i + 0.0)) << ")";
+		EXPECT_NEAR2(F(-cbrt(i + 0.0)), cbrtT(F(-(i + 0.0)), eps), epsi) << "cbrtT(" << (-(i + 0.0)) << ")";
+		EXPECT_NEAR2(F(+cbrt(i + 0.5)), cbrtT(F(+(i + 0.5)), eps), epsi) << "cbrtT(" << (+(i + 0.5)) << ")";
+		EXPECT_NEAR2(F(-cbrt(i + 0.5)), cbrtT(F(-(i + 0.5)), eps), epsi) << "cbrtT(" << (-(i + 0.5)) << ")";
+	}
 }
 
 TEST(base_test, cbrtT) {
-	test_cbrtT_int<int8_t>();
+	test_cbrtT_int<int8_t>(127);
 	test_cbrtT_int<int16_t>();
 	test_cbrtT_int<int32_t>();
 	test_cbrtT_int<int64_t>();
 	test_cbrtT_int<wrapped<int>>();
-	test_cbrtT_uint<uint8_t>();
+	test_cbrtT_uint<uint8_t>(127);
 	test_cbrtT_uint<uint16_t>();
 	test_cbrtT_uint<uint32_t>();
 	test_cbrtT_uint<uint64_t>();
