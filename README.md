@@ -24,7 +24,7 @@ Those unit tests are also its best usage examples.
 ### Experimental
 Nearly every bit of the code has a unit test that covers it in multiple scenarios.
 The code that doesn't yet have a proper unit test is included in the `experinemntal` directory.
-Much like the rest of the library, tode in `experimental` has been successfully used
+Much like the rest of the library, the code in `experimental` has been successfully used
 in multiple programming contest problems and chances of having a bug are not big.
 However, until the proper unit tests get added, it will remain experimental.
 
@@ -97,22 +97,28 @@ See below for a comprehensive listing of the library content.
 
 ## Library structure
 
-There are several levels of source code branching:
+There are several levels in the code hierarchy:
 * source - This is the main body of the library.
-* experimental - Same as `source`, but without proper unit test coverage.
+* experimental - Same as `source`, but without proper unit test coverage yet.
 * sample - A limited set of examples as `test` already shows the usage.
 * test - Unit tests for the rest of the library.
 * test_util - Utility code that comes handy in testing, but is not the main body of the library.
 
 Further subdivision is about headers files and source files. All of the above use one or both of:
 * include - A list of header files containing templates and declarations.
-* src - A list of C++ source files.
-* Further subdivision is about algorithms and data structures and the respective subdomains.
+* src - A list of C++ source files. (I may have to name this directory more consistently.)
+
+Yet further subdivision is about algorithms and data structures, and their respective subdomains.
 
 Finally there are build files, source control files and other repository metadata.
 
 
 ## Implemented algorithms and structures
+
+Here is a list of most of the things currently present in the library.
+I have many more to add, but the code that is not migrated to Altruct yet
+needs to be brought to a higher quality bar that is required here.
+
 * Algorithm:
   * Graph:
     * Dinic blocking flow (max flow)
@@ -193,7 +199,7 @@ Finally there are build files, source control files and other repository metadat
     * Knuth–Morris–Pratt search (string search)
 * I/O:
   * Fast I/O
-  * Reader: File / Stream / String / Buffered / Simple()
+  * Reader: File / Stream / String / Buffered / Simple
   * Writer: File / Stream / String / Buffered / Simple
 	
 * Structure:
