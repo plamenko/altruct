@@ -57,6 +57,48 @@ void linear_recurrence_sample() {
 		fn_3 = fn_2, fn_2 = fn_1, fn_1 = fn;
 	}
 	cout << endl;
+	cout << endl;
+}
+
+void linear_recurrence_sample2() {
+	cout << "=== linear_recurrence_sample 2 ===" << endl;
+
+	// manual calculation of linear recurrence element by element
+	cout << "manual:      ";
+	int a_n3 = 1, a_n2 = 4, a_n1 = 7; // a[n-3], a[n-2], a[n-1]
+	cout << a_n3 << " " << a_n2 << " " << a_n1 << " ";
+	for (int n = 3; n <= 15; n++) {
+		int a_n = (2 * a_n1 - 1 * a_n2 + 1 * a_n3) % 1009; // a[n]
+		cout << a_n << " ";
+		a_n3 = a_n2, a_n2 = a_n1, a_n1 = a_n;
+	}
+	cout << endl;
+
+	// using exponentiation modulo characteristic polynomial
+	// to calculate the n-th element of a linear recurrence
+	cout << "polynomial:  ";
+	typedef modulo<int, 1009> mod;
+	typedef polynom<mod> poly;
+	typedef moduloX<poly> polymod;
+	poly init = { 1, 4, 7 };
+	poly p = { -1, +1, -2, 1 }; // 0 == a[n] - 2 a[n - 1] - a[n - 2] + a[n - 3]
+	poly x = { 0, 1 };      // 0 + 1*x
+	for (int n = 0; n <= 15; n++) {
+		polymod xn = powT(polymod(x, p), n); // x^n % p(x)
+		mod r = 0;
+		for (int i = 0; i < p.size(); i++) {
+			r += init[i] * xn.v[i];
+		}
+		cout << r.v << " ";
+	}
+	cout << endl;
+
+	// using altruct built-in functions
+	cout << "altruct:     ";
+	for (int n = 0; n <= 15; n++) {
+		cout << linear_recurrence<mod, mod>({ 2, -1, +1 }, { 1, 4, 7 }, n).v << " ";
+	}
+	cout << endl;
 
 	cout << endl;
 }
