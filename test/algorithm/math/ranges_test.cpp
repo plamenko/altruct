@@ -27,6 +27,12 @@ TEST(ranges_test, factorials) {
 	EXPECT_EQ((vector<modx>{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 227020758, 178290591, 674358851}), table);
 }
 
+TEST(ranges_test, inv_factorials) {
+	vector<modx> table(16);
+	inv_factorials(table.begin(), table.end(), modx(1, P));
+	EXPECT_EQ((vector<modx>{1, 1, 500000004, 166666668, 41666667, 808333339, 301388891, 900198419, 487524805, 831947206, 283194722, 571199524, 380933296, 490841026, 320774361, 821384963}), table);
+}
+
 TEST(ranges_test, invert) {
 	vector<modx> table(16);
 	range(table.begin(), table.end(), modx(1, P));

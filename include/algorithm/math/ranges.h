@@ -42,6 +42,21 @@ void factorials(It begin, It end, T id = T(1)) {
 }
 
 /**
+ * Builds the inverse factorial look-up table up to `n`.
+ */
+template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+void inv_factorials(It begin, It end, T id = T(1)) {
+	T fact = id, i = id;
+	for (It it = begin; it != end; ++it) {
+		fact *= i; i += id;
+	}
+	T ifact = id / fact;
+	for (It it = end; it != begin; ) {
+		i -= id; ifact *= i; *--it = ifact;
+	}
+}
+
+/**
  * Inverts the table elements with respect to multiplication.
  * Zero values are left zeros.
  */
