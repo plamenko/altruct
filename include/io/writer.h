@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -330,6 +331,7 @@ public:
 	simple_writer_stream& operator << (const char& v) { out.write_char(v); return *this; }
 	simple_writer_stream& operator << (const std::string& s) { out.write_string(s); return *this; }
 	simple_writer_stream& operator << (const int& v) { out.write_int(v); return *this; }
+	simple_writer_stream& operator << (const long& v) { out.write_ll(v); return *this; }
 	simple_writer_stream& operator << (const long long& v) { out.write_ll(v); return *this; }
 	simple_writer_stream& operator << (const float& v) { out.write_float(v); return *this; }
 	simple_writer_stream& operator << (const double& v) { out.write_double(v); return *this; }

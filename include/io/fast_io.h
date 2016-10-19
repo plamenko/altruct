@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstdio>
 #include <vector>
 #include <string>
@@ -200,6 +201,11 @@ public:
 		return read_integral_number<int>();
 	}
 
+	// Reads a single long.
+	long read_l() {
+		return read_integral_number<long>();
+	}
+
 	// Reads a single long long.
 	long long read_ll() {
 		return read_integral_number<long long>();
@@ -219,6 +225,7 @@ public:
 	fast_read& operator >> (char& v) { v = read_char(); return *this; }
 	fast_read& operator >> (std::string& s) { s = read_string(); return *this; }
 	fast_read& operator >> (int& v) { v = read_int(); return *this; }
+	fast_read& operator >> (long& v) { v = read_l(); return *this; }
 	fast_read& operator >> (long long& v) { v = read_ll(); return *this; }
 	fast_read& operator >> (float& v) { v = read_float(); return *this; }
 	fast_read& operator >> (double& v) { v = read_double(); return *this; }
@@ -390,6 +397,7 @@ public:
 	fast_write& operator << (const char& v) { write_char(v); return *this; }
 	fast_write& operator << (const std::string& s) { write_string(s); return *this; }
 	fast_write& operator << (const int& v) { write_int(v); return *this; }
+	fast_write& operator << (const long& v) { write_ll(v); return *this; }
 	fast_write& operator << (const long long& v) { write_ll(v); return *this; }
 	fast_write& operator << (const float& v) { write_float(v); return *this; }
 	fast_write& operator << (const double& v) { write_double(v); return *this; }

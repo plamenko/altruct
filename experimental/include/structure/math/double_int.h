@@ -42,7 +42,7 @@ public:
 	double_int(const T& val) : hi(sign(val.is_negative())), lo(val) {}
 	double_int(const T& rhs_hi, const T& rhs_lo) : hi(rhs_hi), lo(rhs_lo) {}
 	double_int(const double_int& rhs) : hi(rhs.hi), lo(rhs.lo) {}
-	double_int(const char *buff) : double_int(from_string10(buff)) {}
+	//double_int(const char *buff) : double_int(from_string10(buff)) {}
 
 	// GETTERS
 	bool is_negative() const { return hi.is_negative(); }

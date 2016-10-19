@@ -104,7 +104,7 @@ private:
 		T f = inf;
 		for (int u, v = sink; u = prev[v], v != source; v = u) {
 			T df = cap[u][v] - flow[u][v];
-			f = min(f, df > 0 ? df : flow[v][u]);
+			f = std::min(f, df > 0 ? df : flow[v][u]);
 		}
 		return f;
 	}

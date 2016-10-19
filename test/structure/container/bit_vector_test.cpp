@@ -511,5 +511,6 @@ TEST(bit_vector_test, perf) {
 		//v.rotate_right(b, e, n / 3);      // 630 ms
 		//v.swap(b, n/3, n*2/3, e);         // 630 ms
 	}
-	fprintf(stderr, "%d ms    %llx\n", clock() - T0, v.words[0] + r);
+	auto dT = double(clock() - T0) / CLOCKS_PER_SEC;
+	printf("%0.2lf s    %llx\n", dT, v.words[0] + r);
 }

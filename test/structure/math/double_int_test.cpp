@@ -6,7 +6,7 @@
 using namespace std;
 using namespace altruct::math;
 using namespace altruct::random;
-
+/*
 // MSVS
 struct intr8 {
 	uint8_t adc(uint8_t x, uint8_t y, int& carry) const {
@@ -312,3 +312,4 @@ TEST(double_int_test, correctness_64_512) {
 //	EXPECT_EQ(0, z1.b);
 //	EXPECT_EQ(-1, z1.D());
 //}
+*/

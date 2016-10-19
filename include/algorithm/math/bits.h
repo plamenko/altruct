@@ -16,8 +16,11 @@ namespace math {
  */
 template<typename T>
 struct bit_size {
-	static const int value = sizeof(T)* 8;
+	static const int value = sizeof(T) * 8;
 };
+template<typename T>
+const int bit_size<T>::value;
+
 
 /**
  * Base-2 Logarithm.

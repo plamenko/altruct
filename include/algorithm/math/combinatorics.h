@@ -72,7 +72,7 @@ void nth_permutation(It begin, It end, I o) {
 		while (i > 1 && f > o) f /= i--;
 		It it = end - i - 1;
 		for (int k = int(o / f); k > 0; k--) {
-			swap(*(it + k), *(it + k - 1));
+			std::swap(*(it + k), *(it + k - 1));
 		}
 	}
 }

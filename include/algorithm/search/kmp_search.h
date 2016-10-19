@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace altruct {
 namespace search {
 
@@ -24,7 +26,7 @@ size_t kmp_search(RanIt t, size_t n, RanIt p, size_t m, F callback) {
 	if (m == 0) return 0;
 	if (m > n) return n;
 	// preprocess
-	vector<size_t> b(m + 1, -1);
+	std::vector<size_t> b(m + 1, -1);
 	for (size_t i = 0, j = -1; i < m;) {
 		while (j != -1 && p[i] != p[j]) j = b[j];
 		i++; j++;

@@ -3,9 +3,14 @@
 #include "gtest/gtest.h"
 
 #include <cstdlib>
+#include <cstdio>
 #include <fstream>
 #include <sstream>
 #include <functional>
+
+#ifdef WIN32 
+	#define snprintf sprintf_s
+#endif
 
 using namespace std;
 using namespace altruct::io;
@@ -52,8 +57,7 @@ void do_write(writer& wout) {
 TEST(writer_test, file_writer) {
 	const char* name = "writer_test_temp_file";
 
-	FILE* file = nullptr;
-	fopen_s(&file, name, "w");
+	FILE* file = fopen(name, "w");
 	{
 		file_writer wout(file);
 		do_write(wout);
@@ -148,13 +152,13 @@ TEST(writer_test, buffered_writer) {
 
 		// data + advance
 		wout.reserve(4);
-		sprintf_s(wout.data(), wout.available(), "The ");
+		snprintf(wout.data(), wout.available(), "The ");
 		wout.advance();
 		EXPECT_STREQ("The quick brown fox jumps over the lazy ", buff.data());
 		EXPECT_EQ(1, wout.available());
 		// reserve flush
 		wout.reserve(4);
-		sprintf_s(wout.data(), wout.available(), "End.");
+		snprintf(wout.data(), wout.available(), "End.");
 		wout.advance();
 		EXPECT_STREQ("The quick brown fox jumps over the lazy dog. The ", buff.data());
 		EXPECT_EQ(6, wout.available());
@@ -217,7 +221,7 @@ TEST(writer_test, simple_writer) {
 	EXPECT_EQ("random_prefix_xyz 12345678 suffix", do_write([](simple_writer& wout, simple_writer_stream& sout){
 		sout << "random_prefix_xyz ";
 		wout.reserve(9);
-		sprintf_s(wout.data(), wout.available(), "%x", 0x12345678);
+		snprintf(wout.data(), wout.available(), "%x", 0x12345678);
 		wout.advance();
 		sout << " suffix";
 	}));

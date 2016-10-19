@@ -6,6 +6,10 @@
 #include <sstream>
 #include <functional>
 
+#ifdef WIN32 
+	#define snprintf sprintf_s
+#endif
+
 using namespace std;
 using namespace altruct::io;
 
@@ -30,12 +34,11 @@ void test_reader(reader& rin) {
 TEST(reader_test, file_reader) {
 	const char* name = "reader_test_temp_file";
 
-	FILE* file = nullptr;
-	fopen_s(&file, name, "w");
+	FILE* file = fopen(name, "w");
 	fwrite(data, 1, strlen(data), file);
 	fclose(file);
 	
-	fopen_s(&file, name, "r");
+	file = fopen(name, "r");
 	file_reader rin(file);
 	test_reader(rin);
 	fclose(file);
@@ -198,7 +201,7 @@ TEST(reader_test, simple_reader) {
 	EXPECT_EQ("skip", rin.read_string());
 
 	int x;
-	sscanf_s(rin.data(8), "%x%n", &x, &rin.counter());
+	sscanf(rin.data(8), "%x%n", &x, &rin.counter());
 	rin.advance();
 	EXPECT_EQ(0xa1b2cde, x);
 
@@ -228,7 +231,7 @@ TEST(reader_test, simple_reader) {
 	EXPECT_EQ(0, t);
 
 	int y, z;
-	sscanf_s(rin.data(8), "%d;%d%n", &y, &z, &rin.counter());
+	sscanf(rin.data(8), "%d;%d%n", &y, &z, &rin.counter());
 	rin.advance();
 	EXPECT_EQ(11, y);
 	EXPECT_EQ(23, z);

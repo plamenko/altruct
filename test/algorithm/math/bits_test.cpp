@@ -285,9 +285,11 @@ TEST(bits_test, perf) {
 	int r = 0;
 	auto T0 = clock();
 	for (uint64_t x = 1; x < (uint64_t(1) << 33); x++) r += ilog2(x); // 33759 ms
-	printf("%d  %d ms\n", r, clock() - T0);
+	double dT0 = double(clock() - T0) / CLOCKS_PER_SEC;
+	printf("%0.2lf s   %p\n", dT0, &r);
 	
 	auto T1 = clock();
 	for (uint64_t x = 1; x < (uint64_t(1) << 33); x++) r += ilog2_64(x); // 57907 ms
-	printf("%d  %d ms\n", r, clock() - T1);
+	double dT1 = double(clock() - T1) / CLOCKS_PER_SEC;
+	printf("%0.2lf s   %p\n", dT1, &r);
 }

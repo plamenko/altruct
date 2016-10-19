@@ -7,6 +7,10 @@
 #include <sstream>
 #include <functional>
 
+#ifdef WIN32 
+	#define snprintf sprintf_s
+#endif
+
 using namespace std;
 using namespace altruct::io;
 
@@ -23,10 +27,10 @@ public:
 	FILE* file;
 	const char* name;
 	temp_read_file(const char* name, const char* data) : name(name) {
-		fopen_s(&file, name, "w");
+		file = fopen(name, "w");
 		fwrite(data, 1, strlen(data), file);
 		fclose(file);
-		fopen_s(&file, name, "r");
+		file = fopen(name, "r");
 	}
 	~temp_read_file() {
 		fclose(file);
@@ -39,7 +43,7 @@ public:
 	FILE* file;
 	const char* name;
 	temp_write_file(const char* name) : name(name) {
-		fopen_s(&file, name, "w");
+		file = fopen(name, "w");
 	}
 	~temp_write_file() {
 		fclose(file);
@@ -105,7 +109,7 @@ TEST(fast_io_test, fast_read) {
 	EXPECT_EQ("skip", fin.read_string());
 
 	int x;
-	sscanf_s(fin.data(8), "%x%n", &x, &fin.counter());
+	sscanf(fin.data(8), "%x%n", &x, &fin.counter());
 	fin.advance();
 	EXPECT_EQ(0xa1b2cde, x);
 
@@ -198,7 +202,7 @@ TEST(fast_io_test, fast_write) {
 	EXPECT_EQ("random_prefix_xyz 12345678 suffix", do_write([](fast_write& fout){ 
 		fout << "random_prefix_xyz ";
 		fout.reserve(9);
-		sprintf_s(fout.data(), fout.available(), "%x", 0x12345678);
+		snprintf(fout.data(), fout.available(), "%x", 0x12345678);
 		fout.advance();
 		fout << " suffix";
 	}));

@@ -57,7 +57,7 @@ public:
 	bool operator >= (const permutation& p2) const { return !(*this < p2); }
 	
 	// product is equal to function composition: (p1 * p2)(x) == p1(p2(x))
-	permutation operator * (const permutation& p2) const { return permutation(apply_to(p2.to_line())); }
+	permutation operator * (const permutation& p2) const { auto line = p2.to_line(); return permutation(apply_to(line)); }
 	permutation& operator *= (const permutation& p2) { return *this = *this * p2; }
 
 	// product by inverse
@@ -209,7 +209,8 @@ public:
 	}
 
 	static line_t transpositions_to_line(const transpositions_t& transpositions, I n) {
-		return apply_transpositions_to_line(identity_line(n), transpositions);
+		auto line = identity_line(n);
+		return apply_transpositions_to_line(line, transpositions);
 	}
 
 	static transpositions_t line_to_transpositions(const line_t& line) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -306,6 +307,11 @@ public:
 		return read_integral_number<int>();
 	}
 
+	// Reads a single long.
+	long read_l() {
+		return read_integral_number<long>();
+	}
+
 	// Reads a single long long.
 	long long read_ll() {
 		return read_integral_number<long long>();
@@ -339,6 +345,7 @@ public:
 	simple_reader_stream& operator >> (char& v) { v = in.read_char(); return *this; }
 	simple_reader_stream& operator >> (std::string& s) { s = in.read_string(); return *this; }
 	simple_reader_stream& operator >> (int& v) { v = in.read_int(); return *this; }
+	simple_reader_stream& operator >> (long& v) { v = in.read_l(); return *this; }
 	simple_reader_stream& operator >> (long long& v) { v = in.read_ll(); return *this; }
 	simple_reader_stream& operator >> (float& v) { v = in.read_float(); return *this; }
 	simple_reader_stream& operator >> (double& v) { v = in.read_double(); return *this; }
