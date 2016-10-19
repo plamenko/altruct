@@ -85,7 +85,7 @@ so for that you can just use the Altruct function and not have to implement it b
 	cout << linear_recurrence<mod, mod>({ 2, -1, +1 }, { 1, 4, 7 }, n).v << endl;
 ```
 
-Observe how in the above excample, the actual type used is `modulo<polynom<modulo<int>>>`.
+Observe how in the above example, the actual type used is `modulo<polynom<modulo<int>>>`.
 All of the math structures Altruct provides can be composed in such a way where it makes sense.
 
 The same implementation of Fast Fourier Transform and related convolutions can be used both
@@ -146,13 +146,15 @@ needs to be brought to a higher quality bar that is required here.
     * Convolutions:
       * Slow and/or/xor/max/cyclic convolution (O(n^2) implementation)
       * Fast and/or/xor/max convolution (FFT-like O(n log n) implementation)
-      * Fast Walsh-Hadamard transform, fast arithmetic transform
+      * Fast ordinary/cyclic convolution (FFT O(n log n) implementation)
+      * Fast Walsh-Hadamard transform
+	  * Fast Arithmetic transform
       * Fast Fourier transform
-      * Fast ordinary/cyclic convolution
     * Fractions:
       * Farey sequence
     * Modulos:
-      * Chinese Remainder Theorem, Garner algorithm
+      * Chinese Remainder Theorem
+	  * Garner algorithm
       * Jacobi symbol
       * Cipolla algorithm (modular square root)
       * Hensel lift (square root modulo prime power)
@@ -168,8 +170,9 @@ needs to be brought to a higher quality bar that is required here.
         * Primes, Prime-Pi, Euler-Phi (Totient), Moebius-Mu, Divisor-Sigma, Prime-Factor
         * Moebius transform, factorization 
       * Compute from a given factorization:
-        * Divisors, Euler-Phi, CarmichaelLambda
-      * Pollard-Rho factorization, Miller-Rabin primality test
+        * Divisors, Euler-Phi, Carmichael-Lambda
+      * Pollard-Rho integer factorization
+	  * Miller-Rabin primality test
       * Integer digits for a base
     * Ranges:
       * Arithmetic progression
@@ -185,10 +188,10 @@ needs to be brought to a higher quality bar that is required here.
       * Sum, Product
       * Min, Max, Mex (Grundy minimal excludant)
     * Sums:
-      * Sum of f
+      * Sum of arbitrary function f
       * Sum of powers
       * Sum of floors in O(sqrt n)
-      * Sum of multiplicative f
+      * Sum of multiplicative function f
       * Mertens function (Sum of Moebius-Mu)
       * Sum of primes
   * Random:
@@ -196,7 +199,7 @@ needs to be brought to a higher quality bar that is required here.
     * XorShift
   * Search:
     * Binary search
-    * Knuth–Morris–Pratt search (string search)
+    * Knuth-Morris-Pratt algorithm (string search)
 * I/O:
   * Fast I/O
   * Reader: File / Stream / String / Buffered / Simple
@@ -206,28 +209,28 @@ needs to be brought to a higher quality bar that is required here.
   * Container:
     * Aho-Corasick trie
     * Palindrome tree
-    * Siffix array
-    * Bit vector
+    * Suffix array
+    * Bit vector (std::bitset + std::vector<bool> + more)
     * Interval tree (range update/get with lazy propagation)
     * Segment tree (single element update, range get)
     * Low-High map, Sqrt map (efficient storage for a certain sparse data)
     * Range Minimum Query structure (O(n) build, O(1) query)
   * Graph:
-    * Disjoint set
+    * `disjoint_set` - A [disjoint-set a.k.a. union-find](https://en.wikipedia.org/wiki/Disjoint-set_data_structure) structure
   * Math:
-    * complex
-    * double_int
-    * fraction
-    * galois_field_2
-    * matrix
-    * modulo
-    * nimber
-    * permuation (cycle/transposition/array notations)
-    * polynom
-    * quadratic
-    * series (a formal power series)
-    * vector2d, vector3d, vectorNd
-    * fenwick_tree (a.k.a. "logaritamska struktura" in Croatia)
-    * prime_holder (keeps a range of primes and related functions)
-    * root_wrapper (wraps the root powers used in FFT)
+    * `complex` - [Complex numbers](https://en.wikipedia.org/wiki/Complex_number) over arbitrary floating-point type
+    * `double_int` - Work-in-progress, division not implemented
+    * `fraction` - A [fraction](https://en.wikipedia.org/wiki/Fraction_(mathematics)) over arbitrary ring
+    * `galois_field_2` - [GF(2)](https://en.wikipedia.org/wiki/GF(2)) - A finite field with two elements: 0 and 1
+    * `matrix` - A [matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) over arbitrary ring
+    * `modulo` - [Modular arithmetics](https://en.wikipedia.org/wiki/Modular_arithmetic) over arbitrary ring
+    * `nimber` - Grundy [Nimber](https://en.wikipedia.org/wiki/Nimber) arithmetics
+    * `permuation` - A [permutation](https://en.wikipedia.org/wiki/Permutation) in cycle/transposition/array notation
+    * `polynom` - A [polynomial](https://en.wikipedia.org/wiki/Polynomial) with coefficients over arbitrary ring
+    * `quadratic` - A number of the form `a + b * sqrt(D)`. See [Quadratic field](https://en.wikipedia.org/wiki/Quadratic_field) and [Quadratic integer](https://en.wikipedia.org/wiki/Quadratic_integer)
+    * `series` - A [formal power series](https://en.wikipedia.org/wiki/Formal_power_series) over arbitrary ring. See [Generating function](https://en.wikipedia.org/wiki/Generating_function)
+    * `vector2d`, `vector3d`, `vectorNd` - Essentialy a point in 2D/3D geometry. See [Euclidean vector](https://en.wikipedia.org/wiki/Euclidean_vector)
+    * `fenwick_tree` - A [Fenwick tree](https://en.wikipedia.org/wiki/Fenwick_tree) structure a.k.a. "logaritamska struktura" in Croatia
+    * `prime_holder` - A utility container that keeps a range of primes and related functions
+    * `root_wrapper` - A utility class that wraps the root powers used in FFT
 
