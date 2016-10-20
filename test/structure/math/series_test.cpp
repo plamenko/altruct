@@ -193,6 +193,27 @@ TEST(series_test, integral) {
 	EXPECT_EQ((series<int, 4>{ 3, 7, 4, 5, -1, 4 }), si3);
 }
 
+TEST(series_test, ln) {
+	const series<double, 5> s1{ 1, -36, 654, -7836, +68673 };
+	EXPECT_EQ((series<double, 5>{ 0, -36, 6, 156, 399 }), s1.ln());
+	EXPECT_EQ((series<double, 5>{ 5, -36, 6, 156, 399 }), s1.ln(5));
+}
+
+TEST(series_test, exp) {
+	EXPECT_EQ((series<double, 5>{ 1, 0, 0, 0, 0 }), (series<double, 5>::exp(0)));
+	EXPECT_EQ((series<double, 5>{ 1 / 1., 1 / 1., 1 / 2., 1 / 6., 1 / 24. }), (series<double, 5>::exp(1)));
+	EXPECT_EQ((series<double, 5>{ 1 / 1., -1 / 1., 1 / 2., -1 / 6., 1 / 24. }), (series<double, 5>::exp(-1)));
+	EXPECT_EQ((series<double, 5>{ 1 / 1., 2 / 1., 4 / 2., 8 / 6., 16 / 24. }), (series<double, 5>::exp(2)));
+	EXPECT_EQ((series<double, 5>{ 1 / 1., 30 / 1., 900 / 2., 27000 / 6., 810000 / 24. }), (series<double, 5>::exp(30)));
+}
+
+TEST(series_test, make_exp_ord) {
+	const series<double, 5> s1{ 2, -3, 5, -9, 12 };
+	auto s2 = s1.make_exponential();
+	EXPECT_EQ((series<double, 5>{ 2 / 1., -3 / 1., 5 / 2., -9 / 6., 12 / 24. }), s2);
+	EXPECT_EQ((series<double, 5>{ 2 * 1., -3 * 1., 5 * 2., -9 * 6., 12 * 24. }), s1.make_ordinary());
+}
+
 TEST(series_test, identity) {
 	typedef moduloX<int> modx;
 	typedef polynom<modx> polyx;

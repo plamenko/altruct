@@ -84,7 +84,52 @@ public:
 
 	// series expansion of natural logarithm of s(x)
 	series ln(const T& c0 = polynom<T>::ZERO_COEFF) const {
-		return (derivative() / *this).integral(c0);
+		series s = (derivative() / *this).integral(c0);
+		s.p.c.resize(N);
+		return s;
+	}
+
+	// series expansion of exp(a*x) = Sum[a^n * x^n / n!, n]
+	static series exp(const T& a) {
+		series s;
+		s[0] = id_coeff();
+		for (int i = 1; i < N; i++) {
+			s[i] = s[i - 1] * a;
+		}
+		return s.make_exponential();
+	}
+
+	// converts the ordinary generating function to the exponential
+	// by dividing coefficient of each x^n by n!
+	series make_exponential() const {
+		series s = *this;
+		T fact = id_coeff();
+		for (int i = 1; i < N; i++) {
+			fact *= i;
+		}
+		T ifact = id_coeff() / fact;
+		for (int i = N - 1; i > 0; i--) {
+			s[i] *= ifact;
+			ifact *= i;
+		}
+		return s;
+	}
+
+	// converts the exponential generating function to the ordinary
+	// by multiplying coefficient of each x^n by n!
+	series make_ordinary() const {
+		series s = *this;
+		T fact = id_coeff();
+		for (int i = 1; i < N; i++) {
+			fact *= i;
+			s[i] *= fact;
+		}
+		return s;
+	}
+
+	// identity coefficient
+	static T id_coeff() {
+		return identityT<T>::of(polynom<T>::ZERO_COEFF);
 	}
 };
 
