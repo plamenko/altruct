@@ -214,6 +214,10 @@ TEST(series_test, make_exp_ord) {
 	EXPECT_EQ((series<double, 5>{ 2 * 1., -3 * 1., 5 * 2., -9 * 6., 12 * 24. }), s1.make_ordinary());
 }
 
+TEST(series_test, of) {
+	EXPECT_EQ((series<int, 10>{ 0, 1, 3, 6, 10, 15, 21, 28, 36, 45 }), (series<int, 10>::of([](int n){ return n * (n + 1) / 2; })));
+}
+
 TEST(series_test, identity) {
 	typedef moduloX<int> modx;
 	typedef polynom<modx> polyx;

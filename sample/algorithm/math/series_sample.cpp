@@ -8,8 +8,8 @@
 using namespace std;
 using namespace altruct::math;
 
-void series_counting_sample() {
-	cout << "=== series_ogf_sample ===" << endl;
+void series_simple_counting_sample() {
+	cout << "=== series_simple_counting_sample ===" << endl;
 
 	// A generating function for the number of submultisets of {inf a, inf b, inf c}
 	// in which there are an odd number of `a`s, an even number of `b`s, and any number of `c`s.
@@ -35,46 +35,74 @@ void series_counting_sample() {
 	cout << endl;
 }
 
-void series_egf_sample() {
-	cout << "=== series_egf_sample ===" << endl;
+void series_combinatoric_sample() {
+	cout << "=== series_combinatoric_sample ===" << endl;
 
 	typedef modulo<int, 1000000006> mode;
 	typedef modulo<int, 1000000007> mod;
-	typedef series<mod, 1000 + 1> ser; // we are interested in `n` up to 1000
-
-	int n = 1000, k = 2;
 	
+	const int K = 5;
+	const int N = 15; // we are interested in `n` up to 15
+	typedef series<mod, N + 1> ser;
+
 	// fact[n] = n! (mod M)
-	vector<mod> fact(n + 1);
+	vector<mod> fact(N + 1);
 	factorials(fact.begin(), fact.end());
 
-	// d[n] = 2^n (mod phi(M))
-	vector<mode> d(n + 1);
-	powers(d.begin(), d.end(), mode(2));
-	
-	// t[n] = 2^2^n (mod M)
-	ser t; for (int i = 0; i <= n; i++) t[i] = powT(mod(2), d[i].v);
-	// egf_t(x) = Sum[t[n] * x^n / n!, n]
-	auto egf_t = t.make_exponential();
-	
-	// egf_q(x) = e^-x * t(x)
-	auto egf_q = ser::exp(-1) * egf_t;
-	
-	// egf_f(x) = ln(egf_q(x)) + C, egf_f(0) = 0
-	auto egf_f = egf_q.ln(0);
-	
-	// egf_r_k(x) = f(x)^k / k!
-	auto egf_r_k = powT(egf_f, k) / fact[k];
-
-	// egf_c_k(x) = e^x * r_k(x)
-	ser egf_c_k = ser::exp(1) * egf_r_k;
-
-	// c_k[n] calculated up to 1000, but display only up to 10
-	auto c_k = egf_c_k.make_ordinary();
-	for (int i = 0; i <= 10; i++) {
-		cout << c_k[i].v << " ";
+	// Sum[Binomial[n, k] * x^n / n!, n] = e^x x^k / k!
+	cout << "Binomial[n, k]" << endl;
+	for (int k = 1; k <= K; k++) {
+		ser egf_bin_k = ser::exp(1) * powT(ser{ 0, 1 }, k) / fact[k];
+		auto bin_k = egf_bin_k.make_ordinary();
+		for (int n = 0; n <= N; n++) {
+			cout << bin_k[n].v << " ";
+		}
+		cout << endl;
 	}
 	cout << endl;
-	
+
+	// Sum[StirlingS1[n, k] * x^n / n!, n] = (Log[1 + x])^k / k!
+	cout << "StirlingS1[n, k]" << endl;
+	for (int k = 1; k <= K; k++) {
+		ser egf_s1_k = powT(ser{ 1, 1 }.ln(), k) / fact[k];
+		auto s1_k = egf_s1_k.make_ordinary();
+		for (int n = 0; n <= N; n++) {
+			auto s1_n_k = ((n - k) % 2 == 1) ? -s1_k[n] : s1_k[n];
+			cout << s1_n_k.v << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+
+	// Sum[StirlingS2[n, k] * x^n / n!, n] = (e^x - 1)^k / k!
+	cout << "StirlingS2[n, k]" << endl;
+	for (int k = 1; k <= K; k++) {
+		ser egf_s2_k = powT(ser::exp(1) - ser{1}, k) / fact[k];
+		auto s2_k = egf_s2_k.make_ordinary();
+		for (int n = 0; n <= N; n++) {
+			cout << s2_k[n].v << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+
+	cout << "pe553[n, k]" << endl;
+	// t[n] = 2^2^n (mod M)
+	auto t = [](int n){ return powT(mod(2), powT(mode(2), n).v); };
+	// egf_t(x) = Sum[t[n] * x^n / n!, n]
+	// egf_q(x) = e^-x * egf_t(x)
+	// egf_f(x) = ln(egf_q(x)) + C, egf_f(0) = 0
+	auto egf_f = (ser::exp(-1) * ser::of(t).make_exponential()).ln(0);
+	for (int k = 1; k <= K; k++) {
+		// egf_r_k(x) = f(x)^k / k!
+		auto egf_r_k = powT(egf_f, k) / fact[k];
+		// egf_c_k(x) = e^x * r_k(x)
+		ser egf_c_k = ser::exp(1) * egf_r_k;
+		auto c_k = egf_c_k.make_ordinary();
+		for (int n = 0; n <= N; n++) {
+			cout << c_k[n].v << " ";
+		}
+		cout << endl;
+	}
 	cout << endl;
 }

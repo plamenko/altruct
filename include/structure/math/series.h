@@ -127,6 +127,16 @@ public:
 		return s;
 	}
 
+	// Sum[f(n) * x^n, n]
+	template<typename F>
+	static series of(F f) {
+		series s;
+		for (int n = 0; n < N; n++) {
+			s[n] = f(n);
+		}
+		return s;
+	}
+
 	// identity coefficient
 	static T id_coeff() {
 		return identityT<T>::of(polynom<T>::ZERO_COEFF);
