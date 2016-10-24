@@ -63,7 +63,7 @@ public:
 	series derivative() const { return series(p.derivative()); }
 	series integral(const T& c0 = polynom<T>::ZERO_COEFF) const { return series(p.integral(c0)); }
 
-	// t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N) log N)
+	// t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
 	series inverse() const {
 		// ensure that p[0] is 1 before inverting
 		if (p[0] == zeroT<T>::of(p[0])) return series();
