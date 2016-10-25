@@ -13,6 +13,26 @@ using namespace altruct::container;
 typedef modulo<int, 1000000007> field;
 typedef polynom<field> poly;
 
+TEST(sums_test, sum_ratio) {
+	auto f = [](int n, int a, int b, int q) {
+		int s = 0;
+		for (int k = 0; k < n; k++) {
+			s += (a * k + b) / q;
+		}
+		return s;
+	};
+	int U = 20;
+	for (int n = 0; n < U; n++) {
+		for (int a = 0; a < U; a++) {
+			for (int b = 0; b < U; b++) {
+				for (int q = 1; q < U; q++) {
+					EXPECT_EQ(f(n, a, b, q), (sum_ratio<int>(n, a, b, q)));
+				}
+			}
+		}
+	}
+}
+
 TEST(sums_test, sum) {
 	auto f = [](int k) { return k*k; };
 	EXPECT_EQ(0, (sum<int>(f, 1, 0)));

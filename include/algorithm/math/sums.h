@@ -9,6 +9,27 @@ namespace altruct {
 namespace math {
 
 /**
+ * Calculates `Sum[(a * k + b) / q, {k, 0, n - 1}]` in `O(log min(q, n))`.
+ * 
+ * Note: `a` and `b` must be non-negative integers, `q` must be a positive integer.
+ */
+template<typename I>
+I sum_ratio(I n, I a, I b, I q) {
+	I s = 0;
+	while (n > 0) {
+		I n1 = n - 1;
+		s += (b / q) * n + (a / q) * n * n1 / 2;
+		b %= q, a %= q; if (a == 0) break;
+		n = (a * n1 + b) / q;
+		b = (q - 1) - b, swap(a, q);
+		s += n * n1;
+		s = -s;
+	}
+	// we could keep track of the sign above, but the sum can't be negative
+	return s < 0 ? -s : s;
+}
+
+/**
  * Calculates `Sum[f[k], {k, a, b}]` in `O(b - a)`.
  *
  * @param f - `f[n]`
