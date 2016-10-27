@@ -174,7 +174,7 @@ TEST(modulos_test, factorial_mod_p) {
 TEST(modulos_test, factorial_mod_pp) {
 	const int P = 3, K = 4, PK = 81;
 	typedef moduloX<int> modx;
-	vector<modx> fact_table = factorial_table<int>(P, K);
+	vector<modx> fact_table = factorials_mod_p<int>(P, K);
 	EXPECT_EQ((vector<modx>{1, 1, 2, 2, 8, 40, 40, 37, 53, 53, 44, 79, 79, 55, 41, 41, 8, 55, 55, 73, 2, 2, 44, 40, 40, 28, 80, 80, 53, 79, 79, 19, 41, 41, 17, 28, 28, 64, 2, 2, 80,
 		                    40, 40, 19, 26, 26, 62, 79, 79, 64, 41, 41, 26, 1, 1, 55, 2, 2, 35, 40, 40, 10, 53, 53, 71, 79, 79, 28, 41, 41, 35, 55, 55, 46, 2, 2, 71, 40, 40, 1, 80}), fact_table);
 	

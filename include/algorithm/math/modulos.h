@@ -254,7 +254,7 @@ std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
  * Note, multiples of `p` are skipped as required by `factorial_mod_pp`.
  */
 template<typename I>
-std::vector<moduloX<I>> factorial_table(int p, int k = 1) {
+std::vector<moduloX<I>> factorials_mod_p(int p, int k = 1) {
 	int pk = powT(p, k);
 	moduloX<I> v(1, pk);
 	std::vector<moduloX<I>> tbl(pk);
@@ -276,7 +276,7 @@ std::vector<moduloX<I>> factorial_table(int p, int k = 1) {
  * @param I - type of the number `n`
  * @param M - modular type of the result, modulus is prime power `p^k`.
  * @param n - number to take the factorial of
- * @param fact_table - look-up table of `n! % p^k` up to 'p^k', see `factorial_table`
+ * @param fact_table - look-up table of `n! % p^k` up to 'p^k', see `factorials_mod_p`
  * @return - the pair {f, e}
  */
 template<typename I, typename M>
