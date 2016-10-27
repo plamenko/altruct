@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <type_traits>
+#include <vector>
 
 #include "algorithm/math/base.h"
 
@@ -9,7 +10,9 @@ namespace altruct {
 namespace math {
 
 /**
- * Builds range look-up table up to `n`.
+ * Builds a range look-up table up to `n`.
+ *
+ * `v[i] = i * step`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void range(It begin, It end, T step = T(1)) {
@@ -18,9 +21,17 @@ void range(It begin, It end, T step = T(1)) {
 		*it = v; v += step;
 	}
 }
+template<typename T>
+std::vector<T> range(int n, T step = T(1)) {
+	std::vector<T> v(n, step);
+	range(v.begin(), v.end(), step);
+	return v;
+}
 
 /**
  * Builds the powers of `base` look-up table up to `n`.
+ *
+ * `v[i] = base ^ i`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void powers(It begin, It end, T base) {
@@ -29,9 +40,17 @@ void powers(It begin, It end, T base) {
 		*it = v; v *= base;
 	}
 }
+template<typename T>
+std::vector<T> powers(int n, T base) {
+	std::vector<T> v(n, base);
+	powers(v.begin(), v.end(), base);
+	return v;
+}
 
 /**
  * Builds the factorial look-up table up to `n`.
+ *
+ * `v[i] = i!`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void factorials(It begin, It end, T id = T(1)) {
@@ -40,9 +59,17 @@ void factorials(It begin, It end, T id = T(1)) {
 		*it = v; v *= i; i += id;
 	}
 }
+template<typename T>
+std::vector<T> factorials(int n, T id = T(1)) {
+	std::vector<T> v(n, id);
+	factorials(v.begin(), v.end(), id);
+	return v;
+}
 
 /**
  * Builds the inverse factorial look-up table up to `n`.
+ *
+ * `v[i] = 1 / i!`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void inv_factorials(It begin, It end, T id = T(1)) {
@@ -55,10 +82,51 @@ void inv_factorials(It begin, It end, T id = T(1)) {
 		i -= id; ifact *= i; *--it = ifact;
 	}
 }
+template<typename T>
+std::vector<T> inv_factorials(int n, T id = T(1)) {
+	std::vector<T> v(n, id);
+	inv_factorials(v.begin(), v.end(), id);
+	return v;
+}
+
+/**
+ * Builds the inverses look-up table up to `n`.
+ *
+ * `v[i] = 1 / i`
+ */
+template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+void inverses(It begin, It end, T id = T(1)) {
+	inv_factorials(begin, end, id);
+	T fact = id, i = id;
+	*begin = zeroT<T>::of(id);
+	for (It it = ++begin; it != end; ++it) {
+		*it *= fact; fact *= i; i += id;
+	}
+}
+template<typename T>
+std::vector<T> inverses(int n, T id = T(1)) {
+	std::vector<T> v(n, id);
+	inverses(v.begin(), v.end(), id);
+	return v;
+}
+
+/**
+ * Raises the elements to the `n`-th power.
+ *
+ * `v[i] <- v[i] ^ n`
+ */
+template<typename It, typename I>
+void power(It begin, It end, I n) {
+	for (It it = begin; it != end; ++it) {
+		*it = powT(*it, n);
+	}
+}
 
 /**
  * Inverts the table elements with respect to multiplication.
- * Zero values are left zeros.
+ * Note: Zero values are left zeros.
+ *
+ * `v[i] <- 1 / v[i]`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void invert(It begin, It end, T id = T(1)) {
@@ -70,6 +138,8 @@ void invert(It begin, It end, T id = T(1)) {
 
 /**
  * Negates the table elements.
+ *
+ * `v[i] <- -v[i]`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void negate(It begin, It end) {
@@ -81,6 +151,8 @@ void negate(It begin, It end) {
 /**
  * Alternates the sign of the table elements.
  * I.e. negates odd elements.
+ *
+ * `v[i] <- v[i] * (-1)^i`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void alternate(It begin, It end) {
@@ -92,6 +164,8 @@ void alternate(It begin, It end) {
 
 /**
  * Accumulates the table elements.
+ *
+ * `v[i] <- Sum[v[j], {j, 0, i}]`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
 void accumulate(It begin, It end) {
@@ -104,9 +178,11 @@ void accumulate(It begin, It end) {
 
 /**
  * Differences between the table elements.
+ *
+ * `v[i] <- v[i] - v[i - 1]`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
-void differences(It begin, It end) {
+void differentiate(It begin, It end) {
 	if (begin == end) return;
 	It prev = --end;
 	for (It it = end; it != begin; --it) {
