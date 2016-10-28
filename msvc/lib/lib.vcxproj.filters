@@ -257,5 +257,8 @@
     <ClInclude Include="..\..\include\structure\math\galois_field_2.h">
       <Filter>include\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\counting.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

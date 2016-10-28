@@ -157,6 +157,15 @@
     <ClCompile Include="..\..\test\structure\math\double_int_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\counting_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\polynom_modx_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\series_modx_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
