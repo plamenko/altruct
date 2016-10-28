@@ -6,6 +6,7 @@
 using namespace std;
 using namespace altruct::math;
 
+namespace {
 class A {
 public:
 	double v;
@@ -14,6 +15,7 @@ public:
 	bool operator == (const A& rhs) const { return v == rhs.v; }
 	bool operator < (const A& rhs) const { return v < rhs.v; }
 };
+}
 
 TEST(series_test, constructor) {
 	const polynom<int> p = { 1, 2, 3, 4 };
@@ -186,11 +188,11 @@ TEST(series_test, derivative) {
 }
 
 TEST(series_test, integral) {
-	const series<int, 4> s{ 7, 8, 15, -4, 20 };
-	const series<int, 4> si0 = s.integral();
-	const series<int, 4> si3 = s.integral(3);
-	EXPECT_EQ((series<int, 4>{ 0, 7, 4, 5, -1, 4 }), si0);
-	EXPECT_EQ((series<int, 4>{ 3, 7, 4, 5, -1, 4 }), si3);
+	const series<int, 5> s{ 7, 8, 15, -4, 20 };
+	const series<int, 5> si0 = s.integral();
+	const series<int, 5> si3 = s.integral(3);
+	EXPECT_EQ((series<int, 5>{ 0, 7, 4, 5, -1 }), si0);
+	EXPECT_EQ((series<int, 5>{ 3, 7, 4, 5, -1 }), si3);
 }
 
 TEST(series_test, ln) {
@@ -222,7 +224,6 @@ TEST(series_test, identity) {
 	typedef moduloX<int> modx;
 	typedef polynom<modx> polyx;
 	typedef series<modx, 4> serx;
-	polyx::ZERO_COEFF = modx(0, 1009);
 	serx s1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
 	EXPECT_EQ(2, s1[0].v);
 	EXPECT_EQ(1009, s1[0].M());

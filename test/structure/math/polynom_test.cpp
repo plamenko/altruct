@@ -7,6 +7,7 @@
 using namespace std;
 using namespace altruct::math;
 
+namespace {
 class A {
 public:
 	double v;
@@ -16,6 +17,7 @@ public:
 };
 
 typedef modulo<int, 1012924417> mod;
+}
 
 template<>
 struct polynom_mul<mod> {
@@ -42,28 +44,42 @@ struct polynom_mul<mod> {
 
 TEST(polynom_test, constructor) {
 	const vector<int> c = { 1, 2, 3, 4 };
-	polynom<int> p1;
-	EXPECT_EQ((vector<int>{}), p1.c);
+	polynom<int> p0;
+	EXPECT_EQ((vector<int>{ 0 }), p0.c);
+	EXPECT_EQ(0, p0.ZERO_COEFF);
+	polynom<int> p1(5);
+	EXPECT_EQ((vector<int>{ 5 }), p1.c);
+	EXPECT_EQ(0, p1.ZERO_COEFF);
 	polynom<int> p2(c);
 	EXPECT_EQ(c, p2.c);
+	EXPECT_EQ(0, p2.ZERO_COEFF);
 	polynom<int> p3(p2);
 	EXPECT_EQ(c, p3.c);
+	EXPECT_EQ(0, p3.ZERO_COEFF);
 	polynom<int> p4(c.begin(), c.end());
 	EXPECT_EQ(c, p4.c);
+	EXPECT_EQ(0, p4.ZERO_COEFF);
 	polynom<int> p5(&c[0], &c[0] + c.size());
 	EXPECT_EQ(c, p5.c);
-	polynom<int> p6(5);
-	EXPECT_EQ((vector<int>{ 5 }), p6.c);
+	EXPECT_EQ(0, p5.ZERO_COEFF);
+	polynom<int> p6(c.end(), c.end());
+	EXPECT_EQ((vector<int> { }), p6.c);
+	EXPECT_EQ(0, p6.ZERO_COEFF);
 	polynom<int> p7{ 1, 2, 3, 4 };
 	EXPECT_EQ(c, p7.c);
+	EXPECT_EQ(0, p7.ZERO_COEFF);
 	polynom<A> q1(5);
 	EXPECT_EQ((vector<A>{5.0}), q1.c);
+	EXPECT_EQ(A(0), q1.ZERO_COEFF);
 	polynom<A> q2(A(5.3));
 	EXPECT_EQ((vector<A>{5.3}), q2.c);
+	EXPECT_EQ(A(0), q2.ZERO_COEFF);
 	polynom<int> p8(vector<int>{ 1, 2, 3, 4 });
 	EXPECT_EQ(c, p8.c);
+	EXPECT_EQ(0, p8.ZERO_COEFF);
 	polynom<int> p9(polynom<int>{ 1, 2, 3, 4 });
 	EXPECT_EQ(c, p9.c);
+	EXPECT_EQ(0, p9.ZERO_COEFF);
 }
 
 TEST(polynom_test, swap) {
@@ -88,6 +104,17 @@ TEST(polynom_test, reserve) {
 	p.reserve(6);
 	EXPECT_EQ(6, p.c.size());
 	EXPECT_EQ((vector<int>{ 1, 2, 3, 4, 0, 0 }), p.c);
+}
+
+TEST(polynom_test, resize) {
+	polynom<int> p{ 1, 2, 3, 4, 5 };
+	EXPECT_EQ(5, p.c.size());
+	p.resize(3);
+	EXPECT_EQ(3, p.c.size());
+	EXPECT_EQ((vector<int>{ 1, 2, 3 }), p.c);
+	p.resize(6);
+	EXPECT_EQ(6, p.c.size());
+	EXPECT_EQ((vector<int>{ 1, 2, 3, 0, 0, 0 }), p.c);
 }
 
 TEST(polynom_test, size) {
@@ -624,24 +651,16 @@ TEST(polynom_test, integral) {
 }
 
 TEST(polynom_test, identity) {
-	typedef moduloX<int> modx;
-	typedef polynom<modx> polyx;
-	polyx::ZERO_COEFF = modx(0, 1009);
-	polyx p1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
-	EXPECT_EQ(2, p1[0].v);
-	EXPECT_EQ(1009, p1[0].M());
-	EXPECT_EQ(3, p1[1].v);
-	EXPECT_EQ(1009, p1[1].M());
-	EXPECT_EQ(5, p1[2].v);
-	EXPECT_EQ(1009, p1[2].M());
-	EXPECT_EQ(0, p1[3].v);
-	EXPECT_EQ(1009, p1[3].M());
-	polyx e0 = zeroT<polyx>::of(p1);
-	EXPECT_EQ(0, e0[0].v);
-	EXPECT_EQ(1009, e0[0].M());
+	typedef polynom<int> poly;
+	poly p1{ 2, 3, 5 };
+	EXPECT_EQ(2, p1[0]);
+	EXPECT_EQ(3, p1[1]);
+	EXPECT_EQ(5, p1[2]);
+	EXPECT_EQ(0, p1[3]);
+	poly e0 = zeroT<poly>::of(p1);
+	EXPECT_EQ(0, e0[0]);
 	EXPECT_EQ(0, e0.deg());
-	polyx e1 = identityT<polyx>::of(p1);
-	EXPECT_EQ(1, e1[0].v);
-	EXPECT_EQ(1009, e1[0].M());
+	poly e1 = identityT<poly>::of(p1);
+	EXPECT_EQ(1, e1[0]);
 	EXPECT_EQ(0, e1.deg());
 }
