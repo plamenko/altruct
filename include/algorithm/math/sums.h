@@ -189,19 +189,24 @@ T sum_sqrt2(F sf, I n, T zero = T(0)) {
 }
 
 /**
- * Calculates `sum_m(n) = Sum[p(k) * f(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
+ * Calculates `M(n)` in `O(n^(3/4))` or `O(n^(2/3))`.
  *
  * Where:
+ *   `t` is an arbitrary function such that:
+ *       t(n) = Sum[p(k) M(n/k), {k, 1, n}]
  *   `p` is a completely-multiplicative function:
  *       p(n * m) = p(n) * p(m)
- *   `g` and `f` are Moebius transforms of each other:
+ *   `s` is the partial sum of `p`:
+ *       s(n) = Sum[p(k), {k, 1, n}]
+ *
+ * Note that the above relation for `t` holds if:
+ *   M(n) = Sum[p(k) * f(k), {k, 1, n}]
+ *   t(n) = Sum[p(k) * g(k), {k, 1, n}]
+ *   and `g` and `f` are Moebius transforms of each other:
  *       g(n) = Sum[f(d), {d|n}]
  *       f(n) = Sum[mu(n/d) * g(d), {d|n}]
- *   sp(n) = Sum[p(k), {k, 1, n}]
- *   st(n) = Sum[p(k) * g(k), {k, 1, n}]
- *
- * Then the following relation holds and is used for calculation:
- *   st(n) = Sum[p(k) sum_m(n/k), {k, 1, n}]
+ * This allows us to compute `M` in sublinear time given
+ * that we can efficiently compute `t` and `s`.
  *
  * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
  * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
@@ -209,34 +214,40 @@ T sum_sqrt2(F sf, I n, T zero = T(0)) {
  * @param tbl - table to store the calculated values
  */
 template<typename T, typename I, typename F1, typename F2, typename MAP>
-T sum_m(I n, F1 st, F2 sp, MAP& tbl) {
-	if (n < 1) return zeroT<T>::of(st(1));
+T sum_m(I n, F1 t, F2 s, MAP& tbl) {
+	if (n < 1) return zeroT<T>::of(t(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = st(n);
+	T r = t(n);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
-		r -= (sp(k) - sp(k - 1)) * sum_m<T>(n / k, st, sp, tbl);
+		r -= (s(k) - s(k - 1)) * sum_m<T>(n / k, t, s, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= (sp(n / m) - sp(n / (m + 1))) * sum_m<T>(m, st, sp, tbl);
+		r -= (s(n / m) - s(n / (m + 1))) * sum_m<T>(m, t, s, tbl);
 	}
 	return tbl[n] = r;
 }
 
 /**
- * Same as `sum_m(n, st, sp, tbl)` with `p(n) = 1`, `sp(n) = n`.
+ * Calculates `M(n)` in `O(n^(3/4))` or `O(n^(2/3))`.
+ *
+ * Where:
+ *   `t` is an arbitrary function such that:
+ *       t(n) = Sum[M(n/k), {k, 1, n}]
+ *
+ * Same as `sum_m(n, t, s, tbl)` with `p(n) = 1`, `s(n) = n`.
  */
 template<typename T, typename I, typename F, typename MAP>
-T sum_m(I n, F st, MAP& tbl) {
-	if (n < 1) return zeroT<T>::of(st(1));
+T sum_m(I n, F t, MAP& tbl) {
+	if (n < 1) return zeroT<T>::of(t(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = st(n);
+	T r = t(n);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
-		r -= sum_m<T>(n / k, st, tbl);
+		r -= sum_m<T>(n / k, t, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, st, tbl);
+		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, t, tbl);
 	}
 	return tbl[n] = r;
 }
@@ -251,7 +262,7 @@ T sum_m(I n, F st, MAP& tbl) {
  */
 template<typename T, typename I, typename MAP>
 T mertens(I n, MAP& tbl, T id = T(1)) {
-	// p = 1, f = mu, g = delta, st = 1
+	// p = 1, f = mu, g = delta, t = 1
 	return sum_m<T>(n, [&](I k){ return id; }, tbl);
 }
 
