@@ -17,7 +17,10 @@ namespace math {
  * Calculates `h` where `h[n] = Sum[f(n/d) * g(d), {d|n}]`
  *
  * Where:
- *   `f` and `g` are arbitrary functions
+ *   `f` and `g` are arbitrary arithmetic functions
+ *
+ * @param h - table to store the result
+ * @param f, g - functions as defined above
  */
 template<typename T, typename F1, typename F2, typename TBL>
 void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
@@ -33,30 +36,213 @@ void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
 }
 
 /**
- * Dirichlet inverse of `p` up to `n` in `O(n log n)`.
+ * Dirichlet inverse of `f` up to `n` in `O(n log n)`.
  *
- * Calculates `p_inv` such that: `p * p_inv = e`
+ * Calculates `f_inv` such that: `f * f_inv = e`
  *
  * Where:
- *   `p` is an arbitrary function such that:
- *       p(1) != 0, and p(1) is invertible
- *   `e` is the dirichlet  multiplicative identity: `e(n) = [n == 1]`
+ *   `f` is an arbitrary arithmetic function such that:
+ *       f(1) != 0, and f(1) is invertible
+ *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *
+ * @param f_inv - table to store the result
+ * @param f - function as defined above
  */
 template<typename T, typename F1, typename TBL>
-void dirichlet_inverse(TBL& p_inv, F1 p, int n) {
-	T p1 = p(1);
-	T e0 = zeroOf(p1), e1 = identityOf(p1);
-	T ip1 = e1 / p1;
+void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
+	T f1 = f(1);
+	T e0 = zeroOf(f1), e1 = identityOf(f1);
+	T if1 = e1 / f1;
 	for (int i = 0; i < n; i++) {
-		p_inv[i] = e0;
+		f_inv[i] = e0;
 	}
-	p_inv[1] = e1;
+	f_inv[1] = e1;
 	for (int d = 1; d < n; d++) {
-		p_inv[d] *= ip1;
+		f_inv[d] *= if1;
 		for (int j = 2, i = d * 2; i < n; i += d, j++) {
-			p_inv[i] -= p(j) * p_inv[d];
+			f_inv[i] -= f(j) * f_inv[d];
 		}
 	}
+}
+
+/**
+ * Calculates all the values of a multiplicative function `f` up to `n`,
+ * from the values at prime powers, in `O(n log log n)`.
+ *
+ * @param f - table of values of `f`
+ *            must be set to the actual value for prime powers and 1 elsewhere
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename TBL>
+void calc_multiplicative(TBL& f, int n, int* pf) {
+	auto e1 = f[1];
+	for (int p = 2; p < n; p++) {
+		if (pf[p] != p) continue; // not a prime
+		for (int64_t qq = p; qq < n; qq *= p) {
+			for (int q = (int)qq, l = 2, m = 2 * q; m < n; m += q, l++) {
+				if (l % p != 0) f[m] *= f[q];
+			}
+		}
+	}
+}
+
+/**
+ * Dirichlet convolution of `f` and `g` up to `n` in `O(n log log n)`.
+ *
+ * Calculates `h` where `h[n] = Sum[f(n/d) * g(d), {d|n}]`
+ *
+ * Where:
+ *   `f` and `g` are arbitrary arithmetic functions such that
+ *   `h = f * g` is a multiplicative function
+ *
+ * Note that only `h` needs to be multiplicative!
+ *
+ * @param h - table to store the result
+ * @param f, g - functions as defined above
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename T, typename F1, typename F2, typename TBL>
+void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
+	auto e1 = identityOf(f(1)), e0 = zeroOf(f(1));
+	for (int i = 1; i < n; i++) {
+		h[i] = e1;
+	}
+	int q[32]; T fq[32], gq[32];
+	for (int p = 2; p < n; p++) {
+		if (pf[p] != p) continue; // not a prime
+		int m = 0;
+		for (int64_t qq = 1; qq < n; qq *= p) {
+			fq[m] = f((int)qq);
+			gq[m] = g((int)qq);
+			q[m++] = (int)qq;
+		}
+		for (int k = 0; k < m; k++) {
+			auto hq_k = e0;
+			for (int i = 0; i <= k; i++) {
+				hq_k += fq[k - i] * gq[i];
+			}
+			h[q[k]] = hq_k;
+		}
+	}
+	calc_multiplicative(h, n, pf);
+}
+
+/**
+ * Dirichlet inverse of `f` up to `n` in `O(n log log n)`.
+ *
+ * Calculates `f_inv` such that: `f * f_inv = e`
+ *
+ * Where:
+ *   `f` is an arbitrary arithmetic function such that
+ *   `f_inv = f^-1` is a multiplicative function
+ *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *
+ * Note that only `f_inv` needs to be multiplicative!
+ *
+ * @param f_inv - table to store the result
+ * @param f - function as defined above
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename T, typename F1, typename TBL>
+void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
+	auto e1 = f(1), e0 = zeroOf(f(1));
+	for (int i = 1; i < n; i++) {
+		f_inv[i] = e1;
+	}
+	int q[32]; T fq[32], hq[32];
+	for (int p = 2; p < n; p++) {
+		if (pf[p] != p) continue; // not a prime
+		int m = 0;
+		for (int64_t qq = 1; qq < n; qq *= p) {
+			fq[m] = f((int)qq);
+			q[m++] = (int)qq;
+		}
+		hq[0] = e1;
+		for (int k = 1; k < m; k++) {
+			hq[k] = e0;
+			for (int i = 0; i < k; i++) {
+				hq[k] -= fq[k - i] * hq[i];
+			}
+			f_inv[q[k]] = hq[k];
+		}
+	}
+	calc_multiplicative(f_inv, n, pf);
+}
+
+/**
+ * Calculates all the values of a completely multiplicative function `f` up to `n`,
+ * from the values at primes, in `O(n)`.
+ *
+ * param f - table of values of `f`
+ *           must be set to the actual value for primes and 1 elsewhere
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename TBL>
+void calc_completely_multiplicative(TBL& f, int n, int* pf) {
+	auto e1 = f[1];
+	for (int i = 2; i < n; i++) {
+		int p = pf[i];
+		if (pf[i] != i) f[i] = f[i / p] * f[p];
+	}
+}
+
+/**
+ * Dirichlet convolution of `f` and `g` up to `n` in `O(n)`.
+ *
+ * Calculates `h` where `h[n] = Sum[f(n/d) * g(d), {d|n}]`
+ *
+ * Where:
+ *   `f` and `g` are arbitrary arithmetic functions such that
+ *   `h = f * g` is a completely multiplicative function
+ *
+ * Note that only `h` needs to be completely multiplicative!
+ * For example, `f(n) = mu(n)` and `g(n) = sigma1(n)` are not
+ * completely multiplicative, but its convolution `h(n) = n` is!
+ *
+ * @param h - table to store the result
+ * @param f, g - functions as defined above
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename T, typename F1, typename F2, typename TBL>
+void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
+	auto e1 = identityOf(f(1)), f1 = f(1), g1 = g(1);
+	for (int i = 1; i < n; i++) {
+		h[i] = e1;
+	}
+	for (int p = 2; p < n; p++) {
+		if (pf[p] == p) h[p] = f(p) * g1 + g(p) * f1;
+	}
+	calc_completely_multiplicative(h, n, pf);
+}
+
+/**
+ * Dirichlet inverse of `f` up to `n` in `O(n)`.
+ *
+ * Calculates `f_inv` such that: `f * f_inv = e`
+ *
+ * Where:
+ *   `f` is an arbitrary arithmetic function such that
+ *   `f_inv = f^-1` is a completely multiplicative function
+ *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *
+ * Note that only `f_inv` needs to be completely multiplicative!
+ * For example, `f(n) = n mu(n)` is not completely multiplicative,
+ * but its inverse `f_inv(n) = n` is!
+ *
+ * @param f_inv - table to store the result
+ * @param f - function as defined above
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename T, typename F1, typename TBL>
+void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
+	auto e1 = f(1);
+	for (int i = 1; i < n; i++) {
+		f_inv[i] = e1;
+	}
+	for (int p = 2; p < n; p++) {
+		if (pf[p] == p) f_inv[p] = -f(p);
+	}
+	calc_completely_multiplicative(f_inv, n, pf);
 }
 
 /**

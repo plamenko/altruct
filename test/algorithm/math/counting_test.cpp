@@ -11,6 +11,7 @@ using namespace std;
 using namespace altruct::math;
 using namespace altruct::collections;
 
+namespace {
 vector<vector<moduloX<int>>> to_modx(int M, const vector<vector<int>>& vv) {
 	return transform(vv, [&](const vector<int>& v) {
 		return transform(v, [&](int a) {
@@ -24,6 +25,7 @@ vector<T> get_column(const vector<vector<T>>& vv, int k) {
 	return transform(vv, [&](const vector<T>& v){
 		return (k < v.size()) ? v[k] : zeroT<T>::of(v[0]);
 	});
+}
 }
 
 TEST(counting_test, stirling_s1) {
