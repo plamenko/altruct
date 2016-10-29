@@ -12,6 +12,64 @@ namespace altruct {
 namespace math {
 
 /**
+ * Sieves `M` up to `n` in `O(n log n)`.
+ *
+ * Where:
+ *   `t` is an arbitrary function such that:
+ *       t(n) = Sum[p(k) M(n/k), {k, 1, n}]
+ *   `p` is an arbitrary function such that:
+ *       p(1) != 0, and p(1) is invertible
+ *
+ * Then the following holds and is used for computation:
+ *   t'(n) = Sum[p(d) M'(n/d), {d|n}]
+ *   t'(n) = t(n) - t(n-1)
+ *   M'(n) = M(n) - M(n-1)
+ *
+ * @param n - bound up to which to sieve
+ * @param t, p - functions as defined above
+ * @param M - table to store the calculated values
+ */
+template<typename T, typename F1, typename F2, typename MAP>
+void sieve_m(int n, F1 t, F2 p, MAP& M) {
+	T p1 = p(1);
+	T ip1 = identityOf(p1) / p1;
+	M[0] = t(0); // should be zero
+	for (int i = 1; i < n; i++) {
+		M[i] = t(i) - t(i - 1);
+	}
+	for (int d = 1; d < n; d++) {
+		M[d] *= ip1;
+		for (int j = 2, i = d * 2; i < n; i += d, j++) {
+			M[i] -= p(j) * M[d];
+		}
+		M[d] += M[d - 1];
+	}
+}
+
+/**
+ * Sieves `M` up to `n` in `O(n log n)`.
+ *
+ * Where:
+ *   `t` is an arbitrary function such that:
+ *       t(n) = Sum[M(n/k), {k, 1, n}]
+ *
+ * Same as `sieve_m(n, t, p, M)` with `p(n) = 1`.
+ */
+template<typename T, typename F1, typename MAP>
+void sieve_m(int n, F1 t, MAP& M) {
+	M[0] = t(0); // should be zero
+	for (int i = 1; i < n; i++) {
+		M[i] = t(i) - t(i - 1);
+	}
+	for (int d = 1; d < n; d++) {
+		for (int i = d * 2; i < n; i += d) {
+			M[i] -= M[d];
+		}
+		M[d] += M[d - 1];
+	}
+}
+
+/**
  * Calculates `M(n)` in `O(n^(3/4))` or `O(n^(2/3))`.
  *
  * Where:

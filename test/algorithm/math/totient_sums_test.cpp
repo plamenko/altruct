@@ -10,6 +10,19 @@ using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
 
+TEST(totient_sums_test, sieve_m) {
+	int n = 21;
+	auto t = [](int n){ return n * (n + 1) / 2; };
+	vector<int> actual1(n); sieve_m<int>(n, t, actual1);
+	EXPECT_EQ((vector<int>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), actual1);
+
+	typedef moduloX<int> modx;
+	auto t2 = [](int n){ return modx(n * (n + 1) / 2, 1009); };
+	auto p2 = [](int n){ return modx(n + 2, 1009); };
+	vector<modx> actual2(n); sieve_m<modx>(n, t2, p2, actual2);
+	EXPECT_EQ((vector<modx>{0, 673, 449, 1, 973, 77, 264, 938, 540, 840, 205, 992, 170, 509, 61, 809, 482, 934, 112, 116, 490}), actual2);
+}
+
 TEST(totient_sums_test, mertens) {
 	int n = 30;
 	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
