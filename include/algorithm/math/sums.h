@@ -13,7 +13,7 @@ namespace math {
  * Note: `a` and `b` must be non-negative integers, `q` must be a positive integer.
  */
 template<typename I>
-I sum_ratio(I n, I a, I b, I q) {
+I sum_ratio(I a, I b, I q, I n) {
 	I s = 0;
 	while (n > 0) {
 		I n1 = n - 1;
@@ -92,7 +92,7 @@ T sum_pow(int p, I n, T id = T(1)) {
  * Note: `x != 1` must hold. For `x == 1` use `sum_pow`.
  */
 template<typename T, typename I>
-T sum_powx(int m, I n, T x) {
+T sum_powx(int m, T x, I n) {
 	T T0 = zeroT<T>::of(x), T1 = identityT<T>::of(x);
 	auto Tn = T1 * n;
 	polynom<T> p{ 0, 1 }, q{ 1 }, z{ 0, -1, 1 };

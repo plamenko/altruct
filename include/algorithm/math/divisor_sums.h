@@ -19,8 +19,8 @@ namespace math {
  * Where:
  *   `f` and `g` are arbitrary functions
  */
-template<typename T, typename F1, typename F2, typename MAP>
-void dirichlet_convolution(int n, F1 f, F2 g, MAP& h) {
+template<typename T, typename F1, typename F2, typename TBL>
+void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
 	T e0 = zeroOf(f(0));
 	for (int i = 0; i < n; i++) {
 		h[i] = e0;
@@ -42,8 +42,8 @@ void dirichlet_convolution(int n, F1 f, F2 g, MAP& h) {
  *       p(1) != 0, and p(1) is invertible
  *   `e` is the dirichlet  multiplicative identity: `e(n) = [n == 1]`
  */
-template<typename T, typename F1, typename MAP>
-void dirichlet_inverse(int n, F1 p, MAP& p_inv) {
+template<typename T, typename F1, typename TBL>
+void dirichlet_inverse(TBL& p_inv, F1 p, int n) {
 	T p1 = p(1);
 	T e0 = zeroOf(p1), e1 = identityOf(p1);
 	T ip1 = e1 / p1;
@@ -77,8 +77,8 @@ void dirichlet_inverse(int n, F1 p, MAP& p_inv) {
  * @param t, p - functions as defined above
  * @param M - table to store the calculated values
  */
-template<typename T, typename F1, typename F2, typename MAP>
-void sieve_m(int n, F1 t, F2 p, MAP& M) {
+template<typename T, typename F1, typename F2, typename TBL>
+void sieve_m(TBL& M, F1 t, F2 p, int n) {
 	T p1 = p(1);
 	T ip1 = identityOf(p1) / p1;
 	M[0] = t(0); // should be zero
@@ -103,8 +103,8 @@ void sieve_m(int n, F1 t, F2 p, MAP& M) {
  *
  * Same as `sieve_m(n, t, p, M)` with `p(n) = 1`.
  */
-template<typename T, typename F1, typename MAP>
-void sieve_m(int n, F1 t, MAP& M) {
+template<typename T, typename F1, typename TBL>
+void sieve_m(TBL& M, F1 t, int n) {
 	M[0] = t(0); // should be zero
 	for (int i = 1; i < n; i++) {
 		M[i] = t(i) - t(i - 1);
@@ -151,21 +151,21 @@ void sieve_m(int n, F1 t, MAP& M) {
  *    O(U log U)       |  O((n / log n)^(2/3))     |  O(n^2/3 (log n) ^ 1/3)
  * Sieving can always be done in `O(n log n)` or better; See `sieve_m`.
  *
- * @param n - argument at which to evaluate `M`
  * @param t, s - functions as defined above
+ * @param n - argument at which to evaluate `M`
  * @param tbl - table to store the calculated values
  */
-template<typename T, typename I, typename F1, typename F2, typename MAP>
-T sum_m(I n, F1 t, F2 s, MAP& tbl) {
+template<typename T, typename I, typename F1, typename F2, typename TBL>
+T sum_m(F1 t, F2 s, I n, TBL& tbl) {
 	if (n < 1) return zeroT<T>::of(t(1));
 	if (tbl.count(n)) return tbl[n];
 	T r = t(n), p1 = s(1) - s(0);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
-		r -= (s(k) - s(k - 1)) * sum_m<T>(n / k, t, s, tbl);
+		r -= (s(k) - s(k - 1)) * sum_m<T>(t, s, n / k, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= (s(n / m) - s(n / (m + 1))) * sum_m<T>(m, t, s, tbl);
+		r -= (s(n / m) - s(n / (m + 1))) * sum_m<T>(t, s, m, tbl);
 	}
 	return tbl[n] = r / p1;
 }
@@ -177,19 +177,19 @@ T sum_m(I n, F1 t, F2 s, MAP& tbl) {
  *   `t` is an arbitrary function such that:
  *       t(n) = Sum[M(n/k), {k, 1, n}]
  *
- * Same as `sum_m(n, t, s, tbl)` with `p(n) = 1`, `s(n) = n`.
+ * Same as `sum_m(t, s, n, tbl)` with `p(n) = 1`, `s(n) = n`.
  */
- template<typename T, typename I, typename F, typename MAP>
-T sum_m(I n, F t, MAP& tbl) {
+template<typename T, typename I, typename F, typename TBL>
+T sum_m(F t, I n, TBL& tbl) {
 	if (n < 1) return zeroT<T>::of(t(1));
 	if (tbl.count(n)) return tbl[n];
 	T r = t(n);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
-		r -= sum_m<T>(n / k, t, tbl);
+		r -= sum_m<T>(t, n / k, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, t, tbl);
+		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(t, m, tbl);
 	}
 	return tbl[n] = r;
 }
@@ -202,10 +202,10 @@ T sum_m(I n, F t, MAP& tbl) {
  *
  * @param tbl - table to store the calculated values
  */
-template<typename T, typename I, typename MAP>
-T mertens(I n, MAP& tbl, T id = T(1)) {
+template<typename T, typename I, typename TBL>
+T mertens(I n, TBL& tbl, T id = T(1)) {
 	// p = 1, f = mu, g = delta, t = 1
-	return sum_m<T>(n, [&](I k){ return id; }, tbl);
+	return sum_m<T>([&](I k){ return id; }, n, tbl);
 }
 
 /**
@@ -240,7 +240,7 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& v
 	std::vector<T> v;
 	for (auto k : vn) {
 		msf.reset_max(k);
-		v.push_back(sum_m<T>(k, _t, _s, msf));
+		v.push_back(sum_m<T>(_t, _s, k, msf));
 	}
 	return v;
 }
