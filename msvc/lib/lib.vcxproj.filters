@@ -260,5 +260,8 @@
     <ClInclude Include="..\..\include\algorithm\math\counting.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\totient_sums.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

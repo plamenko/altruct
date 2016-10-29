@@ -1,7 +1,5 @@
 #include "algorithm/math/sums.h"
 #include "algorithm/math/primes.h"
-#include "algorithm/math/polynoms.h"
-#include "structure/math/polynom.h"
 #include "structure/container/sqrt_map.h"
 
 #include "gtest/gtest.h"
@@ -11,7 +9,6 @@ using namespace altruct::math;
 using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
-typedef polynom<field> poly;
 
 TEST(sums_test, sum_ratio) {
 	auto f = [](int n, int a, int b, int q) {
@@ -118,59 +115,12 @@ TEST(sums_test, sum_sqrt) {
 	EXPECT_EQ(ve3, va3b);
 }
 
-vector<field> calc_sum_m(int e, const poly& g, int n) {
-	// initialize polynomials
-	poly p = powT(poly{ 0, 1 }, e);
-	poly sp = polynom_sum(p);
-	poly st = polynom_sum(g * p);
-	// wrapping functions that evaluate polynomials
-	auto _g = [&](int n){ return g(field(n)); };
-	auto _p = [&](int n){ return p(field(n)); };
-	auto _sp = [&](int n){ return sp(field(n)); };
-	auto _st = [&](int n){ return st(field(n)); };
-	
-	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
-	int U = (int)isq(icbrt(n));
-	sqrt_map<int, field> msf(U, n);
-	std::vector<int> mu(U); moebius_mu(&mu[0], U);
-	moebius_transform(msf, U, _g, &mu[0]);
-	for (int k = 1; k < U; k++) msf[k] = _p(k) * msf[k] + msf[k - 1];
-
-	// calculate all values
-	vector<field> v;
-	for (int k = 0; k <= n; k++) {
-		msf.reset_max(k);
-		v.push_back(sum_m<field>(k, _st, _sp, msf));
-	}
-	return v;
-
-}
-TEST(sums_test, sum_m) {
-	// Sum[k^p euler_phi(k), { k, 1, n }]
-	// euler_phi(x) is Euler Totient function defined as:
-	//   Sum[[GCD(x, y)==1], {y,1,x}]
-	//   Sum[mu(n/d) * d, {d|x}]
-	poly g_phi = poly{ 0, 1 }; // d
-	EXPECT_EQ((vector<field>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), calc_sum_m(0, g_phi, 20));
-	EXPECT_EQ((vector<field>{0, 1, 3, 9, 17, 37, 49, 91, 123, 177, 217, 327, 375, 531, 615, 735, 863, 1135, 1243, 1585, 1745}), calc_sum_m(1, g_phi, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 23, 55, 155, 227, 521, 777, 1263, 1663, 2873, 3449, 5477, 6653, 8453, 10501, 15125, 17069, 23567, 26767}), calc_sum_m(2, g_phi, 20));
-	
-	// Sum[k^p euler_phi2(k), { k, 1, n }]
-	// euler_phi2(x) is Euler Totient function in 2D defined as:
-	//   Sum[[GCD(x, y, z)==1], {y,1,x}, {z,1,y}]
-	//   Sum[mu(n/d) * d * (d + 1) / 2, {d|x}]
-	poly g_phi2 = poly{ 0, 1, 1 } / field(2); // d * (d + 1) / 2
-	EXPECT_EQ((vector<field>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), calc_sum_m(0, g_phi2, 20));
-	EXPECT_EQ((vector<field>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), calc_sum_m(1, g_phi2, 20));
-	EXPECT_EQ((vector<field>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), calc_sum_m(2, g_phi2, 20));
-}
-
 TEST(sums_test, mertens) {
 	int n = 30;
 	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
 	int U = (int)isq(icbrt(n));
 	sqrt_map<int, field> mm(U, n);
-	std::vector<int> mu(U); moebius_mu(&mu[0], U);
+	std::vector<int> mu(U); moebius_mu(mu.data(), U);
 	for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + mu[k];
 	
 	vector<field> va;
@@ -183,11 +133,11 @@ TEST(sums_test, mertens) {
 
 TEST(sums_test, sum_primes) {
 	vector<int> vp(isqrt(1030) + 1);
-	int m = primes(&vp[0], nullptr, (int)vp.size());
+	int m = primes(vp.data(), nullptr, (int)vp.size());
 	vector<field> va1, va2;
 	for (int n = 0; n < 30; n++) {
-		va1.push_back(sum_primes(n, &vp[0], field(1)));
-		va2.push_back(sum_primes(1000 + n, &vp[0], field(1)) - 76127);
+		va1.push_back(sum_primes(n, vp.data(), field(1)));
+		va2.push_back(sum_primes(1000 + n, vp.data(), field(1)) - 76127);
 	}
 	EXPECT_EQ((vector<field>{0, 0, 2, 5, 5, 10, 10, 17, 17, 17, 17, 28, 28, 41, 41, 41, 41, 58, 58, 77, 77, 77, 77, 100, 100, 100, 100, 100, 100, 129}), va1);
 	EXPECT_EQ((vector<field>{0, 0, 0, 0, 0, 0, 0, 0, 0, 1009, 1009, 1009, 1009, 2022, 2022, 2022, 2022, 2022, 2022, 3041, 3041, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062}), va2);
@@ -196,12 +146,12 @@ TEST(sums_test, sum_primes) {
 TEST(sums_test, sum_primes2) {
 	vector<int> vp(1000);
 	vector<char> vq(1000);
-	int m = primes(&vp[0], &vq[0], (int)vq.size());
+	int m = primes(vp.data(), vq.data(), (int)vq.size());
 	vector<int> ve, va;
 	int c = 0;
 	for (int n = 0; n < vp.size(); n++) {
 		ve.push_back(c += n * vq[n]);
-		va.push_back(sum_primes(n, &vp[0], 1));
+		va.push_back(sum_primes(n, vp.data(), 1));
 	}
 	EXPECT_EQ(ve, va);
 }

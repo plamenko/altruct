@@ -166,6 +166,9 @@
     <ClCompile Include="..\..\test\structure\math\series_modx_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\totient_sums_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
