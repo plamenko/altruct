@@ -20,9 +20,9 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& v
 	T e0 = zeroT<T>::of(id);
 
 	// initialize polynomials
-	poly p = powT(poly{ e0, id }, L);
-	poly s = polynom_sum(p);
-	poly t = polynom_sum(p * g);
+	auto p = powT(poly{ e0, id }, L);
+	auto s = polynom_sum(p);
+	auto t = polynom_sum(p * g);
 
 	// wrapping functions that evaluate polynomials
 	auto _g = [&](int64_t n){ return g(castT(n)); };
@@ -70,6 +70,10 @@ std::vector<T> sum_phi_D_L(int D, int L, const std::vector<int64_t>& vn, T id, C
 		g_phi_D *= poly{ id * i, id } / (id * (i + 1));
 	}
 	return sum_g_L(g_phi_D, L, vn, id, castT);
+}
+template<typename T, typename CAST_T>
+T sum_phi_D_L(int D, int L, int64_t n, T id, CAST_T castT) {
+	return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, id, castT).back();
 }
 
 } // math

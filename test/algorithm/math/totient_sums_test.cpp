@@ -25,6 +25,8 @@ TEST(totient_sums_test, sum_phi_D_L) {
 	EXPECT_EQ((vector<mod>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 1104, 1252}), sum_phi_D_L(2, 0, vn, id, castT));
 	EXPECT_EQ((vector<mod>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 1324, 2039, 2639, 3809, 4859, 6359, 7959, 10543, 12541, 16132, 19092}), sum_phi_D_L(2, 1, vn, id, castT));
 	EXPECT_EQ((vector<mod>{0, 1, 9, 54, 166, 516, 984, 2307, 3971, 7130, 10930, 18795, 25995, 41205, 55905, 78405, 104005, 147933, 183897, 252126, 311326}), sum_phi_D_L(2, 2, vn, id, castT));
+
+	EXPECT_EQ(mod(356214470), sum_phi_D_L(1, 0, 10000000, id, castT));
 }
 
 TEST(totient_sums_test, sum_phi_D_L_modx) {
@@ -45,4 +47,6 @@ TEST(totient_sums_test, sum_phi_D_L_modx) {
 	EXPECT_EQ((vector<modx>{0, 1, 3, 8, 15, 29, 42, 69, 95, 134, 172, 237, 287, 377, 452, 552, 652, 804, 915, 95, 243}), sum_phi_D_L(2, 0, vn, id, castT));
 	EXPECT_EQ((vector<modx>{0, 1, 5, 20, 48, 118, 196, 385, 593, 944, 315, 21, 621, 782, 823, 305, 896, 453, 433, 997, 930}), sum_phi_D_L(2, 1, vn, id, castT));
 	EXPECT_EQ((vector<modx>{0, 1, 9, 54, 166, 516, 984, 289, 944, 67, 840, 633, 770, 845, 410, 712, 78, 619, 259, 885, 554}), sum_phi_D_L(2, 2, vn, id, castT));
+
+	EXPECT_EQ(modx(984, 1009), sum_phi_D_L(1, 0, 10000000, id, castT));
 }
