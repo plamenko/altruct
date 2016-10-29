@@ -196,14 +196,23 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> vn, c
  *
  * Complexity: O(n log n)
  *
- * @param g - pointer/iterator/vector/map of the result container;
-              has to be initialized to 0; accessed via [] operator
+ * @param g - pointer/iterator/vector/map of the result container; accessed via [] operator
  * @param n - calculate moebius transform of `f` up to `n` (exclusive)
  * @param f - function to transform
  * @param mu - values of Moebius Mu up to `n`
  */
 template<typename G, typename F>
-void moebius_transform(G& g, int n, F f, const int* mu) {
+void moebius_transform(G& g, int n, F f, const int* mu = nullptr) {
+	auto e0 = zeroOf(f(1));
+	std::vector<int> temp_mu;
+	if (mu == nullptr) {
+		temp_mu.resize(n);
+		moebius_mu(temp_mu.data(), n);
+		mu = temp_mu.data();
+	}
+	for (int i = 0; i < n; i++) {
+		g[i] = e0;
+	}
 	for (int d = 1; d < n; d++) {
 		auto f_d = f(d);
 		for (int i = d, e = 1; i < n; i += d, e++) {
@@ -214,9 +223,8 @@ void moebius_transform(G& g, int n, F f, const int* mu) {
 }
 template<typename T, typename F>
 std::vector<T> moebius_transform(int n, F f) {
-	T e0 = zeroT<T>::of(f(1));
-	std::vector<int> mu(n); moebius_mu(&mu[0], n);
-	std::vector<T> g(n, e0); moebius_transform(g, n, f, &mu[0]);
+	std::vector<T> g(n, zeroOf(f(1)));
+	moebius_transform(g, n, f);
 	return g;
 }
 

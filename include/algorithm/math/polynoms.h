@@ -86,8 +86,9 @@ std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsy = 0, 
  */
 template<typename T>
 polynom<T> polynom_sum(const polynom<T>& p) {
-	polynom<T> s;
-	std::vector<T> b = bernoulli_b<T>(p.deg());
+	T id = identityT<T>::of(p.ZERO_COEFF);
+	polynom<T> s = zeroOf(p);
+	std::vector<T> b = bernoulli_b<T>(p.deg(), id);
 	for (int m = p.deg(); m >= 0; m--) {
 		T c = p[m] / (m + 1);
 		if (c == p.ZERO_COEFF) continue;
