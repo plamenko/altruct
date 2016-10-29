@@ -1,4 +1,4 @@
-#include "algorithm/math/totient_sums.h"
+#include "algorithm/math/divisor_sums.h"
 #include "algorithm/math/ranges.h"
 #include "structure/math/modulo.h"
 
@@ -10,7 +10,7 @@ using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
 
-TEST(totient_sums_test, dirichlet_convolution) {
+TEST(divisor_sums_test, dirichlet_convolution) {
 	int n = 21;
 	typedef moduloX<int> modx;
 	vector<int> vmu(n); moebius_mu(vmu.data(), (int)vmu.size());
@@ -20,7 +20,7 @@ TEST(totient_sums_test, dirichlet_convolution) {
 	EXPECT_EQ((vector<modx>{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8}), phi);
 }
 
-TEST(totient_sums_test, dirichlet_inverse) {
+TEST(divisor_sums_test, dirichlet_inverse) {
 	int n = 21;
 	typedef moduloX<int> modx;
 	auto f = [](int n){ return modx(n * (n + 2), 1009); };
@@ -28,7 +28,7 @@ TEST(totient_sums_test, dirichlet_inverse) {
 	EXPECT_EQ((vector<modx>{0, 673, 896, 671, 635, 893, 452, 1002, 435, 670, 269, 881, 113, 651, 573, 459, 441, 861, 678, 292, 861}), f_inv);
 }
 
-TEST(totient_sums_test, sieve_m) {
+TEST(divisor_sums_test, sieve_m) {
 	int n = 21;
 	auto t = [](int n){ return n * (n + 1) / 2; };
 	vector<int> actual1(n); sieve_m<int>(n, t, actual1);
@@ -41,7 +41,7 @@ TEST(totient_sums_test, sieve_m) {
 	EXPECT_EQ((vector<modx>{0, 673, 449, 1, 973, 77, 264, 938, 540, 840, 205, 992, 170, 509, 61, 809, 482, 934, 112, 116, 490}), actual2);
 }
 
-TEST(totient_sums_test, mertens) {
+TEST(divisor_sums_test, mertens) {
 	int n = 30;
 	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
 	int U = (int)isq(icbrt(n));
@@ -57,7 +57,7 @@ TEST(totient_sums_test, mertens) {
 	EXPECT_EQ((vector<field>{0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3}), va);
 }
 
-TEST(totient_totient_sums_test, sum_phi_D_L) {
+TEST(totient_divisor_sums_test, sum_phi_D_L) {
 	auto id = field(1);
 	auto castT = [](int64_t n){ return field(n % 1000000007); };
 	auto vn = range<int64_t>(21);
@@ -77,7 +77,7 @@ TEST(totient_totient_sums_test, sum_phi_D_L) {
 	EXPECT_EQ(field(356214470), sum_phi_D_L(1, 0, 10000000, 0, id, castT));
 }
 
-TEST(totient_totient_sums_test, sum_phi_D_L_modx) {
+TEST(totient_divisor_sums_test, sum_phi_D_L_modx) {
 	typedef moduloX<int> modx;
 
 	auto id = modx(1, 1009);
@@ -99,7 +99,7 @@ TEST(totient_totient_sums_test, sum_phi_D_L_modx) {
 	EXPECT_EQ(modx(984, 1009), sum_phi_D_L(1, 0, 10000000, 0, id, castT));
 }
 
-TEST(totient_sums_test, sum_primes) {
+TEST(divisor_sums_test, sum_primes) {
 	vector<int> vp(isqrt(1030) + 1);
 	int m = primes(vp.data(), nullptr, (int)vp.size());
 	vector<field> va1, va2;
@@ -111,7 +111,7 @@ TEST(totient_sums_test, sum_primes) {
 	EXPECT_EQ((vector<field>{0, 0, 0, 0, 0, 0, 0, 0, 0, 1009, 1009, 1009, 1009, 2022, 2022, 2022, 2022, 2022, 2022, 3041, 3041, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062}), va2);
 }
 
-TEST(totient_sums_test, sum_primes2) {
+TEST(divisor_sums_test, sum_primes2) {
 	vector<int> vp(1000);
 	vector<char> vq(1000);
 	int m = primes(vp.data(), vq.data(), (int)vq.size());
