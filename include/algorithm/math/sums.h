@@ -3,7 +3,6 @@
 #include "algorithm/math/base.h"
 #include "algorithm/math/recurrence.h"
 #include "structure/math/polynom.h"
-#include "structure/container/sqrt_map.h"
 
 namespace altruct {
 namespace math {
@@ -186,120 +185,6 @@ T sum_sqrt2(F sf, I n, T zero = T(0)) {
 		r += sf(n / m, m) - sf(n / (m + 1), m);
 	}
 	return r;
-}
-
-/**
- * Calculates `M(n)` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Where:
- *   `t` is an arbitrary function such that:
- *       t(n) = Sum[p(k) M(n/k), {k, 1, n}]
- *   `p` is a completely-multiplicative function:
- *       p(n * m) = p(n) * p(m)
- *   `s` is the partial sum of `p`:
- *       s(n) = Sum[p(k), {k, 1, n}]
- *
- * Note that the above relation for `t` holds if:
- *   M(n) = Sum[p(k) * f(k), {k, 1, n}]
- *   t(n) = Sum[p(k) * g(k), {k, 1, n}]
- *   and `g` and `f` are Moebius transforms of each other:
- *       g(n) = Sum[f(d), {d|n}]
- *       f(n) = Sum[mu(n/d) * g(d), {d|n}]
- * This allows us to compute `M` in sublinear time given
- * that we can efficiently compute `t` and `s`.
- *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
- * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
- *
- * @param tbl - table to store the calculated values
- */
-template<typename T, typename I, typename F1, typename F2, typename MAP>
-T sum_m(I n, F1 t, F2 s, MAP& tbl) {
-	if (n < 1) return zeroT<T>::of(t(1));
-	if (tbl.count(n)) return tbl[n];
-	T r = t(n);
-	I q = sqrtT(n);
-	for (I k = 2; k <= n / q; k++) {
-		r -= (s(k) - s(k - 1)) * sum_m<T>(n / k, t, s, tbl);
-	}
-	for (I m = 1; m < q; m++) {
-		r -= (s(n / m) - s(n / (m + 1))) * sum_m<T>(m, t, s, tbl);
-	}
-	return tbl[n] = r;
-}
-
-/**
- * Calculates `M(n)` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Where:
- *   `t` is an arbitrary function such that:
- *       t(n) = Sum[M(n/k), {k, 1, n}]
- *
- * Same as `sum_m(n, t, s, tbl)` with `p(n) = 1`, `s(n) = n`.
- */
-template<typename T, typename I, typename F, typename MAP>
-T sum_m(I n, F t, MAP& tbl) {
-	if (n < 1) return zeroT<T>::of(t(1));
-	if (tbl.count(n)) return tbl[n];
-	T r = t(n);
-	I q = sqrtT(n);
-	for (I k = 2; k <= n / q; k++) {
-		r -= sum_m<T>(n / k, t, tbl);
-	}
-	for (I m = 1; m < q; m++) {
-		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(m, t, tbl);
-	}
-	return tbl[n] = r;
-}
-
-/**
- * Mertens function: `Sum[moebius_mu(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
- * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
- *
- * @param tbl - table to store the calculated values
- */
-template<typename T, typename I, typename MAP>
-T mertens(I n, MAP& tbl, T id = T(1)) {
-	// p = 1, f = mu, g = delta, t = 1
-	return sum_m<T>(n, [&](I k){ return id; }, tbl);
-}
-
-/**
- * Calculates sum of primes: `Sum[p(k), {k, 1, n}]` in `O(n^(5/7))`.
- *
- * @param p - array of prime numbers up to `sqrt(n)` inclusive
- */
-template<typename T, typename I>
-T sum_primes(I n, const int* p, T id = T(1)) {
-	if (n < 1) return zeroT<T>::of(id);
-	// Initially, we start with the sum of all numbers:
-	// d(i) =  Sum[k, {2 <= k <= i}]
-	// After each round j, all multiples of a prime p(j) get eliminated:
-	// d(i) = Sum[k, {2 <= k <= i, spf(k) > p(j) || is_prime(k)}]
-	// spf(k) = smallest prime factor of k
-	I q = sqrtT(n);
-	container::sqrt_map<I, T> d(q, n);
-	for (int l = 1; l <= q; l++) {
-		I i = n / l;
-		d[i] = id * i * (i + 1) / 2 - 1;
-	}
-	for (int i = n / q - 1; i >= 1; i--) {
-		d[i] = id * i * (i + 1) / 2 - 1;
-	}
-	for (int j = 0; p[j] && p[j] <= q; j++) {
-		I pj = p[j]; I p2 = sqT(pj);
-		I l_max = std::min(q, n / p2);
-		for (I l = 1; l <= l_max; l++) {
-			I i = n / l;
-			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
-		}
-		for (I i = n / q - 1; i >= p2; i--) {
-			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
-		}
-	}
-	return d[n];
 }
 
 } // math

@@ -1,12 +1,10 @@
 #include "algorithm/math/sums.h"
 #include "algorithm/math/primes.h"
-#include "structure/container/sqrt_map.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
-using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
 
@@ -113,45 +111,4 @@ TEST(sums_test, sum_sqrt) {
 	}
 	EXPECT_EQ(ve3, va3a);
 	EXPECT_EQ(ve3, va3b);
-}
-
-TEST(sums_test, mertens) {
-	int n = 30;
-	// preprocess `U = n^(2/3)` values of `Sum[p(k) * f[k], {k, 1, U}]`
-	int U = (int)isq(icbrt(n));
-	sqrt_map<int, field> mm(U, n);
-	std::vector<int> mu(U); moebius_mu(mu.data(), U);
-	for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + mu[k];
-	
-	vector<field> va;
-	for (int k = 0; k <= n; k++) {
-		mm.reset_max(k);
-		va.push_back(mertens(k, mm, field(1)));
-	}
-	EXPECT_EQ((vector<field>{0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3}), va);
-}
-
-TEST(sums_test, sum_primes) {
-	vector<int> vp(isqrt(1030) + 1);
-	int m = primes(vp.data(), nullptr, (int)vp.size());
-	vector<field> va1, va2;
-	for (int n = 0; n < 30; n++) {
-		va1.push_back(sum_primes(n, vp.data(), field(1)));
-		va2.push_back(sum_primes(1000 + n, vp.data(), field(1)) - 76127);
-	}
-	EXPECT_EQ((vector<field>{0, 0, 2, 5, 5, 10, 10, 17, 17, 17, 17, 28, 28, 41, 41, 41, 41, 58, 58, 77, 77, 77, 77, 100, 100, 100, 100, 100, 100, 129}), va1);
-	EXPECT_EQ((vector<field>{0, 0, 0, 0, 0, 0, 0, 0, 0, 1009, 1009, 1009, 1009, 2022, 2022, 2022, 2022, 2022, 2022, 3041, 3041, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062}), va2);
-}
-
-TEST(sums_test, sum_primes2) {
-	vector<int> vp(1000);
-	vector<char> vq(1000);
-	int m = primes(vp.data(), vq.data(), (int)vq.size());
-	vector<int> ve, va;
-	int c = 0;
-	for (int n = 0; n < vp.size(); n++) {
-		ve.push_back(c += n * vq[n]);
-		va.push_back(sum_primes(n, vp.data(), 1));
-	}
-	EXPECT_EQ(ve, va);
 }
