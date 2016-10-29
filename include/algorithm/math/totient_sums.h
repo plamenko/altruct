@@ -12,6 +12,54 @@ namespace altruct {
 namespace math {
 
 /**
+ * Dirichlet convolution of `f` and `g` up to `n` in `O(n log n)`.
+ *
+ * Calculates `h` where `h[n] = Sum[f(n/d) * g(d), {d|n}]`
+ *
+ * Where:
+ *   `f` and `g` are arbitrary functions
+ */
+template<typename T, typename F1, typename F2, typename MAP>
+void dirichlet_convolution(int n, F1 f, F2 g, MAP& h) {
+	T e0 = zeroOf(f(0));
+	for (int i = 0; i < n; i++) {
+		h[i] = e0;
+	}
+	for (int d = 1; d < n; d++) {
+		for (int e = 1, i = d; i < n; i += d, e++) {
+			h[i] += f(d) * g(e);
+		}
+	}
+}
+
+/**
+ * Dirichlet inverse of `p` up to `n` in `O(n log n)`.
+ *
+ * Calculates `p_inv` such that: `p * p_inv = e`
+ *
+ * Where:
+ *   `p` is an arbitrary function such that:
+ *       p(1) != 0, and p(1) is invertible
+ *   `e` is the dirichlet  multiplicative identity: `e(n) = [n == 1]`
+ */
+template<typename T, typename F1, typename MAP>
+void dirichlet_inverse(int n, F1 p, MAP& p_inv) {
+	T p1 = p(1);
+	T e0 = zeroOf(p1), e1 = identityOf(p1);
+	T ip1 = e1 / p1;
+	for (int i = 0; i < n; i++) {
+		p_inv[i] = e0;
+	}
+	p_inv[1] = e1;
+	for (int d = 1; d < n; d++) {
+		p_inv[d] *= ip1;
+		for (int j = 2, i = d * 2; i < n; i += d, j++) {
+			p_inv[i] -= p(j) * p_inv[d];
+		}
+	}
+}
+
+/**
  * Sieves `M` up to `n` in `O(n log n)`.
  *
  * Where:

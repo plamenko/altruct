@@ -10,6 +10,24 @@ using namespace altruct::container;
 
 typedef modulo<int, 1000000007> field;
 
+TEST(totient_sums_test, dirichlet_convolution) {
+	int n = 21;
+	typedef moduloX<int> modx;
+	vector<int> vmu(n); moebius_mu(vmu.data(), (int)vmu.size());
+	auto id = [&](int n){ return modx(n, 1009); };
+	auto mu = [&](int n){ return modx(vmu[n], 1009); };
+	vector<modx> phi(n); dirichlet_convolution<modx>(n, id, mu, phi);
+	EXPECT_EQ((vector<modx>{0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8}), phi);
+}
+
+TEST(totient_sums_test, dirichlet_inverse) {
+	int n = 21;
+	typedef moduloX<int> modx;
+	auto f = [](int n){ return modx(n * (n + 2), 1009); };
+	vector<modx> f_inv(n); dirichlet_inverse<modx>(n, f, f_inv);
+	EXPECT_EQ((vector<modx>{0, 673, 896, 671, 635, 893, 452, 1002, 435, 670, 269, 881, 113, 651, 573, 459, 441, 861, 678, 292, 861}), f_inv);
+}
+
 TEST(totient_sums_test, sieve_m) {
 	int n = 21;
 	auto t = [](int n){ return n * (n + 1) / 2; };
