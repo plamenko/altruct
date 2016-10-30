@@ -7,6 +7,7 @@ void linear_recurrence_sample();
 void linear_recurrence_sample2();
 void series_simple_counting_sample();
 void series_combinatoric_sample();
+void dirichlet_sample();
 
 int main() {
 	xorshift_sample();
@@ -16,5 +17,6 @@ int main() {
 	linear_recurrence_sample2();
 	series_simple_counting_sample();
 	series_combinatoric_sample();
+	dirichlet_sample();
 	return 0;
 }

@@ -24,6 +24,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\sample\algorithm\math\dirichlet_sample.cpp" />
     <ClCompile Include="..\..\sample\algorithm\math\linear_recurrence_sample.cpp" />
     <ClCompile Include="..\..\sample\algorithm\math\series_sample.cpp" />
     <ClCompile Include="..\..\sample\algorithm\random\mersenne_twister_sample.cpp" />

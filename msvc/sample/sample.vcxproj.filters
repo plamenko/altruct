@@ -37,5 +37,8 @@
     <ClCompile Include="..\..\sample\algorithm\math\series_sample.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\sample\algorithm\math\dirichlet_sample.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
