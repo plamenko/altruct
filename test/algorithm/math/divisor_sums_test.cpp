@@ -32,7 +32,7 @@ TEST(divisor_sums_test, dirichlet_convolution) {
 	vector<int> vmu(n); moebius_mu(vmu.data(), (int)vmu.size());
 	auto id = [&](int n){ return modx(n, 1009); };
 	auto mu = [&](int n){ return modx(vmu[n], 1009); };
-	vector<modx> phi(n); dirichlet_convolution<modx>(phi, id, mu, n);
+	vector<modx> phi(n); dirichlet_convolution(phi, id, mu, n);
 	EXPECT_EQ(to_modx(1009, {0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8}), phi);
 }
 
@@ -40,7 +40,7 @@ TEST(divisor_sums_test, dirichlet_inverse) {
 	int n = 21;
 	typedef moduloX<int> modx;
 	auto f = [](int n){ return modx(n * (n + 2), 1009); };
-	vector<modx> f_inv(n); dirichlet_inverse<modx>(f_inv, f, n);
+	vector<modx> f_inv(n); dirichlet_inverse(f_inv, f, n);
 	EXPECT_EQ(to_modx(1009, { 0, 673, 896, 671, 635, 893, 452, 1002, 435, 670, 269, 881, 113, 651, 573, 459, 441, 861, 678, 292, 861 }), f_inv);
 }
 
@@ -61,7 +61,7 @@ TEST(divisor_sums_test, dirichlet_convolution_multiplicative) {
 	vector<int> vmu{ 0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, -1, 1, 1, 0, -1, 0, -1, 0 };
 	auto id = [&](int n){ return modx(n, 1009); };
 	auto mu = [&](int n){ return modx(vmu[n], 1009); };
-	vector<modx> phi(n); dirichlet_convolution_multiplicative<modx>(phi, id, mu, n, pf.data());
+	vector<modx> phi(n); dirichlet_convolution_multiplicative(phi, id, mu, n, pf.data());
 	EXPECT_EQ(to_modx(1009, { 0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8 }), phi);
 }
 
@@ -71,7 +71,7 @@ TEST(divisor_sums_test, dirichlet_inverse_multiplicative) {
 	typedef moduloX<int> modx;
 	vector<int> vphi{ 0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8 };
 	auto f = [&](int n){ return modx(vphi[n], 1009); };
-	vector<modx> f_inv(n); dirichlet_inverse_multiplicative<modx>(f_inv, f, n, pf.data());
+	vector<modx> f_inv(n); dirichlet_inverse_multiplicative(f_inv, f, n, pf.data());
 	EXPECT_EQ(to_modx(1009, { 0, 1, -1, -2, -1, -4, 2, -6, -1, -2, 4, -10, 2, -12, 6, 8, -1, -16, 2, - 18, 4 }), f_inv);
 }
 
@@ -93,7 +93,7 @@ TEST(divisor_sums_test, dirichlet_convolution_completely_multiplicative) {
 	vector<int> vs1{ 0, 1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42 };
 	auto mu = [&](int n){ return modx(vmu[n], 1009); };
 	auto s1 = [&](int n){ return modx(vs1[n], 1009); };
-	vector<modx> id(n); dirichlet_convolution_completely_multiplicative<modx>(id, mu, s1, n, pf.data());
+	vector<modx> id(n); dirichlet_convolution_completely_multiplicative(id, mu, s1, n, pf.data());
 	EXPECT_EQ(to_modx(1009, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }), id);
 }
 
@@ -103,20 +103,35 @@ TEST(divisor_sums_test, dirichlet_inverse_completely_multiplicative) {
 	typedef moduloX<int> modx;
 	vector<int> vnmu{ 0, 1, -2, -3, 0, -5, 6, -7, 0, 0, 10, -11, 0, -13, 14, 15, 0, -17, 0, - 19, 0 };
 	auto f = [&](int n){ return modx(vnmu[n], 1009); };
-	vector<modx> f_inv(n); dirichlet_inverse_completely_multiplicative<modx>(f_inv, f, n, pf.data());
+	vector<modx> f_inv(n); dirichlet_inverse_completely_multiplicative(f_inv, f, n, pf.data());
 	EXPECT_EQ(to_modx(1009, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }), f_inv);
+}
+
+TEST(divisor_sums_test, sieve_m_multiplicative) {
+	int n = 21;
+	auto pf = prime_factor_table(n);
+	typedef moduloX<int> modx;
+	vector<int> vsphi{ 0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128 };
+	auto t = [&](int n){ return modx(vsphi[n], 1009); };
+	auto p = [&](int n){ return modx(n * n * n, 1009); };
+	vector<modx> actual(n); sieve_m_multiplicative(actual, t, p, n, pf.data());
+	EXPECT_EQ(to_modx(1009, { 0, 1, 1003, 978, 972, 851, 17, 689, 677, 629, 467, 155, 305, 138, 479, 477, 453, 601, 937, 150, 876 }), actual);
+	auto t2 = [&](int n){ return modx(n * n * (n + 1) * (n + 1) / 4, 1009); };
+	auto p2 = [&](int n){ return modx(n * n, 1009); };
+	vector<modx> actual2(n); sieve_m_multiplicative(actual2, t2, p2, n, pf.data());
+	EXPECT_EQ(to_modx(1009, { 0, 1, 5, 23, 55, 155, 227, 521, 777, 254, 654, 855, 422, 432, 599, 381, 411, 999, 925, 360, 533 }), actual2);
 }
 
 TEST(divisor_sums_test, sieve_m) {
 	int n = 21;
 	auto t = [](int n){ return n * (n + 1) / 2; };
-	vector<int> actual1(n); sieve_m<int>(actual1, t, n);
+	vector<int> actual1(n); sieve_m(actual1, t, n);
 	EXPECT_EQ((vector<int>{0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128}), actual1);
 
 	typedef moduloX<int> modx;
 	auto t2 = [](int n){ return modx(n * (n + 1) / 2, 1009); };
 	auto p2 = [](int n){ return modx(n + 2, 1009); };
-	vector<modx> actual2(n); sieve_m<modx>(actual2, t2, p2, n);
+	vector<modx> actual2(n); sieve_m(actual2, t2, p2, n);
 	EXPECT_EQ(to_modx(1009, { 0, 673, 449, 1, 973, 77, 264, 938, 540, 840, 205, 992, 170, 509, 61, 809, 482, 934, 112, 116, 490 }), actual2);
 }
 

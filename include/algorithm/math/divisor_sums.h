@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
 
 #include "algorithm/math/base.h"
@@ -22,9 +23,9 @@ namespace math {
  * @param h - table to store the result
  * @param f, g - functions as defined above
  */
-template<typename T, typename F1, typename F2, typename TBL>
+template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
-	T e0 = zeroOf(f(0));
+	auto e0 = zeroOf(f(0));
 	for (int i = 0; i < n; i++) {
 		h[i] = e0;
 	}
@@ -48,11 +49,11 @@ void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
  * @param f_inv - table to store the result
  * @param f - function as defined above
  */
-template<typename T, typename F1, typename TBL>
+template<typename F1, typename TBL>
 void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
-	T f1 = f(1);
-	T e0 = zeroOf(f1), e1 = identityOf(f1);
-	T if1 = e1 / f1;
+	auto f1 = f(1);
+	auto e0 = zeroOf(f1), e1 = identityOf(f1);
+	auto if1 = e1 / f1;
 	for (int i = 0; i < n; i++) {
 		f_inv[i] = e0;
 	}
@@ -101,8 +102,9 @@ void calc_multiplicative(TBL& f, int n, int* pf) {
  * @param f, g - functions as defined above
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
-template<typename T, typename F1, typename F2, typename TBL>
+template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
+	typedef typename std::result_of<F2(int)>::type T;
 	auto e1 = identityOf(f(1)), e0 = zeroOf(f(1));
 	for (int i = 1; i < n; i++) {
 		h[i] = e1;
@@ -141,8 +143,9 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
  * @param f - function as defined above
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
-template<typename T, typename F1, typename TBL>
+template<typename F1, typename TBL>
 void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
+	typedef typename std::result_of<F1(int)>::type T;
 	auto e1 = f(1), e0 = zeroOf(f(1));
 	for (int i = 1; i < n; i++) {
 		f_inv[i] = e1;
@@ -201,7 +204,7 @@ void calc_completely_multiplicative(TBL& f, int n, int* pf) {
  * @param f, g - functions as defined above
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
-template<typename T, typename F1, typename F2, typename TBL>
+template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
 	auto e1 = identityOf(f(1)), f1 = f(1), g1 = g(1);
 	for (int i = 1; i < n; i++) {
@@ -231,7 +234,7 @@ void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, 
  * @param f - function as defined above
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
-template<typename T, typename F1, typename TBL>
+template<typename F1, typename TBL>
 void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
 	auto e1 = f(1);
 	for (int i = 1; i < n; i++) {
@@ -241,6 +244,42 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
 		if (pf[p] == p) f_inv[p] = -f(p);
 	}
 	calc_completely_multiplicative(f_inv, n, pf);
+}
+
+/**
+ * Sieves `M` up to `n` in `O(n log log n)`.
+ *
+ * Where:
+ *   `M` is an arbitrary function such that:
+ *       its backward difference `M'` is multiplicative
+ *   `t` is an arbitrary function such that:
+ *       t(n) = Sum[p(k) M(n/k), {k, 1, n}]
+ *   `p` is a multiplicative function, which means:
+ *       its inverse `p_inv` is also multiplicative
+ *
+ * Then the following holds and is used for computation:
+ *   t'(n) = Sum[p(d) M'(n/d), {d|n}]
+ *   M'(n) = Sum[p^-1(d) t'(n/d), {d|n}]
+ *   t'(n) = t(n) - t(n-1)
+ *   M'(n) = M(n) - M(n-1)
+ *
+ * @param M - table to store the calculated values
+ * @param t, p - functions as defined above
+ * @param n - bound up to which to sieve
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename F1, typename F2, typename TBL>
+void sieve_m_multiplicative_inv(TBL& M, F1 t, F2 p_inv, int n, int* pf) {
+	auto dt = [&](int n){ return (n == 1) ? t(n) : t(n) - t(n - 1); };
+	dirichlet_convolution_multiplicative(M, p_inv, dt, n, pf);
+	for (int i = 1; i < n; i++) M[i] += M[i - 1];
+}
+template<typename F1, typename F2, typename TBL>
+void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pf) {
+	auto p_inv = M;
+	dirichlet_inverse_multiplicative(p_inv, p, n, pf);
+	auto _p_inv = [&](int n){ return p_inv[n]; };
+	sieve_m_multiplicative_inv(M, t, _p_inv, n, pf);
 }
 
 /**
@@ -261,10 +300,10 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
  * @param t, p - functions as defined above
  * @param n - bound up to which to sieve
  */
-template<typename T, typename F1, typename F2, typename TBL>
+template<typename F1, typename F2, typename TBL>
 void sieve_m(TBL& M, F1 t, F2 p, int n) {
-	T p1 = p(1);
-	T ip1 = identityOf(p1) / p1;
+	auto p1 = p(1);
+	auto ip1 = identityOf(p1) / p1;
 	M[1] = t(1);
 	for (int i = 2; i < n; i++) {
 		M[i] = t(i) - t(i - 1);
@@ -287,7 +326,7 @@ void sieve_m(TBL& M, F1 t, F2 p, int n) {
  *
  * Same as `sieve_m(n, t, p, M)` with `p(n) = 1`.
  */
-template<typename T, typename F1, typename TBL>
+template<typename F1, typename TBL>
 void sieve_m(TBL& M, F1 t, int n) {
 	M[1] = t(1);
 	for (int i = 2; i < n; i++) {
@@ -333,9 +372,9 @@ void sieve_m(TBL& M, F1 t, int n) {
  */
 template<typename T, typename I, typename F1, typename F2, typename TBL>
 T sum_m(F1 t, F2 s, I n, TBL& tbl) {
-	if (n < 1) return zeroT<T>::of(t(1));
+	if (n < 1) return zeroOf(t(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = t(n), p1 = s(1) - s(0);
+	auto r = t(n), p1 = s(1) - s(0);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
 		r -= (s(k) - s(k - 1)) * sum_m<T>(t, s, n / k, tbl);
@@ -359,7 +398,7 @@ template<typename T, typename I, typename F, typename TBL>
 T sum_m(F t, I n, TBL& tbl) {
 	if (n < 1) return zeroT<T>::of(t(1));
 	if (tbl.count(n)) return tbl[n];
-	T r = t(n);
+	auto r = t(n);
 	I q = sqrtT(n);
 	for (I k = 2; k <= n / q; k++) {
 		r -= sum_m<T>(t, n / k, tbl);
