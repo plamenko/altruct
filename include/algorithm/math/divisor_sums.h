@@ -133,11 +133,9 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
  * Calculates `f_inv` such that: `f * f_inv = e`
  *
  * Where:
- *   `f` is an arbitrary arithmetic function such that
- *   `f_inv = f^-1` is a multiplicative function
+ *   `f` is a multiplicative function, which means:
+ *       its inverse `f_inv` is also multiplicative
  *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
- *
- * Note that only `f_inv` needs to be multiplicative!
  *
  * @param f_inv - table to store the result
  * @param f - function as defined above
@@ -259,16 +257,16 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
  *   t'(n) = t(n) - t(n-1)
  *   M'(n) = M(n) - M(n-1)
  *
- * @param n - bound up to which to sieve
- * @param t, p - functions as defined above
  * @param M - table to store the calculated values
+ * @param t, p - functions as defined above
+ * @param n - bound up to which to sieve
  */
 template<typename T, typename F1, typename F2, typename TBL>
 void sieve_m(TBL& M, F1 t, F2 p, int n) {
 	T p1 = p(1);
 	T ip1 = identityOf(p1) / p1;
-	M[0] = t(0); // should be zero
-	for (int i = 1; i < n; i++) {
+	M[1] = t(1);
+	for (int i = 2; i < n; i++) {
 		M[i] = t(i) - t(i - 1);
 	}
 	for (int d = 1; d < n; d++) {
@@ -276,7 +274,7 @@ void sieve_m(TBL& M, F1 t, F2 p, int n) {
 		for (int j = 2, i = d * 2; i < n; i += d, j++) {
 			M[i] -= p(j) * M[d];
 		}
-		M[d] += M[d - 1];
+		if (d > 1) M[d] += M[d - 1];
 	}
 }
 
@@ -291,15 +289,15 @@ void sieve_m(TBL& M, F1 t, F2 p, int n) {
  */
 template<typename T, typename F1, typename TBL>
 void sieve_m(TBL& M, F1 t, int n) {
-	M[0] = t(0); // should be zero
-	for (int i = 1; i < n; i++) {
+	M[1] = t(1);
+	for (int i = 2; i < n; i++) {
 		M[i] = t(i) - t(i - 1);
 	}
 	for (int d = 1; d < n; d++) {
 		for (int i = d * 2; i < n; i += d) {
 			M[i] -= M[d];
 		}
-		M[d] += M[d - 1];
+		if (d > 1) M[d] += M[d - 1];
 	}
 }
 
@@ -314,14 +312,6 @@ void sieve_m(TBL& M, F1 t, int n) {
  *   `s` is a partial sum of `p`:
  *       s(n) = Sum[p(k), {k, 1, n}]
  *
- * Note that the above relation for `t` also holds if:
- *   M(n) = Sum[p(k) * f(k), {k, 1, n}]
- *   t(n) = Sum[p(k) * g(k), {k, 1, n}]
- *   `p` is a completely-multiplicative function:
- *       p(n * m) = p(n) * p(m)
- *   `g` and `f` are Moebius transforms of each other:
- *       g(n) = Sum[f(d), {d|n}]
- *       f(n) = Sum[mu(n/d) * g(d), {d|n}]
  * This allows us to compute `M` in sublinear time given
  * that we can efficiently compute `t` and `s`.
  *
@@ -395,7 +385,38 @@ T mertens(I n, TBL& tbl, T id = T(1)) {
 }
 
 /**
- * A helper function for `calc_sum_phi_D_L`.
+ * A helper function for `sum_phi_D_L`.
+ *
+ * Denote `*` as dirichlet convolution and `.` as pointwise multiplication.
+ *
+ * As defined in `sum_phi_D_L`, we have:
+ *   phi_D = mu * g_D
+ *   g_D = 1 * phi_D
+ *
+ * Since a completely multiplicative function (let's call it `p`)
+ * distributes pointwise multiplication over Dirichlet convolution,
+ * we also have:
+ *   p . g_D = p . (1 * phi_D)
+ *   p . g_D = (p . 1) * (p . phi_D)
+ *   p . g_D = p * (p . phi_D)
+ *
+ * Let's define:
+ *   t' = p . g_D
+ *   M' = p . phi_D
+ * Then by substitution:
+ *   t' = p * M'
+ *   t'(n) = Sum[p(d) M'(n/d), {d|n}]
+ * Which is equivalent to:
+ *   t(n) = Sum[p(k) M(n/k), {k, 1, n}]
+ *   which can be calculated efficiently with `sum_m`
+ *
+ * The above two are equivalent because:
+ *   t(n) = Sum[p(k) M(n/k), {k, 1, n}]
+ *   t(n) - t(n-1) = Sum[p(k) (M(n/k) - M((n-1)/k)), {k, 1, n}]
+ *   But `M(n/k) - M((n-1)/k)` is precisely 1 when `k | n` and 0 otherwise
+ *   t(n) - t(n-1) = Sum[p(k) (M(n/k) - M((n-1)/k)), {k|n}]
+ *   t(n) - t(n-1) = Sum[p(k) (M(n/k) - M(n/k-1)), {k|n}]
+ *   t'(n) = Sum[p(k) M'(n/k), {k|n}]
  */
 template<typename T, typename CAST_T>
 std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& vn, int U, T id, CAST_T castT) {
@@ -413,20 +434,21 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& v
 	auto _s = [&](int64_t n){ return s(castT(n)); };
 	auto _t = [&](int64_t n){ return t(castT(n)); };
 
-	// preprocess `U` values of `Sum[p(k) * f[k], {k, 1, U}]`
+	// preprocess `phi_D = mu * g_D` up to `U`
 	int64_t n = *std::max_element(vn.begin(), vn.end());
 	if (U <= 0) U = (int)isq(icbrt(n));
-	altruct::container::sqrt_map<int64_t, T> msf(U, n);
-	moebius_transform(msf, U, _g);
+	altruct::container::sqrt_map<int64_t, T> mm(U, n);
+	moebius_transform(mm, U, _g);
+	// preprocess `Sum[p(k) * phi_D[k], {k, 1, n}]` up to `U`
 	for (int k = 1; k < U; k++) {
-		msf[k] = msf[k - 1] + _p(k) * msf[k];
+		mm[k] = mm[k - 1] + _p(k) * mm[k];
 	}
 
-	// calculate the values of interest
+	// calculate the values of interest with `sum_m`
 	std::vector<T> v;
 	for (auto k : vn) {
-		msf.reset_max(k);
-		v.push_back(sum_m<T>(_t, _s, k, msf));
+		mm.reset_max(k);
+		v.push_back(sum_m<T>(_t, _s, k, mm));
 	}
 	return v;
 }
