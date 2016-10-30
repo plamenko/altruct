@@ -13,9 +13,17 @@ using namespace altruct::collections;
 typedef modulo<int, 1000000007> field;
 
 namespace {
+vector<int> primes_table(int n) {
+	vector<int> p(n);
+	int m = primes(p.data(), nullptr, n);
+	p.resize(m);
+	return p;
+}
+
 vector<int> prime_factor_table(int n) {
-	vector<int> p(n); int m = primes(p.data(), nullptr, n);
-	vector<int> pf(n); factor(pf.data(), n, p.data(), m);
+	auto p = primes_table(n);
+	vector<int> pf(n);
+	factor(pf.data(), n, p.data(), (int)p.size());
 	return pf;
 }
 
@@ -46,32 +54,32 @@ TEST(divisor_sums_test, dirichlet_inverse) {
 
 TEST(divisor_sums_test, calc_multiplicative) {
 	int n = 51;
-	auto pf = prime_factor_table(n);
+	auto p = primes_table(n);
 	typedef moduloX<int> modx;
 	auto id_expected = to_modx(1009, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 });
 	auto id = to_modx(1009, { 0, 1, 2, 3, 4, 5, 1, 7, 8, 9, 1, 11, 1, 13, 1, 1, 16, 17, 1, 19, 1, 1, 1, 23, 1, 25, 1, 27, 1, 29, 1, 31, 32, 1, 1, 1, 1, 37, 1, 1, 1, 41, 1, 43, 1, 1, 1, 47, 1, 49, 1 });
-	calc_multiplicative(id, n, pf.data());
+	calc_multiplicative(id, n, p.data(), (int)p.size());
 	EXPECT_EQ(id_expected, id);
 }
 
 TEST(divisor_sums_test, dirichlet_convolution_multiplicative) {
 	int n = 21;
-	auto pf = prime_factor_table(n);
+	auto p = primes_table(n);
 	typedef moduloX<int> modx;
 	vector<int> vmu{ 0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0, -1, 1, 1, 0, -1, 0, -1, 0 };
 	auto id = [&](int n){ return modx(n, 1009); };
 	auto mu = [&](int n){ return modx(vmu[n], 1009); };
-	vector<modx> phi(n); dirichlet_convolution_multiplicative(phi, id, mu, n, pf.data());
+	vector<modx> phi(n); dirichlet_convolution_multiplicative(phi, id, mu, n, p.data(), (int)p.size());
 	EXPECT_EQ(to_modx(1009, { 0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8 }), phi);
 }
 
 TEST(divisor_sums_test, dirichlet_inverse_multiplicative) {
 	int n = 21;
-	auto pf = prime_factor_table(n);
+	auto p = primes_table(n);
 	typedef moduloX<int> modx;
 	vector<int> vphi{ 0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8 };
 	auto f = [&](int n){ return modx(vphi[n], 1009); };
-	vector<modx> f_inv(n); dirichlet_inverse_multiplicative(f_inv, f, n, pf.data());
+	vector<modx> f_inv(n); dirichlet_inverse_multiplicative(f_inv, f, n, p.data(), (int)p.size());
 	EXPECT_EQ(to_modx(1009, { 0, 1, -1, -2, -1, -4, 2, -6, -1, -2, 4, -10, 2, -12, 6, 8, -1, -16, 2, - 18, 4 }), f_inv);
 }
 
@@ -109,16 +117,16 @@ TEST(divisor_sums_test, dirichlet_inverse_completely_multiplicative) {
 
 TEST(divisor_sums_test, sieve_m_multiplicative) {
 	int n = 21;
-	auto pf = prime_factor_table(n);
+	auto p = primes_table(n);
 	typedef moduloX<int> modx;
 	vector<int> vsphi{ 0, 1, 2, 4, 6, 10, 12, 18, 22, 28, 32, 42, 46, 58, 64, 72, 80, 96, 102, 120, 128 };
-	auto t = [&](int n){ return modx(vsphi[n], 1009); };
-	auto p = [&](int n){ return modx(n * n * n, 1009); };
-	vector<modx> actual(n); sieve_m_multiplicative(actual, t, p, n, pf.data());
-	EXPECT_EQ(to_modx(1009, { 0, 1, 1003, 978, 972, 851, 17, 689, 677, 629, 467, 155, 305, 138, 479, 477, 453, 601, 937, 150, 876 }), actual);
+	auto t1 = [&](int n){ return modx(vsphi[n], 1009); };
+	auto p1 = [&](int n){ return modx(n * n * n, 1009); };
+	vector<modx> actual1(n); sieve_m_multiplicative(actual1, t1, p1, n, p.data(), (int)p.size());
+	EXPECT_EQ(to_modx(1009, { 0, 1, 1003, 978, 972, 851, 17, 689, 677, 629, 467, 155, 305, 138, 479, 477, 453, 601, 937, 150, 876 }), actual1);
 	auto t2 = [&](int n){ return modx(n * n * (n + 1) * (n + 1) / 4, 1009); };
 	auto p2 = [&](int n){ return modx(n * n, 1009); };
-	vector<modx> actual2(n); sieve_m_multiplicative(actual2, t2, p2, n, pf.data());
+	vector<modx> actual2(n); sieve_m_multiplicative(actual2, t2, p2, n, p.data(), (int)p.size());
 	EXPECT_EQ(to_modx(1009, { 0, 1, 5, 23, 55, 155, 227, 521, 777, 254, 654, 855, 422, 432, 599, 381, 411, 999, 925, 360, 533 }), actual2);
 }
 

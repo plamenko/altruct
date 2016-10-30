@@ -72,16 +72,15 @@ void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
  *
  * @param f - table of values of `f`
  *            must be set to the actual value for prime powers and 1 elsewhere
- * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename TBL>
-void calc_multiplicative(TBL& f, int n, int* pf) {
+void calc_multiplicative(TBL& f, int n, int* pa, int m) {
 	auto e1 = f[1];
-	for (int p = 2; p < n; p++) {
-		if (pf[p] != p) continue; // not a prime
-		for (int64_t qq = p; qq < n; qq *= p) {
+	for (int i = 0; i < m && pa[i] < n; i++) {
+		for (int64_t qq = pa[i]; qq < n; qq *= pa[i]) {
 			for (int q = (int)qq, l = 2, m = 2 * q; m < n; m += q, l++) {
-				if (l % p != 0) f[m] *= f[q];
+				if (l % pa[i] != 0) f[m] *= f[q];
 			}
 		}
 	}
@@ -100,33 +99,32 @@ void calc_multiplicative(TBL& f, int n, int* pf) {
  *
  * @param h - table to store the result
  * @param f, g - functions as defined above
- * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename F2, typename TBL>
-void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
+void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m) {
 	typedef typename std::result_of<F2(int)>::type T;
 	auto e1 = identityOf(f(1)), e0 = zeroOf(f(1));
 	for (int i = 1; i < n; i++) {
 		h[i] = e1;
 	}
 	int q[32]; T fq[32], gq[32];
-	for (int p = 2; p < n; p++) {
-		if (pf[p] != p) continue; // not a prime
+	for (int i = 0; i < m && pa[i] < n; i++) {
 		int m = 0;
-		for (int64_t qq = 1; qq < n; qq *= p) {
+		for (int64_t qq = 1; qq < n; qq *= pa[i]) {
 			fq[m] = f((int)qq);
 			gq[m] = g((int)qq);
 			q[m++] = (int)qq;
 		}
 		for (int k = 0; k < m; k++) {
 			auto hq_k = e0;
-			for (int i = 0; i <= k; i++) {
-				hq_k += fq[k - i] * gq[i];
+			for (int j = 0; j <= k; j++) {
+				hq_k += fq[k - j] * gq[j];
 			}
 			h[q[k]] = hq_k;
 		}
 	}
-	calc_multiplicative(h, n, pf);
+	calc_multiplicative(h, n, pa, m);
 }
 
 /**
@@ -141,33 +139,32 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
  *
  * @param f_inv - table to store the result
  * @param f - function as defined above
- * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename TBL>
-void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
+void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
 	typedef typename std::result_of<F1(int)>::type T;
 	auto e1 = f(1), e0 = zeroOf(f(1));
 	for (int i = 1; i < n; i++) {
 		f_inv[i] = e1;
 	}
 	int q[32]; T fq[32], hq[32];
-	for (int p = 2; p < n; p++) {
-		if (pf[p] != p) continue; // not a prime
+	for (int i = 0; i < m && pa[i] < n; i++) {
 		int m = 0;
-		for (int64_t qq = 1; qq < n; qq *= p) {
+		for (int64_t qq = 1; qq < n; qq *= pa[i]) {
 			fq[m] = f((int)qq);
 			q[m++] = (int)qq;
 		}
 		hq[0] = e1;
 		for (int k = 1; k < m; k++) {
 			hq[k] = e0;
-			for (int i = 0; i < k; i++) {
-				hq[k] -= fq[k - i] * hq[i];
+			for (int j = 0; j < k; j++) {
+				hq[k] -= fq[k - j] * hq[j];
 			}
 			f_inv[q[k]] = hq[k];
 		}
 	}
-	calc_multiplicative(f_inv, n, pf);
+	calc_multiplicative(f_inv, n, pa, m);
 }
 
 /**
@@ -266,20 +263,20 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
  * @param M - table to store the calculated values
  * @param t, p - functions as defined above
  * @param n - bound up to which to sieve
- * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename F2, typename TBL>
-void sieve_m_multiplicative_inv(TBL& M, F1 t, F2 p_inv, int n, int* pf) {
+void sieve_m_multiplicative_inv(TBL& M, F1 t, F2 p_inv, int n, int* pa, int m) {
 	auto dt = [&](int n){ return (n == 1) ? t(n) : t(n) - t(n - 1); };
-	dirichlet_convolution_multiplicative(M, p_inv, dt, n, pf);
+	dirichlet_convolution_multiplicative(M, p_inv, dt, n, pa, m);
 	for (int i = 1; i < n; i++) M[i] += M[i - 1];
 }
 template<typename F1, typename F2, typename TBL>
-void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pf) {
+void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pa, int m) {
 	auto p_inv = M;
-	dirichlet_inverse_multiplicative(p_inv, p, n, pf);
+	dirichlet_inverse_multiplicative(p_inv, p, n, pa, m);
 	auto _p_inv = [&](int n){ return p_inv[n]; };
-	sieve_m_multiplicative_inv(M, t, _p_inv, n, pf);
+	sieve_m_multiplicative_inv(M, t, _p_inv, n, pa, m);
 }
 
 /**
