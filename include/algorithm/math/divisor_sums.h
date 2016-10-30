@@ -4,9 +4,7 @@
 #include <vector>
 
 #include "algorithm/math/base.h"
-#include "algorithm/math/primes.h"
 #include "algorithm/math/polynoms.h"
-#include "algorithm/math/sums.h"
 #include "structure/container/sqrt_map.h"
 
 namespace altruct {
@@ -84,6 +82,36 @@ void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
 }
 
 /**
+ * Dirichlet division of `f` with `g` up to `n` in `O(n log n)`.
+ *
+ * Calculates `h` such that: `h = f * g^-1`
+ *
+ * Where:
+ *   `f` is an arbitrary arithmetic function
+ *   `g` is an arbitrary arithmetic function such that:
+ *       g(1) != 0, and g(1) is invertible
+ *
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
+ */
+template<typename F1, typename F2, typename TBL>
+void dirichlet_division(TBL& h, F1 f, F2 g, int n) {
+	auto g1 = g(1);
+	auto e0 = zeroOf(g1), e1 = identityOf(g1);
+	auto ig1 = e1 / g1;
+	for (int i = 1; i < n; i++) {
+		h[i] = f(i);
+	}
+	for (int d = 1; d < n; d++) {
+		h[d] *= ig1;
+		for (int j = 2, i = d * 2; i < n; i += d, j++) {
+			h[i] -= g(j) * h[d];
+		}
+	}
+}
+
+/**
  * Dirichlet inverse of `f` up to `n` in `O(n log n)`.
  *
  * Calculates `f_inv` such that: `f * f_inv = e`
@@ -99,19 +127,9 @@ void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
  */
 template<typename F1, typename TBL>
 void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
-	auto f1 = f(1);
-	auto e0 = zeroOf(f1), e1 = identityOf(f1);
-	auto if1 = e1 / f1;
-	for (int i = 0; i < n; i++) {
-		f_inv[i] = e0;
-	}
-	f_inv[1] = e1;
-	for (int d = 1; d < n; d++) {
-		f_inv[d] *= if1;
-		for (int j = 2, i = d * 2; i < n; i += d, j++) {
-			f_inv[i] -= f(j) * f_inv[d];
-		}
-	}
+	auto e0 = zeroOf(f(1)), e1 = identityOf(f(1));
+	auto e = [&](int n){ return (n == 1) ? e1 : e0; };
+	dirichlet_division(f_inv, e, f, n);
 }
 
 /**
@@ -178,44 +196,67 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, in
 }
 
 /**
- * Dirichlet inverse of `f` up to `n` in `O(n log log n)`.
+ * Dirichlet division of `f` with `g` up to `n` in `O(n log log n)`.
  *
- * Calculates `f_inv` such that: `f * f_inv = e`
+ * Calculates `h` such that: `h = f * g^-1`
  *
  * Where:
- *   `f` is a multiplicative function, which means:
- *       its inverse `f_inv` is also multiplicative
- *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *   `h = f * g` is a multiplicative function
+ *   `f` is an arbitrary arithmetic function
+ *   `g` is an arbitrary arithmetic function such that:
+ *       g(1) != 0, and g(1) is invertible
  *
- * @param f_inv - table to store the result; accessed via [] operator
- * @param f - function as defined above; accessed via () operator
- * @param n - bound up to which to calculate `f_inv`; exclusive
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
  * @param pa - table of all `m` prime numbers up to `n`
  */
-template<typename F1, typename TBL>
-void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
+template<typename F1, typename F2, typename TBL>
+void dirichlet_division_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m) {
 	typedef typename std::result_of<F1(int)>::type T;
-	auto e1 = f(1), e0 = zeroOf(f(1));
+	auto e1 = g(1), e0 = zeroOf(g(1));
 	for (int i = 1; i < n; i++) {
-		f_inv[i] = e1;
+		h[i] = e1;
 	}
-	int q[32]; T fq[32], hq[32];
+	int q[32]; T gq[32], hq[32];
 	for (int i = 0; i < m && pa[i] < n; i++) {
 		int m = 0;
 		for (int64_t qq = 1; qq < n; qq *= pa[i]) {
-			fq[m] = f((int)qq);
+			gq[m] = g((int)qq);
 			q[m++] = (int)qq;
 		}
 		hq[0] = e1;
 		for (int k = 1; k < m; k++) {
-			hq[k] = e0;
+			hq[k] = f(q[k]);
 			for (int j = 0; j < k; j++) {
-				hq[k] -= fq[k - j] * hq[j];
+				hq[k] -= gq[k - j] * hq[j];
 			}
-			f_inv[q[k]] = hq[k];
+			h[q[k]] = hq[k];
 		}
 	}
-	calc_multiplicative(f_inv, n, pa, m);
+	calc_multiplicative(h, n, pa, m);
+}
+
+/**
+* Dirichlet inverse of `f` up to `n` in `O(n log log n)`.
+*
+* Calculates `f_inv` such that: `f * f_inv = e`
+*
+* Where:
+*   `f` is a multiplicative function, which means:
+*       its inverse `f_inv` is also multiplicative
+*   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+*
+* @param f_inv - table to store the result; accessed via [] operator
+* @param f - function as defined above; accessed via () operator
+* @param n - bound up to which to calculate `f_inv`; exclusive
+* @param pa - table of all `m` prime numbers up to `n`
+*/
+template<typename F1, typename TBL>
+void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
+	auto e0 = zeroOf(f(1)), e1 = identityOf(f(1));
+	auto e = [&](int n){ return (n == 1) ? e1 : e0; };
+	dirichlet_division_multiplicative(f_inv, e, f, n, pa, m);
 }
 
 /**
@@ -267,6 +308,38 @@ void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, 
 }
 
 /**
+ * Dirichlet division of `f` with `g` up to `n` in `O(n)`.
+ *
+ * Calculates `h` such that: `h = f * g^-1`
+ *
+ * Where:
+ *   `h = f * g` is a completely multiplicative function
+ *   `f` is an arbitrary arithmetic function
+ *   `g` is an arbitrary arithmetic function such that:
+ *       g(1) != 0, and g(1) is invertible
+ *
+ * Note that only `h` needs to be completely multiplicative!
+ * For example, `phi(n)` and `mu(n)` are not completely multiplicative,
+ * but their division `phi(n) / mu(n) = n` is!
+ *
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename F1, typename F2, typename TBL>
+void dirichlet_division_completely_multiplicative(TBL& h, F1 f, F2 g, int n, int* pf) {
+	auto e1 = g(1);
+	for (int i = 1; i < n; i++) {
+		h[i] = e1;
+	}
+	for (int p = 2; p < n; p++) {
+		if (pf[p] == p) h[p] = f(p) - g(p);
+	}
+	calc_completely_multiplicative(h, n, pf);
+}
+
+/**
  * Dirichlet inverse of `f` up to `n` in `O(n)`.
  *
  * Calculates `f_inv` such that: `f * f_inv = e`
@@ -287,14 +360,42 @@ void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, 
  */
 template<typename F1, typename TBL>
 void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
-	auto e1 = f(1);
-	for (int i = 1; i < n; i++) {
-		f_inv[i] = e1;
-	}
-	for (int p = 2; p < n; p++) {
-		if (pf[p] == p) f_inv[p] = -f(p);
-	}
-	calc_completely_multiplicative(f_inv, n, pf);
+	auto e0 = zeroOf(f(1)), e1 = identityOf(f(1));
+	auto e = [&](int n){ return (n == 1) ? e1 : e0; };
+	dirichlet_division_completely_multiplicative(f_inv, e, f, n, pf);
+}
+
+/**
+ * Moebius transform of `f` up to `n` in `O(n log n)`.
+ *
+ * g[n] = Sum[mu(n/d) * f(d), {d|n}].
+ *
+ * @param g - table to store the result; accessed via [] operator
+ * @param f - function to transform; accessed via () operator
+ * @param n - bound up to which to calculate `g`; exclusive
+ * @param mu - values of Moebius Mu up to `n`
+ */
+template<typename TBL, typename F>
+void moebius_transform(TBL& g, F f, int n) {
+	auto e1 = identityOf(f(1));
+	dirichlet_division(g, f, [&](int n){ return e1; }, n);
+}
+
+/**
+ * Moebius transform of `f` up to `n` in `O(n log n)`.
+ *
+ * g[n] = Sum[mu(n/d) * f(d), {d|n}].
+ *
+ * @param g - table to store the result; accessed via [] operator
+ * @param f - a multiplicative function to transform; accessed via () operator
+ * @param n - bound up to which to calculate `g`; exclusive
+ * @param mu - values of Moebius Mu up to `n`
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
+template<typename TBL, typename F>
+void moebius_transform_multiplicative(TBL& g, F f, int n, int* pa, int m) {
+	auto e1 = identityOf(f(1));
+	dirichlet_division_multiplicative(g, f, [&](int n){ return e1; }, n, pa, m);
 }
 
 /**
@@ -463,7 +564,7 @@ T sum_m(F t, I n, TBL& tbl) {
 		r -= sum_m<T>(t, n / k, tbl);
 	}
 	for (I m = 1; m < q; m++) {
-		r -= T((n / m) - (n / (m + 1))) * sum_m<T>(t, m, tbl);
+		r -= sum_m<T>(t, m, tbl) * ((n / m) - (n / (m + 1))); // TODO: cast from I to T is not safe!
 	}
 	return tbl[n] = r;
 }
@@ -537,8 +638,9 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& v
 	int64_t n = *std::max_element(vn.begin(), vn.end());
 	if (U <= 0) U = (int)isq(icbrt(n));
 	altruct::container::sqrt_map<int64_t, T> mm(U, n);
-	moebius_transform(mm, U, _g);
+	moebius_transform(mm, _g, U);
 	// preprocess `Sum[p(k) * phi_D[k], {k, 1, n}]` up to `U`
+	mm[0] = e0;
 	for (int k = 1; k < U; k++) {
 		mm[k] = mm[k - 1] + _p(k) * mm[k];
 	}

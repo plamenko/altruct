@@ -63,5 +63,11 @@ void dirichlet_sample() {
 	T = clock(); dirichlet_inverse_completely_multiplicative(i1, _mu, n, pf.data());
 	printf("inverse tot:  %d  %d ms\n", n, clock() - T);
 
+	vector<int> tr(n);
+	T = clock(); moebius_transform(tr, _id, n);
+	printf("moebius trans:  %d  %d ms  %s\n", n, clock() - T, (tr == phi) ? "OK" : "ERR");
+	T = clock(); moebius_transform_multiplicative(tr, _id, n, p.data(), m);
+	printf("moebius trans mult:  %d  %d ms  %s\n", n, clock() - T, (tr == phi) ? "OK" : "ERR");
+	
 	cout << endl;
 }

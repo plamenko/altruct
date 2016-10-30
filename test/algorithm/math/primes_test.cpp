@@ -272,7 +272,3 @@ TEST(primes_test, integer_digits) {
 	EXPECT_EQ(123, (polynom<int>{ 11, 7 }(16)));
 	EXPECT_EQ(123, (polynom<int>{ 3, 2, 1 }(10)));
 }
-
-TEST(primes_test, moebius_transform) {
-	EXPECT_EQ((vector<int>{0, 1, 2, 5, 7, 14, 13, 27, 26, 39, 38, 65, 50, 90, 75}), moebius_transform<int>(15, [](int d){ return d * (d + 1) / 2; }));
-}
