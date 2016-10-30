@@ -66,8 +66,9 @@ namespace math {
  * Where:
  *   `f` and `g` are arbitrary arithmetic functions
  *
- * @param h - table to store the result
- * @param f, g - functions as defined above
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
  */
 template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
@@ -92,8 +93,9 @@ void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
  *       f(1) != 0, and f(1) is invertible
  *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
  *
- * @param f_inv - table to store the result
- * @param f - function as defined above
+ * @param f_inv - table to store the result; accessed via [] operator
+ * @param f - function as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `f_inv`; exclusive
  */
 template<typename F1, typename TBL>
 void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
@@ -116,8 +118,9 @@ void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
  * Calculates all the values of a multiplicative function `f` up to `n`,
  * from the values at prime powers, in `O(n log log n)`.
  *
- * @param f - table of values of `f`
+ * @param f - table of values of `f`; accessed via [] operator
  *            must be set to the actual value for prime powers and 1 elsewhere
+ * @param n - bound up to which to calculate `f`; exclusive
  * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename TBL>
@@ -143,8 +146,9 @@ void calc_multiplicative(TBL& f, int n, int* pa, int m) {
  *
  * Note that only `h` needs to be multiplicative!
  *
- * @param h - table to store the result
- * @param f, g - functions as defined above
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
  * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename F2, typename TBL>
@@ -183,8 +187,9 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, in
  *       its inverse `f_inv` is also multiplicative
  *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
  *
- * @param f_inv - table to store the result
- * @param f - function as defined above
+ * @param f_inv - table to store the result; accessed via [] operator
+ * @param f - function as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `f_inv`; exclusive
  * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename TBL>
@@ -217,8 +222,9 @@ void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
  * Calculates all the values of a completely multiplicative function `f` up to `n`,
  * from the values at primes, in `O(n)`.
  *
- * param f - table of values of `f`
+ * param f - table of values of `f`; accessed via [] operator
  *           must be set to the actual value for primes and 1 elsewhere
+ * @param n - bound up to which to calculate `f`; exclusive
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
 template<typename TBL>
@@ -243,8 +249,9 @@ void calc_completely_multiplicative(TBL& f, int n, int* pf) {
  * For example, `f(n) = mu(n)` and `g(n) = sigma1(n)` are not
  * completely multiplicative, but its convolution `h(n) = n` is!
  *
- * @param h - table to store the result
- * @param f, g - functions as defined above
+ * @param h - table to store the result; accessed via [] operator
+ * @param f, g - functions as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `h`; exclusive
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
 template<typename F1, typename F2, typename TBL>
@@ -273,8 +280,9 @@ void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, 
  * For example, `f(n) = n mu(n)` is not completely multiplicative,
  * but its inverse `f_inv(n) = n` is!
  *
- * @param f_inv - table to store the result
- * @param f - function as defined above
+ * @param f_inv - table to store the result; accessed via [] operator
+ * @param f - function as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `f_inv`; exclusive
  * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
  */
 template<typename F1, typename TBL>
@@ -306,9 +314,9 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
  *   t'(n) = t(n) - t(n-1)
  *   M'(n) = M(n) - M(n-1)
  *
- * @param M - table to store the calculated values
- * @param t, p - functions as defined above
- * @param n - bound up to which to sieve
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param t, p - functions as defined above; accessed via () operator
+ * @param n - bound up to which to sieve (exclusive)
  * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename F1, typename F2, typename TBL>
@@ -339,9 +347,9 @@ void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pa, int m) {
  *   t'(n) = t(n) - t(n-1)
  *   M'(n) = M(n) - M(n-1)
  *
- * @param M - table to store the calculated values
- * @param t, p - functions as defined above
- * @param n - bound up to which to sieve
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param t, p - functions as defined above; accessed via () operator
+ * @param n - bound up to which to sieve (exclusive)
  */
 template<typename F1, typename F2, typename TBL>
 void sieve_m(TBL& M, F1 t, F2 p, int n) {
@@ -368,6 +376,10 @@ void sieve_m(TBL& M, F1 t, F2 p, int n) {
  *       t(n) = Sum[M(n/k), {k, 1, n}]
  *
  * Same as `sieve_m(n, t, p, M)` with `p(n) = 1`.
+ *
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param t - function as defined above; accessed via () operator
+ * @param n - bound up to which to sieve (exclusive)
  */
 template<typename F1, typename TBL>
 void sieve_m(TBL& M, F1 t, int n) {
@@ -409,9 +421,9 @@ void sieve_m(TBL& M, F1 t, int n) {
  *    O(U log U)       |  O((n / log n)^(2/3))     |  O(n^2/3 (log n) ^ 1/3)
  * Sieving can always be done in `O(n log n)` or better; See `sieve_m`.
  *
- * @param t, s - functions as defined above
+ * @param t, s - functions as defined above; accessed via () operator
  * @param n - argument at which to evaluate `M`
- * @param tbl - table to store the calculated values
+ * @param tbl - table to store the calculated values; accessed via [] operator
  */
 template<typename T, typename I, typename F1, typename F2, typename TBL>
 T sum_m(F1 t, F2 s, I n, TBL& tbl) {
@@ -436,6 +448,10 @@ T sum_m(F1 t, F2 s, I n, TBL& tbl) {
  *       t(n) = Sum[M(n/k), {k, 1, n}]
  *
  * Same as `sum_m(t, s, n, tbl)` with `p(n) = 1`, `s(n) = n`.
+ *
+ * @param t - function as defined above; accessed via () operator
+ * @param n - argument at which to evaluate `M`
+ * @param tbl - table to store the calculated values; accessed via [] operator
  */
 template<typename T, typename I, typename F, typename TBL>
 T sum_m(F t, I n, TBL& tbl) {
@@ -458,6 +474,7 @@ T sum_m(F t, I n, TBL& tbl) {
  * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
  * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
  *
+ * @param n - argument at which to evaluate `M`
  * @param tbl - table to store the calculated values
  */
 template<typename T, typename I, typename TBL>
@@ -550,7 +567,7 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<int64_t>& v
  *
  * @param D - totient dimension parameter; should be a small constant
  * @param L - exponent in `k^L`; should be a small constant
- * @param vn - values of `n` to calculate
+ * @param vn - arguments at which to evaluate the sum
  * @param U - sieving bound, if 0 is given, `n^2/3` is used for max `n` in `vn`
  * @param id - multiplicative identity in T
  * @param castT - casts int64_t to T
@@ -573,6 +590,7 @@ T sum_phi_D_L(int D, int L, int64_t n, int U, T id, CAST_T castT) {
 /**
  * Calculates sum of primes: `Sum[p(k), {k, 1, n}]` in `O(n^(5/7))`.
  *
+ * @param n - argument at which to evaluate `P`
  * @param p - array of prime numbers up to `sqrt(n)` inclusive
  */
 template<typename T, typename I>
