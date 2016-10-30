@@ -65,7 +65,7 @@ public:
 
 	size_t read(char* buffer, size_t count) override {
 		in.read(buffer, count);
-		return in.gcount();
+		return (size_t)in.gcount();
 	}
 };
 

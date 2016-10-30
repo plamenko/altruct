@@ -13,6 +13,52 @@ namespace altruct {
 namespace math {
 
 /**
+ * Useful identities involving Dirichlet convolution.
+ *
+ * Denote `*` as dirichlet convolution and `.` as pointwise multiplication.
+ *
+ * Definitions:
+ *   `e`    : dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *   `1`    : constant function: `1(n) = 1`
+ *   `Id`   : identity function: `Id(n) = n`
+ *   `Id_k` : identity power function: `Id(n) = n^k`
+ *   `d`    : divisor function (k=0)
+ *   `s`    : divisor sigma function (k=1)
+ *   `s_k`  : divisor sigma function (kt-h powers of divisors)
+ *   `phi`  : euler totient function
+ *   `mu`   : moebius mu function
+ *   `L`    : liouville lambda function
+ *   `f`,`g`: arbitrary functions
+ *   `p`    : arbitrary completely multiplicative function
+ *
+ * Identities:
+ *   f . 1 = 1 . f = f
+ *   f . e = e . f = e  // f(1) = 1
+ *   f * e = e * f = f
+ *   f * f^-1 = f^-1 * f = e
+ *   p . (f * g) = (p . f) * (p . g)
+ *   mu * 1 = e
+ *   mu = 1^-1
+ *   L * |mu| = e
+ *   L = |mu|^-1
+ *   Id_k * (Id_k . mu) = e
+ *   Id_k^-1 = (Id_k . mu)
+ *   d * mu = 1
+ *   d = 1 * 1
+ *   s_k * mu = Id_k
+ *   s_k = Id_k * 1
+ *   phi * 1 = Id
+ *   phi = Id * mu
+ *   s = phi * d
+ *
+ * A short diagram:
+ *        1       1
+ *   phi ---> Id ---> sigma
+ *   phi <--- Id <--- sigma
+ *        mu      mu
+ */
+
+/**
  * Dirichlet convolution of `f` and `g` up to `n` in `O(n log n)`.
  *
  * Calculates `h` where `h[n] = Sum[f(n/d) * g(d), {d|n}]`
