@@ -31,8 +31,6 @@ public:
 	// construct from int, but only if T is not integral to avoid constructor clashing
 	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
 	polynom(int c0) : ZERO_COEFF(make_zero(c0)) { c.push_back(c0); } // to allow constructing from 0 and 1
-	polynom(polynom&& rhs) : ZERO_COEFF(rhs.ZERO_COEFF), c(std::move(rhs.c)) {}
-	polynom(const polynom& rhs) : ZERO_COEFF(rhs.ZERO_COEFF), c(rhs.c) {}
 	polynom(std::vector<T>&& rhs) : ZERO_COEFF(make_zero(rhs.begin(), rhs.end())), c(std::move(rhs)) {}
 	polynom(const std::vector<T>& rhs) : ZERO_COEFF(make_zero(rhs.begin(), rhs.end())), c(rhs) {}
 	template<typename It> polynom(It begin, It end) : ZERO_COEFF(make_zero(begin, end)), c(begin, end) {}

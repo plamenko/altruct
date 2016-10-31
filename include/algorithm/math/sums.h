@@ -20,7 +20,7 @@ I sum_ratio(I a, I b, I q, I n) {
 		s += (b / q) * n + (a / q) * n * n1 / 2;
 		b %= q, a %= q; if (a == 0) break;
 		n = (a * n1 + b) / q;
-		b = (q - 1) - b, swap(a, q);
+		b = (q - 1) - b, std::swap(a, q);
 		s += n * n1;
 		s = -s;
 	}

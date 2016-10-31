@@ -52,9 +52,9 @@ auto v_d = to_modx(1009, { 0, 1, 2, 2, 3, 2, 4, 2, 4, 3, 4, 2, 6, 2, 4, 4, 5, 2,
 auto v_s = to_modx(1009, { 0, 1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42 });
 auto v_phi = to_modx(1009, { 0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8 });
 
-auto f_e = [&](int n){ return modx(n == 1, 1009); };
-auto f_1 = [&](int n){ return modx(1, 1009); };
-auto f_id = [&](int n){ return modx(n, 1009); };
+auto f_e = [](int n){ return modx(n == 1, 1009); };
+auto f_1 = [](int n){ return modx(1, 1009); };
+auto f_id = [](int n){ return modx(n, 1009); };
 auto f_mu = to_func(v_mu);
 auto f_d = to_func(v_d);
 auto f_s = to_func(v_s);

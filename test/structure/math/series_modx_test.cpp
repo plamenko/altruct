@@ -62,6 +62,12 @@ TEST(series_modx_test, constructor) {
 	serx s10(serx(p.c.begin(), p.c.end()));
 	EXPECT_EQ(p, s10.p);
 	EXPECT_EQ(4, s10.N());
+	serx s11 = make_serx(1009, { 1, 2, 3, 4 });
+	EXPECT_EQ(p, s11.p);
+	EXPECT_EQ(4, s11.N());
+	serx s12 = s11;
+	EXPECT_EQ(p, s12.p);
+	EXPECT_EQ(4, s12.N());
 }
 
 TEST(series_modx_test, swap) {

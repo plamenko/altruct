@@ -43,6 +43,10 @@ TEST(series_test, constructor) {
 	EXPECT_EQ(p, s9.p);
 	series<int, 4> s10(series<int, 4>{ 1, 2, 3, 4 });
 	EXPECT_EQ(p, s10.p);
+	series<int, 4> s11 = series<int, 4>{ 1, 2, 3, 4 };
+	EXPECT_EQ(p, s11.p);
+	series<int, 4> s12 = s11;
+	EXPECT_EQ(p, s12.p);
 }
 
 TEST(series_test, swap) {
