@@ -1,5 +1,6 @@
 ﻿#include "structure/math/matrix.h"
 #include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
@@ -7,6 +8,7 @@
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 typedef modulo<int, 1000000007> mod;
 
@@ -14,12 +16,12 @@ TEST(matrix_test, constructor) {
 	matrix<int> m1;
 	EXPECT_EQ(0, m1.rows());
 	EXPECT_EQ(0, m1.cols());
-	
+
 	matrix<int> m2(3, 3);
 	EXPECT_EQ(3, m2.rows());
 	EXPECT_EQ(3, m2.cols());
 	EXPECT_EQ((vector<vector<int>>{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } }), m2.a);
-	
+
 	matrix<int> m3(3, 2);
 	EXPECT_EQ(3, m3.rows());
 	EXPECT_EQ(2, m3.cols());
@@ -73,7 +75,7 @@ TEST(matrix_test, brackets) {
 	const matrix<int> m1({ { 1, 2, 3 }, { 4, 5, 6 } });
 	EXPECT_EQ((vector<int>{ 1, 2, 3 }), m1[0]);
 	EXPECT_EQ(4, m1[1][0]);
-	
+
 	matrix<int> m2({ { 1, 2, 3 }, { 4, 5, 6 } });
 	vector<int> &row2 = m2[1];
 	EXPECT_EQ((vector<int>{ 4, 5, 6 }), row2);
@@ -86,24 +88,10 @@ TEST(matrix_test, brackets) {
 TEST(matrix_test, operators_comparison) {
 	const matrix<int> m1({ { 1, 2, 3 }, { 4, 5, 6 } });
 	const matrix<int> m2({ { 7, 8 }, { 9, 0 }, { 1, 2 } });
-	EXPECT_EQ(false, m1 == m2);
-	EXPECT_EQ(true, m1 != m2);
-	EXPECT_EQ(true, m1 < m2);
-	EXPECT_EQ(false, m1 > m2);
-	EXPECT_EQ(true, m1 <= m2);
-	EXPECT_EQ(false, m1 >= m2);
-	EXPECT_EQ(false, m2 == m1);
-	EXPECT_EQ(true, m2 != m1);
-	EXPECT_EQ(false, m2 < m1);
-	EXPECT_EQ(true, m2 > m1);
-	EXPECT_EQ(false, m2 <= m1);
-	EXPECT_EQ(true, m2 >= m1);
-	EXPECT_EQ(true, m2 == m2);
-	EXPECT_EQ(false, m2 != m2);
-	EXPECT_EQ(false, m2 < m2);
-	EXPECT_EQ(false, m2 > m2);
-	EXPECT_EQ(true, m2 <= m2);
-	EXPECT_EQ(true, m2 >= m2);
+	ASSERT_COMPARISON_OPERATORS(0, m1, m1);
+	ASSERT_COMPARISON_OPERATORS(0, m2, m2);
+	ASSERT_COMPARISON_OPERATORS(-1, m1, m2);
+	ASSERT_COMPARISON_OPERATORS(+1, m2, m1);
 }
 
 TEST(matrix_test, operators_arithmetic) {
@@ -117,7 +105,7 @@ TEST(matrix_test, operators_arithmetic) {
 	EXPECT_EQ((matrix<int>{ { 28, 14 }, { 79, 44 } }), m1 * m2);
 	EXPECT_EQ((matrix<int>{ { 39, 54, 69 }, { 9, 18, 27 }, { 9, 12, 15 } }), m2 * m1);
 	EXPECT_EQ((matrix<int>{{ 10, 20, 30 }, { 40, 50, 60 } }), m1 * 10);
-	
+
 	matrix <int> mr;
 	mr = m2; mr += m3;
 	EXPECT_EQ((matrix<int>{ { 9, 15 }, { 13, 1 }, { 4, 7 } }), mr);
@@ -140,15 +128,15 @@ TEST(matrix_test, operators_inverse) {
 	const matrix<mod> m1({ { 20, 30, 40 }, { 50, 60, 70 } });
 	const matrix<mod> m2({ { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 	const matrix<mod> m3({ { 2, 3, 5 }, { 7, 11, 13 }, { 17, 19, 23 } });
-	
+
 	EXPECT_EQ(mod(0), m2.det());
 	EXPECT_EQ((matrix<mod>{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0} }), m2.inverse());
 	EXPECT_EQ(mod(-78), m3.det());
 	EXPECT_EQ((matrix<mod>{ { 6, 26, -16 }, { 60, -39, 9 }, { -54, 13, 1 }}) / mod(-78), m3.inverse());
-	
+
 	EXPECT_EQ((matrix<mod>{ { 2, 3, 4 }, { 5, 6, 7 } }), m1 / mod(10));
 	EXPECT_EQ((matrix<mod>{ { -36, -13, 5 }, { 0, -13, -13 }, { 36, -13, -31 }}) / mod(-78), m2 / m3);
-	
+
 	matrix <mod> mr;
 	mr = m1; mr /= mod(10);
 	EXPECT_EQ((matrix<mod>{{ 2, 3, 4 }, { 5, 6, 7 } }), mr);

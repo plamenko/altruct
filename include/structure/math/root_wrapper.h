@@ -24,8 +24,8 @@ namespace math {
 template<typename T>
 class root_wrapper {
 public:
-	int index, size;
 	const T* roots;
+	int size, index;
 	root_wrapper(const T* roots, int size, int index) : roots(roots), size(size), index(index) {}
 	root_wrapper& operator *= (const root_wrapper& rhs) { index += rhs.index; index &= size - 1; return *this; }
 	root_wrapper operator * (const root_wrapper& rhs) const { return root_wrapper(*this) *= rhs; }

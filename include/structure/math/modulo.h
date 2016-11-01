@@ -134,20 +134,20 @@ public:
 
 	// construct from int, but only if T is not integral to avoid constructor clashing
 	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-	modulo(int v) : v(v), my_modulo_members(1) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-	modulo(const T& v = 0) : v(v), my_modulo_members(1) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-	modulo(const T& v, const T& M) : v(v), my_modulo_members(M) { normalize(); }
-	modulo(const modulo& rhs) : v(rhs.v), my_modulo_members(rhs.M()) {}
+	modulo(int v) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
+	modulo(const T& v = 0) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
+	modulo(const T& v, const T& M) : my_modulo_members(M), v(v) { normalize(); }
+	modulo(const modulo& rhs) : my_modulo_members(rhs.M()), v(rhs.v) {}
 
 	void normalize() { modulo_normalize(&v, this->M()); }
-	
+
 	bool operator == (const modulo &rhs) const { return (v == rhs.v); }
 	bool operator != (const modulo &rhs) const { return (v != rhs.v); }
 	bool operator <  (const modulo &rhs) const { return (v <  rhs.v); }
 	bool operator >  (const modulo &rhs) const { return (v >  rhs.v); }
 	bool operator <= (const modulo &rhs) const { return (v <= rhs.v); }
 	bool operator >= (const modulo &rhs) const { return (v >= rhs.v); }
-	
+
 	modulo  operator +  (const modulo &rhs) const { modulo t(*this); t += rhs; return t; }
 	modulo  operator -  (const modulo &rhs) const { modulo t(*this); t -= rhs; return t; }
 	modulo  operator -  ()                  const { modulo t(-v, this->M());   return t; }

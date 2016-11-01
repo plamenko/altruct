@@ -30,7 +30,7 @@ public:
 	public:
 		size_t pos;
 		bit_vector* owner;
-		bit_proxy(bit_vector* owner, size_t pos) : owner(owner), pos(pos) {}
+		bit_proxy(bit_vector* owner, size_t pos) : pos(pos), owner(owner) {}
 		operator int() { return owner->bit_at(pos); }
 		bit_proxy& operator = (int val) { owner->set(pos, val & 1); return *this; }
 		bit_proxy& operator ^= (int val) { if (val == 1) owner->set(pos, -1); return *this; }
@@ -171,7 +171,7 @@ public:
 		words[ie] = we;
 		return *this;
 	}
-	
+
 	// swaps the two ranges
 	// result is undefined if the two ranges overlap
 	bit_vector& swap(size_t begin1, size_t end1, size_t begin2, size_t end2) {
@@ -260,7 +260,7 @@ public:
 	W word_at(size_t pos) const {
 		return word_at(pos / L, pos % L);
 	}
-	
+
 	// returns the word at the given word-index and offset within it
 	W word_at(size_t i, int l) const {
 		return (l == 0) ? words[i] : ((words[i] >> l) | (words[i + 1] << (L - l)));
@@ -286,7 +286,7 @@ public:
 	void reserve(size_t new_size) {
 		if (sz < new_size) resize(new_size);
 	}
-	
+
 	// resizes the container to the new size
 	void resize(size_t new_size) {
 		sz = new_size;

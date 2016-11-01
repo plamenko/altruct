@@ -263,7 +263,7 @@ TEST(bit_vector_test, bit_proxy) {
 	EXPECT_EQ(1, (int)bv[4]);
 	bv[4] = 0; // 1 => 0
 	EXPECT_EQ(0, (int)bv[4]);
-	
+
 	bv[4] ^= 0; // 0 ^ 0 => 0
 	EXPECT_EQ(0, (int)bv[4]);
 	bv[4] ^= 1; // 0 ^ 1 => 1
@@ -272,7 +272,7 @@ TEST(bit_vector_test, bit_proxy) {
 	EXPECT_EQ(1, (int)bv[4]);
 	bv[4] ^= 1; // 1 ^ 1 => 0
 	EXPECT_EQ(0, (int)bv[4]);
-	
+
 	bv[4] |= 0; // 0 | 0 => 0
 	EXPECT_EQ(0, (int)bv[4]);
 	bv[4] |= 1; // 0 | 1 => 1
@@ -477,7 +477,7 @@ TEST(bit_vector_test, logic_operators) {
 	EXPECT_EQ(vo.words, t.words);
 	t = v1; t ^= v2;
 	EXPECT_EQ(vx.words, t.words);
-	
+
 	t = v2; t &= v1;
 	EXPECT_EQ(va.words, t.words);
 	t = v2; t |= v1;
@@ -512,5 +512,5 @@ TEST(bit_vector_test, perf) {
 		//v.swap(b, n/3, n*2/3, e);         // 630 ms
 	}
 	auto dT = double(clock() - T0) / CLOCKS_PER_SEC;
-	printf("%0.2lf s    %llx\n", dT, v.words[0] + r);
+	printf("%0.2lf s    %lx\n", dT, long(v.words[0] + r));
 }

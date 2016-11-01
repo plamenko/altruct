@@ -1,4 +1,5 @@
 ﻿#include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
@@ -6,6 +7,7 @@
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 typedef modulo<int, 1000000000, modulo_storage::CONSTANT> modc;
 typedef modulo<int, 1000000007> mod;
@@ -29,24 +31,10 @@ TEST(modulo_test, constructor) {
 TEST(modulo_test, operators_comparison) {
 	const mod m1(10);
 	const mod m2(20);
-	EXPECT_EQ(false, m1 == m2);
-	EXPECT_EQ(true, m1 != m2);
-	EXPECT_EQ(true, m1 < m2);
-	EXPECT_EQ(false, m1 > m2);
-	EXPECT_EQ(true, m1 <= m2);
-	EXPECT_EQ(false, m1 >= m2);
-	EXPECT_EQ(false, m2 == m1);
-	EXPECT_EQ(true, m2 != m1);
-	EXPECT_EQ(false, m2 < m1);
-	EXPECT_EQ(true, m2 > m1);
-	EXPECT_EQ(false, m2 <= m1);
-	EXPECT_EQ(true, m2 >= m1);
-	EXPECT_EQ(true, m2 == m2);
-	EXPECT_EQ(false, m2 != m2);
-	EXPECT_EQ(false, m2 < m2);
-	EXPECT_EQ(false, m2 > m2);
-	EXPECT_EQ(true, m2 <= m2);
-	EXPECT_EQ(true, m2 >= m2);
+	ASSERT_COMPARISON_OPERATORS(0, m1, m1);
+	ASSERT_COMPARISON_OPERATORS(0, m2, m2);
+	ASSERT_COMPARISON_OPERATORS(-1, m1, m2);
+	ASSERT_COMPARISON_OPERATORS(+1, m2, m1);
 }
 
 TEST(modulo_test, operators_arithmetic) {
@@ -197,7 +185,7 @@ TEST(modulo_test, perf) {
 
 	typedef modulo<int64_t, 1> modl;
 	modl::M() = 1000000000000000003LL;
-	
+
 	int ni = 1000000000;
 	int ai(12345678);
 	int bi(456789);

@@ -7,7 +7,7 @@
 #include <sstream>
 #include <functional>
 
-#ifdef WIN32 
+#ifdef WIN32
 	#define snprintf sprintf_s
 #endif
 
@@ -28,13 +28,24 @@ public:
 	const char* name;
 	temp_read_file(const char* name, const char* data) : name(name) {
 		file = fopen(name, "w");
-		fwrite(data, 1, strlen(data), file);
-		fclose(file);
-		file = fopen(name, "r");
+		if (file != 0) {
+			fwrite(data, 1, strlen(data), file);
+			fclose(file);
+			file = fopen(name, "r");
+			if (file == 0) {
+				cerr << "cannot open '" << name << "' for reading" << endl;
+			}
+		}
 	}
 	~temp_read_file() {
-		fclose(file);
+		close();
 		remove(name);
+	}
+	void close() {
+		if (file != 0) {
+			fclose(file);
+			file = 0;
+		}
 	}
 };
 
@@ -44,13 +55,19 @@ public:
 	const char* name;
 	temp_write_file(const char* name) : name(name) {
 		file = fopen(name, "w");
+		if (file == 0) {
+			cerr << "cannot open '" << name << "' for writing" << endl;
+		}
 	}
 	~temp_write_file() {
-		fclose(file);
+		close();
 		remove(name);
 	}
 	void close() {
-		fclose(file);
+		if (file != 0) {
+			fclose(file);
+			file = 0;
+		}
 	}
 };
 }
@@ -78,7 +95,8 @@ TEST(fast_io_test, fast_read) {
 		"g_string_s"
 	);
 	auto fin = fast_read(tmp.file, 10);
-	
+	EXPECT_TRUE(tmp.file != 0) << "Cannot open the file for reading!";
+
 	EXPECT_EQ(' ', fin.read_char());
 	EXPECT_EQ('x', fin.read_char());
 	EXPECT_EQ(' ', fin.read_char());
@@ -104,7 +122,7 @@ TEST(fast_io_test, fast_read) {
 	EXPECT_NEAR(-1.45e7, fin.read_double(), 1e1 * 1e-14);
 	EXPECT_NEAR(+1.45e-81, fin.read_double(), 1e-81 * 1e-14);
 	EXPECT_NEAR(-1.45e+81, fin.read_double(), 1e+81 * 1e-14);
-	
+
 	EXPECT_EQ('-', fin.read_char());
 	EXPECT_EQ("skip", fin.read_string());
 
@@ -132,6 +150,7 @@ TEST(fast_io_test, fast_read) {
 
 string do_write(function<void(fast_write&)> writer) {
 	temp_write_file tmp("fast_io_test_temp_file");
+	EXPECT_TRUE(tmp.file != 0) << "Cannot open the file for writing!";
 	auto fout = fast_write(tmp.file, 10);
 	writer(fout);
 	fout.flush();
@@ -152,7 +171,7 @@ TEST(fast_io_test, fast_write) {
 	EXPECT_EQ("x", do_write([](fast_write& fout){ fout.write_char('x'); }));
 	EXPECT_EQ("test", do_write([](fast_write& fout){ fout.write_string("test"); }));
 	EXPECT_EQ("string", do_write([](fast_write& fout){ fout.write_string(string("string")); }));
-	
+
 	EXPECT_EQ("0", do_write([](fast_write& fout){ fout.write_int(0); }));
 	EXPECT_EQ("42", do_write([](fast_write& fout){ fout.write_int(42); }));
 	EXPECT_EQ("-42", do_write([](fast_write& fout){ fout.write_int(-42); }));
@@ -172,12 +191,12 @@ TEST(fast_io_test, fast_write) {
 	EXPECT_EQ("-123.6", do_write([](fast_write& fout){ fout.write_float(-123.6499f, 1); }));
 	EXPECT_EQ("123.7", do_write([](fast_write& fout){ fout.write_float(123.6500f, 1); }));
 	EXPECT_EQ("-123.7", do_write([](fast_write& fout){ fout.write_float(-123.6500f, 1); }));
-	
+
 	EXPECT_EQ("1234500################.######", keep(do_write([](fast_write& fout){ fout.write_float(123.45e20f); }), 7));
 	EXPECT_EQ("-1234500################.######", keep(do_write([](fast_write& fout){ fout.write_float(-123.45e20f); }), 7));
 	EXPECT_EQ("12345678901234###################.######", keep(do_write([](fast_write& fout){ fout.write_double(123.456789012345e30); }), 14));
 	EXPECT_EQ("-12345678901234###################.######", keep(do_write([](fast_write& fout){ fout.write_double(-123.456789012345e30); }), 14));
-	
+
 	EXPECT_EQ("0.0000000000000e+000", do_write([](fast_write& fout){ fout.write_double(0.0, 13, true); }));
 	EXPECT_EQ("1.2345678901234e+000", do_write([](fast_write& fout){ fout.write_double(1.2345678901234, 13, true); }));
 	EXPECT_EQ("-1.2345678901234e+000", do_write([](fast_write& fout){ fout.write_double(-1.2345678901234, 13, true); }));
@@ -199,7 +218,7 @@ TEST(fast_io_test, fast_write) {
 	EXPECT_EQ("12345678901234567 aaa", do_write([](fast_write& fout){ fout << 12345678901234567 << " aaa"; }));
 	EXPECT_EQ("2.718282 3.141593", do_write([](fast_write& fout){ fout << 2.7182818f << " " << 3.1415926535897932384626433832795; }));
 
-	EXPECT_EQ("random_prefix_xyz 12345678 suffix", do_write([](fast_write& fout){ 
+	EXPECT_EQ("random_prefix_xyz 12345678 suffix", do_write([](fast_write& fout){
 		fout << "random_prefix_xyz ";
 		fout.reserve(9);
 		snprintf(fout.data(), fout.available(), "%x", 0x12345678);

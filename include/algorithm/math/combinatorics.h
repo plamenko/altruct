@@ -64,7 +64,7 @@ bool next_partition(BidIt begin, BidIt end) {
  */
 template<typename It, typename I>
 void nth_permutation(It begin, It end, I o) {
-	auto d = distance(begin, end);
+	auto d = std::distance(begin, end);
 	int i = 0; I f = 1;
 	while (i < d && f <= o) f *= ++i;
 	while (i > 1) {

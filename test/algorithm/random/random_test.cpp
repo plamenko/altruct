@@ -1,5 +1,7 @@
 #include "algorithm/random/random.h"
 
+#include <map>
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -63,13 +65,13 @@ TEST(random_test, uniform_next) {
 		values[i] = i;
 	}
 	random_shuffle(values.begin(), values.end());
-	
+
 	auto next = [&](){
 		static int index = 0;
 		index %= values.size();
 		return values[index++];
 	};
-	
+
 	map<uint8_t, int> hist;
 	for (int i = 0; i < 100 * 10; i++) {
 		//auto r = integer_to_range<uint8_t>(next(), 10, 10 + 100 - 1); // fails

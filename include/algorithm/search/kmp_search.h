@@ -1,12 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <cstddef>
 
 namespace altruct {
 namespace search {
 
 /**
- * Knuth–Morris–Pratt searching algorithm.
+ * Knuth-Morris-Pratt searching algorithm.
  *
  * Searches for and reports all occurences of `pattern` within the `text`.
  *

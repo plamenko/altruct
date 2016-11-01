@@ -1,10 +1,12 @@
 ﻿#include "structure/math/series.h"
 #include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 namespace {
 class A {
@@ -97,30 +99,13 @@ TEST(series_test, operators_comparison) {
 	const series<int, 4> s1{ 4 };
 	const series<int, 4> s2{ 1, 3, 5, 7 };
 	const series<int, 4> s3{ 1, 3, 5, 7, 0, 0, 0 };
-	EXPECT_EQ(false, s1 == s2);
-	EXPECT_EQ(true, s1 != s2);
-	EXPECT_EQ(true, s1 < s2);
-	EXPECT_EQ(false, s1 > s2);
-	EXPECT_EQ(true, s1 <= s2);
-	EXPECT_EQ(false, s1 >= s2);
-	EXPECT_EQ(false, s2 == s1);
-	EXPECT_EQ(true, s2 != s1);
-	EXPECT_EQ(false, s2 < s1);
-	EXPECT_EQ(true, s2 > s1);
-	EXPECT_EQ(false, s2 <= s1);
-	EXPECT_EQ(true, s2 >= s1);
-	EXPECT_EQ(true, s2 == s2);
-	EXPECT_EQ(false, s2 != s2);
-	EXPECT_EQ(false, s2 < s2);
-	EXPECT_EQ(false, s2 > s2);
-	EXPECT_EQ(true, s2 <= s2);
-	EXPECT_EQ(true, s2 >= s2);
-	EXPECT_EQ(true, s2 == s3);
-	EXPECT_EQ(false, s2 != s3);
-	EXPECT_EQ(false, s2 < s3);
-	EXPECT_EQ(false, s2 > s3);
-	EXPECT_EQ(true, s2 <= s3);
-	EXPECT_EQ(true, s2 >= s3);
+	ASSERT_COMPARISON_OPERATORS(0, s1, s1);
+	ASSERT_COMPARISON_OPERATORS(0, s2, s2);
+	ASSERT_COMPARISON_OPERATORS(0, s3, s3);
+	ASSERT_COMPARISON_OPERATORS(-1, s1, s2);
+	ASSERT_COMPARISON_OPERATORS(+1, s2, s1);
+	ASSERT_COMPARISON_OPERATORS(0, s2, s3);
+	ASSERT_COMPARISON_OPERATORS(0, s3, s2);
 }
 
 TEST(series_test, inverse) {

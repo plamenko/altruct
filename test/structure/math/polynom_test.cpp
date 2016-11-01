@@ -1,11 +1,13 @@
 ﻿#include "algorithm/math/fft.h"
 #include "structure/math/polynom.h"
 #include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 namespace {
 class A {
@@ -19,6 +21,8 @@ public:
 typedef modulo<int, 1012924417> mod;
 }
 
+namespace altruct {
+namespace math {
 template<>
 struct polynom_mul<mod> {
 	static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
@@ -41,6 +45,8 @@ struct polynom_mul<mod> {
 		}
 	}
 };
+}
+}
 
 TEST(polynom_test, constructor) {
 	const vector<int> c = { 1, 2, 3, 4 };
@@ -179,17 +185,17 @@ TEST(polynom_test, leading_coefficient) {
 
 TEST(polynom_test, is_power) {
 	const polynom<int> p1;
-	EXPECT_EQ(false, p1.is_power());
+	EXPECT_FALSE(p1.is_power());
 	const polynom<int> p2{ 4 };
-	EXPECT_EQ(false, p2.is_power());
+	EXPECT_FALSE(p2.is_power());
 	const polynom<int> p3{ 1 };
-	EXPECT_EQ(true, p3.is_power());
+	EXPECT_TRUE(p3.is_power());
 	const polynom<int> p4{ 0, 0, 0, 3 };
-	EXPECT_EQ(false, p4.is_power());
+	EXPECT_FALSE(p4.is_power());
 	const polynom<int> p5{ 0, 0, 0, 1 };
-	EXPECT_EQ(true, p5.is_power());
+	EXPECT_TRUE(p5.is_power());
 	const polynom<int> p6{ 0, 0, 0, 1, 0 };
-	EXPECT_EQ(true, p6.is_power());
+	EXPECT_TRUE(p6.is_power());
 }
 
 TEST(polynom_test, cmp) {
@@ -529,30 +535,13 @@ TEST(polynom_test, operators_comparison) {
 	const polynom<int> p1{ 4 };
 	const polynom<int> p2{ 1, 3, 5, 7 };
 	const polynom<int> p3{ 1, 3, 5, 7, 0, 0, 0 };
-	EXPECT_EQ(false, p1 == p2);
-	EXPECT_EQ(true, p1 != p2);
-	EXPECT_EQ(true, p1 < p2);
-	EXPECT_EQ(false, p1 > p2);
-	EXPECT_EQ(true, p1 <= p2);
-	EXPECT_EQ(false, p1 >= p2);
-	EXPECT_EQ(false, p2 == p1);
-	EXPECT_EQ(true, p2 != p1);
-	EXPECT_EQ(false, p2 < p1);
-	EXPECT_EQ(true, p2 > p1);
-	EXPECT_EQ(false, p2 <= p1);
-	EXPECT_EQ(true, p2 >= p1);
-	EXPECT_EQ(true, p2 == p2);
-	EXPECT_EQ(false, p2 != p2);
-	EXPECT_EQ(false, p2 < p2);
-	EXPECT_EQ(false, p2 > p2);
-	EXPECT_EQ(true, p2 <= p2);
-	EXPECT_EQ(true, p2 >= p2);
-	EXPECT_EQ(true, p2 == p3);
-	EXPECT_EQ(false, p2 != p3);
-	EXPECT_EQ(false, p2 < p3);
-	EXPECT_EQ(false, p2 > p3);
-	EXPECT_EQ(true, p2 <= p3);
-	EXPECT_EQ(true, p2 >= p3);
+	ASSERT_COMPARISON_OPERATORS(0, p1, p1);
+	ASSERT_COMPARISON_OPERATORS(0, p2, p2);
+	ASSERT_COMPARISON_OPERATORS(0, p3, p3);
+	ASSERT_COMPARISON_OPERATORS(-1, p1, p2);
+	ASSERT_COMPARISON_OPERATORS(+1, p2, p1);
+	ASSERT_COMPARISON_OPERATORS(0, p2, p3);
+	ASSERT_COMPARISON_OPERATORS(0, p3, p2);
 }
 
 TEST(polynom_test, operators_arithmetic) {

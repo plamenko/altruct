@@ -13,7 +13,7 @@ class wrapped {
 public:
 	T v;
 	wrapped(const T& v = 0) : v(v) {}
-	
+
 	bool operator == (const wrapped& rhs) const { return v == rhs.v; }
 	bool operator != (const wrapped& rhs) const { return v != rhs.v; }
 	bool operator <  (const wrapped& rhs) const { return v < rhs.v; }
@@ -302,17 +302,17 @@ TEST(base_test, isqrtc) {
 }
 
 TEST(base_test, is_square) {
-	EXPECT_EQ(true, is_square(0));
-	EXPECT_EQ(true, is_square(+1));
-	EXPECT_EQ(false, is_square(-1));
-	EXPECT_EQ(false, is_square(+2));
-	EXPECT_EQ(false, is_square(-2));
-	EXPECT_EQ(true, is_square(+9));
-	EXPECT_EQ(false, is_square(-9));
-	EXPECT_EQ(false, is_square(+2000000000000000000LL));
-	EXPECT_EQ(false, is_square(-2000000000000000000LL));
-	EXPECT_EQ(true, is_square(+4000000000000000000LL));
-	EXPECT_EQ(false, is_square(-4000000000000000000LL));
+	EXPECT_TRUE(is_square(0));
+	EXPECT_TRUE(is_square(+1));
+	EXPECT_FALSE(is_square(-1));
+	EXPECT_FALSE(is_square(+2));
+	EXPECT_FALSE(is_square(-2));
+	EXPECT_TRUE(is_square(+9));
+	EXPECT_FALSE(is_square(-9));
+	EXPECT_FALSE(is_square(+2000000000000000000LL));
+	EXPECT_FALSE(is_square(-2000000000000000000LL));
+	EXPECT_TRUE(is_square(+4000000000000000000LL));
+	EXPECT_FALSE(is_square(-4000000000000000000LL));
 }
 
 template<typename I>
@@ -476,17 +476,17 @@ TEST(base_test, icbrtc) {
 }
 
 TEST(base_test, is_cube) {
-	EXPECT_EQ(true, is_cube(0));
-	EXPECT_EQ(true, is_cube(+1));
-	EXPECT_EQ(true, is_cube(-1));
-	EXPECT_EQ(false, is_cube(+2));
-	EXPECT_EQ(false, is_cube(-2));
-	EXPECT_EQ(true, is_cube(+27));
-	EXPECT_EQ(true, is_cube(-27));
-	EXPECT_EQ(false, is_cube(+2000000000000000000LL));
-	EXPECT_EQ(false, is_cube(-2000000000000000000LL));
-	EXPECT_EQ(true, is_cube(+8000000000000000000LL));
-	EXPECT_EQ(true, is_cube(-8000000000000000000LL));
+	EXPECT_TRUE(is_cube(0));
+	EXPECT_TRUE(is_cube(+1));
+	EXPECT_TRUE(is_cube(-1));
+	EXPECT_FALSE(is_cube(+2));
+	EXPECT_FALSE(is_cube(-2));
+	EXPECT_TRUE(is_cube(+27));
+	EXPECT_TRUE(is_cube(-27));
+	EXPECT_FALSE(is_cube(+2000000000000000000LL));
+	EXPECT_FALSE(is_cube(-2000000000000000000LL));
+	EXPECT_TRUE(is_cube(+8000000000000000000LL));
+	EXPECT_TRUE(is_cube(-8000000000000000000LL));
 }
 
 TEST(base_test, div_floor) {

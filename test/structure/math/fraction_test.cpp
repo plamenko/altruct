@@ -1,10 +1,13 @@
 ﻿#include "structure/math/fraction.h"
 #include "structure/math/modulo.h"
 
+#include "structure_test_util.h"
+
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 typedef fraction<int> frac;
 
@@ -29,24 +32,10 @@ TEST(fraction_test, constructor) {
 TEST(fraction_test, operators_comparison) {
 	const frac f1(20, 31);
 	const frac f2(3, 4);
-	EXPECT_EQ(false, f1 == f2);
-	EXPECT_EQ(true, f1 != f2);
-	EXPECT_EQ(true, f1 < f2);
-	EXPECT_EQ(false, f1 > f2);
-	EXPECT_EQ(true, f1 <= f2);
-	EXPECT_EQ(false, f1 >= f2);
-	EXPECT_EQ(false, f2 == f1);
-	EXPECT_EQ(true, f2 != f1);
-	EXPECT_EQ(false, f2 < f1);
-	EXPECT_EQ(true, f2 > f1);
-	EXPECT_EQ(false, f2 <= f1);
-	EXPECT_EQ(true, f2 >= f1);
-	EXPECT_EQ(true, f2 == f2);
-	EXPECT_EQ(false, f2 != f2);
-	EXPECT_EQ(false, f2 < f2);
-	EXPECT_EQ(false, f2 > f2);
-	EXPECT_EQ(true, f2 <= f2);
-	EXPECT_EQ(true, f2 >= f2);
+	ASSERT_COMPARISON_OPERATORS(0, f1, f1);
+	ASSERT_COMPARISON_OPERATORS(0, f2, f2);
+	ASSERT_COMPARISON_OPERATORS(-1, f1, f2);
+	ASSERT_COMPARISON_OPERATORS(+1, f2, f1);
 }
 
 TEST(fraction_test, operators_arithmetic) {

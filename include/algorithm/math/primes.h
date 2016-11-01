@@ -87,7 +87,7 @@ void moebius_mu(int *mu, int n, const int* p = 0, int m = 0);
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_q(char* q, long long b, long long e, const int *p, int m);
+void segmented_q(char* q, int64_t b, int64_t e, const int *p, int m);
 
 /**
  * Segmented Euler's Phi (Number of coprimes; Totient) in range `[b, e)`
@@ -104,7 +104,7 @@ void segmented_q(char* q, long long b, long long e, const int *p, int m);
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_phi(long long *phi, long long *tmp, long long b, long long e, const int *p, int m);
+void segmented_phi(int64_t *phi, int64_t *tmp, int64_t b, int64_t e, const int *p, int m);
 
 /**
  * Segmented Moebius Mu (+/-1 if squarefree, 0 otherwise) in range `[b, e)`
@@ -122,7 +122,7 @@ void segmented_phi(long long *phi, long long *tmp, long long b, long long e, con
  * @param p - array of prime numbers up to `sqrt(e)`
  * @param m - number of prime numbers up to `sqrt(e)`
  */
-void segmented_mu(long long *mu, long long b, long long e, const int *p, int m);
+void segmented_mu(int64_t *mu, int64_t b, int64_t e, const int *p, int m);
 
 /**
  * Divisor Sigma 0 (Number of divisors) up to `n`
@@ -142,7 +142,7 @@ void divisor_sigma0(int *ds0, int n);
  * @param ds1 - array to store the result
  * @param n - calculate sum of divisors up to `n` (exclusive)
  */
-void divisor_sigma1(long long *ds1, int n);
+void divisor_sigma1(int64_t *ds1, int n);
 
 /**
  * Biggest prime factor for integers up to `n`

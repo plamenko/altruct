@@ -27,8 +27,8 @@ public:
 	typedef std::pair<I, I> transposition_t;
 	typedef std::vector<transposition_t> transpositions_t;
 
-	I n;
 	cycles_t cycles;
+	I n;
 
 	// identity
 	permutation(I n = 0) : n(n) {}
@@ -55,7 +55,7 @@ public:
 	bool operator >  (const permutation& p2) const { return (p2 < *this); }
 	bool operator <= (const permutation& p2) const { return !(p2 < *this); }
 	bool operator >= (const permutation& p2) const { return !(*this < p2); }
-	
+
 	// product is equal to function composition: (p1 * p2)(x) == p1(p2(x))
 	permutation operator * (const permutation& p2) const { auto line = p2.to_line(); return permutation(apply_to(line)); }
 	permutation& operator *= (const permutation& p2) { return *this = *this * p2; }
@@ -95,7 +95,7 @@ public:
 		return permutation(vc, n);
 	}
 
-	// `T-th` root of this permutation, with specified parity 
+	// `T-th` root of this permutation, with specified parity
 	// @param parity - {-1: optimal, 0: force_even, 1: force_odd}
 	permutation root(int64_t T, int parity = -1) const {
 		auto vc = to_all_cycles();

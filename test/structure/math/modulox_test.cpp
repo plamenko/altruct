@@ -1,4 +1,5 @@
 ﻿#include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
@@ -6,6 +7,7 @@
 
 using namespace std;
 using namespace altruct::math;
+using namespace altruct::test_util;
 
 typedef moduloX<int> modx;
 
@@ -36,24 +38,10 @@ TEST(modulox_test, constructor) {
 TEST(modulox_test, operators_comparison) {
 	const modx m1(10, 1000000007);
 	const modx m2(20, 1000000007);
-	EXPECT_EQ(false, m1 == m2);
-	EXPECT_EQ(true, m1 != m2);
-	EXPECT_EQ(true, m1 < m2);
-	EXPECT_EQ(false, m1 > m2);
-	EXPECT_EQ(true, m1 <= m2);
-	EXPECT_EQ(false, m1 >= m2);
-	EXPECT_EQ(false, m2 == m1);
-	EXPECT_EQ(true, m2 != m1);
-	EXPECT_EQ(false, m2 < m1);
-	EXPECT_EQ(true, m2 > m1);
-	EXPECT_EQ(false, m2 <= m1);
-	EXPECT_EQ(true, m2 >= m1);
-	EXPECT_EQ(true, m2 == m2);
-	EXPECT_EQ(false, m2 != m2);
-	EXPECT_EQ(false, m2 < m2);
-	EXPECT_EQ(false, m2 > m2);
-	EXPECT_EQ(true, m2 <= m2);
-	EXPECT_EQ(true, m2 >= m2);
+	ASSERT_COMPARISON_OPERATORS(0, m1, m1);
+	ASSERT_COMPARISON_OPERATORS(0, m2, m2);
+	ASSERT_COMPARISON_OPERATORS(-1, m1, m2);
+	ASSERT_COMPARISON_OPERATORS(+1, m2, m1);
 }
 
 TEST(modulox_test, operators_arithmetic) {

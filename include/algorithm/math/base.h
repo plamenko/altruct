@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <stdint.h>
+#include <type_traits>
 
 namespace altruct {
 namespace math {

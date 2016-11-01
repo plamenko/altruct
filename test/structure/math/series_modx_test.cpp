@@ -1,12 +1,14 @@
 ﻿#include "algorithm/collections/collections.h"
 #include "structure/math/series.h"
 #include "structure/math/modulo.h"
+#include "structure_test_util.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::math;
 using namespace altruct::collections;
+using namespace altruct::test_util;
 
 namespace {
 typedef moduloX<int> modx;
@@ -131,30 +133,13 @@ TEST(series_modx_test, operators_comparison) {
 	const auto s1 = make_serx(1009, { 4 });
 	const auto s2 = make_serx(1009, { 1, 3, 5, 7 });
 	const auto s3 = make_serx(1009, { 1, 3, 5, 7, 0, 0, 0 });
-	EXPECT_EQ(false, s1 == s2);
-	EXPECT_EQ(true, s1 != s2);
-	EXPECT_EQ(true, s1 < s2);
-	EXPECT_EQ(false, s1 > s2);
-	EXPECT_EQ(true, s1 <= s2);
-	EXPECT_EQ(false, s1 >= s2);
-	EXPECT_EQ(false, s2 == s1);
-	EXPECT_EQ(true, s2 != s1);
-	EXPECT_EQ(false, s2 < s1);
-	EXPECT_EQ(true, s2 > s1);
-	EXPECT_EQ(false, s2 <= s1);
-	EXPECT_EQ(true, s2 >= s1);
-	EXPECT_EQ(true, s2 == s2);
-	EXPECT_EQ(false, s2 != s2);
-	EXPECT_EQ(false, s2 < s2);
-	EXPECT_EQ(false, s2 > s2);
-	EXPECT_EQ(true, s2 <= s2);
-	EXPECT_EQ(true, s2 >= s2);
-	EXPECT_EQ(true, s2 == s3);
-	EXPECT_EQ(false, s2 != s3);
-	EXPECT_EQ(false, s2 < s3);
-	EXPECT_EQ(false, s2 > s3);
-	EXPECT_EQ(true, s2 <= s3);
-	EXPECT_EQ(true, s2 >= s3);
+	ASSERT_COMPARISON_OPERATORS(0, s1, s1);
+	ASSERT_COMPARISON_OPERATORS(0, s2, s2);
+	ASSERT_COMPARISON_OPERATORS(0, s3, s3);
+	ASSERT_COMPARISON_OPERATORS(-1, s1, s2);
+	ASSERT_COMPARISON_OPERATORS(+1, s2, s1);
+	ASSERT_COMPARISON_OPERATORS(0, s2, s3);
+	ASSERT_COMPARISON_OPERATORS(0, s3, s2);
 }
 
 TEST(series_modx_test, inverse) {
