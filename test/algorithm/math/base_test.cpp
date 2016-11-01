@@ -155,7 +155,7 @@ void test_sqT_int() {
 
 template<typename F>
 void test_sqT_float() {
-	float eps = 1e-6;
+	float eps = 1e-6f;
 	EXPECT_EQ(F(6.25), sqT<F>(+2.5));
 	EXPECT_EQ(F(6.25), sqT<F>(-2.5));
 	for (int i = -num_iterations; i < num_iterations; i++) {
