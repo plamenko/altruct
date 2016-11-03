@@ -191,20 +191,20 @@ needs to be brought to a higher quality bar that is required here.
     * Sums:
       * Sum of arbitrary function f
       * Sum of powers
-	  * Sum of floor((a * k + b) / q) in O(log n)
-      * Sum of f(k, floor(n / k)) in O(sqrt n)
+	  * Sum of `floor((a * k + b) / q)` in O(log n)
+      * Sum of `f(k, floor(n / k))` in O(sqrt n)
 	* Divisor sums:
-	  * Dirichlet convolution, division, inverse
+	  * Dirichlet convolution, division, inverse:
 	    * arbitrary arithmetic functions in O(n log n)
 		* multiplicative functions in O(n log log n)
 		* completely multiplicative functions in O(n)
-	  * Moebius transform
+	  * Moebius transform:
 	    * arbitrary arithmetic functions in O(n log n)
 		* multiplicative functions in O(n log log n)
-      * Sum of multiplicative functions in O(n^(2/3))
+      * Sum of multiplicative functions in O(n^(2/3)):
 		* Mertens function (sum of Moebius-Mu)
 		* Totient summatory function (sum of Euler-Phi)
-		* Arbitrary function M such that `T(n) = Sum[M(floor(n/k)), {k,1,n}]`
+		* Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
       * Sum of primes in O(n^(5/7))
   * Random:
     * Mersene Twister
