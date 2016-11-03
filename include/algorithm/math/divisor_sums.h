@@ -699,7 +699,7 @@ template<typename T, typename I>
 T sum_primes(I n, const int* p, T id = T(1)) {
 	if (n < 1) return zeroT<T>::of(id);
 	// Initially, we start with the sum of all numbers:
-	// d(i) =  Sum[k, {2 <= k <= i}]
+	// d(i) = Sum[k, {2 <= k <= i}]
 	// After each round j, all multiples of a prime p(j) get eliminated:
 	// d(i) = Sum[k, {2 <= k <= i, spf(k) > p(j) || is_prime(k)}]
 	// spf(k) = smallest prime factor of k
