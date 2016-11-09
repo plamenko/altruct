@@ -66,6 +66,8 @@ void fft_rec(T *dest, T *src, int size, const R& root, int off = 1) {
  * Result is stored in `dataR`. All `dataR`, `data1` and `data2` are modified.
  * dataR[k] = Sum[data1[i] * data2[(k - i) % size], {i, 0, size - 1}]
  *
+ * Mathematica equivalent: `ListConvolve[u, v, {1, -1}]`
+ *
  * Note: in case `z1 + z2 >= size - 1`, where `z1` and `z2` are number of
  * trailing zero elements in `data1` and `data2` respectively, cyclic
  * convolution is equal to normal convolution. That means that normal
