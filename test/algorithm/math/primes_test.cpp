@@ -185,6 +185,17 @@ TEST(primes_test, carmichael_lambda) {
 	EXPECT_EQ(256, carmichael_lambda(vector<pair<int, int>> {{ 2, 10 }}));
 }
 
+TEST(primes_test, squares_r) {
+	vector<int> va, vu;
+	for (int i = 1; i <= 30; i++) {
+		auto vf = factor_integer_slow(i);
+		va.push_back(squares_r(vf, false));
+		vu.push_back(squares_r(vf, true));
+	}
+	EXPECT_EQ((vector<int>{4, 4, 0, 4, 8, 0, 0, 4, 4, 8, 0, 0, 8, 0, 0, 4, 8, 4, 0, 8, 0, 0, 0, 0, 12, 8, 0, 0, 8, 0}), va);
+	EXPECT_EQ((vector<int>{1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 2, 1, 0, 0, 1, 0}), vu);
+}
+
 TEST(primes_test, miller_rabin) {
 	int n = 100000;
 	vector<char> vq(n);
