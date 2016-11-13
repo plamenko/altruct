@@ -201,7 +201,7 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, in
  * Calculates `h` such that: `h = f * g^-1`
  *
  * Where:
- *   `h = f * g` is a multiplicative function
+ *   `h = f * g^-1` is a multiplicative function
  *   `f` is an arbitrary arithmetic function
  *   `g` is an arbitrary arithmetic function such that:
  *       g(1) != 0, and g(1) is invertible
@@ -313,7 +313,7 @@ void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, 
  * Calculates `h` such that: `h = f * g^-1`
  *
  * Where:
- *   `h = f * g` is a completely multiplicative function
+ *   `h = f * g^-1` is a completely multiplicative function
  *   `f` is an arbitrary arithmetic function
  *   `g` is an arbitrary arithmetic function such that:
  *       g(1) != 0, and g(1) is invertible
