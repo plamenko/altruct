@@ -20,7 +20,7 @@ namespace math {
  * @param epsx - absolute tolerance for x
  */
 template<typename P, typename F>
-F monotonic_search(const P &p, const F &b, const F& e, const F& y, const F& epsy = 0, const F& epsx = 0, int max_iter = 50) {
+F monotonic_search(const P &p, const F &b, const F& e, const F& y, const F& epsy = 0, const F& epsx = 0, int max_iter = 200) {
 	F lo = b, hi = e, mid = e;
 	F val_b = p(b), val_e = p(e);
 	if (-epsy <= val_b && val_b <= epsy) return b;
@@ -53,7 +53,7 @@ F monotonic_search(const P &p, const F &b, const F& e, const F& y, const F& epsy
  * @param epsx - absolute tolerance for x during search
  */
 template<typename T, typename F>
-std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsz = 0, const F& epsy = 0, const F& epsx = 0, int max_iter = 50) {
+std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsz = 0, const F& epsy = 0, const F& epsx = 0, int max_iter = 200) {
 	int l = std::max(p.deg(), 1);
 	// derivations
 	std::vector<polynom<T>> pd(l);
