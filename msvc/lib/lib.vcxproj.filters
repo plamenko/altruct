@@ -263,5 +263,8 @@
     <ClInclude Include="..\..\include\algorithm\math\divisor_sums.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\prime_counting.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

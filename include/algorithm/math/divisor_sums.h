@@ -689,42 +689,5 @@ T sum_phi_D_L(int D, int L, int64_t n, int U, T id, CAST_T castT) {
 	return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, U, id, castT).back();
 }
 
-/**
- * Calculates sum of primes: `Sum[p(k), {k, 1, n}]` in `O(n^(5/7))`.
- *
- * @param n - argument at which to evaluate `P`
- * @param p - array of prime numbers up to `sqrt(n)` inclusive
- */
-template<typename T, typename I>
-T sum_primes(I n, const int* p, T id = T(1)) {
-	if (n < 1) return zeroT<T>::of(id);
-	// Initially, we start with the sum of all numbers:
-	// d(i) = Sum[k, {2 <= k <= i}]
-	// After each round j, all multiples of a prime p(j) get eliminated:
-	// d(i) = Sum[k, {2 <= k <= i, spf(k) > p(j) || is_prime(k)}]
-	// spf(k) = smallest prime factor of k
-	I q = sqrtT(n);
-	container::sqrt_map<I, T> d(q, n);
-	for (int l = 1; l <= q; l++) {
-		I i = n / l;
-		d[i] = id * i * (i + 1) / 2 - 1;
-	}
-	for (int i = n / q - 1; i >= 1; i--) {
-		d[i] = id * i * (i + 1) / 2 - 1;
-	}
-	for (int j = 0; p[j] && p[j] <= q; j++) {
-		I pj = p[j]; I p2 = sqT(pj);
-		I l_max = std::min(q, n / p2);
-		for (I l = 1; l <= l_max; l++) {
-			I i = n / l;
-			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
-		}
-		for (I i = n / q - 1; i >= p2; i--) {
-			d[i] -= (d[i / pj] - d[pj - 1]) * pj;
-		}
-	}
-	return d[n];
-}
-
 } // math
 } // altruct

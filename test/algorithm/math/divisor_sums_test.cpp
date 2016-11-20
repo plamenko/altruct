@@ -237,28 +237,3 @@ TEST(totient_divisor_sums_test, sum_phi_D_L_modx) {
 
 	EXPECT_EQ(modx(984, 1009), sum_phi_D_L(1, 0, 10000000, 0, id, castT));
 }
-
-TEST(divisor_sums_test, sum_primes) {
-	vector<int> vp(isqrt(1030) + 1);
-	int m = primes(vp.data(), nullptr, (int)vp.size());
-	vector<modx> va1, va2;
-	for (int n = 0; n < 30; n++) {
-		va1.push_back(sum_primes(n, vp.data(), modx(1, 1009)));
-		va2.push_back(sum_primes(1000 + n, vp.data(), modx(1, 1009)) - modx(76127, 1009));
-	}
-	EXPECT_EQ(to_modx(1009, { 0, 0, 2, 5, 5, 10, 10, 17, 17, 17, 17, 28, 28, 41, 41, 41, 41, 58, 58, 77, 77, 77, 77, 100, 100, 100, 100, 100, 100, 129 }), va1);
-	EXPECT_EQ(to_modx(1009, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1009, 1009, 1009, 1009, 2022, 2022, 2022, 2022, 2022, 2022, 3041, 3041, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062, 4062 }), va2);
-}
-
-TEST(divisor_sums_test, sum_primes2) {
-	vector<int> vp(1000);
-	vector<char> vq(1000);
-	int m = primes(vp.data(), vq.data(), (int)vq.size());
-	vector<int> ve, va;
-	int c = 0;
-	for (int n = 0; n < vp.size(); n++) {
-		ve.push_back(c += n * vq[n]);
-		va.push_back(sum_primes(n, vp.data(), 1));
-	}
-	EXPECT_EQ(ve, va);
-}

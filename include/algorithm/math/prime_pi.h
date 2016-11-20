@@ -12,6 +12,10 @@ namespace math {
  *
  * @param pi - array of prime_pi values up to `m^(2/3)`
  * @param p - array of primes up to `m^(1/2)`
+ * @param pi_size - value up to which prime_pi is precomputed
+ *
+ * @deprecated - `prime_pi_sqrt` implementation is simpler and faster in practice
+ *               this is because this implementation requires too much memory
  */
 template<typename I, typename J>
 I prime_pi_PHI_key(I m, J n) {
@@ -40,13 +44,20 @@ I prime_pi_P2(I m, J n, const J* pi, const int* p) {
 		r += pi[m / p[k]] - k;
 	return r;
 }
+template<typename I>
+std::unordered_map<I, I>& prime_pi_tbl() {
+	static std::unordered_map<I, I> tbl;
+	return tbl;
+}
 template<typename I, typename J>
-I prime_pi(I m, const J* pi, const int* p) {
+I prime_pi_deprecated(I m, const J* pi, const int* p, int pi_size = 0) {
 	if (m < 2) return 0;
-	//if (m < pi.size()) return pi[m];
+	if (m < pi_size) return pi[m];
+	auto& tbl = prime_pi_tbl<I>();
+	if (tbl.count(m)) return tbl[m];
 	J y = (J)cbrtT(m) + 1;
 	J n = pi[y];
-	return prime_pi_PHI(m, n, p) - prime_pi_P2(m, n, pi, p) + n - 1;
+	return tbl[m] = prime_pi_PHI(m, n, p) - prime_pi_P2(m, n, pi, p) + n - 1;
 }
 
 } // math

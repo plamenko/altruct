@@ -173,8 +173,10 @@ needs to be brought to a higher quality bar that is required here.
         * Divisors, Euler-Phi, Carmichael-Lambda
       * Pollard-Rho integer factorization
       * Miller-Rabin primality test
-      * PrimePi in O(n^(2/3))
       * Integer digits for a base
+    * Prime counting:
+      * PrimeSum in O(n^(5/7))
+      * PrimePi in O(n^(5/7))
     * Ranges:
       * Arithmetic progression
       * Powers, Factorials, Inverse
@@ -205,7 +207,6 @@ needs to be brought to a higher quality bar that is required here.
 		* Mertens function (sum of Moebius-Mu)
 		* Totient summatory function (sum of Euler-Phi)
 		* Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
-      * Sum of primes in O(n^(5/7))
   * Random:
     * Mersene Twister
     * XorShift
