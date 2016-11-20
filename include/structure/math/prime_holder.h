@@ -59,11 +59,12 @@ public:
 };
 
 inline void prime_holder::ensure_pq() {
-	if (vp.empty() || vq.empty()) {
-		m = int(1.25 * sz / log(sz)) + 1; // upper bound on pi(sz)
+	if (vq.empty()) {
+		m = int(sz / (log(sz) - 1.1)) + 5; // upper bound on pi(sz)
+		if (sz < 40) m = sz / 2 + 2; // more accurate for small sz
 		vp.resize(m);
 		vq.resize(sz);
-		m = altruct::math::primes(&vp[0], &vq[0], sz);
+		m = altruct::math::primes(vp.data(), vq.data(), sz);
 		vp.resize(m);
 	}
 }
@@ -71,21 +72,21 @@ inline void prime_holder::ensure_pq() {
 inline std::vector<int>& prime_holder::ensure(std::vector<int> &v, void(*f)(int*, int, const int*, int)) {
 	if (v.empty()) {
 		v.resize(sz);
-		f(&v[0], sz, &p()[0], primes());
+		f(v.data(), sz, p().data(), primes());
 	}
 	return v;
 }
 
 inline std::vector<prime_holder::fact_pair> prime_holder::factor_integer(std::vector<int> vn) {
 	std::vector<prime_holder::fact_pair> vf;
-	altruct::math::factor_integer(vf, vn, &pf()[0]);
+	altruct::math::factor_integer(vf, vn, pf().data());
 	std::sort(vf.begin(), vf.end());
 	return vf;
 }
 
 inline std::vector<prime_holder::fact_pair> prime_holder::factor_integer(int n) {
 	std::vector<prime_holder::fact_pair> vf;
-	altruct::math::factor_integer(vf, n, &pf()[0]);
+	altruct::math::factor_integer(vf, n, pf().data());
 	std::sort(vf.begin(), vf.end());
 	return vf;
 }

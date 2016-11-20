@@ -13,9 +13,11 @@ int primes(int *p, char *q, int n) {
 	// last n chars of p are used for q
 	if (!q) q = (char *) (p + n) - n;
 	// initialize q
-	q[0] = q[1] = 0;
-	for (int i = 2; i < n; i++)
+	if (n > 0) q[0] = 0;
+	if (n > 1) q[1] = 0;
+	for (int i = 2; i < n; i++) {
 		q[i] = 1;
+	}
 	// perform sieving
 	int m = 0;
 	for (int i = 2; i < n; i++) {
