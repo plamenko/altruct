@@ -22,6 +22,12 @@ public:
 	// Returns the number of characters read.
 	virtual size_t read(char* buffer, size_t count) = 0;
 	
+	// Returns false if an error flags is set, and true otherwise.
+	// Error flag is usually set if EOF occured during a read operation.
+	// Note that the value returned by this function depends on the last
+	// operation performed on the stream (and not on the next).
+	virtual operator bool() const = 0;
+
 	virtual ~reader() {}
 	reader() {}
 	reader(const reader&) = delete;
@@ -33,18 +39,27 @@ public:
  */
 class file_reader : public reader {
 	FILE* in;
+	bool read_failed;
 	
 public:
 	// Constructs a new `file_reader` on top of `in` file.
 	// `in` pointer is owned by the caller!
-	file_reader(FILE* in) : in(in) {}
+	file_reader(FILE* in) : in(in), read_failed(false) {}
 
 	int read_char() override {
-		return fgetc(in);
+		int res = fgetc(in);
+		if (res == -1) read_failed = true;
+		return res;
 	}
 
 	size_t read(char* buffer, size_t count) override {
-		return fread(buffer, 1, count, in);
+		int res = fread(buffer, 1, count, in);
+		if (res < count) read_failed = true;
+		return res;
+	}
+
+	operator bool() const override {
+		return !read_failed;
 	}
 };
 
@@ -67,6 +82,10 @@ public:
 		in.read(buffer, count);
 		return (size_t)in.gcount();
 	}
+	
+	operator bool() const override {
+		return bool(in);
+	}
 };
 
 /**
@@ -76,24 +95,33 @@ class string_reader : public reader {
 	const char* in;
 	size_t len;
 	size_t pos;
+	bool read_failed;
 
 public:
 	// Constructs a new `string_reader` on top of `in` string.
 	// `in` pointer is owned by the caller!
 	string_reader(const char* in) : string_reader(in, strlen(in)) {}
-	string_reader(const char* in, size_t len) : in(in), len(len), pos(0) {}
+	string_reader(const char* in, size_t len) : in(in), len(len), pos(0), read_failed(false){}
 
 	int read_char() override {
-		if (pos >= len) return -1;
+		if (pos >= len) {
+			read_failed = true;
+			return -1;
+		}
 		return in[pos++];
 	}
 
 	size_t read(char* buffer, size_t count) override {
-		if (pos >= len) return 0;
-		size_t pos0 = pos;
-		pos += std::min(count, len - pos0);
-		std::copy(in + pos0, in + pos, buffer);
-		return pos - pos0;
+		size_t available = len - pos;
+		if (available < count) read_failed = true;
+		count = std::min(count, available);
+		std::copy(in + pos, in + pos + count, buffer);
+		pos += count;
+		return count;
+	}
+	
+	operator bool() const override {
+		return !read_failed;
 	}
 };
 
@@ -111,11 +139,12 @@ class buffered_reader : public reader {
 	char* end;
 	size_t capacity;
 	int cnt; // used for formatted input
+	bool read_failed;
 
 public:
 	// Constructs a new `buffered_reader` on top of `in` reader.
 	// The caller needs to keep the underlying reader alive!
-	buffered_reader(reader& in, size_t buffer_size = 1 << 20) : in(in), cnt(0) {
+	buffered_reader(reader& in, size_t buffer_size = 1 << 20) : in(in), cnt(0), read_failed(false) {
 		capacity = buffer_size;
 		buff = new char[capacity + 1];
 		buff[capacity] = 0;
@@ -124,6 +153,10 @@ public:
 
 	~buffered_reader() {
 		delete[] buff;
+	}
+
+	operator bool() const {
+		return !read_failed;
 	}
 
 	// Refills the buffer.
@@ -157,7 +190,11 @@ public:
 	// available, or `nullptr` otherwise.
 	const char* data(size_t count = 0) {
 		size_t available = reserve(count);
-		return (available >= count) ? ptr : nullptr;
+		if (available < count) {
+			read_failed = true;
+			return nullptr;
+		}
+		return ptr;
 	}
 
 	// Returns the reference to `cnt` variable.
@@ -191,12 +228,16 @@ public:
 
 	int read_char() override {
 		size_t available = reserve(1);
-		if (available < 1) return -1;
+		if (available < 1) {
+			read_failed = true;
+			return -1;
+		}
 		return *ptr++;
 	}
 
 	size_t read(char* buffer, size_t count) override {
 		size_t available = reserve(count);
+		if (available < count) read_failed = true;
 		count = std::min(count, available);
 		std::copy(ptr, ptr + count, buffer);
 		ptr += count;
@@ -222,6 +263,18 @@ public:
 	simple_reader(reader& in, size_t buffer_size = 1 << 20) : buffered_reader(in, buffer_size) {
 	}
 
+	// Reads a string of characters until a delimiter.
+	// Delimiter is consumed, but not returned.
+	std::string read_line(char delimiter = '\n') {
+		std::string s;
+		int c = read_char();
+		while (c != delimiter && c != -1) {
+			s.push_back((char)c);
+			c = read_char();
+		}
+		return s;
+	}
+	
 	// Reads a string of characters until a whitespace.
 	std::string read_string() {
 		skip_whitespaces();
@@ -341,6 +394,10 @@ public:
 	// Constructs a new `simple_reader_stream` on top of `in` reader.
 	// The caller needs to keep the underlying reader alive!
 	simple_reader_stream(simple_reader& in) : in(in) {}
+
+	operator bool() const { return bool(in); }
+
+	std::string read_line(char delimiter = '\n') { return in.read_line(delimiter); }
 	
 	simple_reader_stream& operator >> (char& v) { v = in.read_char(); return *this; }
 	simple_reader_stream& operator >> (std::string& s) { s = in.read_string(); return *this; }

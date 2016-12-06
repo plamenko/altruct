@@ -31,6 +31,41 @@ void test_reader(reader& rin) {
 	EXPECT_EQ(-1, rin.read_char());
 }
 
+void test_eof1(reader& rin) {
+	char buff[100] = {};
+	EXPECT_EQ(53, rin.read(buff, 53));
+	EXPECT_EQ("The quick brown fox jumps over the lazy dog. The End.", string(buff, buff + 53));
+	EXPECT_TRUE(bool(rin)) << "last read was successful, expecting true";
+	EXPECT_EQ(0, rin.read(buff, 1));
+	EXPECT_FALSE(bool(rin)) << "last read reached EOF, expecting false";
+}
+
+void test_eof2(reader& rin) {
+	char buff[100] = {};
+	EXPECT_EQ(53, rin.read(buff, 100));
+	EXPECT_EQ("The quick brown fox jumps over the lazy dog. The End.", string(buff, buff + 53));
+	EXPECT_FALSE(bool(rin)) << "last read reached EOF, expecting false";
+}
+
+void test_eof3(reader& rin) {
+	char buff[100] = {};
+	EXPECT_EQ(52, rin.read(buff, 52));
+	EXPECT_EQ("The quick brown fox jumps over the lazy dog. The End", string(buff, buff + 52));
+	EXPECT_TRUE(bool(rin)) << "last read was successful, expecting true";
+	EXPECT_EQ('.', rin.read_char());
+	EXPECT_TRUE(bool(rin)) << "last read was successful, expecting true";
+	EXPECT_EQ(-1, rin.read_char());
+	EXPECT_FALSE(bool(rin)) << "last read reached EOF, expecting false";
+}
+
+template<typename F>
+void test_all(F runner) {
+	runner(test_reader);
+	runner(test_eof1);
+	runner(test_eof2);
+	runner(test_eof3);
+}
+
 TEST(reader_test, file_reader) {
 	const char* name = "reader_test_temp_file";
 
@@ -38,10 +73,12 @@ TEST(reader_test, file_reader) {
 	fwrite(data, 1, strlen(data), file);
 	fclose(file);
 	
-	file = fopen(name, "r");
-	file_reader rin(file);
-	test_reader(rin);
-	fclose(file);
+	test_all([&](std::function<void(reader& rin)> test_func) {
+		file = fopen(name, "r");
+		file_reader rin(file);
+		test_func(rin);
+		fclose(file);
+	});
 
 	remove(name);
 }
@@ -53,26 +90,38 @@ TEST(reader_test, fstream_reader) {
 	os << data;
 	os.close();
 
-	ifstream is(name);
-	stream_reader rin(is);
-	test_reader(rin);
+	test_all([&](std::function<void(reader& rin)> test_func) {
+		ifstream is(name);
+		stream_reader rin(is);
+		test_func(rin);
+		is.close();
+	});
 	
-	is.close();
 	remove(name);
 }
 
 TEST(reader_test, sstream_reader) {
-	istringstream is(data);
-	stream_reader rin(is);
-	test_reader(rin);
+	test_all([&](std::function<void(reader& rin)> test_func) {
+		istringstream is(data);
+		stream_reader rin(is);
+		test_func(rin);
+	});
 }
 
 TEST(reader_test, string_reader) {
-	string_reader rin(data);
-	test_reader(rin);
+	test_all([&](std::function<void(reader& rin)> test_func) {
+		string_reader rin(data);
+		test_func(rin);
+	});
 }
 
 TEST(reader_test, buffered_reader) {
+	test_all([&](std::function<void(reader& rin)> test_func) {
+		string_reader sin(data);
+		buffered_reader rin(sin, 1000);
+		test_func(rin);
+	});
+
 	string_reader sin(data);
 	buffered_reader rin(sin, 10);
 
@@ -153,7 +202,11 @@ TEST(reader_test, simple_reader) {
 		"90   +1234"
 		"5678901234"
 		"56789_abc "
-		"def 0 12.3"
+		" da bud di"
+		"n don camp"
+		"alon\n come"
+		"t alpha \td"
+		"ef  0 12.3"
 		"45 -1.45e7"
 		"+1.45e-81 "
 		"-1.45e+81-"
@@ -189,6 +242,8 @@ TEST(reader_test, simple_reader) {
 	EXPECT_EQ(1234567890123456789LL, rin.read_ll());
 
 	EXPECT_EQ("_abc", rin.read_string());
+	EXPECT_EQ("  da bud din don campalon", rin.read_line());
+	EXPECT_EQ(" comet alpha ", rin.read_line('\t'));
 	EXPECT_EQ("def", rin.read_string());
 
 	EXPECT_NEAR(0, rin.read_float(), 1e-6);
@@ -237,4 +292,5 @@ TEST(reader_test, simple_reader) {
 	EXPECT_EQ(23, z);
 	EXPECT_EQ(';', rin.read_char());
 	EXPECT_EQ(-1, rin.read_char());
+	EXPECT_EQ("", rin.read_line());
 }
