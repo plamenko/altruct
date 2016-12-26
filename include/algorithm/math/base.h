@@ -281,19 +281,19 @@ bool is_cube(I x) {
 template<typename I>
 I div_floor(I a, I b) {
 	if (b < 0) a = -a, b = -b;
-	return (a < 0) ? (a + 1) / b - 1 : a / b;
+	return (a < 0) ? I((a + 1) / b - 1) : I(a / b);
 }
 
 template<typename I>
 I div_ceil(I a, I b) {
 	if (b < 0) a = -a, b = -b;
-	return (a > 0) ? (a - 1) / b + 1 : a / b;
+	return (a > 0) ? I((a - 1) / b + 1) : I(a / b);
 }
 
 template<typename I>
 I div_round(I a, I b) {
 	if (b < 0) a = -a, b = -b;
-	return (a > 0) ? (a + b / 2) / b : (a - b / 2) / b;
+	return (a > 0) ? I((a + b / 2) / b) : I((a - b / 2) / b);
 }
 
 /**

@@ -53,7 +53,7 @@ public:
 	}
 
 	size_t read(char* buffer, size_t count) override {
-		int res = fread(buffer, 1, count, in);
+		size_t res = fread(buffer, 1, count, in);
 		if (res < count) read_failed = true;
 		return res;
 	}

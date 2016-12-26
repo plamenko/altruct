@@ -210,7 +210,7 @@ void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D ma
 	const auto &f = vf[i];
 	for (int e = 0; e <= f.second; e++) {
 		divisors(vd, vf, maxd, d, i + 1);
-		if (maxd && d > maxd / f.first) break;
+		if (maxd > 0 && d > maxd / f.first) break;
 		d *= f.first;
 	}
 }

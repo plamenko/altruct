@@ -99,9 +99,10 @@ int jacobi(I n, I m) {
 }
 
 /**
- * Square root of `y.v` modulo prime `y.M`
+ * Square root of `y.v` modulo odd prime `y.M`
  *
  * @param M - the modulo<I, ...> type
+ * @param y - integer such that: y = x^2 (mod p), (y, p) = 1
  */
 template <typename M>
 M sqrt_cipolla(const M& y) {
@@ -116,7 +117,9 @@ M sqrt_cipolla(const M& y) {
 }
 
 /**
- * Square root of `y` modulo prime `p`
+ * Square root of `y` modulo odd prime `p`
+ *
+ * @param y - integer such that: y = x^2 (mod p), (y, p) = 1
  */
 template <typename I>
 I sqrt_cipolla(const I& y, const I& p) {
@@ -124,7 +127,9 @@ I sqrt_cipolla(const I& y, const I& p) {
 }
 
 /**
- * Square root of `y` modulo prime power `p^k`
+ * Square root of `y` modulo odd prime power `p^k`
+ *
+ * @param y - integer such that: y = x^2 (mod p^k), (y, p) = 1
  */
 template <typename I>
 I sqrt_hensel_lift(const I& y, const I& p, I k) {

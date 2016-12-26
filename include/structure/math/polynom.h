@@ -269,6 +269,7 @@ public:
 	template<typename A>
 	A eval(const A& x) const {
 		A r = zeroT<A>::of(x);
+        if (c.empty()) return r;
 		for (int i = deg(); i >= 0; i--) {
 			r = r * x + A(c[i]);
 		}
@@ -277,6 +278,7 @@ public:
 
 	polynom derivative() const {
 		polynom r(ZERO_COEFF);
+        if (c.empty()) return r;
 		for (int i = deg(); i > 0; i--) {
 			r[i - 1] = c[i] * i;
 		}
@@ -286,6 +288,7 @@ public:
 	polynom integral() const { return integral(ZERO_COEFF); }
 	polynom integral(const T& c0) const {
 		polynom r(c0);
+        if (c.empty()) return r;
 		for (int i = deg(); i >= 0; i--) {
 			r[i + 1] = c[i] / (i + 1);
 		}
