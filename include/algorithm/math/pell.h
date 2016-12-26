@@ -11,6 +11,11 @@ namespace altruct {
 namespace math {
 
 /**
+ * Based on the following paper:
+ *   John P. Robertson - Solving the generalized Pell equation "x^2 - D y^2 = N" (2004)
+ */
+
+/**
  * PQa algorithm for Pell's equations.
  *
  * Computes continued fraction expansion of the quadratic irrational
