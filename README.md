@@ -152,6 +152,8 @@ needs to be brought to a higher quality bar that is required here.
       * Fast Fourier transform
     * Fractions:
       * Farey sequence
+    * Diophantine equations
+      * Generalized Pell's equation `x^2 - D y^2 = N`
     * Modulos:
       * Chinese Remainder Theorem
 	  * Garner algorithm
@@ -171,6 +173,7 @@ needs to be brought to a higher quality bar that is required here.
         * Moebius transform, factorization 
       * Compute from a given factorization:
         * Divisors, Euler-Phi, Carmichael-Lambda
+        * SquaresR
       * Pollard-Rho integer factorization
       * Miller-Rabin primality test
       * Integer digits for a base
