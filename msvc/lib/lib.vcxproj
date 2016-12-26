@@ -48,6 +48,7 @@
     <ClInclude Include="..\..\include\algorithm\math\fractions.h" />
     <ClInclude Include="..\..\include\algorithm\math\gmp_helpers.h" />
     <ClInclude Include="..\..\include\algorithm\math\modulos.h" />
+    <ClInclude Include="..\..\include\algorithm\math\pell.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynoms.h" />
     <ClInclude Include="..\..\include\algorithm\math\polynom_mod.h" />
     <ClInclude Include="..\..\include\algorithm\math\primes.h" />
@@ -93,7 +94,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GoogleTest</RootNamespace>
+    <RootNamespace>altruct_lib</RootNamespace>
     <ProjectName>altruct_lib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -172,6 +172,9 @@
     <ClCompile Include="..\..\test\algorithm\math\prime_counting_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\pell_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

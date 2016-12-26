@@ -266,5 +266,8 @@
     <ClInclude Include="..\..\include\algorithm\math\prime_counting.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\pell.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
