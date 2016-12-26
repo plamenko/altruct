@@ -9,6 +9,12 @@
 using namespace std;
 using namespace altruct::collections;
 
+TEST(collections_test, sorted) {
+    EXPECT_EQ((vector<int>{}), sorted(vector<int>()));
+    EXPECT_EQ((vector<int>{5, 7, 13}), sorted(vector<int>{7, 13, 5}));
+    EXPECT_EQ((vector<int>{5, 7, 13}), sorted(set<int>{7, 13, 5}));
+}
+
 TEST(collections_test, filter) {
 	EXPECT_EQ((vector<int>{}), filter(vector<int>(), [](int x){ return x % 4 == 1; }));
 	EXPECT_EQ((vector<int>{5, 13}), filter(vector<int>{2, 3, 5, 7, 11, 13}, [](int x){ return x % 4 == 1; }));

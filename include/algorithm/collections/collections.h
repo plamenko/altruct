@@ -9,7 +9,31 @@ namespace altruct {
 namespace collections {
 
 /**
- * Returns the vector of the elements in the range [begin, end) that satisfy predicate `p`.
+ * Returns a sorted vector of the elements in the range [begin, end).
+ */
+template<
+    typename It,
+    typename T = typename std::iterator_traits<It>::value_type
+>
+std::vector<T> sorted(It begin, It end) {
+    std::vector<T> r(begin, end);
+    std::sort(r.begin(), r.end());
+    return r;
+}
+
+/**
+ * Returns a sorted vector of the elements in the collection `c`.
+ */
+template<
+    typename C,
+    typename T = typename C::value_type
+>
+std::vector<T> sorted(const C& c) {
+    return sorted(c.begin(), c.end());
+}
+
+/**
+ * Returns a vector of the elements in the range [begin, end) that satisfy predicate `p`.
  */
 template<
 	typename It,
@@ -25,7 +49,7 @@ std::vector<T> filter(It begin, It end, const P& p) {
 }
 
 /**
- * Returns the vector of the elements in collection `c` that satisfy predicate `p`.
+ * Returns a vector of the elements in the collection `c` that satisfy predicate `p`.
  */
 template<
 	typename C,
@@ -37,7 +61,7 @@ std::vector<T> filter(const C& c, const P& p) {
 }
 
 /**
- * Returns the vector of the elements in the range [begin, end) transformed by functor `f`.
+ * Returns a vector of the elements in the range [begin, end) transformed by functor `f`.
  */
 template<
 	typename It,
@@ -53,7 +77,7 @@ std::vector<T> transform(It begin, It end, const F& f) {
 }
 
 /**
- * Returns the vector of the elements in collection `c` transformed by functor `f`.
+ * Returns a vector of the elements in the collection `c` transformed by functor `f`.
  */
 template<
 	typename C,
@@ -65,7 +89,7 @@ std::vector<T> transform(const C& c, const F& f) {
 }
 
 /**
- * Returns the Run-Length encoding of the elements in the range [begin, end).
+ * Returns Run-Length encoding of the elements in the range [begin, end).
  */
 template<
 	typename It,
@@ -84,7 +108,7 @@ std::vector<std::pair<T, int>> run_length(It begin, It end) {
 }
 
 /**
- * Returns the Run-Length encoding of the elements in collection `c`.
+ * Returns Run-Length encoding of the elements in collection `c`.
  */
 template<
 	typename C,
