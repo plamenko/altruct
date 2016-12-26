@@ -30,14 +30,14 @@ TEST(pell_test, PQa_13) {
     if (true) {
         int64_t D = 13, P0 = 0, Q0 = 1;
         std::vector<int64_t> P{ P0 }, Q{ Q0 }, a, A, B, G;
-        EXPECT_EQ(1, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{0, 3, 1, 2, 1, 3, 3}), P);
         EXPECT_EQ((vector<int64_t>{1, 4, 3, 3, 4, 1, 4}), Q);
         EXPECT_EQ((vector<int64_t>{3, 1, 1, 1, 1, 6}), a);
         EXPECT_EQ((vector<int64_t>{3, 4, 7, 11, 18, 119}), A);
         EXPECT_EQ((vector<int64_t>{1, 1, 2, 3, 5, 33}), B);
         EXPECT_EQ((vector<int64_t>{3, 4, 7, 11, 18, 119}), G);
-        EXPECT_EQ(6, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{0, 3, 1, 2, 1, 3, 3, 1, 2, 1, 3, 3}), P);
         EXPECT_EQ((vector<int64_t>{1, 4, 3, 3, 4, 1, 4, 3, 3, 4, 1, 4}), Q);
         EXPECT_EQ((vector<int64_t>{3, 1, 1, 1, 1, 6, 1, 1, 1, 1, 6}), a);
@@ -55,10 +55,10 @@ TEST(pell_test, PQa_13) {
         EXPECT_EQ((vector<int64_t>{2, 7}), A);
         EXPECT_EQ((vector<int64_t>{1, 3}), B);
         EXPECT_EQ((vector<int64_t>{3, 11}), G);
-        EXPECT_EQ(2, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
-        EXPECT_EQ(3, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
-        EXPECT_EQ(4, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
-        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(1, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(1, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(1, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
+        EXPECT_EQ(1, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{1, 3, 3, 3, 3, 3, 3}), P);
         EXPECT_EQ((vector<int64_t>{2, 2, 2, 2, 2, 2, 2}), Q);
         EXPECT_EQ((vector<int64_t>{2, 3, 3, 3, 3, 3}), a);
@@ -69,16 +69,14 @@ TEST(pell_test, PQa_13) {
     if (true) {
         int64_t D = 13, P0 = 11, Q0 = 108;
         std::vector<int64_t> P{ P0 }, Q{ Q0 }, a, A, B, G;
-        int i0 = pell_PQa<int64_t>(D, P, Q, a, A, B, G);
-        EXPECT_EQ(3, i0);
+        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{11, -11, 4, 2, 1, 3, 3, 1, 2}), P);
         EXPECT_EQ((vector<int64_t>{108, -1, 3, 3, 4, 1, 4, 3, 3}), Q);
         EXPECT_EQ((vector<int64_t>{0, 7, 2, 1, 1, 6, 1, 1}), a);
         EXPECT_EQ((vector<int64_t>{0, 1, 2, 3, 5, 33, 38, 71}), A);
         EXPECT_EQ((vector<int64_t>{1, 7, 15, 22, 37, 244, 281, 525}), B);
         EXPECT_EQ((vector<int64_t>{-11, 31, 51, 82, 133, 880, 1013, 1893}), G);
-        int i1 = pell_PQa<int64_t>(D, P, Q, a, A, B, G);
-        EXPECT_EQ(8, i1);
+        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{11, -11, 4, 2, 1, 3, 3, 1, 2, 1, 3, 3, 1, 2}), P);
         EXPECT_EQ((vector<int64_t>{108, -1, 3, 3, 4, 1, 4, 3, 3, 4, 1, 4, 3, 3}), Q);
         EXPECT_EQ((vector<int64_t>{0, 7, 2, 1, 1, 6, 1, 1, 1, 1, 6, 1, 1}), a);
@@ -89,8 +87,7 @@ TEST(pell_test, PQa_13) {
     if (true) {
         int64_t D = 13, P0 = 43, Q0 = 108;
         std::vector<int64_t> P{ P0 }, Q{ Q0 }, a, A, B, G;
-        int i0 = pell_PQa<int64_t>(D, P, Q, a, A, B, G);
-        EXPECT_EQ(3, i0);
+        EXPECT_EQ(5, pell_PQa<int64_t>(D, P, Q, a, A, B, G));
         EXPECT_EQ((vector<int64_t>{43, -43, 9, 3, 3, 1, 2, 1, 3}), P);
         EXPECT_EQ((vector<int64_t>{108, -17, 4, 1, 4, 3, 3, 4, 1}), Q);
         EXPECT_EQ((vector<int64_t>{0, 2, 3, 6, 1, 1, 1, 1}), a);

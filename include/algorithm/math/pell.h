@@ -35,7 +35,7 @@ namespace math {
  *            initially empty, terms get populated by the method;
  * @param G - terms used in the solution of the pell equation;
  *            initially empty, terms get populated by the method;
- * @return  - the start of the period
+ * @return  - the length of the period
  */
 template<typename I>
 int pell_PQa(I D, std::vector<I>& P, std::vector<I>& Q, std::vector<I>& a, std::vector<I>& A, std::vector<I>& B, std::vector<I>& G) {
@@ -55,7 +55,7 @@ int pell_PQa(I D, std::vector<I>& P, std::vector<I>& Q, std::vector<I>& a, std::
         P0 = a0 * Q0 - P0; P.push_back(P0);
         Q0 = (D - P0 * P0) / Q0; Q.push_back(Q0);
         if (i0 == 0 && Q0 > 0 && P0 > 0 && sqT<I>(P0) < D && sqT<I>(P0 - Q0) < D && D < sqT<I>(P0 + Q0)) i0 = i;
-        if (i0 != 0 && i > i0 && P[i] == P[i0] && Q[i] == Q[i0]) return i0;
+        if (i0 != 0 && i > i0 && P[i] == P[i0] && Q[i] == Q[i0]) return i - i0;
     }
 }
 
@@ -74,8 +74,7 @@ int pell_PQa(I D, std::vector<I>& P, std::vector<I>& Q, std::vector<I>& a, std::
 template<typename I>
 int pell1(I D, I N, I& x0, I& y0) {
     std::vector<I> P{ 0 }, Q{ 1 }, a, A, B, G;
-    int i0 = pell_PQa<I>(D, P, Q, a, A, B, G);
-    int l = (int)a.size() - i0;
+    int l = pell_PQa<I>(D, P, Q, a, A, B, G);
     if (l % 2 == 1) {
         // Length of the period is odd.
         // All solutions to the `x^2 - D y^2 = -1` equation are
@@ -124,8 +123,7 @@ int pell1(I D, I N, I& x0, I& y0) {
 template<typename I>
 void pellS(I D, I N, std::vector<I>& xc0, std::vector<I>& yc0) {
     std::vector<I> P{ 0 }, Q{ 1 }, a, A, B, G;
-    int i0 = pell_PQa<I>(D, P, Q, a, A, B, G);
-    int l = (int)a.size() - i0;
+    int l = pell_PQa<I>(D, P, Q, a, A, B, G);
     if (l % 2 == 1 || Q[l] != 1) {
         pell_PQa<I>(D, P, Q, a, A, B, G);
         l *= 2;
@@ -181,8 +179,7 @@ void pell(I D, I N, const std::vector<std::pair<P, int>>& fN, std::vector<I>& xc
         for (const auto& z : vz) {
             I zh = (z <= mh) ? z : z - mm;
             std::vector<I> P{ zh }, Q{ mm }, a, A, B, G;
-            int i0 = pell_PQa<I>(D, P, Q, a, A, B, G);
-            int l = (int)a.size() - i0;
+            int l = pell_PQa<I>(D, P, Q, a, A, B, G);
             int i = 1; while (i < (int)Q.size() && Q[i] != +1 && Q[i] != -1) i++;
             if (i >= (int)Q.size()) continue;
             // check for solution by testing Q[i] == (-1)^i sign(m)
