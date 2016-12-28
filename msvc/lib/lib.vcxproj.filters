@@ -269,5 +269,8 @@
     <ClInclude Include="..\..\include\algorithm\math\pell.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\triples.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

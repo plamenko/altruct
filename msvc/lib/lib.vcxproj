@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
     <ClInclude Include="..\..\include\algorithm\math\sums.h" />
     <ClInclude Include="..\..\include\algorithm\math\divisor_sums.h" />
+    <ClInclude Include="..\..\include\algorithm\math\triples.h" />
     <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h" />
     <ClInclude Include="..\..\include\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\algorithm\random\xorshift.h" />
