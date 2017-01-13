@@ -54,6 +54,83 @@ TEST(bits_test, bit_size) {
 	ASSERT_EQ(64, bit_size<int64_t>::value);
 }
 
+TEST(bits_test, get_bit) {
+    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    for (int i = 0; i < 64; i++) ASSERT_EQ((x >> i) & 1, get_bit(uint64_t(x), i)) << i;
+    for (int i = 0; i < 64; i++) ASSERT_EQ((y >> i) & 1, get_bit(uint64_t(y), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ((x >> i) & 1, get_bit(uint32_t(x), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ((y >> i) & 1, get_bit(uint32_t(y), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ((x >> i) & 1, get_bit(uint16_t(x), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ((y >> i) & 1, get_bit(uint16_t(y), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ((x >> i) & 1, get_bit(uint8_t(x), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ((y >> i) & 1, get_bit(uint8_t(y), i)) << i;
+}
+
+TEST(bits_test, set_bit) {
+    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) | (uint64_t(1) << i), set_bit(uint64_t(x), i)) << i;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) | (uint64_t(1) << i), set_bit(uint64_t(y), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) | (uint32_t(1) << i), set_bit(uint32_t(x), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(y) | (uint32_t(1) << i), set_bit(uint32_t(y), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(x) | (uint16_t(1) << i), set_bit(uint16_t(x), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(y) | (uint16_t(1) << i), set_bit(uint16_t(y), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(x) | (uint8_t(1) << i), set_bit(uint8_t(x), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(y) | (uint8_t(1) << i), set_bit(uint8_t(y), i)) << i;
+}
+
+TEST(bits_test, flip_bit) {
+    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) ^ (uint64_t(1) << i), flip_bit(uint64_t(x), i)) << i;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) ^ (uint64_t(1) << i), flip_bit(uint64_t(y), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) ^ (uint32_t(1) << i), flip_bit(uint32_t(x), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(y) ^ (uint32_t(1) << i), flip_bit(uint32_t(y), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(x) ^ (uint16_t(1) << i), flip_bit(uint16_t(x), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(y) ^ (uint16_t(1) << i), flip_bit(uint16_t(y), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(x) ^ (uint8_t(1) << i), flip_bit(uint8_t(x), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(y) ^ (uint8_t(1) << i), flip_bit(uint8_t(y), i)) << i;
+}
+
+TEST(bits_test, clear_bit) {
+    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) & ~(uint64_t(1) << i), clear_bit(uint64_t(x), i)) << i;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) & ~(uint64_t(1) << i), clear_bit(uint64_t(y), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) & ~(uint32_t(1) << i), clear_bit(uint32_t(x), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(y) & ~(uint32_t(1) << i), clear_bit(uint32_t(y), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(x) & ~(uint16_t(1) << i), clear_bit(uint16_t(x), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(uint16_t(y) & ~(uint16_t(1) << i), clear_bit(uint16_t(y), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(x) & ~(uint8_t(1) << i), clear_bit(uint8_t(x), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(uint8_t(y) & ~(uint8_t(1) << i), clear_bit(uint8_t(y), i)) << i;
+}
+
+namespace {
+template<typename T>
+T erase_slow(T val, int pos) {
+    int sz = bit_size<T>::value;
+    vector<int> v(sz);
+    for (int i = 0; i < sz; i++) {
+        v[i] = (val >> i) & 1;
+    }
+    v.erase(v.begin() + pos);
+    val = 0;
+    for (int i = 0; i < sz - 1; i++) {
+        val |= T(v[i]) << i;
+    }
+    return val;
+}
+}
+
+TEST(bits_test, erase_bit) {
+    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(erase_slow(uint64_t(x), i), erase_bit(uint64_t(x), i)) << i;
+    for (int i = 0; i < 64; i++) ASSERT_EQ(erase_slow(uint64_t(y), i), erase_bit(uint64_t(y), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(erase_slow(uint32_t(x), i), erase_bit(uint32_t(x), i)) << i;
+    for (int i = 0; i < 32; i++) ASSERT_EQ(erase_slow(uint32_t(y), i), erase_bit(uint32_t(y), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(erase_slow(uint16_t(x), i), erase_bit(uint16_t(x), i)) << i;
+    for (int i = 0; i < 16; i++) ASSERT_EQ(erase_slow(uint16_t(y), i), erase_bit(uint16_t(y), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(erase_slow(uint8_t(x), i), erase_bit(uint8_t(x), i)) << i;
+    for (int i = 0; i < 8; i++) ASSERT_EQ(erase_slow(uint8_t(y), i), erase_bit(uint8_t(y), i)) << i;
+}
+
 TEST(bits_test, log2) {
 	// for x = 0 the two implementations differ
 	vector<int> v; for (int x = 0; x <= 32; x++) v.push_back(ilog2_64(x));

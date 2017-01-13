@@ -22,6 +22,21 @@ template<typename T>
 const int bit_size<T>::value;
 
 
+/** Gets the bit at the given position. */
+template<typename T> T get_bit(T val, int pos) { return (val >> pos) & 1; }
+/** Sets the bit at the given position. */
+template<typename T> T set_bit(T val, int pos) { return val | (T(1) << pos); }
+/** Flips the bit at the given position. */
+template<typename T> T flip_bit(T val, int pos) { return val ^ (T(1) << pos); }
+/** Clearsthe bit at the given position. */
+template<typename T> T clear_bit(T val, int pos) { return val & ~(T(1) << pos); }
+/** Erases the bit at the given position. The higher bits get shifted right. */
+template<typename T> T erase_bit(T val, int pos) {
+    T lo_mask = (T(1) << pos) - 1;
+    return ((val >> 1) & ~lo_mask) | (val & lo_mask);
+}
+
+
 /**
  * Base-2 Logarithm.
  * Note: `ilog2(0) = 0` for simpler implementation.
