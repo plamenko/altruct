@@ -109,12 +109,14 @@ std::vector<triple<I>> pythagorean_triples_fixed_leg(I leg, const std::vector<st
  */ 
 template<typename I, typename F>
 void eisenstein_triples60(I c_max, bool only_primitive, F visitor) {
-    // a = m^2 - n^2, b = m^2 - mn + n^2, c = 2mn - n^2
-    // with coprime integers m, n with 0 < n < m
-    // (the angle of 60 degrees is opposite to the side b)
-    // if m+n==0 (mod 3), then gcd(a,b,c)=3, else gcd(a,b,c)=1
-    // (m, n) and (m, m-n) generate the same triple, hence n needs to go only till m/2
-    // the only solution for n==m/2 is (3,3,3) for m=2,n=1
+    // a = (m^2 - n^2), b = (m^2 - mn + n^2), c = (2mn - n^2)
+    // With coprime integers m, n with 0 < n < m.
+    // The angle of 60 degrees is opposite to the side b.
+    // If m+n==0 (mod 3), then gcd(a,b,c)=3, else gcd(a,b,c)=1.
+    // Two different pairs (m, n) and (m, m-n) generate the same triple.
+    // Unfortunately the two pairs can both be of gcd=3, so we can't simply
+    // skip that case. Instead, duplicates can be simply avoided by n going
+    // only till m/2. (The only solution for n==m/2 is (3,3,3) for m=2,n=1.)
     I m_max = min(sqrtT<I>(c_max * 4), (c_max * 3 + 1) / 2);
     for (I m = 1; m <= m_max; m++) {
         I m2 = sqT<I>(m);
@@ -154,15 +156,33 @@ std::vector<triple<I>> eisenstein_triples60(I c_max, bool only_primitive) {
  */
 template<typename I, typename F>
 void eisenstein_triples120(I c_max, bool only_primitive, F visitor) {
-    // TODO, similar as above
-    // a = m^2 - n^2
-    // b = 2mn + n^2
-    // c = m^2 + mn + n^2
-    // with coprime integers m, n with 0 < n < m
-    // (the angle of 120 degrees is opposite to the side c).
-    // From here, all primitive solutions can be obtained by dividing a, b, and c by their greatest common divisor
-    // (e.g. by taking m = 4 and n = 1, one obtains a = 21, b = 9 and c = 15, which is not a primitive solution,
-    // but leads to the primitive solution a = 7, b = 3, and c = 5 which, up to order, can be obtained with the values m = 2 and n = 1)
+    // a = (m^2 - n^2), b = (2mn + n^2), c = (m^2 + mn + n^2)
+    // With coprime integers m, n with 0 < n < m.
+    // The angle of 120 degrees is opposite to the side c.
+    // If m-n==0 (mod 3), then gcd(a,b,c)=3, else gcd(a,b,c)=1.
+    // However, unlike with the 60 degree case, here we can avoid duplicates
+    // by simply skipping the gcd=3 case. This is because the biggest side c
+    // can only be generated with a single pair (m, n). This means that each
+    // primitive triple can be generated in precisely two ways: once directly
+    // with gcd=1, and once indirectly with gcd=3 (which we can then skip).
+    I m_max = sqrtT<I>(c_max);
+    for (I m = 1; m <= m_max; m++) {
+        I m2 = sqT<I>(m);
+        for (I n = 1; n < m; n++) {
+            if ((m - n) % 3 == 0) continue;
+            if (gcd(m, n) != 1) continue;
+            I n2 = sqT<I>(n), mn = m * n;
+            I a = m2 - n2, b = mn * 2 + n2, c = m2 + mn + n2;
+            if (a > b) swap(a, b);
+            if (c > c_max) continue;
+            I k_max = only_primitive ? 1 : c_max / c;
+            I ka = 0, kb = 0, kc = 0;
+            for (I k = 1; k <= k_max; k++) {
+                ka += a, kb += b, kc += c;
+                visitor(ka, kb, kc);
+            }
+        }
+    }
 }
 template<typename I>
 std::vector<triple<I>> eisenstein_triples120(I c_max, bool only_primitive) {
