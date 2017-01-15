@@ -241,6 +241,9 @@ public:
 	// of the k-th lexicographically smallest suffix
 	index_t get_kth_suffix(index_t k) const { return _suff_arr[k]; }
 
+    // returns the lexicographical order of the suffix starting at position `i`
+    index_t get_suffix_order(index_t i) const { return _suff_ord[i]; }
+
 	// returns the size of the input string.
 	// note that there is one more suffix, the empty one.
 	index_t size() const { return (index_t)_string.size(); }
