@@ -112,9 +112,6 @@
     <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp">
       <Filter>algorithm\graph</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\structure\container\interval_tree_test.cpp">
-      <Filter>structure\container</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\io\reader_test.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -177,6 +174,9 @@
     </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\triples_test.cpp">
       <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\lazy_segment_tree_test.cpp">
+      <Filter>structure\container</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

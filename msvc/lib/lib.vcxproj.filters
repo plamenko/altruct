@@ -203,9 +203,6 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\interval_tree.h">
-      <Filter>include\structure\container</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\io\reader.h">
       <Filter>include\io</Filter>
     </ClInclude>
@@ -271,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\triples.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\lazy_segment_tree.h">
+      <Filter>include\structure\container</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

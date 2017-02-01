@@ -227,8 +227,8 @@ needs to be brought to a higher quality bar that is required here.
     * Palindrome tree
     * Suffix array
     * Bit vector (std::bitset + std::vector<bool> + more)
-    * Interval tree (range update/get with lazy propagation)
-    * Segment tree (single element update, range get)
+    * Segment tree (range query, single element update)
+    * Lazy segment tree (range query, range update with lazy propagation)
     * Low-High map, Sqrt map (efficient storage for a certain sparse data)
     * Range Minimum Query structure (O(n) build, O(1) query)
   * Graph:

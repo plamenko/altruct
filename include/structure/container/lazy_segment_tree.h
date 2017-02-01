@@ -8,7 +8,9 @@ namespace altruct {
 namespace container {
 
 /**
- * Interval tree that supports range operations.
+ * Segment tree that supports range queries and range updates.
+ *
+ * Range updates are performed lazily.
  *
  * Space complexity: `O(n)`.
  * Time complexities:
@@ -23,7 +25,7 @@ namespace container {
  *                e.g. `0` for addition, `1` for multiplication, `+inf` for minimum, etc.
  */
 template<typename T>
-class interval_tree {
+class lazy_segment_tree {
 public:
 	typedef std::function<bool(T& node)> update_functor;
 	typedef std::function<void(T& parent, const T& left, const T& right)> up_functor;
@@ -33,13 +35,13 @@ public:
 	up_functor f_up;     // for up-propagation on update
 	down_functor f_down; // for down-propagation for lazy updating
 
-	interval_tree(size_t sz, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
+    lazy_segment_tree(size_t sz, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
 		v.resize(calc_pow2(sz) * 2, id);
 		//rebuild(); // must be called manually
 	}
 
 	template<typename It>
-	interval_tree(It begin, It end, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
+    lazy_segment_tree(It begin, It end, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
 		auto sz = std::distance(begin, end);
 		v.resize(calc_pow2(sz) * 2, id);
 		std::copy(begin, end, v.begin() + size());
