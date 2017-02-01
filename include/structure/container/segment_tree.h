@@ -8,7 +8,7 @@ namespace altruct {
 namespace container {
 
 /**
- * Segment tree that supports range operations.
+ * Segment tree that supports range queries.
  *
  * Space complexity: `O(n)`.
  * Time complexities:
@@ -91,6 +91,15 @@ public:
 		}
 	}
 
+    void rebuild(size_t begin, size_t end) {
+        size_t b = begin + size(), e = end - 1 + size();
+        while (b > 1) {
+            b /= 2, e /= 2;
+            for (size_t i = e; i >= b; i--) {
+                update(i);
+            }
+        }
+    }
 private:
 	void update(size_t i) {
 		v[i] = f(v[2 * i + 0], v[2 * i + 1]);

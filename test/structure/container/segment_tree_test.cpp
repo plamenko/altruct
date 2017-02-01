@@ -84,3 +84,15 @@ TEST(segment_tree_test, modify_rebuild) {
 	st.rebuild();
 	verify_all(st, v, min_f, inf);
 }
+
+TEST(segment_tree_test, modify_range_rebuild) {
+    int inf = numeric_limits<int>::max();
+    auto min_f = [](int v1, int v2){ return std::min(v1, v2); };
+    vector<int> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
+
+    segment_tree<int> st(v.begin(), v.end(), min_f, inf);
+    st[6] = v[6] = 2;
+    st[8] = v[8] = -7;
+    st.rebuild(6, 8 + 1);
+    verify_all(st, v, min_f, inf);
+}
