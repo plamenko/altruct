@@ -25,7 +25,7 @@ namespace container {
 template<typename T>
 class interval_tree {
 public:
-	typedef std::function<void(T& node)> update_functor;
+	typedef std::function<bool(T& node)> update_functor;
 	typedef std::function<void(T& parent, const T& left, const T& right)> up_functor;
 	typedef std::function<void(T& parent, T& left, T& right)> down_functor;
 
@@ -59,12 +59,15 @@ public:
 		return tl;
 	}
 
-	void update(size_t begin, size_t end, update_functor f) {
+    // if `f` returns false, meaning that the segment cannot be updated as a whole,
+    // `f` will be called again on both of its children individually and so on.
+	template<typename F>
+    void update(size_t begin, size_t end, F f) {
 		propagate_down(begin, end);
 		size_t b = begin, e = end, i = size();
 		while (b < e) {
-			if (b & 1) f(v[i + b++]);
-			if (e & 1) f(v[i + --e]);
+            if (b & 1) update_segment(i + b++, f);
+            if (e & 1) update_segment(i + --e, f);
 			b /= 2, e /= 2, i /= 2;
 		}
 		propagate_up(begin, end);
@@ -82,12 +85,58 @@ public:
 		}
 	}
 
-	size_t size() {
+    void rebuild(size_t begin, size_t end) {
+        size_t b = begin + size(), e = end - 1 + size();
+        while (b > 1) {
+            b /= 2, e /= 2;
+            for (size_t i = e; i >= b; i--) {
+                update_up(i);
+            }
+        }
+    }
+
+    // restores all the elements in the [begin, end) range; O(end - begin)
+    void restore(size_t begin, size_t end) {
+        size_t b = begin + size(), e = end - 1 + size();
+        for (int h = calc_height(size()); h >= 1; h--) {
+            for (size_t i = b >> h; i <= e >> h; i++) {
+                update_down(i);
+            }
+        }
+    }
+
+    size_t size() {
 		return v.size() / 2;
 	}
 
 private:
-	void propagate_down(size_t begin, size_t end) {
+    template<typename F>
+    void update_segment(size_t i, F f) {
+        // Compilers are not good enough in optimizing the recursive implementation.
+        // Since this is the innermost loop, unrolling it actually makes a difference.
+        if (!f(v[i])) {
+            update_down(i);
+            update_segment(2 * i + 0, f);
+            update_segment(2 * i + 1, f);
+            update_up(i);
+        }
+        //size_t stk[64]; int sz = 0;
+        //stk[sz++] = i;
+        //while (sz > 0) {
+        //    size_t j = stk[--sz];
+        //    if (!f(v[j])) {
+        //        update_down(j);
+        //        stk[sz++] = 2 * j + 1;
+        //        stk[sz++] = 2 * j + 0;
+        //    } else {
+        //        while (j > i && (j & 1)) {
+        //            update_up(j /= 2);
+        //        }
+        //    }
+        //}
+    }
+    
+    void propagate_down(size_t begin, size_t end) {
 		update_from_root(top(begin));
 		update_from_root(top(end) - 1);
 	}
