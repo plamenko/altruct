@@ -162,9 +162,9 @@ void pellS(I D, I N, std::vector<I>& xc0, std::vector<I>& yc0) {
  * @param fN - prime factorization of N
  * @param x0, y0 - the minimal positive solutions for each equivalence class
  */
-template<typename I, typename P>
-void pell(I D, I N, const std::vector<std::pair<P, int>>& fN, std::vector<I>& xc0, std::vector<I>& yc0) {
-    std::vector<std::pair<P, int>> fN2;
+template<typename I, typename PF>
+void pell(I D, I N, const std::vector<std::pair<PF, int>>& fN, std::vector<I>& xc0, std::vector<I>& yc0) {
+    std::vector<std::pair<PF, int>> fN2;
     for (const auto& f : fN) {
         if (f.second >= 2) fN2.push_back({ f.first, f.second / 2 });
     }

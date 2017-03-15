@@ -47,12 +47,12 @@ void pythagorean_triples(I c_max, bool only_primitive, F visitor) {
     for (I m = 1; m <= m_max; m++) {
         I m2 = sqT<I>(m);
         I n_min = (m % 2) + 1; // different parity
-        I n_max = min(m - 1, sqrtT<I>(c_max - m2));
+        I n_max = std::min(m - 1, sqrtT<I>(c_max - m2));
         for (I n = n_min; n <= n_max; n += 2) {
             if (gcd(m, n) != 1) continue;
             I n2 = sqT<I>(n), mn = m * n;
             I a = m2 - n2, b = mn * 2, c = m2 + n2;
-            if (a > b) swap(a, b);
+            if (a > b) std::swap(a, b);
             I k_max = only_primitive ? 1 : c_max / c;
             I ka = 0, kb = 0, kc = 0;
             for (I k = 1; k <= k_max; k++) {
@@ -83,7 +83,7 @@ void pythagorean_triples_fixed_leg(I leg, const std::vector<std::pair<P, int>>& 
     for (auto& t : f2) {
         t.second *= 2;
     }
-    vector<I> vd; divisors(vd, f2);
+    std::vector<I> vd; divisors(vd, f2);
     for (const auto& d : vd) {
         I e = leg2 / d;
         I c2 = e + d, b2 = e - d;
@@ -117,14 +117,14 @@ void eisenstein_triples60(I c_max, bool only_primitive, F visitor) {
     // Unfortunately the two pairs can both be of gcd=3, so we can't simply
     // skip that case. Instead, duplicates can be simply avoided by n going
     // only till m/2. (The only solution for n==m/2 is (3,3,3) for m=2,n=1.)
-    I m_max = min(sqrtT<I>(c_max * 4), (c_max * 3 + 1) / 2);
+    I m_max = std::min(sqrtT<I>(c_max * 4), (c_max * 3 + 1) / 2);
     for (I m = 1; m <= m_max; m++) {
         I m2 = sqT<I>(m);
         for (I n = 1; n <= m / 2; n++) {
             if (gcd(m, n) != 1) continue;
             I n2 = sqT<I>(n), mn = m * n;
             I a = m2 - n2, b = m2 - mn + n2, c = mn * 2 - n2;
-            if (a > c) swap(a, c);
+            if (a > c) std::swap(a, c);
             if ((m + n) % 3 == 0) {
                 a /= 3, b /= 3, c /= 3;
             }
@@ -173,7 +173,7 @@ void eisenstein_triples120(I c_max, bool only_primitive, F visitor) {
             if (gcd(m, n) != 1) continue;
             I n2 = sqT<I>(n), mn = m * n;
             I a = m2 - n2, b = mn * 2 + n2, c = m2 + mn + n2;
-            if (a > b) swap(a, b);
+            if (a > b) std::swap(a, b);
             if (c > c_max) continue;
             I k_max = only_primitive ? 1 : c_max / c;
             I ka = 0, kb = 0, kc = 0;

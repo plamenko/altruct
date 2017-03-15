@@ -155,7 +155,7 @@ public:
 		delete[] buff;
 	}
 
-	operator bool() const {
+	operator bool() const override {
 		return !read_failed;
 	}
 
