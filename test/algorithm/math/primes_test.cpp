@@ -275,9 +275,21 @@ TEST(primes_test, integer_digits) {
 	EXPECT_EQ((vector<int>{}), integer_digits(0, 10));
 	EXPECT_EQ((vector<int>{1}), integer_digits(1, 10));
 	EXPECT_EQ((vector<int>{3, 2, 1}), integer_digits(123, 10));
+    EXPECT_EQ((vector<int>{3, 2, 1, 0, 0}), integer_digits(123, 10, 5));
 	EXPECT_EQ((vector<int>{11, 7}), integer_digits(123, 16));
 	EXPECT_EQ((vector<int>{1, 0, 1, 1, 0, 0, 1}), integer_digits(77, 2));
 	EXPECT_EQ(77, (polynom<int>{ 1, 0, 1, 1, 0, 0, 1 }(2)));
 	EXPECT_EQ(123, (polynom<int>{ 11, 7 }(16)));
 	EXPECT_EQ(123, (polynom<int>{ 3, 2, 1 }(10)));
+    EXPECT_EQ(123, (polynom<int>{ 3, 2, 1, 0, 0 }(10)));
+}
+
+TEST(primes_test, integer_string) {
+    EXPECT_EQ("", integer_string(0, 10));
+    EXPECT_EQ("0", integer_string(0, 10, 1));
+    EXPECT_EQ("1", integer_string(1, 10));
+    EXPECT_EQ("123", integer_string(123, 10));
+    EXPECT_EQ("00123", integer_string(123, 10, 5));
+    EXPECT_EQ("7b", integer_string(123, 16));
+    EXPECT_EQ("1001101", integer_string(77, 2));
 }

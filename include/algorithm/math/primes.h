@@ -4,6 +4,7 @@
 #include "structure/math/modulo.h"
 
 #include <vector>
+#include <string>
 
 namespace altruct {
 namespace math {
@@ -482,9 +483,9 @@ std::vector<std::pair<I, int>> factor_integer_slow(I n) {
  * @param b - base
  * @param len - zeros are added if necessary to fill the `len` digits
  */
-template<typename I>
-std::vector<I> integer_digits(const I& n, const I& b, int len = 0) {
-	std::vector<I> vd;
+template<typename I, typename B>
+std::vector<B> integer_digits(const I& n, const B& b, int len = 0) {
+	std::vector<B> vd;
 	for (I t = n; t > 0; t /= b) {
 		vd.push_back(t % b);
 	}
@@ -492,6 +493,32 @@ std::vector<I> integer_digits(const I& n, const I& b, int len = 0) {
 		vd.push_back(0);
 	}
 	return vd;
+}
+
+/**
+ * Converts the vector of digits to a lowercase string.
+ * Only bases up to 36 are supported.
+ */
+template<typename B>
+std::string integer_string(const std::vector<B>& digits) {
+    static char* c = "0123456789abcdefghijklmnopqrstuvwxyz";
+    std::string s;
+    for (auto it = digits.rbegin(); it != digits.rend(); ++it) {
+        s += c[*it];
+    }
+    return s;
+}
+
+/**
+ * Gives the string representation of `n` in base `b`.
+ *
+ * @param n - number to extract the digits of
+ * @param b - base up to 36
+ * @param len - zeros are added if necessary to fill the `len` digits
+ */
+template<typename I, typename B>
+std::string integer_string(const I& n, const B& b, int len = 0) {
+    return integer_string(integer_digits(n, b, len));
 }
 
 } // math
