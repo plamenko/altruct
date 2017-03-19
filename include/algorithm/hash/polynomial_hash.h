@@ -9,6 +9,61 @@ namespace altruct {
 namespace hash {
 
 /**
+ * Polynomial hash with only 1 base.
+ */
+template<int32_t M, int32_t B, int32_t BI>
+class polynomial_hash1 {
+    typedef int32_t I;
+    typedef int64_t IT;
+public:
+    static std::vector<I> W;
+    static std::vector<I> WI;
+
+    static void _ensure(std::vector<I>& w, size_t sz, I b) {
+        size_t i0 = w.size();
+        w.resize(sz);
+        if (i0 == 0) w[i0++] = 1;
+        for (size_t i = i0; i < sz; i++) {
+            w[i] = (w[i - 1] * IT(b)) % M;
+        }
+    }
+
+    static void ensure(size_t size) {
+        if (W.size() >= size) return;
+        size = std::max(size, W.size() + W.size() / 2);
+        _ensure(W, size, B);
+        _ensure(WI, size, BI);
+    }
+
+
+    I h;
+
+    polynomial_hash1(I h = 0) : h(h) {}
+    polynomial_hash1 clone() const { return polynomial_hash1(*this); }
+    bool operator < (const polynomial_hash1& rhs) const { return h < rhs.h; }
+    bool operator == (const polynomial_hash1& rhs) const { return h == rhs.h; }
+    polynomial_hash1 operator * (const polynomial_hash1& rhs) const { return clone() *= rhs; }
+    polynomial_hash1 operator + (const polynomial_hash1& rhs) const { return clone() += rhs; }
+    polynomial_hash1 operator - (const polynomial_hash1& rhs) const { return clone() -= rhs; }
+    polynomial_hash1 operator >> (int cnt) const { return clone() >>= cnt; } // divide by B^cnt
+    polynomial_hash1 operator << (int cnt) const { return clone() <<= cnt; } // multiply by B^cnt
+    polynomial_hash1& operator *= (const polynomial_hash1& rhs) { h = (h * IT(rhs.h)) % M; return *this; }
+    polynomial_hash1& operator += (const polynomial_hash1& rhs) { h = (h + rhs.h) % M; return *this; }
+    polynomial_hash1& operator -= (const polynomial_hash1& rhs) { h = (h + M - rhs.h) % M; return *this; }
+    polynomial_hash1& operator >>= (int cnt) { ensure(cnt + 1); h = (h * IT(WI[cnt])) % M; return *this; }
+    polynomial_hash1& operator <<= (int cnt) { ensure(cnt + 1); h = (h * IT(W[cnt])) % M; return *this; }
+    // H = H + (RHS << pos)
+    polynomial_hash1& add(const polynomial_hash1& rhs, size_t pos) { ensure(pos + 1); h = (h + rhs.h * IT(W[pos])) % M; return *this; }
+    // H = (H - RHS) >> pos
+    polynomial_hash1& sub_shr(const polynomial_hash1& rhs, size_t pos) { ensure(pos + 1); h = ((h + M - rhs.h) * IT(WI[pos])) % M; return *this; }
+
+    int32_t hash() const { return h; }
+};
+template<int32_t M, int32_t B, int32_t BI> std::vector<int32_t> polynomial_hash1<M, B, BI>::W;
+template<int32_t M, int32_t B, int32_t BI> std::vector<int32_t> polynomial_hash1<M, B, BI>::WI;
+
+
+/**
  * Polynomial hash with `K` bases.
  *
  * `M`, `B`, `BI` must be defined by the client.
@@ -243,8 +298,8 @@ public:
 
 	HASH get(size_t begin, size_t end) const {
 		HASH r;
-		if (end > 0) r.add(vh.at(end - 1), 0);
-		if (begin > 0) r.sub_shr(vh.at(begin - 1), begin);
+        if (end > 0) r = vh[end - 1];
+        if (begin > 0) r.sub_shr(vh[begin - 1], begin);
 		return r;
 	}
 

@@ -7,6 +7,13 @@
 using namespace std;
 using namespace altruct::hash;
 
+typedef polynomial_hash1<758986603, 36759071, 366621061> phash1;
+
+typedef polynomial_hash<1> phashK1;
+template<> int32_t phashK1::M[1] = { 758986603 };
+template<> int32_t phashK1::B[1] = { 36759071 };
+template<> int32_t phashK1::BI[1] = { 366621061 };
+
 typedef polynomial_hash<2> phash2;
 template<> int32_t phash2::M[2] = { 758986603, 1000000007 };
 template<> int32_t phash2::B[2] = { 36759071, 32547971 };
@@ -221,4 +228,19 @@ TEST(polynomial_hash_test, cumulative_hash_online) {
 	h.pop_back();
 	EXPECT_EQ(0, h.size());
 	EXPECT_EQ(phash2{}, h.get(0, 0));
+}
+
+TEST(polynomial_hash_test, polynomial_hash1) {
+    vector<int> v;
+    int x = 31;
+    for (int i = 0; i < 1000; i++) {
+        v.push_back(x = x * int64_t(x) % 997230937);
+    }
+    cumulative_hash<phash1> ch1(v.begin(), v.end());
+    cumulative_hash<phashK1> chk1(v.begin(), v.end());
+    for (int e = 0; e <= v.size(); e++) {
+        for (int b = 0; b <= e; b++) {
+            EXPECT_EQ(chk1.get(b, e).hash(), ch1.get(b, e).hash()) << " b = " << b << ", e = " << e;
+        }
+    }
 }
