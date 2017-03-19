@@ -24,10 +24,10 @@ double integer_to_double_0_1(U val) {
  * In case the range of `val` is not a proper multiple of the range `[min, max]`,
  * the lower values will be hit more often. See `next_uniform` to avoid this.
  */
-template<typename U>
-U integer_to_range(U val, U min, U max) {
-	U width = max - min + 1;
-	return (width == 0) ? val : min + val % width;
+template<typename U, typename V>
+V integer_to_range(U val, V min, V max) {
+	V width = max - min + 1;
+	return (width == 0) ? V(val) : min + val % width;
 }
 
 /**
