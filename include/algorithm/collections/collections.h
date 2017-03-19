@@ -33,6 +33,30 @@ std::vector<T> sorted(const C& c) {
 }
 
 /**
+ * Returns a reversed vector of the elements in the range [begin, end).
+ */
+template<
+    typename It,
+    typename T = typename std::iterator_traits<It>::value_type
+>
+std::vector<T> reversed(It begin, It end) {
+    std::vector<T> r(begin, end);
+    std::reverse(r.begin(), r.end());
+    return r;
+}
+
+/**
+ * Returns a reversed vector of the elements in the collection `c`.
+ */
+template<
+    typename C,
+    typename T = typename C::value_type
+>
+std::vector<T> reversed(const C& c) {
+    return reversed(c.begin(), c.end());
+}
+
+/**
  * Returns a vector of the elements in the range [begin, end) that satisfy predicate `p`.
  */
 template<
