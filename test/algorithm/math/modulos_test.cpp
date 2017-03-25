@@ -154,35 +154,3 @@ TEST(modulos_test, kth_roots_of_unity) {
 	EXPECT_EQ((set<int>{1}), kth_roots_of_unity(18, 5, prim));
 	EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots_of_unity(18, 6, prim));
 }
-
-TEST(modulos_test, factorial_mod_p) {
-	const int P = 37;
-	typedef modulo<int, P> mod;
-	vector<mod> fact_table(P);
-	factorials(fact_table.begin(), fact_table.end(), mod(1, P));
-	EXPECT_EQ((vector<mod>{1, 1, 2, 6, 24, 9, 17, 8, 27, 21, 25, 16, 7, 17, 16, 18, 29, 12, 31, 34, 14, 35, 30, 24, 21, 7, 34, 30, 26, 14, 13, 33, 20, 31, 18, 1, 36}), fact_table);
-	
-	EXPECT_EQ(make_pair(mod(25), 0LL), factorial_mod_pp(10LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(31), 2LL), factorial_mod_pp(100LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(7), 27LL), factorial_mod_pp(1000LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(19), 277LL), factorial_mod_pp(10000LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(3), 2776LL), factorial_mod_pp(100000LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(30), 27776LL), factorial_mod_pp(1000000LL, P, 1, &fact_table[0]));
-	EXPECT_EQ(make_pair(mod(20), 2LL), binomial_mod_pp(1000000LL, 1234LL, P, 1, &fact_table[0]));
-}
-
-TEST(modulos_test, factorial_mod_pp) {
-	const int P = 3, K = 4, PK = 81;
-	typedef moduloX<int> modx;
-	vector<modx> fact_table = factorials_mod_p<int>(P, K);
-	EXPECT_EQ((vector<modx>{1, 1, 2, 2, 8, 40, 40, 37, 53, 53, 44, 79, 79, 55, 41, 41, 8, 55, 55, 73, 2, 2, 44, 40, 40, 28, 80, 80, 53, 79, 79, 19, 41, 41, 17, 28, 28, 64, 2, 2, 80,
-		                    40, 40, 19, 26, 26, 62, 79, 79, 64, 41, 41, 26, 1, 1, 55, 2, 2, 35, 40, 40, 10, 53, 53, 71, 79, 79, 28, 41, 41, 35, 55, 55, 46, 2, 2, 71, 40, 40, 1, 80}), fact_table);
-	
-	EXPECT_EQ(make_pair(modx(7, PK), 4LL), factorial_mod_pp(10LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(65, PK), 48LL), factorial_mod_pp(100LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(31, PK), 498LL), factorial_mod_pp(1000LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(5, PK), 4996LL), factorial_mod_pp(10000LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(22, PK), 49995LL), factorial_mod_pp(100000LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(58, PK), 499993LL), factorial_mod_pp(1000000LL, P, K, &fact_table[0]));
-	EXPECT_EQ(make_pair(modx(17, PK), 2LL), binomial_mod_pp(1000000LL, 1234LL, P, K, &fact_table[0]));
-}

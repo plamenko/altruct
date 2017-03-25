@@ -272,5 +272,8 @@
     <ClInclude Include="..\..\include\structure\container\lazy_segment_tree.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\comb_mod_pp.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

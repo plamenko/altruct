@@ -178,6 +178,9 @@
     <ClCompile Include="..\..\test\structure\container\lazy_segment_tree_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\comb_mod_pp_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
