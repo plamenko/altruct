@@ -503,9 +503,9 @@ std::vector<std::pair<I, int>> factor_integer_slow(I n) {
 /**
  * Factors out all factors `p` out of `n`.
  */
-template<typename I, typename P>
-I factor_out(I n, P p) {
-    while (n % p == 0) n /= p;
+template<typename I, typename P, typename E>
+I factor_out(I n, P p, E& e) {
+    while (n % p == 0) n /= p, e++;
     return n;
 }
 

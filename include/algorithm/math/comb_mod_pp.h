@@ -15,6 +15,7 @@ namespace math {
  *   Binomial coefficients modulo prime powers by Andrew Granville
  */
 
+
 /**
  * Generates a table of factorials modulo prime power `p^e` up to `n`
  *   where multiples of `p` are skipped (i.e. not taken into the product).
@@ -45,15 +46,15 @@ std::vector<R> factorials_mod_pp_skipped(int n, int p, int e = 1) {
  *   where M(n) is complexity of n-bit multiplication
  *
  * @param n - number to take the factorial of
- * @return - `f`
+ * @return - the pair {f, u}
  */
 template<typename R, typename I>
-R factorial_mod_pp_skipped_slow(I n, int p, int e) {
+std::pair<R, I> factorial_mod_pp_skipped_slow(I n, int p, int e) {
     moduloX<R> r(1, powT(castOf<R>(p), e));
     for (I i = 1; i <= n; i++) {
         if (i % p != 0) r *= castOf<R>(i);
     }
-    return r.v;
+    return { r.v, n / p };
 }
 
 /**
@@ -68,15 +69,16 @@ R factorial_mod_pp_skipped_slow(I n, int p, int e) {
  *
  * @param I - type of the number `n`
  * @param n - number to take the factorial of
- * @return - `f`
+ * @return - the pair {f, a}
  */
 template<typename R, typename I>
-R factorial_mod_pp_reduced_slow(I n, int p, int e) {
+std::pair<R, I> factorial_mod_pp_reduced_slow(I n, int p, int e) {
+    I a = 0;
     moduloX<R> r(1, powT(castOf<R>(p), e));
     for (I i = 1; i <= n; i++) {
-        r *= castOf<R>(factor_out(i, p));
+        r *= castOf<R>(factor_out(i, p, a));
     }
-    return r.v;
+    return { r.v, a };
 }
 
 /**
@@ -91,18 +93,20 @@ R factorial_mod_pp_reduced_slow(I n, int p, int e) {
  *
  * @param I - type of the numbers `n` and `k`
  * @param n, k - numbers to take the binomial of
- * @return - `b`
+ * @return - the pair {b, a}
  */
 template<typename R, typename I>
-R binomial_mod_pp_reduced_slow(I n, I k, int p, int e) {
+std::pair<R, I> binomial_mod_pp_reduced_slow(I n, I k, int p, int e) {
     k = std::min<I>(k, n - k);
     moduloX<R> r(1, powT(castOf<R>(p), e)), s = r;
+    I ar = 0, as = 0;
     for (I i = 1; i <= k; i++, n--) {
-        r *= castOf<R>(factor_out(n, p));
-        s *= castOf<R>(factor_out(i, p));
+        r *= castOf<R>(factor_out(n, p, ar));
+        s *= castOf<R>(factor_out(i, p, as));
     }
     r /= s;
-    return r.v;
+    ar -= as;
+    return{ r.v, ar };
 }
 
 /**
@@ -126,7 +130,7 @@ R binomial_mod_pp_reduced_slow(I n, I k, int p, int e) {
  * @return - the pair {f, a}
  */
 template<typename R, typename I>
-std::pair<moduloX<R>, I> factorial_mod_pp_reduced_2(I n, int p, int e, const R* fact_table) {
+std::pair<moduloX<R>, I> factorial_mod_pp_reduced_2_modx(I n, int p, int e, const R* fact_table) {
     int pe = powT(p, e);
     // fact_table[p^e] == (p == 2 && k != 2) +1 : -1;
 	bool sign = !(p == 2 && e != 2);
@@ -139,6 +143,11 @@ std::pair<moduloX<R>, I> factorial_mod_pp_reduced_2(I n, int p, int e, const R* 
 		a += n;
 	}
 	return{ f, a };
+}
+template<typename R, typename I>
+std::pair<R, I> factorial_mod_pp_reduced_2(I n, int p, int e, const R* fact_table) {
+    auto r = factorial_mod_pp_reduced_2_modx(n, p, e, fact_table);
+    return{ r.first.v, r.second };
 }
 
 /**
@@ -163,13 +172,13 @@ std::pair<moduloX<R>, I> factorial_mod_pp_reduced_2(I n, int p, int e, const R* 
  * @return - the pair {b, a}
  */
 template<typename R, typename I>
-std::pair<moduloX<R>, I> binomial_mod_pp_reduced_2(I n, I k, int p, int e, const R* fact_table) {
-    auto fn = factorial_mod_pp_reduced_2(n, p, e, fact_table);
-    auto fk = factorial_mod_pp_reduced_2(k, p, e, fact_table);
-    auto fl = factorial_mod_pp_reduced_2(I(n - k), p, e, fact_table);
+std::pair<R, I> binomial_mod_pp_reduced_2(I n, I k, int p, int e, const R* fact_table) {
+    auto fn = factorial_mod_pp_reduced_2_modx(n, p, e, fact_table);
+    auto fk = factorial_mod_pp_reduced_2_modx(k, p, e, fact_table);
+    auto fl = factorial_mod_pp_reduced_2_modx(I(n - k), p, e, fact_table);
     auto b = fn.first / (fk.first * fl.first);
     auto a = fn.second - (fk.second + fl.second);
-	return{ b, a };
+	return{ b.v, a };
 }
 
 /**
@@ -185,18 +194,18 @@ std::pair<moduloX<R>, I> binomial_mod_pp_reduced_2(I n, I k, int p, int e, const
  * @param n - number to take the factorial of
  * @param fact_table - look-up table of `n! % p^e` up to 'p*e',
  *   see `factorials_mod_pp_skipped`
- * @return - `f`
+ * @return - the pair {f, u}
  */
 template<typename R, typename I>
-R factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
+std::pair<R, I> factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
     R m = powT<R>(p, e);
     R me = m / p * (p - 1);
-    if (n <= p * e) return fact_table[castOf<int, I>(n)] % m;
     I u = n / p; int v = castOf<int, I>(n % p);
     int r = (e + 1) / 2;
+    if (n <= p * e) return{ fact_table[castOf<int, I>(n)] % m, u };
 
     // gcd look-up table
-    vector<vector<int>> gcd_table(e + 1, vector<int>(e + 1));
+    std::vector<std::vector<int>> gcd_table(e + 1, std::vector<int>(e + 1));
     for (int i = 0; i <= e; i++) {
         for (int j = 0; j <= e; j++) {
             gcd_table[i][j] = gcd(i, j);
@@ -204,10 +213,10 @@ R factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
     }
     auto gcd_f = [&](I n, int d) { return gcd_table[castOf<int, I>(n % d)][d]; };
 
-    vector<I> numerators;
-    vector<int> denominators;
+    std::vector<I> numerators;
+    std::vector<int> denominators;
     // alpha coefficients
-    vector<R> alphas(e);
+    std::vector<R> alphas(e);
     for (int j = 1; j < e; j++) {
         moduloX<R> alpha(1, me);
         numerators.clear();
@@ -226,7 +235,7 @@ R factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
         alphas[j] = alpha.v;
     }
     // beta coefficients
-    vector<R> betas(r + 1);
+    std::vector<R> betas(r + 1);
     for (int j = 1; j <= r; j++) {
         moduloX<R> beta(1, me);
         numerators.clear();
@@ -265,7 +274,7 @@ R factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
         f *= modulo_power<R, R>(bin.v, alphas[j], m);
     }
     // fact(u*p+v, p) = fact(u*p, p) * fact(v, p) * bin(u*p+v, v, p)
-    return f.v;
+    return{ f.v, u };
 }
 
 /**
@@ -282,15 +291,16 @@ R factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table) {
  * @param n - number to take the factorial of
  * @param fact_table - look-up table of `n! % p^e` up to 'p*e',
  *   see `factorials_mod_pp_skipped`
- * @return - `f`
+ * @return - the pair {f, a}
  */
 template<typename R, typename I>
-R factorial_mod_pp_reduced(I n, int p, int e, const R* fact_table) {
+std::pair<R, I> factorial_mod_pp_reduced(I n, int p, int e, const R* fact_table) {
     moduloX<R> r(1, powT(castOf<R>(p), e));
+    I a = 0;
     for (int i = 0; n > 1; i++) {
-        r *= factorial_mod_pp_skipped(n, p, e, fact_table), n /= p;
+        r *= factorial_mod_pp_skipped(n, p, e, fact_table).first, n /= p, a += n;
     }
-    return r.v;
+    return{ r.v, a };
 }
 
 /**
@@ -311,22 +321,23 @@ R factorial_mod_pp_reduced(I n, int p, int e, const R* fact_table) {
  * @return - the pair {b, a}
  */
 template<typename R, typename I>
-R binomial_mod_pp_reduced(I n, I k, int p, int e, const R* fact_table) {
+std::pair<R, I> binomial_mod_pp_reduced(I n, I k, int p, int e, const R* fact_table) {
     I l = n - k;
     R m = powT<R>(castOf<R>(p), e);
     moduloX<R> r(1, m), s = r;
+    I a = 0;
     bool sign = !(p == 2 && e != 2);
     for (int i = 0; n > 1; i++) {
         // Since we are multiplying factorial_mod_pp_skipped(n % m)
         // instead of simply doing factorial_mod_pp_duced(n),
         // we need to adjust the sign. This is faster than the later.
         if (sign && i >= e - 1 && (n % p) < (k % p) + (l % p)) r = -r;
-        if (n > 0) r *= factorial_mod_pp_skipped(castOf<R, I>(n % m), p, e, fact_table), n /= p;
-        if (k > 0) s *= factorial_mod_pp_skipped(castOf<R, I>(k % m), p, e, fact_table), k /= p;
-        if (l > 0) s *= factorial_mod_pp_skipped(castOf<R, I>(l % m), p, e, fact_table), l /= p;
+        if (n > 0) r *= factorial_mod_pp_skipped(castOf<R, I>(n % m), p, e, fact_table).first, n /= p, a += n;
+        if (k > 0) s *= factorial_mod_pp_skipped(castOf<R, I>(k % m), p, e, fact_table).first, k /= p, a -= k;
+        if (l > 0) s *= factorial_mod_pp_skipped(castOf<R, I>(l % m), p, e, fact_table).first, l /= p, a -= l;
     }
     r /= s;
-    return r.v;
+    return{ r.v, a };
 }
 
 } // math

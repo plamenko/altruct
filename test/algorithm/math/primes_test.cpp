@@ -285,10 +285,18 @@ TEST(primes_test, factor_integer_trial_division_first_1000) {
 }
 
 TEST(primes_test, factor_out) {
-    EXPECT_EQ(17, factor_out(17, 3));
-    EXPECT_EQ(1, factor_out(243, 3));
-    EXPECT_EQ(17, factor_out(243 * 17, 3));
-    EXPECT_EQ(powT(2LL, 15), factor_out(powT(10LL, 15), 5));
+    int e1 = 1000;
+    EXPECT_EQ(17, factor_out(17, 3, e1));
+    EXPECT_EQ(1000, e1);
+    int e2 = 1000;
+    EXPECT_EQ(1, factor_out(243, 3, e2));
+    EXPECT_EQ(1005, e2);
+    int e3 = 1000;
+    EXPECT_EQ(17, factor_out(243 * 17, 3, e3));
+    EXPECT_EQ(1005, e3);
+    int e4 = 1000;
+    EXPECT_EQ(powT(2LL, 15), factor_out(powT(10LL, 15), 5, e4));
+    EXPECT_EQ(1015, e4);
 }
 
 TEST(primes_test, fraction_reduce) {
