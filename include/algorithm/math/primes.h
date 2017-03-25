@@ -163,6 +163,30 @@ void factor(int *bpf, int n, const int *p, int m);
 /**
  * Prime factorization of integer `n`
  *
+ * Stores the prime factors and their exponents to the map `mf`. This
+ * function requires a prime factors array for integers up to `n` inclusive
+ * to be provided. That array can be precalculated with the `factor` function.
+ *
+ * Complexity: O(log n / log log n)
+ *
+ * @param mf - map to store prime factors and the corresponding exponents
+ * @param n - integer to factor
+ * @param pf - array of prime factors for integers up to `n` inclusive
+ */
+template<typename M>
+void factor_integer_to_map(M &mf, int n, const int *pf) {
+    while (n > 1) {
+        int p = pf[n], e = 0;
+        while (n % p == 0) {
+            n /= p, e++;
+        }
+        mf[p] += e;
+    }
+}
+
+/**
+ * Prime factorization of integer `n`
+ *
  * Stores the prime factors and their exponents to the vector `vf`. This
  * function requires a prime factors array for integers up to `n` inclusive
  * to be provided. That array can be precalculated with the `factor` function.
@@ -477,6 +501,36 @@ std::vector<std::pair<I, int>> factor_integer_slow(I n) {
 }
 
 /**
+ * Factors out all factors `p` out of `n`.
+ */
+template<typename I, typename P>
+I factor_out(I n, P p) {
+    while (n % p == 0) n /= p;
+    return n;
+}
+
+/**
+ * Jointly reduces the given lists of numerators and denominators.
+ *
+ *    n     n_0 * ... * n_l1
+ *   --- = ------------------
+ *    d     d_0 * ... * d_l2
+ */
+template<typename I, typename P, typename G>
+void fraction_reduce(std::vector<I>& numerators, std::vector<P>& denominators, G gcd) {
+    for (auto& d : denominators) {
+        for (size_t i = 0; d > 1 && i < numerators.size();) {
+            auto g = gcd(numerators[i], d);
+            if (g > 1) {
+                d /= g, numerators[i] /= g;
+            } else {
+                i++;
+            }
+        }
+    }
+}
+
+/**
  * Gives the vector of digits of `n` in base `b`.
  *
  * @param n - number to extract the digits of
@@ -487,9 +541,9 @@ template<typename I, typename B>
 std::vector<B> integer_digits(const I& n, const B& b, int len = 0) {
 	std::vector<B> vd;
 	for (I t = n; t > 0; t /= b) {
-		vd.push_back(t % b);
+		vd.push_back(castOf<B, I>(t % b));
 	}
-	while (vd.size() < len) {
+    while ((int)vd.size() < len) {
 		vd.push_back(0);
 	}
 	return vd;

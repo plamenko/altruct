@@ -2,6 +2,8 @@
 #include "structure/math/polynom.h"
 
 #include <algorithm>
+#include <vector>
+#include <map>
 
 #include "gtest/gtest.h"
 
@@ -133,45 +135,56 @@ TEST(primes_test, factor) {
 }
 
 TEST(primes_test, factor_integer) {
-	int n = 30;
-	vector<int> vp(n);
-	int m = primes(&vp[0], nullptr, n);
-	vector<int> vpf(n);
-	factor(&vpf[0], n, &vp[0], m);
+    int n = 30;
+    vector<int> vp(n);
+    int m = primes(&vp[0], nullptr, n);
+    vector<int> vpf(n);
+    factor(&vpf[0], n, &vp[0], m);
 
-	vector<pair<int, int>> vf0; factor_integer(vf0, 0, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {}), vf0);
-	vector<pair<int, int>> vf1; factor_integer(vf1, 1, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {}), vf1);
-	vector<pair<int, int>> vf2; factor_integer(vf2, 2, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {{ 2, 1 } }), vf2);
-	vector<pair<int, int>> vf17; factor_integer(vf17, 17, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {{ 17, 1 } }), vf17);
-	vector<pair<int, int>> vf20; factor_integer(vf20, 20, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {{ 5, 1 }, { 2, 2 } }), vf20);
+    vector<int> vm0(1); factor_integer_to_map(vm0, 0, &vpf[0]);
+    EXPECT_EQ((vector<int> {0}), vm0);
+    vector<int> vm1(2); factor_integer_to_map(vm1, 1, &vpf[0]);
+    EXPECT_EQ((vector<int> {0, 0}), vm1);
+    vector<int> vm2(7); factor_integer_to_map(vm2, 6, &vpf[0]);
+    EXPECT_EQ((vector<int> {0, 0, 1, 1, 0, 0, 0}), vm2);
+    vector<int> vm3(18); factor_integer_to_map(vm3, 17, &vpf[0]);
+    EXPECT_EQ((vector<int> {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}), vm3);
+    map<int, int> vm4; factor_integer_to_map(vm4, 20, &vpf[0]);
+    EXPECT_EQ((map<int, int> {{ 2, 2 }, { 5, 1 }}), vm4);
 
-	vector<pair<int, int>> vf9800; factor_integer(vf9800, vector<int>{ 20, 14, 35 }, &vpf[0]);
-	EXPECT_EQ((vector<pair<int, int>> {{ 5, 2 }, { 2, 3 }, { 7, 2 } }), vf9800);
+    vector<pair<int, int>> vf0; factor_integer(vf0, 0, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {}), vf0);
+    vector<pair<int, int>> vf1; factor_integer(vf1, 1, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {}), vf1);
+    vector<pair<int, int>> vf2; factor_integer(vf2, 2, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {{ 2, 1 } }), vf2);
+    vector<pair<int, int>> vf17; factor_integer(vf17, 17, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {{ 17, 1 } }), vf17);
+    vector<pair<int, int>> vf20; factor_integer(vf20, 20, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {{ 5, 1 }, { 2, 2 } }), vf20);
 
-	vector<int64_t> vd20; divisors(vd20, vf20); sort(vd20.begin(), vd20.end());
-	EXPECT_EQ((vector<int64_t>{ 1, 2, 4, 5, 10, 20 }), vd20);
-	vector<int64_t> vd9800; divisors(vd9800, vf9800, int64_t(49)); sort(vd9800.begin(), vd9800.end());
-	EXPECT_EQ((vector<int64_t>{ 1, 2, 4, 5, 7, 8, 10, 14, 20, 25, 28, 35, 40, 49 }), vd9800);
-	vector<pair<int, int>> vf1e9{ { 1000000007, 1 }, { 1000000009, 1 } };
-	vector<int64_t> vd1e9; divisors(vd1e9, vf1e9); sort(vd1e9.begin(), vd1e9.end());
-	EXPECT_EQ((vector<int64_t>{ 1, 1000000007, 1000000009, int64_t(1000000016000000063LL) }), vd1e9);
+    vector<pair<int, int>> vf9800; factor_integer(vf9800, vector<int>{ 20, 14, 35 }, &vpf[0]);
+    EXPECT_EQ((vector<pair<int, int>> {{ 5, 2 }, { 2, 3 }, { 7, 2 } }), vf9800);
 
-	EXPECT_EQ((vector<int>{5, 2}), prime_factors(vf20));
-	EXPECT_EQ((vector<int>{5, 2, 7}), prime_factors(vf9800));
-	EXPECT_EQ((vector<int>{1, 2}), prime_exponents(vf20));
-	EXPECT_EQ((vector<int>{2, 3, 2}), prime_exponents(vf9800));
+    vector<int64_t> vd20; divisors(vd20, vf20); sort(vd20.begin(), vd20.end());
+    EXPECT_EQ((vector<int64_t>{ 1, 2, 4, 5, 10, 20 }), vd20);
+    vector<int64_t> vd9800; divisors(vd9800, vf9800, int64_t(49)); sort(vd9800.begin(), vd9800.end());
+    EXPECT_EQ((vector<int64_t>{ 1, 2, 4, 5, 7, 8, 10, 14, 20, 25, 28, 35, 40, 49 }), vd9800);
+    vector<pair<int, int>> vf1e9{ { 1000000007, 1 }, { 1000000009, 1 } };
+    vector<int64_t> vd1e9; divisors(vd1e9, vf1e9); sort(vd1e9.begin(), vd1e9.end());
+    EXPECT_EQ((vector<int64_t>{ 1, 1000000007, 1000000009, int64_t(1000000016000000063LL) }), vd1e9);
 
-	EXPECT_EQ(1, divisor_sigma0(vf0));
-	EXPECT_EQ(1, divisor_sigma0(vf1));
-	EXPECT_EQ(2, divisor_sigma0(vf2));
-	EXPECT_EQ(2, divisor_sigma0(vf17));
-	EXPECT_EQ(6, divisor_sigma0(vf20));
-	EXPECT_EQ(36, divisor_sigma0(vf9800));
+    EXPECT_EQ((vector<int>{5, 2}), prime_factors(vf20));
+    EXPECT_EQ((vector<int>{5, 2, 7}), prime_factors(vf9800));
+    EXPECT_EQ((vector<int>{1, 2}), prime_exponents(vf20));
+    EXPECT_EQ((vector<int>{2, 3, 2}), prime_exponents(vf9800));
+
+    EXPECT_EQ(1, divisor_sigma0(vf0));
+    EXPECT_EQ(1, divisor_sigma0(vf1));
+    EXPECT_EQ(2, divisor_sigma0(vf2));
+    EXPECT_EQ(2, divisor_sigma0(vf17));
+    EXPECT_EQ(6, divisor_sigma0(vf20));
+    EXPECT_EQ(36, divisor_sigma0(vf9800));
 }
 
 TEST(primes_test, carmichael_lambda) {
@@ -269,6 +282,27 @@ TEST(primes_test, factor_integer_trial_division_first_1000) {
 		fact vf; factor_integer(vf, i, &vpf[0]);
 		EXPECT_EQ(sorted(vf), sorted(factor_integer_slow(i)));
 	}
+}
+
+TEST(primes_test, factor_out) {
+    EXPECT_EQ(17, factor_out(17, 3));
+    EXPECT_EQ(1, factor_out(243, 3));
+    EXPECT_EQ(17, factor_out(243 * 17, 3));
+    EXPECT_EQ(powT(2LL, 15), factor_out(powT(10LL, 15), 5));
+}
+
+TEST(primes_test, fraction_reduce) {
+    auto gcd_f = [](int x, int y){return gcd(x, y); };
+    vector<int> num0{ 2 * 6, 5, 35, 22 };
+    vector<int> den0{ 5, 13, 6 * 17 };
+    fraction_reduce(num0, den0, gcd_f);
+    EXPECT_EQ((vector<int>{2, 1, 35, 22}), num0);
+    EXPECT_EQ((vector<int>{1, 13, 17, }), den0);
+    vector<int> num1{ 5, 13, 6 * 17 };
+    vector<int> den1{ 2 * 6, 5, 35, 22 };
+    fraction_reduce(num1, den1, gcd_f);
+    EXPECT_EQ((vector<int>{1, 13, 17, }), num1);
+    EXPECT_EQ((vector<int>{2, 1, 35, 22}), den1);
 }
 
 TEST(primes_test, integer_digits) {
