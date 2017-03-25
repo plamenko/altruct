@@ -76,11 +76,11 @@ I modulo_div_int(I x, I y, I M) {
 	if (g != 1) { // uh oh, y and M are not coprime, try common gcd
 		g = gcd(x, g);
 		x /= g; y /= g;
-		gcd_ex(y, M / g, &yi); // == k
+		gcd_ex(y, I(M / g), &yi); // == k
 		// if (k != 1), there is no result, or more precisely,
 		// the result will be `k` times bigger than it should.
 	}
-	modulo_normalize_int(&yi, M / g);
+	modulo_normalize_int(&yi, I(M / g));
 	return modulo_mul(x, yi, M);
 }
 inline int64_t modulo_div(int64_t x, int64_t y, int64_t M) { return modulo_div_int(x, y, M); }

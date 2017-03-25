@@ -8,6 +8,18 @@ namespace altruct {
 namespace math {
 
 /**
+ * Casts value from T to I.
+ */
+template<typename R, typename T>
+struct castT {
+    static R of(const T& x) {
+        return R(x);
+    }
+};
+template<typename R, typename T>
+R castOf(const T& x) { return castT<R, T>::of(x); }
+
+/**
  * Gives the multiplicative identity element for the element `x`.
  *
  * For example:
