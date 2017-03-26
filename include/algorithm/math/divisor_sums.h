@@ -687,5 +687,36 @@ T sum_phi_D_L(int D, int L, int64_t n, int U, T id = T(1)) {
 	return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, U, id).back();
 }
 
+/**
+ * Divisor Sigma k (Sum of k-th powers of divisors) up to `n`
+ *
+ * A faster implementation than the `O(n log n)` ones in `primes.h`.
+ *
+ * Complexity: O(n log log n)
+ *
+ * @param ds - table to store the result; accessed via [] operator
+ * @param k - dvisors are taken to the k-th power
+ * @param n - sum is calculated up to `n` (exclusive)
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
+template<typename T, typename TBL>
+void divisor_sigma(TBL& ds, int k, int n, int* pa, int m, T id = T(1)) {
+    // s_k = Id_k * 1
+    auto _c1 = [&](int n){ return id; };
+    if (k == 0) {
+        auto _id_0 = [&](int n){ return id; };
+        dirichlet_convolution_multiplicative(ds, _id_0, _c1, n, pa, m);
+    } else if (k == 1) {
+        auto _id_1 = [&](int n){ return castOf(id, n); };
+        dirichlet_convolution_multiplicative(ds, _id_1, _c1, n, pa, m);
+    } else if (k == 2) {
+        auto _id_2 = [&](int n){ return sqT(castOf(id, n)); };
+        dirichlet_convolution_multiplicative(ds, _id_2, _c1, n, pa, m);
+    } else {
+        auto _id_k = [&](int n){ return powT(castOf(id, n), k); };
+        dirichlet_convolution_multiplicative(ds, _id_k, _c1, n, pa, m);
+    }
+}
+
 } // math
 } // altruct

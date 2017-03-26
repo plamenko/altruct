@@ -196,7 +196,7 @@ TEST(divisor_sums_test, mertens) {
 	EXPECT_EQ(v_M, va);
 }
 
-TEST(totient_divisor_sums_test, sum_phi_D_L) {
+TEST(divisor_sums_test, sum_phi_D_L) {
 	auto id = field(1);
 	auto vn = range<int64_t>(21);
 	
@@ -215,7 +215,7 @@ TEST(totient_divisor_sums_test, sum_phi_D_L) {
 	EXPECT_EQ(field(356214470), sum_phi_D_L(1, 0, 10000000, 0, id));
 }
 
-TEST(totient_divisor_sums_test, sum_phi_D_L_modx) {
+TEST(divisor_sums_test, sum_phi_D_L_modx) {
 	typedef moduloX<int> modx;
 
 	auto id = modx(1, 1009);
@@ -234,4 +234,24 @@ TEST(totient_divisor_sums_test, sum_phi_D_L_modx) {
 	EXPECT_EQ(to_modx(1009, { 0, 1, 9, 54, 166, 516, 984, 289, 944, 67, 840, 633, 770, 845, 410, 712, 78, 619, 259, 885, 554 }), sum_phi_D_L(2, 2, vn, 0, id));
 
 	EXPECT_EQ(modx(984, 1009), sum_phi_D_L(1, 0, 10000000, 0, id));
+}
+
+TEST(divisor_sums_test, divisor_sigma) {
+    int n = 30;
+    auto pa = primes_table(n);
+    vector<int> vds0(n);
+    divisor_sigma<int>(vds0, 0, n, pa.data(), (int)pa.size());
+    EXPECT_EQ((vector<int> {0, 1, 2, 2, 3, 2, 4, 2, 4, 3, 4, 2, 6, 2, 4, 4, 5, 2, 6, 2, 6, 4, 4, 2, 8, 3, 4, 4, 6, 2}), vds0);
+
+    vector<int64_t> vds1(n);
+    divisor_sigma<int64_t>(vds1, 1, n, pa.data(), (int)pa.size());
+    EXPECT_EQ((vector<int64_t> {0, 1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42, 32, 36, 24, 60, 31, 42, 40, 56, 30}), vds1);
+
+    vector<int64_t> vds2(n);
+    divisor_sigma<int64_t>(vds2, 2, n, pa.data(), (int)pa.size());
+    EXPECT_EQ((vector<int64_t> {0, 1, 5, 10, 21, 26, 50, 50, 85, 91, 130, 122, 210, 170, 250, 260, 341, 290, 455, 362, 546, 500, 610, 530, 850, 651, 850, 820, 1050, 842 }), vds2);
+
+    vector<modx> vds10(n);
+    divisor_sigma(vds10, 10, n, pa.data(), (int)pa.size(), modx(1, 107));
+    EXPECT_EQ(to_modx(107, { 0, 1, 62, 93, 38, 57, 95, 65, 72, 104, 3, 43, 3, 10, 71, 58, 6, 20, 28, 38, 26, 53, 98, 36, 62, 90, 85, 46, 9, 5 }), vds10);
 }
