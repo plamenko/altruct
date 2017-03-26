@@ -58,6 +58,7 @@
     <ClInclude Include="..\..\include\algorithm\math\ranges.h" />
     <ClInclude Include="..\..\include\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\algorithm\math\reduce.h" />
+    <ClInclude Include="..\..\include\algorithm\math\sequences.h" />
     <ClInclude Include="..\..\include\algorithm\math\sums.h" />
     <ClInclude Include="..\..\include\algorithm\math\divisor_sums.h" />
     <ClInclude Include="..\..\include\algorithm\math\triples.h" />

@@ -181,6 +181,9 @@
     <ClCompile Include="..\..\test\algorithm\math\comb_mod_pp_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\sequences_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

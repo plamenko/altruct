@@ -19,7 +19,7 @@ struct castT {
         return R(x);
     }
     static R of(const R& ref, const T& x) {
-        return R(x);
+        return of(x);
     }
 };
 template<typename T>

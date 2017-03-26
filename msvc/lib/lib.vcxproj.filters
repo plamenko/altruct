@@ -275,5 +275,8 @@
     <ClInclude Include="..\..\include\algorithm\math\comb_mod_pp.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\sequences.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
