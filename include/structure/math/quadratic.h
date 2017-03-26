@@ -40,8 +40,9 @@ struct quadratic_members<T, ID, quadratic_storage::CONSTANT> {
  * quadratic<double, -1> - complex numbers
  *
  * @param T - the underlying type
- * @param ID - ID of the quadratic type (useful when STATIC = true)
- * @param STATIC - whether D is a static or instance member
+ * @param ID - ID of the modulo type (useful with modulo_storage::CONSTANT)
+ * @param STORAGE_TYPE - whether D is a constant, static or instance member
+ *   See `modulo::STORAGE_TYPE` for details.
  */
 template<typename T, int ID, int STORAGE_TYPE = quadratic_storage::STATIC>
 class quadratic : public quadratic_members<T, ID, STORAGE_TYPE> {

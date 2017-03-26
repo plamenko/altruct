@@ -39,6 +39,13 @@ struct series_members<T, ID, series_storage::CONSTANT> {
 
 /**
  * A formal power series
+ *
+ * `s(x) = p(x) + O(x^N)`, where p(x) is a polynomial of degree N-1
+ *
+ * @param T - the underlying type
+ * @param ID - ID of the modulo type (useful with modulo_storage::CONSTANT)
+ * @param STORAGE_TYPE - whether N is a constant, static or instance member
+ *   See `modulo::STORAGE_TYPE` for details.
  */
 template<typename T, int ID, int STORAGE_TYPE = series_storage::CONSTANT>
 class series : public series_members<T, ID, STORAGE_TYPE> {

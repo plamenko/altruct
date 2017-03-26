@@ -123,8 +123,25 @@ struct modulo_members<T, ID, modulo_storage::CONSTANT> {
  * modulo<int, 3> - Z/3Z
  *
  * @param T - the underlying type
- * @param ID - ID of the modulo type (useful when STATIC = true)
- * @param STATIC - whether M is a static or instance member
+ * @param ID - ID of the modulo type (useful with modulo_storage::CONSTANT)
+ * @param STORAGE_TYPE - whether M is a constant, static or instance member
+ *    CONSTANT - Uses the ID template argument as M which is a constant.
+ *      This allows compiler to employ optimized division by constant.
+ *      If your moudlo is always say 1000000007, this is the way to go.
+ *      This option can only be used when the type T is int.
+ *    STATIC - Has a class static member for M. Separate for each <T, ID>.
+ *      This allows to avoid having the same instance of M for each instance
+ *      of modulo. Useful when having a large array of instances when M gets
+ *      known only at run time, or when the type T is not int.
+ *    INSTANCE - Each modulo instance consists of both value v and modulus M.
+ *      This is not as time and space efficient as the above two, but is the
+ *      prefered option when keeping an instance of M for each instance of
+ *      modulo is not a problem.
+ *      Note that operations between two instances (v1, m1) and (v2, m2) with
+ *      different moduli are allowed and in such case m1 gets used as modulus.
+ *      This is both for performance reasons (avoids a check) and convenience
+ *      as one can do `modx(v, M) * int(u)` in which case the second operand
+ *      gets resolved to `modx(u, 0)` which has an invalid modulus 0.
  */
 template<typename T, int ID, int STORAGE_TYPE = modulo_storage::STATIC>
 class modulo : public modulo_members<T, ID, STORAGE_TYPE> {

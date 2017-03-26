@@ -1,5 +1,10 @@
 rename lib -> src
 
+altruct::chrono
+	rdtsc clock
+
+Pretty printers for ostream
+
 Tests
 	use compare macro to simplify comparison operator tests
 	helper methods to anonymous namespace
