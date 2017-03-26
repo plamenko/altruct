@@ -666,7 +666,7 @@ TEST(polynom_modx_test, integral) {
 	EXPECT_EQ(make_polyx(1009, { 3, 7, 4, 5, -1, 4 }), pi3);
 }
 
-TEST(polynom_modx_test, identity) {
+TEST(polynom_modx_test, casts) {
 	polyx p1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
 	EXPECT_EQ(2, p1[0].v);
 	EXPECT_EQ(1009, p1[0].M());
@@ -676,6 +676,7 @@ TEST(polynom_modx_test, identity) {
 	EXPECT_EQ(1009, p1[2].M());
 	EXPECT_EQ(0, p1[3].v);
 	EXPECT_EQ(1009, p1[3].M());
+    EXPECT_EQ(2, p1.deg());
 	polyx e0 = zeroT<polyx>::of(p1);
 	EXPECT_EQ(0, e0[0].v);
 	EXPECT_EQ(1009, e0[0].M());
@@ -684,4 +685,30 @@ TEST(polynom_modx_test, identity) {
 	EXPECT_EQ(1, e1[0].v);
 	EXPECT_EQ(1009, e1[0].M());
 	EXPECT_EQ(0, e1.deg());
+    const polyx p2 = castOf<polyx>(p1);
+    EXPECT_EQ(2, p2[0].v);
+    EXPECT_EQ(1009, p2[0].M());
+    EXPECT_EQ(3, p2[1].v);
+    EXPECT_EQ(1009, p2[1].M());
+    EXPECT_EQ(5, p2[2].v);
+    EXPECT_EQ(1009, p2[2].M());
+    EXPECT_EQ(0, p2[3].v);
+    EXPECT_EQ(1009, p2[3].M());
+    EXPECT_EQ(2, p2.deg());
+    const polyx p3 = castOf(e1, p1);
+    EXPECT_EQ(2, p3[0].v);
+    EXPECT_EQ(1009, p3[0].M());
+    EXPECT_EQ(3, p3[1].v);
+    EXPECT_EQ(1009, p3[1].M());
+    EXPECT_EQ(5, p3[2].v);
+    EXPECT_EQ(1009, p3[2].M());
+    EXPECT_EQ(0, p3[3].v);
+    EXPECT_EQ(1009, p3[3].M());
+    EXPECT_EQ(2, p3.deg());
+    const polyx p4 = castOf(e1, 4);
+    EXPECT_EQ(4, p4[0].v);
+    EXPECT_EQ(1009, p4[0].M());
+    EXPECT_EQ(0, p4[1].v);
+    EXPECT_EQ(1009, p4[1].M());
+    EXPECT_EQ(0, p4.deg());
 }

@@ -639,17 +639,38 @@ TEST(polynom_test, integral) {
 	EXPECT_EQ((polynom<int>{ 3, 7, 4, 5, -1, 4 }), pi3);
 }
 
-TEST(polynom_test, identity) {
+TEST(polynom_test, casts) {
 	typedef polynom<int> poly;
 	poly p1{ 2, 3, 5 };
 	EXPECT_EQ(2, p1[0]);
 	EXPECT_EQ(3, p1[1]);
 	EXPECT_EQ(5, p1[2]);
 	EXPECT_EQ(0, p1[3]);
-	poly e0 = zeroT<poly>::of(p1);
+    EXPECT_EQ(2, p1.deg());
+	const poly e0 = zeroT<poly>::of(p1);
 	EXPECT_EQ(0, e0[0]);
 	EXPECT_EQ(0, e0.deg());
-	poly e1 = identityT<poly>::of(p1);
+	const poly e1 = identityT<poly>::of(p1);
 	EXPECT_EQ(1, e1[0]);
 	EXPECT_EQ(0, e1.deg());
+    const poly p2 = castOf<poly>(p1);
+    EXPECT_EQ(2, p2[0]);
+    EXPECT_EQ(3, p2[1]);
+    EXPECT_EQ(5, p2[2]);
+    EXPECT_EQ(0, p2[3]);
+    EXPECT_EQ(2, p2.deg());
+    const poly p3 = castOf(e1, p1);
+    EXPECT_EQ(2, p3[0]);
+    EXPECT_EQ(3, p3[1]);
+    EXPECT_EQ(5, p3[2]);
+    EXPECT_EQ(0, p3[3]);
+    EXPECT_EQ(2, p3.deg());
+    const poly p4 = castOf(e1, 4);
+    EXPECT_EQ(4, p4[0]);
+    EXPECT_EQ(0, p4[1]);
+    EXPECT_EQ(0, p4.deg());
+    const poly p5 = castOf<poly>(5);
+    EXPECT_EQ(5, p5[0]);
+    EXPECT_EQ(0, p5[1]);
+    EXPECT_EQ(0, p5.deg());
 }

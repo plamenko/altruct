@@ -156,7 +156,7 @@ TEST(quadratic_test, norm) {
 	EXPECT_EQ(25, g2.norm());
 }
 
-TEST(quadratic_test, identity) {
+TEST(quadratic_test, casts) {
 	const quad q(2, -5);
 	const quad e0 = zeroT<quad>::of(q);
 	const quad e1 = identityT<quad>::of(q);
@@ -166,9 +166,25 @@ TEST(quadratic_test, identity) {
 	EXPECT_EQ(1, e1.a);
 	EXPECT_EQ(0, e1.b);
 	EXPECT_EQ(5, e1.D());
+    const quad q3 = castOf<quad>(3);
+    EXPECT_EQ(3, q3.a);
+    EXPECT_EQ(0, q3.b);
+    EXPECT_EQ(5, q3.D());
+    const quad q4 = castOf(q, 4);
+    EXPECT_EQ(4, q4.a);
+    EXPECT_EQ(0, q4.b);
+    EXPECT_EQ(5, q4.D());
+    const quad q6 = castOf(q, q4);
+    EXPECT_EQ(4, q6.a);
+    EXPECT_EQ(0, q6.b);
+    EXPECT_EQ(5, q6.D());
+    const quad q7 = castOf<quad>(q4);
+    EXPECT_EQ(4, q7.a);
+    EXPECT_EQ(0, q7.b);
+    EXPECT_EQ(5, q7.D());
 }
 
-TEST(quadratic_test, identity_x) {
+TEST(quadratic_test, casts_x) {
 	const quadx z(2, -5, -1);
 	const quadx z0 = zeroT<quadx>::of(z);
 	const quadx z1 = identityT<quadx>::of(z);
@@ -178,4 +194,16 @@ TEST(quadratic_test, identity_x) {
 	EXPECT_EQ(1, z1.a);
 	EXPECT_EQ(0, z1.b);
 	EXPECT_EQ(-1, z1.D());
+    const quadx z5 = castOf(z, 5);
+    EXPECT_EQ(5, z5.a);
+    EXPECT_EQ(0, z5.b);
+    EXPECT_EQ(-1, z5.D());
+    const quadx z6 = castOf(z, z5);
+    EXPECT_EQ(5, z6.a);
+    EXPECT_EQ(0, z6.b);
+    EXPECT_EQ(-1, z6.D());
+    const quadx z7 = castOf<quadx>(z5);
+    EXPECT_EQ(5, z7.a);
+    EXPECT_EQ(0, z7.b);
+    EXPECT_EQ(-1, z7.D());
 }

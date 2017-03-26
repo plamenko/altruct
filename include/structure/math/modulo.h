@@ -185,19 +185,34 @@ template<typename T>
 using moduloX = modulo<T, 0, modulo_storage::INSTANCE>;
 
 template<typename T, int ID>
-T modulo_members<T, ID, modulo_storage::STATIC>::_M = T(ID);
+T modulo_members<T, ID, modulo_storage::STATIC>::_M = castOf<T>(ID);
+
+template<typename T, int ID, int STORAGE_TYPE, typename I>
+struct castT<modulo<T, ID, STORAGE_TYPE>, I> {
+    typedef modulo<T, ID, STORAGE_TYPE> mod;
+    static mod of(const I& x) {
+        return mod(castOf<T>(x % mod::M()));
+    }
+    static mod of(const mod& ref, const I& x) {
+        return mod(castOf(ref.v, x % ref.M()), ref.M());
+    }
+};
+template<typename T, int ID, int STORAGE_TYPE>
+struct castT<modulo<T, ID, STORAGE_TYPE>, modulo<T, ID, STORAGE_TYPE>> : nopCastT<modulo<T, ID, STORAGE_TYPE>>{};
 
 template<typename T, int ID, int STORAGE_TYPE>
 struct identityT<modulo<T, ID, STORAGE_TYPE>> {
-	static modulo<T, ID, STORAGE_TYPE> of(const modulo<T, ID, STORAGE_TYPE>& x) {
-		return modulo<T, ID, STORAGE_TYPE>(identityT<T>::of(x.v), x.M());
+    typedef modulo<T, ID, STORAGE_TYPE> mod;
+	static mod of(const mod& x) {
+		return mod(identityOf(x.v), x.M());
 	}
 };
 
 template<typename T, int ID, int STORAGE_TYPE>
 struct zeroT<modulo<T, ID, STORAGE_TYPE>> {
-	static modulo<T, ID, STORAGE_TYPE> of(const modulo<T, ID, STORAGE_TYPE>& x) {
-		return modulo<T, ID, STORAGE_TYPE>(zeroT<T>::of(x.v), x.M());
+    typedef modulo<T, ID, STORAGE_TYPE> mod;
+	static mod of(const mod& x) {
+		return mod(zeroOf(x.v), x.M());
 	}
 };
 

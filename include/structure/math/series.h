@@ -43,9 +43,9 @@ struct series_members<T, ID, series_storage::CONSTANT> {
  * `s(x) = p(x) + O(x^N)`, where p(x) is a polynomial of degree N-1
  *
  * @param T - the underlying type
- * @param ID - ID of the modulo type (useful with modulo_storage::CONSTANT)
+ * @param ID - ID of the series type (useful with series_storage::CONSTANT)
  * @param STORAGE_TYPE - whether N is a constant, static or instance member
- *   See `modulo::STORAGE_TYPE` for details.
+ *   See `STORAGE_TYPE` in the `modulo` class for details.
  */
 template<typename T, int ID, int STORAGE_TYPE = series_storage::CONSTANT>
 class series : public series_members<T, ID, STORAGE_TYPE> {
@@ -192,17 +192,32 @@ using seriesX = series<T, 0, series_storage::INSTANCE>;
 template<typename T, int ID>
 int series_members<T, ID, series_storage::STATIC>::_N = ID;
 
+template<typename T, int ID, int STORAGE_TYPE, typename I>
+struct castT<series<T, ID, STORAGE_TYPE>, I> {
+    typedef series<T, ID, STORAGE_TYPE> ser;
+    static ser of(const I& x) {
+        return ser(castOf<polynom<T>>(x));
+    }
+    static ser of(const ser& ref, const I& x) {
+        return ser(castOf(ref.p, x), ref.N());
+    }
+};
+template<typename T, int ID, int STORAGE_TYPE>
+struct castT<series<T, ID, STORAGE_TYPE>, series<T, ID, STORAGE_TYPE>> : nopCastT<series<T, ID, STORAGE_TYPE>>{};
+
 template<typename T, int ID, int STORAGE_TYPE>
 struct identityT<series<T, ID, STORAGE_TYPE>> {
-	static series<T, ID, STORAGE_TYPE> of(const series<T, ID, STORAGE_TYPE>& s) {
-		return series<T, ID, STORAGE_TYPE>(identityT<polynom<T>>::of(s.p), s.N());
+    typedef series<T, ID, STORAGE_TYPE> ser;
+    static ser of(const ser& s) {
+        return ser(identityOf(s.p), s.N());
 	}
 };
 
 template<typename T, int ID, int STORAGE_TYPE>
 struct zeroT<series<T, ID, STORAGE_TYPE>> {
-	static series<T, ID, STORAGE_TYPE> of(const series<T, ID, STORAGE_TYPE>& s) {
-		return series<T, ID, STORAGE_TYPE>(zeroT<polynom<T>>::of(s.p), s.N());
+    typedef series<T, ID, STORAGE_TYPE> ser;
+    static ser of(const ser& s) {
+        return ser(zeroOf(s.p), s.N());
 	}
 };
 

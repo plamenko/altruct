@@ -19,18 +19,17 @@ class polynom {
 public:
 
 	template<typename It>
-	static T make_zero(It begin, It end) { return (begin != end) ? zeroT<T>::of(*begin) : T(0); }
-	static T make_zero(const T& c) { return zeroT<T>::of(c); }
+	static T make_zero(It begin, It end) { return (begin != end) ? zeroOf(*begin) : T(0); }
 
 	T ZERO_COEFF;
 	
 	// p(x) = sum{c[i] * x^i}
 	std::vector<T> c;
 
-	polynom(const T& c0 = T(0)) : ZERO_COEFF(make_zero(c0)) { c.push_back(c0); }
+	polynom(const T& c0 = T(0)) : ZERO_COEFF(zeroOf(c0)) { c.push_back(c0); }
 	// construct from int, but only if T is not integral to avoid constructor clashing
 	template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-	polynom(int c0) : ZERO_COEFF(make_zero(c0)) { c.push_back(c0); } // to allow constructing from 0 and 1
+	polynom(int c0) : ZERO_COEFF(zeroOf(c0)) { c.push_back(c0); } // to allow constructing from 0 and 1
 	polynom(std::vector<T>&& rhs) : ZERO_COEFF(make_zero(rhs.begin(), rhs.end())), c(std::move(rhs)) {}
 	polynom(const std::vector<T>& rhs) : ZERO_COEFF(make_zero(rhs.begin(), rhs.end())), c(rhs) {}
 	template<typename It> polynom(It begin, It end) : ZERO_COEFF(make_zero(begin, end)), c(begin, end) {}
@@ -110,7 +109,7 @@ public:
 	// pr = p1 * p2; O(l1 * l2)
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void _mul_long(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
-		auto ZERO_COEFF = make_zero(*p1);
+		auto ZERO_COEFF = zeroOf(*p1);
 		for (int i = lr; i >= 0; i--) {
 			T r = ZERO_COEFF;
 			int jmax = std::min(i, l1);
@@ -126,7 +125,7 @@ public:
 	// `0 <= l2 <= l1 <= lr <= l1 + l2` must hold
 	// it is allowed for `p1`, `p2` and `pr` to be the same instance
 	static void _mul_karatsuba(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
-		auto ZERO_COEFF = make_zero(*p1);
+		auto ZERO_COEFF = zeroOf(*p1);
 		int k = l1 / 2 + 1; // k > l1 - k >= 0
 		if (l2 == 0) {
 			for (int i = lr; i >= 0; i--) pr[i] = p1[i] * p2[0];
@@ -161,7 +160,7 @@ public:
 	static void _mul(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
 		if (l2 > l1) return _mul(pr, lr, p2, l2, p1, l1);   // ensure `l2 <= l1`
 		l1 = std::min(l1, lr); l2 = std::min(l2, lr);       // ensure `l2 <= l1 <= lr`
-		_zero(pr, l1 + l2, lr, make_zero(*p1));
+		_zero(pr, l1 + l2, lr, zeroOf(*p1));
 		lr = std::min(lr, l1 + l2);                         // ensure `lr <= l1 + l2`
 		polynom_mul<T>::impl(pr, lr, p1, l1, p2, l2);
 	}
@@ -268,10 +267,10 @@ public:
 	
 	template<typename A>
 	A eval(const A& x) const {
-		A r = zeroT<A>::of(x);
+		A r = zeroOf(x);
         if (c.empty()) return r;
 		for (int i = deg(); i >= 0; i--) {
-			r = r * x + A(c[i]);
+			r = r * x + castOf(x, c[i]);
 		}
 		return r;
 	}
@@ -324,6 +323,18 @@ struct polynom_mul {
 		}
 	}
 };
+
+template<typename T, typename I>
+struct castT<polynom<T>, I> {
+    static polynom<T> of(const I& x) {
+        return polynom<T>(castOf<T>(x));
+    }
+    static polynom<T> of(const polynom<T>& ref, const I& x) {
+        return polynom<T>(castOf(ref.ZERO_COEFF, x));
+    }
+};
+template<typename T>
+struct castT<polynom<T>, polynom<T>> : nopCastT<polynom<T>>{};
 
 template<typename T>
 struct identityT<polynom<T>> {

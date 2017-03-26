@@ -209,11 +209,11 @@ TEST(series_test, of) {
 	EXPECT_EQ((series<int, 10>{ 0, 1, 3, 6, 10, 15, 21, 28, 36, 45 }), (series<int, 10>::of([](int n){ return n * (n + 1) / 2; })));
 }
 
-TEST(series_test, identity) {
-	typedef moduloX<int> modx;
-	typedef polynom<modx> polyx;
-	typedef series<modx, 4> serx;
-	serx s1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
+TEST(series_test, casts) {
+	typedef modulo<int, 1009> mod;
+	typedef polynom<mod> poly;
+	typedef series<mod, 4> ser;
+    ser s1{ { 2 }, { 3 }, { 5 } };
 	EXPECT_EQ(2, s1[0].v);
 	EXPECT_EQ(1009, s1[0].M());
 	EXPECT_EQ(3, s1[1].v);
@@ -222,12 +222,41 @@ TEST(series_test, identity) {
 	EXPECT_EQ(1009, s1[2].M());
 	EXPECT_EQ(0, s1[3].v);
 	EXPECT_EQ(1009, s1[3].M());
-	serx e0 = zeroT<serx>::of(s1);
+	ser e0 = zeroT<ser>::of(s1);
 	EXPECT_EQ(0, e0[0].v);
 	EXPECT_EQ(1009, e0[0].M());
 	EXPECT_EQ(0, e0.p.deg());
-	serx e1 = identityT<serx>::of(s1);
+	ser e1 = identityT<ser>::of(s1);
 	EXPECT_EQ(1, e1[0].v);
 	EXPECT_EQ(1009, e1[0].M());
 	EXPECT_EQ(0, e1.p.deg());
+
+    const ser s2 = castOf<ser>(s1);
+    EXPECT_EQ(2, s2[0].v);
+    EXPECT_EQ(1009, s2[0].M());
+    EXPECT_EQ(3, s2[1].v);
+    EXPECT_EQ(1009, s2[1].M());
+    EXPECT_EQ(5, s2[2].v);
+    EXPECT_EQ(1009, s2[2].M());
+    EXPECT_EQ(0, s2[3].v);
+    EXPECT_EQ(1009, s2[3].M());
+    const ser s3 = castOf(e1, s1);
+    EXPECT_EQ(2, s3[0].v);
+    EXPECT_EQ(1009, s3[0].M());
+    EXPECT_EQ(3, s3[1].v);
+    EXPECT_EQ(1009, s3[1].M());
+    EXPECT_EQ(5, s3[2].v);
+    EXPECT_EQ(1009, s3[2].M());
+    EXPECT_EQ(0, s3[3].v);
+    EXPECT_EQ(1009, s3[3].M());
+    const ser s4 = castOf(e1, 4);
+    EXPECT_EQ(4, s4[0].v);
+    EXPECT_EQ(1009, s4[0].M());
+    EXPECT_EQ(0, s4[1].v);
+    EXPECT_EQ(1009, s4[1].M());
+    const ser s5 = castOf<ser>(5);
+    EXPECT_EQ(5, s5[0].v);
+    EXPECT_EQ(1009, s5[0].M());
+    EXPECT_EQ(0, s5[1].v);
+    EXPECT_EQ(1009, s5[1].M());
 }

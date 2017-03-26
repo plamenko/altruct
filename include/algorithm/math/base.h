@@ -9,15 +9,32 @@ namespace math {
 
 /**
  * Casts value from T to I.
+ *
+ * Reference value is useful when additional information is required.
+ * E.g. like when casting to moduloX.
  */
 template<typename R, typename T>
 struct castT {
     static R of(const T& x) {
         return R(x);
     }
+    static R of(const R& ref, const T& x) {
+        return R(x);
+    }
+};
+template<typename T>
+struct nopCastT {
+    static const T& of(const T& x) {
+        return x;
+    }
+    static const T& of(const T& ref, const T& x) {
+        return x;
+    }
 };
 template<typename R, typename T>
 R castOf(const T& x) { return castT<R, T>::of(x); }
+template<typename R, typename T>
+R castOf(const R& ref, const T& x) { return castT<R, T>::of(ref, x); }
 
 /**
  * Gives the multiplicative identity element for the element `x`.

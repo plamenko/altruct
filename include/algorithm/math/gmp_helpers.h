@@ -43,7 +43,6 @@ template<> mpz altruct::math::castT<mpz, long long>::of(const long long& x) {
     return (x < 0) ? -castOf<mpz>((unsigned long long) - x) : castOf<mpz>((unsigned long long)x);
 };
 
-
 //inline mpz int64_to_mpz(int64_t x) { return (mpz(int32_t(x >> 32)) << 32) | mpz(uint32_t(x & 0xFFFFFFFF)); }
 //inline int64_t mpz_to_int64(mpz x) { mpz xh = x >> 32, xl = x & 0xFFFFFFFF; return (int64_t(xh.get_si()) << 32) | uint64_t(xl.get_ui()); }
 inline mpz int64_to_mpz(int64_t x) { return altruct::math::castOf<mpz>(x); }
@@ -75,7 +74,8 @@ inline mpf& f_set(mpf &x, const mpf &val, int prec) { x.set_prec(prec ? prec : v
 inline mpz z_div_floor(mpz a, mpz b) { mpz q; mpz_fdiv_q(q.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t()); return q; }
 inline mpz z_div_ceil(mpz a, mpz b) { mpz q; mpz_cdiv_q(q.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t()); return q; }
 
-
+inline mpz operator % (const mpz& lhs, const int64_t& rhs) { return lhs % int64_to_mpz(rhs); }
+inline mpz operator % (const int64_t& lhs, const mpz& rhs) { return int64_to_mpz(lhs) % rhs; }
 template<> inline int64_t altruct::math::modulo_mul(const int64_t& x, const int64_t& y, const int64_t& M) { return z_mulmod(x, y, M); }
 
 template<> inline mpz altruct::math::sqrtT(mpz x, mpz) { return z_sqrt(x); }

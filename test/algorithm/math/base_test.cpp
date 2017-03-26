@@ -36,6 +36,18 @@ public:
 	wrapped& operator %= (const wrapped &rhs) { v %= rhs.v; return *this; }
 };
 
+TEST(base_test, cast) {
+    EXPECT_EQ(123, (castT<int, int64_t>::of(123LL)));
+    EXPECT_EQ(123.0, (castT<double, int64_t>::of(123LL)));
+    EXPECT_EQ(123LL, (castT<int64_t, int>::of(123)));
+    EXPECT_EQ(123LL, (castT<int64_t, double>::of(123.5)));
+    EXPECT_EQ(123, (castOf<int>(123LL)));
+    EXPECT_EQ(123.0, (castOf<double>(123LL)));
+    EXPECT_EQ(123LL, (castOf<int64_t>(123)));
+    EXPECT_EQ(123LL, (castOf<int64_t>(123.5)));
+    EXPECT_EQ(123LL, (castOf(7LL, 123.5)));
+}
+
 TEST(base_test, identity) {
 	EXPECT_EQ(1, identityT<int>::of(0));
 	EXPECT_EQ(1, identityT<int>::of(1));
@@ -43,6 +55,12 @@ TEST(base_test, identity) {
 	EXPECT_EQ(1.0, identityT<double>::of(0.0));
 	EXPECT_EQ(1.0, identityT<double>::of(1.0));
 	EXPECT_EQ(1.0, identityT<double>::of(5.0));
+    EXPECT_EQ(1, identityOf(0));
+    EXPECT_EQ(1, identityOf(1));
+    EXPECT_EQ(1, identityOf(5));
+    EXPECT_EQ(1.0, identityOf(0.0));
+    EXPECT_EQ(1.0, identityOf(1.0));
+    EXPECT_EQ(1.0, identityOf(5.0));
 }
 
 TEST(base_test, zero) {
@@ -52,6 +70,12 @@ TEST(base_test, zero) {
 	EXPECT_EQ(0.0, zeroT<double>::of(0.0));
 	EXPECT_EQ(0.0, zeroT<double>::of(1.0));
 	EXPECT_EQ(0.0, zeroT<double>::of(5.0));
+    EXPECT_EQ(0, zeroOf(0));
+    EXPECT_EQ(0, zeroOf(1));
+    EXPECT_EQ(0, zeroOf(5));
+    EXPECT_EQ(0.0, zeroOf(0.0));
+    EXPECT_EQ(0.0, zeroOf(1.0));
+    EXPECT_EQ(0.0, zeroOf(5.0));
 }
 
 TEST(base_test, absT) {

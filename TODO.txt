@@ -1,5 +1,11 @@
 rename lib -> src
 
+castT (this allows for proper casting)
+	make all altruct types implement castT
+	add cast tests for all classes
+	revisit casts in various altruct methods
+	tests for gmp_helpers
+
 altruct::chrono
 	rdtsc clock
 

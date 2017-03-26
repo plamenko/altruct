@@ -249,7 +249,7 @@ TEST(series_modx_test, of) {
 	EXPECT_EQ(make_serx(1009, { 0, 1, 3, 6, 10, 15, 21, 28, 36, 45 }), serx::of([](int n){ return modx(n, 1009) * (n + 1) / 2; }, 10));
 }
 
-TEST(series_modx_test, identity) {
+TEST(series_modx_test, casts) {
 	serx s1{ { 2, 1009 }, { 3, 1009 }, { 5, 1009 } };
 	EXPECT_EQ(2, s1[0].v);
 	EXPECT_EQ(1009, s1[0].M());
@@ -267,4 +267,28 @@ TEST(series_modx_test, identity) {
 	EXPECT_EQ(1, e1[0].v);
 	EXPECT_EQ(1009, e1[0].M());
 	EXPECT_EQ(0, e1.p.deg());
+
+    const serx s2 = castOf<serx>(s1);
+    EXPECT_EQ(2, s2[0].v);
+    EXPECT_EQ(1009, s2[0].M());
+    EXPECT_EQ(3, s2[1].v);
+    EXPECT_EQ(1009, s2[1].M());
+    EXPECT_EQ(5, s2[2].v);
+    EXPECT_EQ(1009, s2[2].M());
+    EXPECT_EQ(0, s2[3].v);
+    EXPECT_EQ(1009, s2[3].M());
+    const serx s3 = castOf(e1, s1);
+    EXPECT_EQ(2, s3[0].v);
+    EXPECT_EQ(1009, s3[0].M());
+    EXPECT_EQ(3, s3[1].v);
+    EXPECT_EQ(1009, s3[1].M());
+    EXPECT_EQ(5, s3[2].v);
+    EXPECT_EQ(1009, s3[2].M());
+    EXPECT_EQ(0, s3[3].v);
+    EXPECT_EQ(1009, s3[3].M());
+    const serx s4 = castOf(e1, 4);
+    EXPECT_EQ(4, s4[0].v);
+    EXPECT_EQ(1009, s4[0].M());
+    EXPECT_EQ(0, s4[1].v);
+    EXPECT_EQ(1009, s4[1].M());
 }

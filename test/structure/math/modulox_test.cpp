@@ -113,7 +113,32 @@ TEST(modulox_test, operators_inplace_self) {
 	EXPECT_EQ(modx(0, 1000000007), mr);
 }
 
-TEST(modulox_test, identity) {
+TEST(modulo_test, division) {
+    // 18 directly divisible by 6
+    EXPECT_EQ(modx(3, 1000), modx(18, 1000) / modx(6, 1000));
+    EXPECT_EQ(modx(18, 1000), modx(3, 1000) * modx(6, 1000));
+
+    // 7 is invertible modulo 1000
+    EXPECT_EQ(modx(430, 1000), modx(10, 1000) / modx(7, 1000));
+    EXPECT_EQ(modx(10, 1000), modx(430, 1000) * modx(7, 1000));
+
+    // 48 is not invertible modulo 1000,
+    // but after dividing all three (56, 48 and 1000)
+    // by their GCD 8,  48/8=6 is invertible modulo 1000/8=125
+    EXPECT_EQ(modx(147, 1000), modx(56, 1000) / modx(48, 1000));
+    EXPECT_EQ(modx(56, 1000), modx(147, 1000) * modx(48, 1000));
+
+    // 48 is not invertible modulo 1000,
+    // and even after dividing all three (28, 48 and 1000)
+    // by their GCD 4,  48/4=12 is still not invertible modulo 1000/4=250
+    // hence the result is g times bigger where g = gcd(12, 250) = 2
+    EXPECT_EQ(modx(147, 1000), modx(28, 1000) / modx(48, 1000));
+    EXPECT_EQ(modx(28 * 2, 1000), modx(147, 1000) * modx(48, 1000));
+
+    EXPECT_EQ(modx(53, 100), modx(17, 100).inv());
+}
+
+TEST(modulox_test, casts) {
 	modx m1(1000000000, 1000000007);
 	modx e0 = zeroT<modx>::of(m1);
 	modx e1 = identityT<modx>::of(m1);
@@ -124,7 +149,15 @@ TEST(modulox_test, identity) {
 	modx mr = powT(m1, 10);
 	EXPECT_EQ(282475249, mr.v);
 	EXPECT_EQ(1000000007, mr.M());
-
+    modx m5 = castOf(m1, -5);
+    EXPECT_EQ(1000000002, m5.v);
+    EXPECT_EQ(1000000007, m5.M());
+    modx m6 = castOf(m1, m5);
+    EXPECT_EQ(1000000002, m6.v);
+    EXPECT_EQ(1000000007, m6.M());
+    modx m7 = castOf<modx>(m5);
+    EXPECT_EQ(1000000002, m7.v);
+    EXPECT_EQ(1000000007, m7.M());
 }
 
 TEST(modulox_test, int64) {
