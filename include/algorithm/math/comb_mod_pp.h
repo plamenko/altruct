@@ -225,7 +225,7 @@ std::pair<R, I> factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table)
             if (i == j) continue;
             if (j < i) alpha = -alpha;
             numerators.push_back(u - i);
-            denominators.push_back(abs(j - i));
+            denominators.push_back(absT(j - i));
         }
         fraction_reduce(numerators, denominators, gcd_f);
         // denominators should all be 1 now
@@ -244,7 +244,7 @@ std::pair<R, I> factorial_mod_pp_skipped(I n, int p, int e, const R* fact_table)
             if (i == j) continue;
             if (j < i) beta = -beta;
             numerators.push_back(u - i);
-            denominators.push_back(abs(j - i));
+            denominators.push_back(absT(j - i));
             if (i == 0) continue;
             numerators.push_back(u + i);
             denominators.push_back(j + i);

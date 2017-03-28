@@ -171,7 +171,7 @@ void calc_multiplicative(TBL& f, int n, int* pa, int m) {
 template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m) {
     auto e1 = identityOf(castOf(h[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
-    typedef typename decltype(e1) T;
+    typedef decltype(e1) T;
     for (int i = 1; i < n; i++) {
 		h[i] = e1;
 	}
@@ -213,7 +213,7 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, in
 template<typename F1, typename F2, typename TBL>
 void dirichlet_division_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m) {
     auto e1 = identityOf(castOf(h[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
-    typedef typename decltype(e0) T;
+    typedef decltype(e0) T;
     for (int i = 1; i < n; i++) {
 		h[i] = e1;
 	}

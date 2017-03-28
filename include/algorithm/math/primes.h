@@ -555,7 +555,7 @@ std::vector<B> integer_digits(const I& n, const B& b, int len = 0) {
  */
 template<typename B>
 std::string integer_string(const std::vector<B>& digits) {
-    static char* c = "0123456789abcdefghijklmnopqrstuvwxyz";
+    static const char* c = "0123456789abcdefghijklmnopqrstuvwxyz";
     std::string s;
     for (auto it = digits.rbegin(); it != digits.rend(); ++it) {
         s += c[*it];
