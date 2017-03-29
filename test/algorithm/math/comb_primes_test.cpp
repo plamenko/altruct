@@ -42,6 +42,11 @@ TEST(comb_primes_test, multinomial_prime_exponent) {
 	EXPECT_EQ(e, a);
 }
 
+TEST(comb_primes_test, multinomial) {
+    EXPECT_EQ(1, multinomial(vector<int>{}, 1));
+    EXPECT_EQ(2520, multinomial(vector<int>{5,2,3}, 1));
+}
+
 TEST(comb_primes_test, elements_multinomial) {
 	EXPECT_EQ(1.0, elements_multinomial(vector<string>{}, 1.0));
 	EXPECT_EQ(1.0, elements_multinomial(vector<string>{ "aa" }, 1.0));

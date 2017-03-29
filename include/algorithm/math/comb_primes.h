@@ -48,6 +48,33 @@ I multinomial_prime_exponent(C k_container, I p) {
 }
 
 /**
+ * Calculates the multinomial coefficient.
+ *
+ * `multinomial({3, 2, 5}) = (3+2+5)!/(3!2!5!)`
+ */
+template<typename T, typename It>
+T multinomial(It begin, It end, T id = T(1)) {
+    T num = id, n = zeroOf(id);
+    T den = id, d;
+    for (It it = begin; it != end; ++it) {
+        d = zeroOf(id);
+        for (auto i = 1; i <= *it; ++i) {
+            n += id; num *= n;
+            d += id; den *= d;
+        }
+    }
+    return num / den;
+}
+
+/**
+ * Calculates the multinomial coefficient.
+ */
+template <typename T, typename C>
+T multinomial(C container, T id = T(1)) {
+    return multinomial(container.begin(), container.end(), id);
+}
+
+/**
  * Calculates the multinomial coefficient based on the elements.
  *
  * Note, the elements must be in sorted order.
