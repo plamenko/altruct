@@ -64,7 +64,7 @@ template<
 	typename P,
 	typename T = typename std::iterator_traits<It>::value_type
 >
-std::vector<T> filter(It begin, It end, const P& p) {
+std::vector<T> filter(It begin, It end, P p) {
 	std::vector<T> r;
 	for (It it = begin; it != end; ++it) {
 		if (p(*it)) r.push_back(*it);
@@ -80,7 +80,7 @@ template<
 	typename P,
 	typename T = typename C::value_type
 >
-std::vector<T> filter(const C& c, const P& p) {
+std::vector<T> filter(const C& c, P p) {
 	return filter(c.begin(), c.end(), p);
 }
 
@@ -92,7 +92,7 @@ template<
 	typename F,
 	typename T = typename std::result_of<F(typename std::iterator_traits<It>::value_type)>::type
 >
-std::vector<T> transform(It begin, It end, const F& f) {
+std::vector<T> transform(It begin, It end, F f) {
 	std::vector<T> r;
 	for (It it = begin; it != end; ++it) {
 		r.push_back(f(*it));
@@ -108,7 +108,7 @@ template<
 	typename F,
 	typename T = typename std::result_of<F(typename C::value_type)>::type
 >
-std::vector<T> transform(const C& c, const F& f) {
+std::vector<T> transform(const C& c, F f) {
 	return transform(c.begin(), c.end(), f);
 }
 
