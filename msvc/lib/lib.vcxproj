@@ -69,6 +69,7 @@
     <ClInclude Include="..\..\include\algorithm\search\kmp_search.h" />
     <ClInclude Include="..\..\include\concurrency\concurrency.h" />
     <ClInclude Include="..\..\include\io\fast_io.h" />
+    <ClInclude Include="..\..\include\io\iostream_overloads.h" />
     <ClInclude Include="..\..\include\io\reader.h" />
     <ClInclude Include="..\..\include\io\writer.h" />
     <ClInclude Include="..\..\include\structure\container\bit_vector.h" />

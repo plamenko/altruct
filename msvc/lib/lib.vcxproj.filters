@@ -278,5 +278,8 @@
     <ClInclude Include="..\..\include\algorithm\math\sequences.h">
       <Filter>include\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\io\iostream_overloads.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

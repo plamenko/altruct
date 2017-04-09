@@ -59,6 +59,7 @@
     <ClCompile Include="..\..\test\algorithm\search\kmp_search_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
     <ClCompile Include="..\..\test\io\fast_io_test.cpp" />
+    <ClCompile Include="..\..\test\io\iostream_overloads_test.cpp" />
     <ClCompile Include="..\..\test\io\reader_test.cpp" />
     <ClCompile Include="..\..\test\io\writer_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\bit_vector_test.cpp" />

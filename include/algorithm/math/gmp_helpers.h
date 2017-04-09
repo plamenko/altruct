@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <gmpxx.h>
 #include "algorithm/math/base.h"
 #include "structure/math/modulo.h"
@@ -85,3 +86,7 @@ template<> inline mpz altruct::math::modulo_inv(const mpz& x, const mpz& M) { re
 template<> inline mpz altruct::math::modulo_div(const mpz& x, const mpz& y, const mpz& M) { return modulo_div_int(x, y, M); }
 template<> inline mpz altruct::math::modulo_power(const mpz& x, const mpz& y, const mpz& M) { return z_powmod(x, y, M); }
 template<> inline mpz altruct::math::modulo_power(const mpz& x, const int64_t& y, const mpz& M) { return z_powmod(x, int64_to_mpz(y), M); }
+
+std::ostream& operator << (std::ostream& os, const mpz& rhs) { return os << rhs.get_str(); }
+std::ostream& operator << (std::ostream& os, const mpq& rhs) { return os << rhs.get_str(); }
+std::ostream& operator << (std::ostream& os, const mpf& rhs) { mp_exp_t exp = 0; return os << "0." << rhs.get_str(exp) << "e" << exp; }
