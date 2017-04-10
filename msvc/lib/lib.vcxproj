@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />

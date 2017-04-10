@@ -58,9 +58,9 @@ Trees
 	splay tree
 
 Graphs
-	min cost flow
+	matching (bipartite)
 	hungarian algorithm
-	matching
+	min-cost max-flow
 
 make LCA use RMQ structure?
 

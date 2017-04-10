@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <vector>
+#include <limits>
 
 namespace altruct {
 namespace graph {
@@ -12,13 +13,13 @@ namespace graph {
 template<typename T>
 class dinic {
 public:
-	T inf;
+    T infinity;
 	std::vector<std::vector<int>> adjl; // adjl[a] is the adjacency list of a.
 	std::vector<std::vector<T>> cap;    // cap[a][b] is the capacity from a to b.
 	std::vector<std::vector<T>> flow;   // flow[a][b] is the occupied flow from a to b.
 	std::vector<int> level;             // level[a] is the level in level graph of a.
 
-	dinic(const std::vector<std::vector<T>>& cap) : cap(cap) {
+    dinic(const std::vector<std::vector<T>>& cap, T infinity = std::numeric_limits<T>::max()) : cap(cap), infinity(infinity) {
 		adjl.resize(cap.size());
 		for (int u = 0; u < (int)cap.size(); u++) {
 			for (int v = 0; v < (int)cap.size(); v++) {
@@ -31,17 +32,9 @@ public:
 	}
 
 	T calc_max_flow(int source, int sink) {
-		inf = 0;
-		for (auto v : adjl[source]) {
-			inf += cap[source][v];
-		}
 		T f = 0;
-		flow = cap;
-		for (int u = 0; u < adjl.size(); u++) {
-			for (int v = 0; v < adjl.size(); v++) {
-				flow[u][v] = 0;
-			}
-		}
+        if (source == sink) return f;
+        flow.assign(adjl.size(), std::vector<T>(adjl.size()));
 		while (build_level_graph(source, sink)) {
 			f += construct_blocking_flow(source, sink);
 		}
@@ -101,7 +94,7 @@ private:
 	}
 
 	T get_path_flow(int source, int sink, const std::vector<int>& prev) {
-		T f = inf;
+        T f = infinity;
 		for (int u, v = sink; u = prev[v], v != source; v = u) {
 			T df = cap[u][v] - flow[u][v];
 			f = std::min(f, df > 0 ? df : flow[v][u]);
@@ -125,5 +118,5 @@ private:
 	}
 };
 
-}
-}
+} // graph
+} //altruct

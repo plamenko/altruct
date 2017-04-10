@@ -281,5 +281,8 @@
     <ClInclude Include="..\..\include\io\iostream_overloads.h">
       <Filter>include\io</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
