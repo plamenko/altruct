@@ -46,6 +46,12 @@ TEST(iostream_overloads_test, nested_map_of_vector_to_set) {
     EXPECT_EQ("{{{3}, {11, 7}}, {{15, -2}, {10, 9, 8}}, {{42, 1, 12}, {5, 3, -1}}}", to_str(nested));
 }
 
+TEST(iostream_overloads_test, fraction) {
+    EXPECT_EQ("5/1", to_str(altruct::math::fraction<int>(5)));
+    EXPECT_EQ("2/3", to_str(altruct::math::fraction<int>(2, 3)));
+    EXPECT_EQ("3/2", to_str(altruct::math::fraction<int>(6, 4)));
+}
+
 TEST(iostream_overloads_test, modulo) {
     typedef altruct::math::modulo<int, 1007, altruct::math::modulo_storage::CONSTANT> mod;
     typedef altruct::math::moduloX<int> modx;

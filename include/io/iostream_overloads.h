@@ -7,6 +7,7 @@
 #include <map>
 #include <algorithm>
 
+#include "structure/math/fraction.h"
 #include "structure/math/modulo.h"
 #include "structure/math/polynom.h"
 
@@ -43,6 +44,12 @@ std::ostream& operator << (std::ostream& os, const std::set<T, P, A>& container)
 template<typename K, typename V, typename P, typename A>
 std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& container) { return output_container(os, container); }
 
+
+/** std::ostream specialization for altruct::math::fraction */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& rhs) {
+    return os << rhs.p << "/" << rhs.q;
+}
 
 /** std::ostream specialization for altruct::math::modulo */
 template<typename T, int ID, int STORAGE_TYPE>
