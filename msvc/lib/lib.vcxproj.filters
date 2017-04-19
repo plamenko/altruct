@@ -194,9 +194,6 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic.h">
-      <Filter>include\algorithm\graph</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
@@ -282,6 +279,12 @@
       <Filter>include\io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\push_relabel_flow.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
   </ItemGroup>

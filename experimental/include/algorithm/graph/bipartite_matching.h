@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "algorithm/graph/dinic.h"
+#include "algorithm/graph/dinic_flow.h"
 
 namespace altruct {
 namespace graph {
@@ -22,7 +22,7 @@ std::vector<std::pair<int, int>> bipartite_matching(int nodes, const std::vector
         cap[e.first][e.second] = 1;
         cap[e.second][sink] = 1;
     }
-    dinic<int> d(cap);
+    dinic_flow<int> d(cap);
     d.calc_max_flow(src, sink);
     std::vector<std::pair<int, int>> selected;
     for (const auto& e : edges) {

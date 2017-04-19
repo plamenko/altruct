@@ -11,7 +11,7 @@ namespace graph {
  * Uses Dinic's algorithm to find the maximum flow.
  */
 template<typename T>
-class dinic {
+class dinic_flow {
 public:
     T infinity;
 	std::vector<std::vector<int>> adjl; // adjl[a] is the adjacency list of a.
@@ -19,7 +19,7 @@ public:
 	std::vector<std::vector<T>> flow;   // flow[a][b] is the occupied flow from a to b.
 	std::vector<int> level;             // level[a] is the level in level graph of a.
 
-    dinic(const std::vector<std::vector<T>>& cap, T infinity = std::numeric_limits<T>::max()) : cap(cap), infinity(infinity) {
+    dinic_flow(const std::vector<std::vector<T>>& cap, T infinity = std::numeric_limits<T>::max()) : cap(cap), infinity(infinity) {
 		adjl.resize(cap.size());
 		for (int u = 0; u < (int)cap.size(); u++) {
 			for (int v = 0; v < u; v++) {
