@@ -13,6 +13,8 @@ namespace graph {
 template<typename T>
 class push_relabel_flow {
 public:
+    enum selection_rule { RELABEL_TO_FRONT, LARGEST_LABEL };
+
     T infinity;
     std::vector<std::vector<int>> adjl; // adjl[a] is the adjacency list of a.
     std::vector<std::vector<T>> cap;    // cap[a][b] is the capacity from a to b.
@@ -22,9 +24,11 @@ public:
     std::vector<T> excess;              // flow into node minus flow from node.
     std::vector<int> seen;              // neighbours seen since last relabel.
 
-    push_relabel_flow(const std::vector<std::vector<T>>& cap, T infinity = std::numeric_limits<T>::max()) : cap(cap), infinity(infinity) {
-        adjl.resize(cap.size());
-        for (int u = 0; u < (int)cap.size(); u++) {
+    // infinity = std::numeric_limits<T>::max() is no good because of overflows!!!
+    push_relabel_flow(const std::vector<std::vector<T>>& cap, T infinity) : cap(cap), infinity(infinity) {
+        int n = (int)cap.size();
+        adjl.resize(n);
+        for (int u = 0; u < n; u++) {
             for (int v = 0; v < u; v++) {
                 if (cap[u][v] > 0 || cap[v][u] > 0) {
                     adjl[u].push_back(v);
@@ -34,8 +38,8 @@ public:
         }
     }
 
-    T calc_max_flow(int source, int sink) {
-        int n = (int)adjl.size();
+    T calc_max_flow(int source, int sink, int rule = RELABEL_TO_FRONT) {
+        int n = (int)cap.size();
         if (source == sink) return 0;
         
         flow.assign(n, std::vector<T>(n, 0));
@@ -49,23 +53,41 @@ public:
             push(source, v);
         }
 
-        deque<int> que;
-        for (int v = 0; v < n; v++) {
-            if (v != source && v != sink) que.push_back(v);
-        }
-
-        auto it = que.begin();
-        while (it != que.end()) {
-            int u = *it;
-            int old_height = height[u];
-            discharge(u);
-            if (height[u] > old_height) {
-                // relabel to front strategy
-                que.erase(it);
-                que.push_front(u);
-                it = que.begin();
-            } else {
-                ++it;
+        if (rule == RELABEL_TO_FRONT) {
+            deque<int> que;
+            for (int v = 0; v < n; v++) {
+                if (v != source && v != sink) que.push_back(v);
+            }
+            for (auto it = que.begin(); it != que.end();) {
+                int u = *it;
+                int old_height = height[u];
+                discharge(u);
+                if (height[u] > old_height) {
+                    // relabel to front strategy
+                    que.erase(it);
+                    que.push_front(u);
+                    it = que.begin();
+                } else {
+                    ++it;
+                }
+            }
+        } else if (rule == LARGEST_LABEL) {
+            vector<int> que;
+            for (int v = 0; v < n; v++) {
+                if (v != source && v != sink) que.push_back(v);
+            }
+            for (auto it = que.begin(); it != que.end();) {
+                int u = *it;
+                int old_height = height[u];
+                discharge(u);
+                if (height[u] > old_height) {
+                    // largest-label strategy
+                    // TODO: it is not optimal to perform a full sort here
+                    sort(que.begin(), que.end(), [&](int u1, int u2){ return height[u1] > height[u2]; });
+                    it = que.begin();
+                } else {
+                    ++it;
+                }
             }
         }
 
@@ -77,6 +99,7 @@ public:
     }
 
 private:
+
     void push(int u, int v) {
         auto send = std::min(excess[u], cap[u][v] - flow[u][v]);
         flow[u][v] += send;
@@ -87,9 +110,8 @@ private:
 
     void relabel(int u) {
         // find smallest new height making a push possible, if such a push is possible at all
-        int n = (int)adjl.size();
-        int min_height = n + 1;
-        for (int v = 0; v < n; v++) {
+        int min_height = std::numeric_limits<int>::max();
+        for (auto v : adjl[u]) {
             if (cap[u][v] - flow[u][v] > 0){
                 min_height = std::min(min_height, height[v]);
                 height[u] = min_height + 1;
@@ -98,20 +120,21 @@ private:
     }
 
     void discharge(int u) {
-        int n = (int)adjl.size();
+        int it = seen[u];
         while (excess[u] > 0) {
-            if (seen[u] < n) { // check next neighbour
-                int v = seen[u];
+            if (it < adjl[u].size()) { // check next neighbour
+                int v = adjl[u][it];
                 if (cap[u][v] - flow[u][v] > 0 && height[u] > height[v]) {
                     push(u, v);
                 } else {
-                    seen[u]++;
+                    it++;
                 }
             } else { // we have checked all neighbours. must relabel
                 relabel(u);
-                seen[u] = 0;
+                it = 0;
             }
         }
+        seen[u] = it;
     }
 };
 

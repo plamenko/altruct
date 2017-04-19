@@ -11,7 +11,7 @@ using namespace altruct::graph;
 
 template<typename MAX_FLOW_IMPL, typename T>
 void test_max_flow(const vector<vector<T>>& capacities, const vector<vector<T>>& expected_flows) {
-    MAX_FLOW_IMPL mfi(capacities);
+    MAX_FLOW_IMPL mfi(capacities, 1000000);
     vector<vector<T>> actual_flows = capacities;
     for (int i = 0; i < mfi.cap.size(); i++) {
         for (int j = 0; j < mfi.cap.size(); j++) {
