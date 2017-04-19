@@ -22,8 +22,8 @@ public:
     dinic(const std::vector<std::vector<T>>& cap, T infinity = std::numeric_limits<T>::max()) : cap(cap), infinity(infinity) {
 		adjl.resize(cap.size());
 		for (int u = 0; u < (int)cap.size(); u++) {
-			for (int v = 0; v < (int)cap.size(); v++) {
-				if (cap[u][v] > 0) {
+			for (int v = 0; v < u; v++) {
+                if (cap[u][v] > 0 || cap[v][u] > 0) {
 					adjl[u].push_back(v);
 					adjl[v].push_back(u);
 				}
