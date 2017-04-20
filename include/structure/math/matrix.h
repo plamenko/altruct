@@ -17,11 +17,11 @@ public:
 	matrix() : matrix(0, 0) {
 	}
 
-	matrix(int n, int m) {
+	matrix(int n, int m, T zero = T(0)) {
 		if (!m) m = n;
 		a.resize(n);
 		for (auto &row : a) {
-			row.resize(m);
+			row.resize(m, zero);
 		}
 	}
 
@@ -63,9 +63,11 @@ public:
 	// matrices must be of same dimensions
 	matrix& operator += (const matrix &rhs) {
 		int n = rows(), m = cols();
-		for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			a[i][j] += rhs[i][j];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                a[i][j] += rhs[i][j];
+            }
+        }
 		return *this;
 	}
 	matrix operator + (const matrix &rhs) const {
@@ -75,9 +77,11 @@ public:
 	// matrices must be of same dimensions
 	matrix& operator -= (const matrix &rhs) {
 		int n = rows(), m = cols();
-		for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			a[i][j] -= rhs[i][j];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                a[i][j] -= rhs[i][j];
+            }
+        }
 		return *this;
 	}
 	matrix operator - (const matrix &rhs) const {
@@ -86,13 +90,16 @@ public:
 
 	// lhs.cols() must be equal to rhs.rows()
 	matrix& operator *= (const matrix &rhs) {
+        T e0 = zeroOf(a[0][0]);
 		int n = rows(), m = cols(), p = rhs.cols();
 		matrix t(n, p);
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < p; j++) {
-				t[i][j] = 0;
-				for (int k = 0; k < m; k++)
-					t[i][j] += a[i][k] * rhs[k][j];
+                T s = e0;
+                for (int k = 0; k < m; k++) {
+                    s += a[i][k] * rhs[k][j];
+                }
+                t[i][j] = s;
 			}
 		}
 		return swap(t);
@@ -103,9 +110,11 @@ public:
 
 	matrix& operator *= (const T& s) {
 		int n = rows(), m = cols();
-		for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			a[i][j] *= s;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                a[i][j] *= s;
+            }
+        }
 		return *this;
 	}
 	matrix operator * (const T& s) const {
@@ -121,9 +130,11 @@ public:
 
 	matrix& operator /= (const T& s) {
 		int n = rows(), m = cols();
-		for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			a[i][j] /= s;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                a[i][j] /= s;
+            }
+        }
 		return *this;
 	}
 	matrix operator / (const T& s) const {
@@ -141,9 +152,9 @@ public:
 
 	// matrix must be a square matrix
 	static bool gauss(matrix &mat, matrix &inv, T &det) {
-		T e0 = zeroT<T>::of(mat.a[0][0]), e1 = identityT<T>::of(mat.a[0][0]);
+		T e0 = zeroOf(mat.a[0][0]), e1 = identityOf(mat.a[0][0]);
 		int i, j, k, n = mat.rows();
-		inv = identity(n);
+		inv = identity(n, e1);
 		det = e1;
 		for (j = 0; j < n; j++) {
 			for (i = j; i < n && mat.a[i][j] == e0; i++);
@@ -205,16 +216,18 @@ public:
 	matrix transpose() const {
 		int n = rows(), m = cols();
 		matrix t(m, n);
-		for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			t[j][i] = a[i][j];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                t[j][i] = a[i][j];
+            }
+        }
 		return t;
 	}
 
-	static matrix identity(int n) {
-		matrix t(n, n);
+	static matrix identity(int n, T id = T(1)) {
+		matrix t(n, n, zeroOf(id));
 		for (int i = 0; i < n; i++) {
-			t.a[i][i] = 1;
+			t.a[i][i] = id;
 		}
 		return t;
 	}
@@ -223,14 +236,14 @@ public:
 template<typename T>
 struct identityT<matrix<T>> {
 	static matrix<T> of(const matrix<T>& x) {
-		return matrix<T>::identity(x.rows());
+		return matrix<T>::identity(x.rows(), identityOf(x[0][0]));
 	}
 };
 
 template<typename T>
 struct zeroT<matrix<T>> {
 	static matrix<T> of(const matrix<T>& x) {
-		return matrix<T>(x.rows(), x.cols());
+		return matrix<T>(x.rows(), x.cols(), zeroOf(x[0][0]));
 	}
 };
 

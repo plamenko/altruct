@@ -11,6 +11,7 @@ using namespace altruct::math;
 using namespace altruct::test_util;
 
 typedef modulo<int, 1000000007> mod;
+typedef moduloX<int> modx;
 
 TEST(matrix_test, constructor) {
 	matrix<int> m1;
@@ -26,6 +27,12 @@ TEST(matrix_test, constructor) {
 	EXPECT_EQ(3, m3.rows());
 	EXPECT_EQ(2, m3.cols());
 	EXPECT_EQ((vector<vector<int>>{ { 0, 0 }, { 0, 0 }, { 0, 0 } }), m3.a);
+
+    matrix<modx> m0(3, 2, modx(0, 1009));
+    EXPECT_EQ(3, m0.rows());
+    EXPECT_EQ(2, m0.cols());
+    EXPECT_EQ((vector<vector<modx>>{{ 0, 0 }, { 0, 0 }, { 0, 0 } }), m0.a);
+    EXPECT_EQ(1009, m0[1][1].M());
 
 	matrix<int> m4({
 		{ 00, 01, 02, 03, 04, 05 },
@@ -150,6 +157,15 @@ TEST(matrix_test, power) {
 	EXPECT_EQ((matrix<mod>{ { 2, 3, 5 }, { 7, 11, 13 }, { 17, 19, 23 } }), m1.pow(1));
 	EXPECT_EQ((matrix<mod>{ { 3946, 4920, 6064 }, { 11456, 14278, 17588 }, { 20632, 25700, 31654 } }), m1.pow(3));
 	EXPECT_EQ((matrix<mod>{ { -55788, 107120, -48832 }, { 247392, -205764, 66936 }, { -164496, 97240, -22532 } }) / mod(-78 * 78 * 78), m1.pow(-3));
+    
+    const matrix<modx> m0({
+        { { 2, 1000000007 }, { 3, 1000000007 }, { 5, 1000000007 } },
+        { { 7, 1000000007 }, { 11, 1000000007 }, { 13, 1000000007 } },
+        { { 17, 1000000007 }, { 19, 1000000007 }, { 23, 1000000007 } } });
+    EXPECT_EQ((matrix<modx>{
+        { { -55788, 1000000007 }, { 107120, 1000000007 }, { -48832, 1000000007 } },
+        { { 247392, 1000000007 }, { -205764, 1000000007 }, { 66936, 1000000007 } },
+        { { -164496, 1000000007 }, { 97240, 1000000007 }, { -22532, 1000000007 } } }) / modx(-78 * 78 * 78, 1000000007), m0.pow(-3));
 }
 
 TEST(matrix_test, transpose) {

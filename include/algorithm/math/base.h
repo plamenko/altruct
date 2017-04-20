@@ -87,7 +87,7 @@ T zeroOf(const T& x) { return zeroT<T>::of(x); }
  */
 template <typename T>
 T absT(const T &x) {
-	T e0 = zeroT<T>::of(x);
+	T e0 = zeroOf(x);
 	return (x < e0) ? -x : x;
 }
 
@@ -116,7 +116,7 @@ T maxT(const T &x, const T &y) {
  */
 template<typename T, typename I>
 T powT(T x, I y) {
-	T e1 = identityT<T>::of(x);
+	T e1 = identityOf(x);
 	T r = e1;
 	for (; y > 0; y /= 2) {
 		if (y % 2 != 0) r *= x;
@@ -132,7 +132,7 @@ T powT(T x, I y) {
  */
 template<typename T>
 T gcd(T a, T b) {
-	T e0 = zeroT<T>::of(a);
+	T e0 = zeroOf(a);
 	while (a != e0) { T r = b % a; b = a; a = r; }
 	return b;
 }
@@ -151,7 +151,7 @@ T gcd(T a, T b) {
  */
 template<typename T>
 T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
-	T e0 = zeroT<T>::of(a), e1 = identityT<T>::of(a);
+	T e0 = zeroOf(a), e1 = identityOf(a);
 	T r, q, g = a, h = b;
 	T xo = e0, xn = e1;
 	T yo = e1, yn = e0;
@@ -178,7 +178,7 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
  */
 template<typename T>
 T gcd_max(T a, T b) {
-	T e0 = zeroT<T>::of(b);
+	T e0 = zeroOf(b);
 	if (b == e0) return a;
 	T go = e0, g = 1;
 	while (go != g) {
