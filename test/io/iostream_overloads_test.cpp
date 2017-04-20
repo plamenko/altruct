@@ -7,7 +7,6 @@
 #include <functional>
 
 using namespace std;
-using namespace altruct::io;
 
 namespace {
 template<typename T>

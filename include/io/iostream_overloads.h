@@ -10,9 +10,7 @@
 #include "structure/math/fraction.h"
 #include "structure/math/modulo.h"
 #include "structure/math/polynom.h"
-
-namespace altruct {
-namespace io {
+#include "structure/math/matrix.h"
 
 /** std::ostream specialization for std::pair */
 template<typename T1, typename T2>
@@ -63,6 +61,8 @@ std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rh
     return os << rhs.c;
 }
 
-
-} // io
-} // altruct
+/** std::ostream specialization for altruct::math::matrix */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs) {
+    return os << rhs.a;
+}
