@@ -17,6 +17,9 @@ public:
 	matrix() : matrix(0, 0) {
 	}
 
+    matrix(const T& v) : matrix(1, 1, v) {
+    }
+
 	matrix(int n, int m, T zero = T(0)) {
 		if (!m) m = n;
 		a.resize(n);
@@ -73,6 +76,9 @@ public:
 	matrix operator + (const matrix &rhs) const {
 		return matrix(*this) += rhs;
 	}
+    matrix operator + () const {
+        return matrix(*this);
+    }
 
 	// matrices must be of same dimensions
 	matrix& operator -= (const matrix &rhs) {
@@ -87,6 +93,9 @@ public:
 	matrix operator - (const matrix &rhs) const {
 		return matrix(*this) -= rhs;
 	}
+    matrix operator - () const {
+        return zeroOf(*this) -= *this;
+    }
 
 	// lhs.cols() must be equal to rhs.rows()
 	matrix& operator *= (const matrix &rhs) {
@@ -232,6 +241,18 @@ public:
 		return t;
 	}
 };
+
+template<typename T, typename I>
+struct castT<matrix<T>, I> {
+    static matrix<T> of(const I& x) {
+        return matrix<T>(castOf<T>(x));
+    }
+    static matrix<T> of(const matrix<T>& ref, const I& x) {
+        return matrix<T>::identity(ref.rows(), castOf(ref[0][0], x));
+    }
+};
+template<typename T>
+struct castT<matrix<T>, matrix<T>> : nopCastT<matrix<T>>{};
 
 template<typename T>
 struct identityT<matrix<T>> {

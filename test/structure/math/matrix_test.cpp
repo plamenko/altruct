@@ -28,6 +28,12 @@ TEST(matrix_test, constructor) {
 	EXPECT_EQ(2, m3.cols());
 	EXPECT_EQ((vector<vector<int>>{ { 0, 0 }, { 0, 0 }, { 0, 0 } }), m3.a);
 
+    matrix<modx> mS(modx(3, 1009));
+    EXPECT_EQ(1, mS.rows());
+    EXPECT_EQ(1, mS.cols());
+    EXPECT_EQ(3, mS[0][0].v);
+    EXPECT_EQ(1009, mS[0][0].M());
+
     matrix<modx> m0(3, 2, modx(0, 1009));
     EXPECT_EQ(3, m0.rows());
     EXPECT_EQ(2, m0.cols());
@@ -108,7 +114,9 @@ TEST(matrix_test, operators_arithmetic) {
 	const matrix<int> m4({ { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9} });
 
 	EXPECT_EQ((matrix<int>{ { 9, 15 }, { 13, 1 }, { 4, 7 } }), m2 + m3);
+    EXPECT_EQ((matrix<int>{{ 1, 2, 3 }, { 4, 5, 6 } }), +m1);
 	EXPECT_EQ((matrix<int>{ { 5, 1 }, { 5, -1 }, { -2, -3 } }), m2 - m3);
+    EXPECT_EQ((matrix<int>{{ -1, -2, -3 }, { -4, -5, -6 } }), -m1);
 	EXPECT_EQ((matrix<int>{ { 28, 14 }, { 79, 44 } }), m1 * m2);
 	EXPECT_EQ((matrix<int>{ { 39, 54, 69 }, { 9, 18, 27 }, { 9, 12, 15 } }), m2 * m1);
 	EXPECT_EQ((matrix<int>{{ 10, 20, 30 }, { 40, 50, 60 } }), m1 * 10);
@@ -173,11 +181,13 @@ TEST(matrix_test, transpose) {
 	EXPECT_EQ((matrix<int>{ { 1, 4 }, { 2, 5 }, { 3, 6 }}), m1.transpose());
 }
 
-TEST(matrix_test, identity) {
+TEST(matrix_test, casts) {
 	const matrix<int> m1({ { 2, 3, 5 }, { 7, 11, 13 }, { 17, 19, 23 } });
 	const matrix<int> m2({ { 2, 3, 5, 6 }, { 7, 11, 13, 14 }, { 17, 19, 23, 25 } });
 	EXPECT_EQ((matrix<int>{ { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}), matrix<int>::identity(3));
 	EXPECT_EQ((matrix<int>{{ 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}), identityT<matrix<int>>::of(m1));
 	EXPECT_EQ((matrix<int>{{ 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }}), zeroT<matrix<int>>::of(m1));
 	EXPECT_EQ((matrix<int>{{ 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }}), zeroT<matrix<int>>::of(m2));
+    EXPECT_EQ((matrix<int>{{ 5, 0, 0 }, { 0, 5, 0 }, { 0, 0, 5 }}), castOf(m1, 5));
+    EXPECT_EQ((matrix<int>{{ 5 }}), castOf<matrix<int>>(5));
 }
