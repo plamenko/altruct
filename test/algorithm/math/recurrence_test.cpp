@@ -39,6 +39,21 @@ TEST(recurrence_test, linear_recurrence_on_matrix) {
 	EXPECT_EQ((vector<mat> {a0, a1, a2, a3, a4}), a);
 }
 
+TEST(recurrence_test, linear_recurrence_on_matrix_matrix) {
+    std::vector<mat> a;
+    mat c0 = { { 2, 0 }, { 0, 4 } };
+    mat c1 = { { -3, 5 }, { 7, 0 } };
+    mat a0 = { { 1, 0 }, { 0, 1 } };
+    mat a1 = { { 1, 1 }, { 1, 0 } };
+    mat a2 = { { -1, 7 }, { 11, 0 } };
+    mat a3 = { { 0, 11 }, { 51, 7 } };
+    mat a4 = { { 58, 1 }, { 197, 77 } };
+    for (int n = 0; n < 5; n++) {
+        a.push_back(linear_recurrence<mat, mat>({ c0, c1 }, { a0, a1 }, n));
+    }
+    EXPECT_EQ((vector<mat> {a0, a1, a2, a3, a4}), a);
+}
+
 TEST(recurrence_test, fibonacci) {
 	std::vector<int> f;
 	for (int n = 0; n < 20; n++) {

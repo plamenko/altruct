@@ -20,11 +20,11 @@ namespace math {
  */
 template<typename T, typename A>
 A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init, long long n) {
-	T e0 = zeroT<T>::of(f_coeff[0]), e1 = identityT<T>::of(f_coeff[0]);
+	T e0 = zeroOf(f_coeff[0]), e1 = identityOf(f_coeff[0]);
 	// characteristic polynomial: p(x) = 0
 	int L = (int) f_coeff.size();
-	polynom<T> p(std::vector<T>(L + 1));
-	p[L] = 1;
+	polynom<T> p(std::vector<T>(L + 1, e0));
+	p[L] = e1;
 	for (int i = 0; i < L; i++)
 		p[L - 1 - i] = -f_coeff[i];
 	// x^n % p(x)
@@ -32,9 +32,9 @@ A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init,
 	polynom<T> x = { e0, e1 };
 	polymod xn = powT(polymod(x, p), n);
 	// f[n]
-	A r = zeroT<A>::of(f_init[0]);
+	A r = zeroOf(f_init[0]);
 	for (int i = 0; i < L; i++) {
-		r += f_init[i] * xn.v[i];
+        r += castOf(r, xn.v[i]) * f_init[i];
 	}
 	return r;
 }
@@ -45,9 +45,9 @@ A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init,
 template<typename T, typename A>
 A linear_recurrence_next(const std::vector<T> &f_coeff, const std::vector<A> &f_init) {
 	int L = (int)f_coeff.size();
-	A r = zeroT<A>::of(f_init[0]);
+	A r = zeroOf(f_init[0]);
 	for (int i = 0; i < L; i++) {
-		r += f_init[f_init.size() - 1 - i] * f_coeff[i];
+        r += castOf(r, f_coeff[i]) * f_init[f_init.size() - 1 - i];
 	}
 	return r;
 }
@@ -113,12 +113,12 @@ std::vector<T> bernoulli_b(int n, T id = T(1)) {
  */
 template<typename T, typename A = T>
 polynom<T> berlekamp_massey(std::vector<A> a, T id = T(1)) {
-	T e0 = zeroT<T>::of(id), e1 = identityT<T>::of(id);
+	T e0 = zeroOf(id), e1 = identityOf(id);
 	int n = (int)a.size() / 2;
 	int m = 2 * n - 1;
 	polynom<A> R, R0, R1;
 	polynom<T> V, V0, V1, Q;
-	R0[m + 1] = identityT<A>::of(a[0]);
+	R0[m + 1] = identityOf(a[0]);
 	for (int i = 0; i <= m; i++) {
 		R1[i] = a[m - i];
 	}
