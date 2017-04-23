@@ -1,3 +1,5 @@
+#include "algorithm/graph/iterative_dfs.h"
+#include "algorithm/graph/topological_sort.h"
 #include "algorithm/graph/dinic_flow.h"
 #include "algorithm/graph/push_relabel_flow.h"
 #include "algorithm/graph/bipartite_matching.h"
@@ -8,6 +10,35 @@
 
 using namespace std;
 using namespace altruct::graph;
+
+namespace {
+    vector<vector<pair<int, int>>> dag_adjl{
+        { { 4, 10 } },
+        { { 4, 7 }, { 0, 3 } },
+        { { 0, 5 } },
+        { { 2, -4 }, { 0, 6 }, { 1, 8 }, { 4, 5 } },
+        {},
+        { { 1, -2 }, { 6, 6 } },
+        {},
+        { { 6, 7 } },
+        { { 10, -5 } },
+        {},
+        {},
+    };
+    auto index_f = [](const pair<int, int>& e){return e.first; };
+}
+
+TEST(graph_test, iterative_dfs) {
+    // TODO
+}
+
+TEST(graph_test, in_degrees) {
+    EXPECT_EQ((vector<int>{3, 2, 1, 0, 3, 0, 2, 0, 0, 0, 1}), in_degrees(dag_adjl, index_f));
+}
+
+TEST(graph_test, topological_sort) {
+    EXPECT_EQ((vector<int>{ 9, 8, 10, 7, 5, 6, 3, 1, 2, 0, 4 }), topological_sort(dag_adjl, index_f));
+}
 
 template<typename MAX_FLOW_IMPL, typename T>
 void test_max_flow(const vector<vector<T>>& capacities, const vector<vector<T>>& expected_flows) {

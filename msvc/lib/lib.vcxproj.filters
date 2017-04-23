@@ -287,5 +287,8 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\topological_sort.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

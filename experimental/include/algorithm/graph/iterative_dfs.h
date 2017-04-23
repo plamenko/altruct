@@ -12,7 +12,7 @@ namespace graph {
  * Otherwise, each component will be traversed (the graph may be disconnected).
  *
  * @param adjl - adjacency list
- * @param visitor - a function `bool visitor(root, parent, node, depth)`
+ * @param visitor - a function `bool visitor(int root, int parent, int node, int depth)`
  *                  @param root - the root node of the current component
  *                  @param parent - the parent of the current node,
  *                                -1 if the current node is the root
@@ -22,26 +22,28 @@ namespace graph {
  *                                (visited in pre-order)
  *                  @param depth - the depth of the current node
  *                  @return - true if the node should be entered
+ * @param index_f - a functor that extracts the outbound node index from the edge
  * @param source - the source node, or -1 if not specified
  */
-template<typename F>
-void iterative_dfs(const std::vector<std::vector<int>>& adjl, F visitor, int source = -1) {
+template<typename F, typename E, typename FI>
+void iterative_dfs(const std::vector<std::vector<E>>& adjl, F visitor, FI index_f, int source) {
 	std::vector<int> visited(adjl.size());
 	std::vector<std::pair<int, int>> stk;
 	// this outer loop allows us to handle a disconnected graph
-	for (int o = 0; o < (int)adjl.size(); o++) {
-		if (source != -1) o = source;
-		// handle the component rooted at `o`
+    int of = (source != -1) ? source : 0;
+    int ol = (source != -1) ? source : (int)adjl.size() - 1;
+	for (int o = of; o <= ol; o++) {
 		if (visited[o]) continue;
-		visited[o] = 1;
-		stk.push_back({ o, 0 });
-		visitor(o, -1, o, 0);
+        if (visitor(o, -1, o, 0)) {
+            visited[o] = 1;
+            stk.push_back({ o, 0 });
+        }
 		while (!stk.empty()) {
 			int d = (int)stk.size();
 			int u = stk.back().first;
 			int i = stk.back().second;
 			if (i < (int)adjl[u].size()) {
-				int v = adjl[u][i];
+				int v = index_f(adjl[u][i]);
 				stk.back().second++;
 				if (visited[v]) continue;
 				if (visitor(o, u, v, d)) {
@@ -53,8 +55,11 @@ void iterative_dfs(const std::vector<std::vector<int>>& adjl, F visitor, int sou
 				visitor(o, u, -1, d);
 			}
 		}
-		if (source != -1) break;
 	}
+}
+template<typename F>
+void iterative_dfs(const std::vector<std::vector<int>>& adjl, F visitor, int source = -1) {
+    return iterative_dfs(adjl, visitor, [](int i){ return i; }, source);
 }
 
 }
