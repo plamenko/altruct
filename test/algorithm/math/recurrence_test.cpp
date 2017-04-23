@@ -10,6 +10,13 @@ typedef long long ll;
 typedef modulo<int, 1000000007> mod;
 typedef matrix<int> mat;
 
+TEST(recurrence_test, linear_recurrence_poly_coeff) {
+    EXPECT_EQ((vector<int>{2}), linear_recurrence_poly_to_coeff(polynom<int>{-2, 1}));
+    EXPECT_EQ((polynom<int>{-2, 1}), linear_recurrence_coeff_to_poly(vector<int>{2}));
+    EXPECT_EQ((vector<int>{2, 3, 5, 7}), linear_recurrence_poly_to_coeff(polynom<int>{-7, -5, -3, -2, 1}));
+    EXPECT_EQ((polynom<int>{-7, -5, -3, -2, 1}), linear_recurrence_coeff_to_poly(vector<int>{2, 3, 5, 7}));
+}
+
 TEST(recurrence_test, linear_recurrence) {
 	std::vector<int> f;
 	for (int n = 0; n < 20; n++) {
@@ -109,9 +116,11 @@ TEST(recurrence_test, berlekamp_massey) {
 	for (int n = 0; n <= 100; n++) {
 		a.push_back(linear_recurrence<mod, mod>({ 17, -23, 13, 45, -58 }, { 2, 3, 5, 7, 11 }, n));
 	}
-	auto p = berlekamp_massey<mod>(a);
+	auto p = berlekamp_massey_poly<mod>(a);
 	EXPECT_EQ((polynom<mod> { +58, -45, -13, +23, -17, 1 }), p);
-	
+    auto vc = berlekamp_massey<mod>(a);
+    EXPECT_EQ((vector<mod> { 17, -23, 13, 45, -58 }), vc);
+
 	// use the characteristic polynomial to calculate the n-th term of the sequence
 	typedef moduloX<polynom<mod>> polymod;
 	auto x_n = powT(polymod({ 0, 1 }, p), 100); // x^n % p
