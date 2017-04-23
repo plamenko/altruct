@@ -158,16 +158,29 @@ TEST(polynom_test, operator_brackets) {
 }
 
 TEST(polynom_test, degree) {
-	const polynom<int> p1;
-	EXPECT_EQ(0, p1.deg());
-	const polynom<int> p2{ 4 };
-	EXPECT_EQ(0, p2.deg());
-	const polynom<int> p3{ 0, 3 };
-	EXPECT_EQ(1, p3.deg());
-	const polynom<int> p4{ 2, 3, 5, 7 };
-	EXPECT_EQ(3, p4.deg());
-	const polynom<int> p5{ 2, 3, 5, 7, 0, 0 };
-	EXPECT_EQ(3, p5.deg());
+    const polynom<int> p1;
+    EXPECT_EQ(0, p1.deg());
+    const polynom<int> p2{ 4 };
+    EXPECT_EQ(0, p2.deg());
+    const polynom<int> p3{ 0, 3 };
+    EXPECT_EQ(1, p3.deg());
+    const polynom<int> p4{ 2, 3, 5, 7 };
+    EXPECT_EQ(3, p4.deg());
+    const polynom<int> p5{ 2, 3, 5, 7, 0, 0 };
+    EXPECT_EQ(3, p5.deg());
+}
+
+TEST(polynom_test, lowest) {
+    const polynom<int> p1;
+    EXPECT_EQ(0, p1.lowest());
+    const polynom<int> p2{ 4 };
+    EXPECT_EQ(0, p2.lowest());
+    const polynom<int> p3{ 0, 3 };
+    EXPECT_EQ(1, p3.lowest());
+    const polynom<int> p4{ 2, 3, 5, 7 };
+    EXPECT_EQ(0, p4.lowest());
+    const polynom<int> p5{ 0, 0, 2, 3, 5, 7 };
+    EXPECT_EQ(2, p5.lowest());
 }
 
 TEST(polynom_test, leading_coefficient) {

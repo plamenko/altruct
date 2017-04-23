@@ -46,8 +46,9 @@ public:
 	const T& operator [] (int index) const { return at(index); }
 	T& operator [] (int index) { reserve(index + 1); return c[index]; }
 	int deg() const { for (int i = size() - 1; i > 0; i--) if (!(c[i] == ZERO_COEFF)) return i; return 0; }
+    int lowest() const { for (int i = 0; i < size(); i++) if (!(c[i] == ZERO_COEFF)) return i; return 0; }
 	const T& leading_coeff() const { return at(deg()); }
-	bool is_power() const { for (int i = deg() - 1; i >= 0; i--) if (!(c[i] == ZERO_COEFF)) return false; return leading_coeff() == identityT<T>::of(ZERO_COEFF); }
+	bool is_power() const { return lowest() == deg() && leading_coeff() == identityOf(ZERO_COEFF); }
 
 	// compares p1 and p2; O(l1 + l2)
 	static int cmp(const polynom &p1, const polynom &p2) {
@@ -339,7 +340,7 @@ struct castT<polynom<T>, polynom<T>> : nopCastT<polynom<T>>{};
 template<typename T>
 struct identityT<polynom<T>> {
 	static polynom<T> of(const polynom<T>& p) {
-		return polynom<T>(identityT<T>::of(p.ZERO_COEFF));
+		return polynom<T>(identityOf(p.ZERO_COEFF));
 	}
 };
 

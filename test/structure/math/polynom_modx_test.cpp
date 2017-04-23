@@ -191,16 +191,29 @@ TEST(polynom_modx_test, operator_brackets) {
 }
 
 TEST(polynom_modx_test, degree) {
-	const auto p1 = make_polyx(1009, {});
-	EXPECT_EQ(0, p1.deg());
-	const auto p2 = make_polyx(1009, { 4 });
-	EXPECT_EQ(0, p2.deg());
-	const auto p3 = make_polyx(1009, { 0, 3 });
-	EXPECT_EQ(1, p3.deg());
-	const auto p4 = make_polyx(1009, { 2, 3, 5, 7 });
-	EXPECT_EQ(3, p4.deg());
-	const auto p5 = make_polyx(1009, { 2, 3, 5, 7, 0, 0 });
-	EXPECT_EQ(3, p5.deg());
+    const auto p1 = make_polyx(1009, {});
+    EXPECT_EQ(0, p1.deg());
+    const auto p2 = make_polyx(1009, { 4 });
+    EXPECT_EQ(0, p2.deg());
+    const auto p3 = make_polyx(1009, { 0, 3 });
+    EXPECT_EQ(1, p3.deg());
+    const auto p4 = make_polyx(1009, { 2, 3, 5, 7 });
+    EXPECT_EQ(3, p4.deg());
+    const auto p5 = make_polyx(1009, { 2, 3, 5, 7, 0, 0 });
+    EXPECT_EQ(3, p5.deg());
+}
+
+TEST(polynom_modx_test, lowest) {
+    const auto p1 = make_polyx(1009, {});
+    EXPECT_EQ(0, p1.lowest());
+    const auto p2 = make_polyx(1009, { 4 });
+    EXPECT_EQ(0, p2.lowest());
+    const auto p3 = make_polyx(1009, { 0, 3 });
+    EXPECT_EQ(1, p3.lowest());
+    const auto p4 = make_polyx(1009, { 2, 3, 5, 7 });
+    EXPECT_EQ(0, p4.lowest());
+    const auto p5 = make_polyx(1009, { 0, 0, 2, 3, 5, 7 });
+    EXPECT_EQ(2, p5.lowest());
 }
 
 TEST(polynom_modx_test, leading_coefficient) {
