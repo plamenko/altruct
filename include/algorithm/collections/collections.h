@@ -57,6 +57,32 @@ std::vector<T> reversed(const C& c) {
 }
 
 /**
+ * Returns a vector of the the first `n` elements in the range [begin, end).
+ */
+template<
+    typename It,
+    typename T = typename std::iterator_traits<It>::value_type
+>
+std::vector<T> take(It begin, It end, size_t n) {
+    std::vector<T> r;
+    for (It it = begin; it != end && n-- > 0; ++it) {
+        r.push_back(*it);
+    }
+    return r;
+}
+
+/**
+ * Returns a vector of the the first `n` elements in the collection `c`.
+ */
+template<
+    typename C,
+    typename T = typename C::value_type
+>
+std::vector<T> take(const C& c, size_t n) {
+    return take(c.begin(), c.end(), n);
+}
+
+/**
  * Returns a vector of the elements in the range [begin, end) that satisfy predicate `p`.
  */
 template<
