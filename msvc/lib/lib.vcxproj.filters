@@ -299,5 +299,8 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

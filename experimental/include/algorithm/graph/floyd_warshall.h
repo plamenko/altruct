@@ -29,7 +29,7 @@ std::vector<std::vector<std::pair<int, W>>> floyd_warshall(const std::vector<std
         res[i][i] = { i, 0 };
         for (const auto& e : adjl[i]) {
             int v = index_f(e);
-            res[i][v] = { v, weight_f(e) };
+            res[i][v] = { v, std::min(res[i][v].second, weight_f(e)) };
         }
     }
     for (int i = 0; i < n; i++) {

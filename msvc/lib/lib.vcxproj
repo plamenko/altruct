@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h" />
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h" />
