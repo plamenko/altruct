@@ -11,7 +11,9 @@ namespace graph {
 /**
  * Calculates in-degrees for each node.
  *
- * @param adjl - adjacency list
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
  * @param index_f - a functor that extracts the outbound node index from the edge
  */
 template<typename E, typename FI>
@@ -24,11 +26,17 @@ std::vector<int> in_degrees(const std::vector<std::vector<E>>& adjl, FI index_f)
     }
     return deg;
 }
+template<typename E = int>
+std::vector<int> in_degrees(const std::vector<std::vector<int>>& adjl) {
+    return in_degrees(adjl, visitor, [](int i){ return i; });
+}
 
 /**
  * Calculates topological order of DAG nodes.
  *
- * @param adjl - adjacency list
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
  * @param index_f - a functor that extracts the outbound node index from the edge
  */
 template<typename E, typename FI>
@@ -48,5 +56,5 @@ std::vector<int> topological_sort(const std::vector<std::vector<int>>& adjl) {
     return topological_sort(adjl, visitor, [](int i){ return i; });
 }
 
-}
-}
+} // graph
+} // altruct

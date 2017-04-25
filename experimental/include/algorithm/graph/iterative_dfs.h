@@ -11,7 +11,9 @@ namespace graph {
  * If `source` is specified only the component rooted at `source` will be traversed.
  * Otherwise, each component will be traversed (the graph may be disconnected).
  *
- * @param adjl - adjacency list
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
  * @param visitor - a function `bool visitor(int root, int parent, int node, int depth)`
  *                  @param root - the root node of the current component
  *                  @param parent - the parent of the current node,
@@ -62,5 +64,5 @@ void iterative_dfs(const std::vector<std::vector<int>>& adjl, F visitor, int sou
     return iterative_dfs(adjl, visitor, [](int i){ return i; }, source);
 }
 
-}
-}
+} // graph
+} // altruct
