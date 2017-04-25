@@ -32,4 +32,4 @@ std::vector<std::pair<int, int>> bipartite_matching(int nodes, const std::vector
 }
 
 } // graph
-} //altruct
+} // altruct

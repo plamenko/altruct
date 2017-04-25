@@ -119,4 +119,4 @@ private:
 };
 
 } // graph
-} //altruct
+} // altruct
