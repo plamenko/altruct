@@ -1,5 +1,8 @@
 #include "algorithm/graph/iterative_dfs.h"
 #include "algorithm/graph/topological_sort.h"
+#include "algorithm/graph/tarjan_scc.h"
+#include "algorithm/graph/transitive_closure.h"
+#include "algorithm/graph/floyd_warshall.h"
 #include "algorithm/graph/dinic_flow.h"
 #include "algorithm/graph/push_relabel_flow.h"
 #include "algorithm/graph/bipartite_matching.h"
@@ -12,7 +15,7 @@ using namespace std;
 using namespace altruct::graph;
 
 namespace {
-    vector<vector<pair<int, int>>> dag_adjl{
+    vector<vector<pair<int, int>>> adjl_dag1{
         { { 4, 10 } },
         { { 4, 7 }, { 0, 3 } },
         { { 0, 5 } },
@@ -25,6 +28,16 @@ namespace {
         {},
         {},
     };
+    vector<vector<pair<int, int>>> adjl_directed{
+        { { 2, -2 } },
+        { { 0, 4 }, { 2, 3 } },
+        { { 3, 2 } },
+        { { 1, -1 }, { 4, -8 } },
+        { { 5, 2 } },
+        { { 6, 3 } },
+        { { 4, 7 } },
+        { { 5, 6 } },
+    };
     auto index_f = [](const pair<int, int>& e){return e.first; };
 }
 
@@ -33,11 +46,37 @@ TEST(graph_test, iterative_dfs) {
 }
 
 TEST(graph_test, in_degrees) {
-    EXPECT_EQ((vector<int>{3, 2, 1, 0, 3, 0, 2, 0, 0, 0, 1}), in_degrees(dag_adjl, index_f));
+    EXPECT_EQ((vector<int>{3, 2, 1, 0, 3, 0, 2, 0, 0, 0, 1}), in_degrees(adjl_dag1, index_f));
 }
 
 TEST(graph_test, topological_sort) {
-    EXPECT_EQ((vector<int>{ 9, 8, 10, 7, 5, 6, 3, 1, 2, 0, 4 }), topological_sort(dag_adjl, index_f));
+    EXPECT_EQ((vector<int>{ 9, 8, 10, 7, 5, 6, 3, 1, 2, 0, 4 }), topological_sort(adjl_dag1, index_f));
+}
+
+TEST(graph_test, tarjan_scc) {
+    EXPECT_EQ((vector<vector<int>>{{ 9 }, { 8 }, { 10 }, { 7 }, { 5 }, { 6 }, { 3 }, { 2 }, { 1 }, { 0 }, { 4 } }), tarjan_scc(adjl_dag1, index_f));
+    EXPECT_EQ((vector<vector<int>>{{ 7 }, { 1, 3, 2, 0 }, { 6, 5, 4 } }), tarjan_scc(adjl_directed, index_f));
+}
+
+TEST(graph_test, transitive_closure) {
+    EXPECT_EQ((vector<vector<int>>{{ 4 }, { 4, 0 }, { 0, 4 }, { 2, 0, 1, 4 }, {}, { 1, 6, 4, 0 }, {}, { 6 }, { 10 }, {}, {} }), transitive_closure(adjl_dag1, index_f));
+    EXPECT_EQ((vector<vector<int>>{{ 4 }, { 0 }, { 0 }, { 1, 2 }, {}, { 1, 6 }, {}, { 6 }, { 10 }, {}, {} }), transitive_reduction(adjl_dag1, index_f));
+    EXPECT_EQ((vector<vector<int>>{{ 4 }, { 0 }, { 0 }, { 1, 2 }, {}, { 1, 6 }, {}, { 6 }, { 10 }, {}, {} }), transitive_reduction(transitive_closure(adjl_dag1, index_f)));
+    EXPECT_EQ((vector<vector<int>>{{ 2, 3, 1, 4, 5, 6 }, { 0, 2, 3, 4, 5, 6 }, { 3, 1, 4, 5, 6, 0 }, { 1, 4, 5, 6, 0, 2 }, { 5, 6 }, { 6, 4 }, { 4, 5 }, { 5, 6, 4 } }), transitive_closure(adjl_directed, index_f));
+}
+
+TEST(graph_test, floyd_warshall) {
+    int INF = 1000000000;
+    EXPECT_EQ((vector<vector<pair<int, int>>> {
+        { { 0, 0 }, { 2, -1 }, { 2, -2 }, { 2, 0 }, { 2, -8 }, { 2, -6 }, { 2, -3 }, { -1, INF } },
+        { { 0, 4 }, { 1, 0 }, { 0, 2 }, { 0, 4 }, { 0, -4 }, { 0, -2 }, { 0, 1 }, { -1, INF } },
+        { { 3, 5 }, { 3, 1 }, { 2, 0 }, { 3, 2 }, { 3, -6 }, { 3, -4 }, { 3, -1 }, { -1, INF } },
+        { { 1, 3 }, { 1, -1 }, { 1, 1 }, { 3, 0 }, { 4, -8 }, { 4, -6 }, { 4, -3 }, { -1, INF } },
+        { { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 4, 0 }, { 5, 2 }, { 5, 5 }, { -1, INF } },
+        { { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 6, 10 }, { 5, 0 }, { 6, 3 }, { -1, INF } },
+        { { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 4, 7 }, { 4, 9 }, { 6, 0 }, { -1, INF } },
+        { { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 5, 16 }, { 5, 6 }, { 5, 9 }, { 7, 0 } }
+    }), floyd_warshall(adjl_directed, INF));
 }
 
 template<typename MAX_FLOW_IMPL, typename T>

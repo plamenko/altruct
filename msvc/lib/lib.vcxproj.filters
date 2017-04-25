@@ -290,5 +290,14 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\topological_sort.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\tarjan_scc.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\transitive_closure.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
