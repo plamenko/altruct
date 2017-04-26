@@ -1,6 +1,7 @@
 #include "algorithm/graph/iterative_dfs.h"
 #include "algorithm/graph/topological_sort.h"
 #include "algorithm/graph/tarjan_scc.h"
+#include "algorithm/graph/chain_decomposition.h"
 #include "algorithm/graph/transitive_closure.h"
 #include "algorithm/graph/floyd_warshall.h"
 #include "algorithm/graph/dijkstra.h"
@@ -10,13 +11,16 @@
 #include "algorithm/graph/lowest_common_ancestor.h"
 #include "algorithm/graph/heavy_light_decomposition.h"
 
+#include "algorithm/collections/collections.h"
+
 #include "gtest/gtest.h"
 
 using namespace std;
 using namespace altruct::graph;
+using namespace altruct::collections;
 
 namespace {
-    vector<vector<pair<int, int>>> adjl_dag_neg1{ // no cycles, has negative weights
+    vector<vector<pair<int, int>>> adjl_dag_neg1{ // no cycles, has negative weights, multiple components
         { { 4, 10 } },
         { { 4, 7 }, { 0, 3 } },
         { { 0, 5 } },
@@ -49,6 +53,26 @@ namespace {
         { { 4, 7 } },
         { { 5, 10 }, { 5, 6 }, { 5, 11 } },
     };
+    vector<vector<pair<int, int>>> adjl_cyc_undir{ // undirected, has cycles, multiple components
+        { { 5, 21 }, { 7, 28 }, { 8, 23 } },
+        { { 2, 31 }, { 4, 33 } },
+        { { 1, 27 }, { 4, 35 } },
+        { { 6, 28 }, { 9, 26 } },
+        { { 1, 34 }, { 2, 28 }, { 9, 34 } },
+        { { 0, 31 }, { 7, 26 }, { 9, 29 } },
+        { { 3, 25 }, { 9, 28 } },
+        { { 0, 32 }, { 5, 33 }, { 8, 31 }, { 9, 30 } },
+        { { 0, 29 }, { 7, 35 } },
+        { { 4, 26 }, { 5, 28 }, { 6, 30 }, { 7, 32 }, { 3, 24 } },
+        { { 11, 45 } },
+        { { 10, 38 }, { 12, 45 } },
+        { { 11, 42 } },
+        { { 14, 55 }, { 15, 57 } },
+        { { 13, 57 }, { 15, 54 } },
+        { { 13, 53 }, { 14, 52 }, { 16, 54 }, { 17, 50 } },
+        { { 15, 58 }, { 17, 55 } },
+        { { 15, 58 }, { 16, 56 } },
+    };
     auto index_f = [](const pair<int, int>& e){return e.first; };
 }
 
@@ -67,6 +91,13 @@ TEST(graph_test, topological_sort) {
 TEST(graph_test, tarjan_scc) {
     EXPECT_EQ((vector<vector<int>>{{ 9 }, { 8 }, { 10 }, { 7 }, { 5 }, { 6 }, { 3 }, { 2 }, { 1 }, { 0 }, { 4 } }), tarjan_scc(adjl_dag_neg1, index_f));
     EXPECT_EQ((vector<vector<int>>{{ 7 }, { 1, 3, 2, 0 }, { 6, 5, 4 } }), tarjan_scc(adjl_cyc_neg1, index_f));
+}
+
+TEST(graph_test, chain_decomposition) {
+    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 }, { 9, 3, 6, 9 }, { 4, 2, 1, 4 } }, {}, { { 13, 15, 14, 13 }, { 15, 17, 16, 15 } }}), chain_decomposition(adjl_cyc_undir, index_f));
+    auto cve = cut_vertices_and_edges(adjl_cyc_undir, index_f);
+    EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cve.first));
+    EXPECT_EQ((vector<pair<int, int>>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cve.second));
 }
 
 TEST(graph_test, transitive_closure) {
