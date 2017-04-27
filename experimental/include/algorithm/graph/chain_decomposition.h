@@ -57,6 +57,101 @@ std::vector<std::vector<std::vector<int>>> chain_decomposition(const std::vector
 }
 
 /**
+ * Calculates all the cut edges (bridges) of a graph.
+ * (whose removal would increase number of components in the graph)
+ *
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
+ * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param vvc - `chain_decomposition` of a graph
+ */
+template<typename E, typename FI>
+std::vector<std::pair<int, int>> cut_edges(const std::vector<std::vector<E>>& adjl, FI index_f, const std::vector<std::vector<std::vector<int>>>& vvc) {
+    // unordered_set could be avoided by having chain_decomposition operate on edge indices
+    std::unordered_set<std::pair<int, int>> ce;
+    for (int u = 0; u < (int)adjl.size(); u++) {
+        for (const auto& e : adjl[u]) {
+            int v = index_f(e);
+            if (u < v) ce.insert({ u, v }); // edge is a bridge ...
+        }
+    }
+    for (const auto& vc : vvc) {
+        for (const auto& c : vc) {
+            for (int i = 1; i < (int)c.size(); i++) {
+                int u = c[i - 1], v = c[i];
+                if (u > v) std::swap(u, v);
+                ce.erase({ u, v }); // ... if it is not in any chain
+            }
+        }
+    }
+    return std::vector<std::pair<int, int>>(ce.begin(), ce.end());
+}
+
+/**
+ * Calculates all the cut vertices (articulation points) of a graph.
+ * (whose removal would increase number of components in the graph)
+ *
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
+ * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param vvc - `chain_decomposition` of a graph
+ */
+template<typename E, typename FI>
+std::vector<int> cut_vertices(const std::vector<std::vector<E>>& adjl, FI index_f, const std::vector<std::vector<std::vector<int>>>& vvc) {
+    std::vector<int> is_cut(adjl.size(), 0);
+    for (int u = 0; u < (int)adjl.size(); u++) {
+        if (adjl[u].size() >= 2) is_cut[u] = 1; // vertex is an articulation point if its degree is at least 2 ...
+    }
+    for (const auto& vc : vvc) {
+        for (const auto& c : vc) {
+            for (int u : c) is_cut[u] = 0; // ... and is not in any biconnected component ...
+        }
+    }
+    for (const auto& vc : vvc) {
+        for (int i = 1; i < (int)vc.size(); i++) {
+            int u = vc[i].front(), v = vc[i].back();
+            if (u == v) is_cut[u] = 1; // ... or it is a first vertex of a non-first cycle (per each component)
+        }
+    }
+    std::vector<int> cv;
+    for (int u = 0; u < (int)adjl.size(); u++) {
+        if (is_cut[u]) cv.push_back(u);
+    }
+    return cv;
+}
+
+/**
+ * Calculates all the biconnected components of a graph.
+ *
+ * Note, bridge components are not considered to be biconnected and hence not returned.
+ *
+ * Complexity: O(m)
+ *
+ * @param adjl - adjacency list of `n` nodes and `m` edges
+ * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param vvc - `chain_decomposition` of a graph
+ */
+template<typename E, typename FI>
+std::vector<std::vector<int>> biconnected_components(const std::vector<std::vector<E>>& adjl, FI index_f, const std::vector<std::vector<std::vector<int>>>& vvc) {
+    std::vector<int> seen(adjl.size(), 0);
+    std::vector<std::vector<int>> vbc;
+    for (const auto& vc : vvc) {
+        for (const auto& c : vc) {
+            int u = c.front(), v = c.back();
+            if (u == v) vbc.push_back({}), seen[u] = 0; // start of a new biconnected component
+            for (int u : c) {
+                if (!seen[u]) vbc.back().push_back(u), seen[u] = 1;
+            }
+        }
+    }
+    return vbc;
+}
+
+
+
+/**
  * Calculates all the cut vertices and edges.
  * (whose removal would increase number of components in the graph)
  *

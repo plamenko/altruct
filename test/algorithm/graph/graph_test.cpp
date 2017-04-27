@@ -94,7 +94,11 @@ TEST(graph_test, tarjan_scc) {
 }
 
 TEST(graph_test, chain_decomposition) {
-    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 }, { 9, 3, 6, 9 }, { 4, 2, 1, 4 } }, {}, { { 13, 15, 14, 13 }, { 15, 17, 16, 15 } }}), chain_decomposition(adjl_cyc_undir, index_f));
+    const auto d = chain_decomposition(adjl_cyc_undir, index_f);
+    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 }, { 9, 3, 6, 9 }, { 4, 2, 1, 4 } }, {}, { { 13, 15, 14, 13 }, { 15, 17, 16, 15 } }}), d);
+    EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(adjl_cyc_undir, index_f, d)));
+    EXPECT_EQ((vector<pair<int, int>>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cut_edges(adjl_cyc_undir, index_f, d)));
+    EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(adjl_cyc_undir, index_f, d)));
     auto cve = cut_vertices_and_edges(adjl_cyc_undir, index_f);
     EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cve.first));
     EXPECT_EQ((vector<pair<int, int>>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cve.second));
