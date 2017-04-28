@@ -305,5 +305,8 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\chain_decomposition.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\graph.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

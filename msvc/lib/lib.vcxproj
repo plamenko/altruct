@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h" />
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\graph.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h" />

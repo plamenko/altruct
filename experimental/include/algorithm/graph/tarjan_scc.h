@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph.h"
+
 #include <vector>
 #include <algorithm>
 
@@ -11,19 +13,18 @@ namespace graph {
  *
  * Complexity: O(m)
  *
- * @param adjl - adjacency list of `n` nodes and `m` edges
- * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param g - a directed acyclic graph with `n` nodes and `m` edges
  */
-template<typename E, typename FI>
-std::vector<std::vector<int>> tarjan_scc(const std::vector<std::vector<E>>& adjl, FI index_f) {
+template<typename E>
+std::vector<std::vector<int>> tarjan_scc(const graph<E>& g) {
     std::vector<std::vector<int>> vscc;
     int cnt = 0;
-    std::vector<int> low(adjl.size(), -1); // node's lowest reachable ancestor
-    std::vector<int> idx(adjl.size(), -1); // node's index in the dfs traversal
-    std::vector<int> act(adjl.size(), -1); // whether or not a node is on `sta`
+    std::vector<int> low(g.size(), -1); // node's lowest reachable ancestor
+    std::vector<int> idx(g.size(), -1); // node's index in the dfs traversal
+    std::vector<int> act(g.size(), -1); // whether or not a node is on `sta`
     std::vector<int> sta;                  // stack of active nodes
     std::vector<std::pair<int, int>> stk;  // dfs stack
-    for (int o = 0; o < (int)adjl.size(); o++) {
+    for (int o = 0; o < g.size(); o++) {
         if (idx[o] != -1) continue;
         act[o] = low[o] = idx[o] = cnt++;
         sta.push_back(o);
@@ -31,8 +32,8 @@ std::vector<std::vector<int>> tarjan_scc(const std::vector<std::vector<E>>& adjl
         while (!stk.empty()) {
             int u = stk.back().first;
             int i = stk.back().second;
-            if (i < (int)adjl[u].size()) {
-                int v = index_f(adjl[u][i]);
+            if (i < (int)g[u].size()) {
+                int v = g[u][i].v;
                 stk.back().second++;
                 if (act[v] != -1) {
                     low[u] = std::min(low[u], idx[v]);
@@ -63,10 +64,6 @@ std::vector<std::vector<int>> tarjan_scc(const std::vector<std::vector<E>>& adjl
     }
     std::reverse(vscc.begin(), vscc.end());
     return vscc;
-}
-template<typename E = int>
-std::vector<std::vector<int>> tarjan_scc(const std::vector<std::vector<int>>& adjl) {
-    return tarjan_scc(adjl, [](int i){ return i; });
 }
 
 } // graph

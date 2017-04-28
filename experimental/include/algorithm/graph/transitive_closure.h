@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph.h"
+
 #include <vector>
 #include <algorithm>
 
@@ -11,32 +13,27 @@ namespace graph {
  *
  * Complexity: O(n*m)
  *
- * @param adjl - adjacency list of `n` nodes and `m` edges
- * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param g - a graph with `n` nodes and `m` edges
  */
-template<typename E, typename FI>
-std::vector<std::vector<int>> transitive_closure(const std::vector<std::vector<E>>& adjl, FI index_f) {
-    std::vector<std::vector<int>> res(adjl.size());
-    for (int i = 0; i < (int)adjl.size(); i++) {
-        std::vector<int> d(adjl.size(), 0);
+template<typename E>
+graph<edge> transitive_closure(const graph<E>& g) {
+    graph<edge> res(g.size());
+    for (int i = 0; i < g.size(); i++) {
+        std::vector<int> d(g.size(), 0);
         vector<int> stk{ i };
         d[i] = -1;
         while (!stk.empty()) {
             int u = stk.back(); stk.pop_back();
-            for (const auto& e : adjl[u]) {
-                int v = index_f(e);
+            for (const auto& e : g[u]) {
+                int v = e.v;
                 if (d[v] != 0) continue;
                 stk.push_back(v);
-                res[i].push_back(v);
+                res.add_edge(i, v);
                 d[v] = 1;
             }
         }
     }
     return res;
-}
-template<typename E = int>
-std::vector<std::vector<int>> transitive_closure(const std::vector<std::vector<int>>& adjl) {
-    return transitive_closure(adjl, [](int i){ return i; });
 }
 
 /**
@@ -52,39 +49,34 @@ std::vector<std::vector<int>> transitive_closure(const std::vector<std::vector<i
  *
  * Complexity: O(n*m)
  *
- * @param adjl - adjacency list of `n` nodes and `m` edges
- * @param index_f - a functor that extracts the outbound node index from the edge
+ * @param g - an undirected graph with `n` nodes and `m` edges
  */
-template<typename E, typename FI>
-std::vector<std::vector<int>> transitive_reduction(const std::vector<std::vector<E>>& adjl, FI index_f) {
-    std::vector<std::vector<int>> res(adjl.size());
-    for (int i = 0; i < (int)adjl.size(); i++) {
-        std::vector<int> d(adjl.size(), 0);
+template<typename E>
+graph<edge> transitive_reduction(const graph<E>& g) {
+    graph<edge> res(g.size());
+    for (int i = 0; i < g.size(); i++) {
+        std::vector<int> d(g.size(), 0);
         vector<int> stk;
         d[i] = -1;
-        for (const auto& e : adjl[i]) {
-            int v = index_f(e);
+        for (const auto& e : g[i]) {
+            int v = e.v;
             if (d[v] == 0) stk.push_back(v);
             d[v] = 1;
         }
         d[i] = -1;
         while (!stk.empty()) {
             int u = stk.back(); stk.pop_back();
-            for (const auto& e : adjl[u]) {
-                int v = index_f(e);
+            for (const auto& e : g[u]) {
+                int v = e.v;
                 if (d[v] == 0) stk.push_back(v);
                 d[v] = -1; // reachable indirectly, hence not in the reduction
             }
         }
-        for (int v = 0; v < (int)adjl.size(); v++) {
-            if (d[v] == 1) res[i].push_back(v);
+        for (int v = 0; v < g.size(); v++) {
+            if (d[v] == 1) res.add_edge(i, v);
         }
     }
     return res;
-}
-template<typename E = int>
-std::vector<std::vector<int>> transitive_reduction(const std::vector<std::vector<int>>& adjl) {
-    return transitive_reduction(adjl, [](int i){ return i; });
 }
 
 } // graph

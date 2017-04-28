@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph.h"
+
 #include "algorithm/graph/iterative_dfs.h"
 #include "algorithm/graph/lowest_common_ancestor.h"
 
@@ -31,34 +33,35 @@ class heavy_light_decomposition {
 	std::vector<int> sizes;
 
 public:
-	heavy_light_decomposition(std::vector<std::vector<int>>& adjl) :
-		parents(adjl.size(), -1),
-		positions(adjl.size(), -1),
-		nodes(adjl.size(), -1),
-		sizes(adjl.size(), 1) {
-		iterative_dfs(adjl, [&](int root, int parent, int node, int depth) {
+    template<typename E>
+	heavy_light_decomposition(graph<E>& g) :
+		parents(g.size(), -1),
+		positions(g.size(), -1),
+		nodes(g.size(), -1),
+		sizes(g.size(), 1) {
+		iterative_dfs(g, [&](int root, int parent, int node, int depth) {
 			if (node == -1) {
-				for (int v : adjl[parent]) {
-					if (v != parents[parent]) sizes[parent] += sizes[v];
+				for (const E& e : g[parent]) {
+					if (e.v != parents[parent]) sizes[parent] += sizes[e.v];
 				}
 			} else {
 				parents[node] = parent;
 			}
 			return true;
 		});
-		for (int u = 0; u < (int)adjl.size(); u++) {
-			if (adjl[u].size() < 2) continue;
+		for (int u = 0; u < g.size(); u++) {
+			if (g[u].size() < 2) continue;
 			int heavy_i = 0, heavy_size = 0;
-			for (int i = 0; i < (int)adjl[u].size(); i++) {
-				int v = adjl[u][i];
+			for (int i = 0; i < g[u].size(); i++) {
+				int v = g[u][i].v;
 				if (v != parents[u] && heavy_size < sizes[v]) {
 					heavy_i = i, heavy_size = sizes[v];
 				}
 			}
-			std::swap(adjl[u][0], adjl[u][heavy_i]);
+			std::swap(g[u][0].v, g[u][heavy_i].v);
 		}
 		int pos = 0, par = -2;
-		iterative_dfs(adjl, [&](int root, int parent, int node, int depth) {
+		iterative_dfs(g, [&](int root, int parent, int node, int depth) {
 			if (node != -1) {
 				if (par == -2) par = parent;
 				parents[node] = par;
@@ -99,9 +102,10 @@ public:
 	lowest_common_ancestor lca;
 	heavy_light_decomposition hld;
 
-	heavy_light_decomposition_ex(std::vector<std::vector<int>>& adjl) :
-		lca(adjl),
-		hld(adjl) {
+    template<typename E>
+	heavy_light_decomposition_ex(graph<E>& g) :
+		lca(g),
+		hld(g) {
 	}
 
 	// `k-th` parent (ancestor) of `u`;

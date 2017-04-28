@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graph.h"
+
 #include "algorithm/graph/iterative_dfs.h"
 #include "structure/container/segment_tree.h"
 
@@ -25,13 +27,14 @@ class lowest_common_ancestor {
 	altruct::container::segment_tree<pii> levels; // segment tree for range-minimum-queries on the (level, node)
 
 public:
-	// @param adjl - adjacency list of a tree (or forest, but no cycles);
-	//               if there is an edge (u,v), there should also be edge (v,u)
-	lowest_common_ancestor(const std::vector<std::vector<int>>& adjl) :
-		indices(adjl.size(), -1),
-		levels(adjl.size() * 2 + 1, min_f, { std::numeric_limits<int>::max(), -1 }) {
+	// @param g - an undirected tree (or a forest, but no cycles);
+	//            if there is an edge (u,v), there should also be an edge (v,u)
+	template<typename E>
+    lowest_common_ancestor(const graph<E>& g) :
+		indices(g.size(), -1),
+		levels(g.size() * 2 + 1, min_f, { std::numeric_limits<int>::max(), -1 }) {
 		int s = 0;
-		iterative_dfs(adjl, [&](int root, int parent, int node, int depth) {
+		iterative_dfs(g, [&](int root, int parent, int node, int depth) {
 			if (parent != -1) indices[parent] = s;
 			levels[s++] = { depth - 1, parent };
 			return true;
