@@ -77,6 +77,14 @@ namespace {
         { { 15, 58 }, { 17, 55 } },
         { { 15, 58 }, { 16, 56 } },
     });
+    graph<edge> cyc_undir2({ // undirected, has cycles
+        { { 1 }, { 3 }, { 4 } },
+        { { 0 }, { 2 }, { 4 } },
+        { { 1 }, { 3 } },
+        { { 2 }, { 0 }, { 5 } },
+        { { 0 }, { 1 }, { 5 } },
+        { { 3 }, { 4 } },
+    });
 }
 
 TEST(graph_test, iterative_dfs) {
@@ -102,6 +110,8 @@ TEST(graph_test, chain_decomposition) {
     EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(cyc_undir, d)));
     EXPECT_EQ((vector<full_edge>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cut_edges(cyc_undir, d)));
     EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(cyc_undir, d)));
+    const auto d2 = chain_decomposition(cyc_undir2);
+    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 3, 2, 1, 0 }, { 0, 4, 5, 3 }, { 1, 4 } }}), d2);
 }
 
 TEST(graph_test, transitive_closure) {
@@ -253,8 +263,15 @@ TEST(graph_test, chromatic_polynomial) {
         EXPECT_EQ(p0, p) << "ERROR: K_" << n << ": " << p << endl;
     }
     if (true) {
+        auto p = chromatic_polynomial(cyc_undir2, 1);
+        // k (k - 1) (k - 2)^2 (k (k - 3) + 4)
+        auto p0 = poly{ -8, 10, -5, 1 } *chromatic_polynomial_K(3, 1);
+        //cout << "Petersen related" << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: Petersen related" << ": " << p << endl;
+    }
+    if (true) {
         auto p = chromatic_polynomial(petersen_graph(), 1);
-        auto p0 = poly{ -352, 775, -814, 529, -230, 67, -12, 1 } *chromatic_polynomial_K(3, 1);
+        auto p0 = poly{ -352, 775, -814, 529, -230, 67, -12, 1 } * chromatic_polynomial_K(3, 1);
         //cout << "Petersen" << ": " << "  " << clock() << " ms" << endl;
         EXPECT_EQ(p0, p) << "ERROR: Petersen" << ": " << p << endl;
     }

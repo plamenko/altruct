@@ -61,6 +61,7 @@ public:
     bool operator == (const graph<E>& rhs) const { return adjl == rhs.adjl; }
 
     int size() const { return (int)adjl.size(); }
+    int num_edges() const { int e = 0; for (const auto& l : adjl) e += (int)l.size(); return e; }
     std::vector<E>& operator[] (int u) { return adjl[u]; }
     const std::vector<E>& operator[] (int u) const { return adjl[u]; }
 

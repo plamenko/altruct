@@ -41,11 +41,11 @@ std::vector<std::vector<std::vector<int>>> chain_decomposition(const graph<E>& g
             if (par[v] == u || ord[v] < ord[u]) continue;
             std::vector<int> c{ u, v };
             vis[u] = 1;
-            do {
+            while (vis[v] == -1) {
                 vis[v] = 1;
                 v = par[v];
                 c.push_back(v);
-            } while (vis[v] == -1);
+            };
             vvc.back().push_back(c);
         }
     }
