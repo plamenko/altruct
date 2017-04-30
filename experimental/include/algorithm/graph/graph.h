@@ -52,8 +52,8 @@ template<typename E>
 class graph {
 public:
     std::vector<std::vector<E>> adjl;
-    
-    graph() : {}
+
+    graph() {}
     graph(int n) : adjl(n) {}
     graph(const std::vector<std::vector<E>>& adjl) : adjl(adjl) {}
 
@@ -61,10 +61,52 @@ public:
     bool operator == (const graph<E>& rhs) const { return adjl == rhs.adjl; }
 
     int size() const { return (int)adjl.size(); }
-    int add_node() { adjl.push_back({}); return size() - 1; }
-    void add_edge(int u, const E& e) { adjl[u].push_back(e); }
     std::vector<E>& operator[] (int u) { return adjl[u]; }
     const std::vector<E>& operator[] (int u) const { return adjl[u]; }
+
+    int add_node() { adjl.push_back({}); return size() - 1; }
+    void add_edge(int u, const E& e) { adjl[u].push_back(e); }
+    void add_edge2(int u, const E& e) { adjl[u].push_back(e); adjl[e.v].push_back(e); adjl[e.v].back().v = u; }
+
+    void delete_edge(int u, int v) {
+        for (int i = 0; i < (int)adjl[u].size();) {
+            if (adjl[u][i].v == v) {
+                swap(adjl[u][i], adjl[u].back());
+                adjl[u].pop_back();
+            } else {
+                i++;
+            }
+        }
+    }
+    void delete_node(int u) {
+        int v = size() - 1;
+        swap(adjl[u], adjl[v]);
+        adjl.pop_back();
+        for (auto& l : adjl) {
+            for (int i = 0; i < (int)l.size();) {
+                if (l[i].v == u) {
+                    swap(l[i], l.back());
+                    l.pop_back();
+                } else {
+                    if (l[i].v == v) l[i].v = u;
+                    i++;
+                }
+            }
+        }
+    }
+    void contract(int u, int v) {
+        delete_edge(u, v);
+        delete_edge(v, u);
+        adjl[u].insert(adjl[u].end(), adjl[v].begin(), adjl[v].end());
+        for (auto& l : adjl) for (auto& e : l) if (e.v == v) e.v = u;
+        delete_node(v);
+        for (int u = 0; u < size(); u++) deduplicate_edges(u);
+    }
+    void deduplicate_edges(int u) {
+        sort(adjl[u].begin(), adjl[u].end());
+        auto it = unique(adjl[u].begin(), adjl[u].end());
+        adjl[u].erase(it, adjl[u].end());
+    }
 };
 
 } // graph

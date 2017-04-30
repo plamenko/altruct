@@ -2,6 +2,7 @@
 #include "algorithm/graph/topological_sort.h"
 #include "algorithm/graph/tarjan_scc.h"
 #include "algorithm/graph/chain_decomposition.h"
+#include "algorithm/graph/chromatic_polynomial.h"
 #include "algorithm/graph/transitive_closure.h"
 #include "algorithm/graph/floyd_warshall.h"
 #include "algorithm/graph/dijkstra.h"
@@ -12,10 +13,12 @@
 #include "algorithm/graph/heavy_light_decomposition.h"
 
 #include "algorithm/collections/collections.h"
+#include "io/iostream_overloads.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
+using namespace altruct::math;
 using namespace altruct::graph;
 using namespace altruct::collections;
 
@@ -179,4 +182,80 @@ TEST(graph_test, heavy_light_decomposition) {
 	EXPECT_EQ(3, hld.parent(3, 0));
 	EXPECT_EQ(2, hld.parent(3, 1));
 	EXPECT_EQ(0, hld.parent(3, 2));
+}
+
+namespace {
+    auto path_graph = [&](int n) {
+        graph<edge> g(n);
+        for (int i = 1; i < n; i++) {
+            g.add_edge2(i - 1, i);
+        }
+        return g;
+    };
+    auto tree_graph = [&](int n) {
+        graph<edge> g(n);
+        for (int i = 1; i < n; i++) {
+            int p = rand() % i;
+            g.add_edge2(i, p);
+        }
+        return g;
+    };
+    auto cycle_graph = [&](int n) {
+        auto g = path_graph(n);
+        if (n > 2) g.add_edge2(n - 1, 0);
+        return g;
+    };
+    auto complete_graph = [&](int n) {
+        graph<edge> g(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                g.add_edge2(i, j);
+            }
+        }
+        return g;
+    };
+    auto petersen_graph = [&]() {
+        graph<edge> g(10);
+        vector<full_edge> ve{
+            { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 0 },
+            { 0, 5 }, { 1, 6 }, { 2, 7 }, { 3, 8 }, { 4, 9 },
+            { 5, 7 }, { 6, 8 }, { 7, 9 }, { 8, 5 }, { 9, 6 },
+        };
+        for (auto e : ve) g.add_edge2(e.u, e.v);
+        return g;
+    };
+    typedef polynom<int> poly;
+}
+
+TEST(graph_test, chromatic_polynomial) {
+    for (int n = 1; n < 20; n++) {
+        auto p = chromatic_polynomial(path_graph(n), 1);
+        auto p0 = chromatic_polynomial_T(n, 1);
+        //cout << "P_" << n << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: P_" << n << ": " << p << endl;
+    }
+    for (int n = 1; n < 20; n++) {
+        auto p = chromatic_polynomial(tree_graph(n), 1);
+        auto p0 = chromatic_polynomial_T(n, 1);
+        //cout << "T_" << n << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: T_" << n << ": " << p << endl;
+    }
+    for (int n = 3; n < 20; n++) {
+        auto p = chromatic_polynomial(cycle_graph(n), 1);
+        auto p0 = chromatic_polynomial_C(n, 1);
+        //cout << "C_" << n << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: C_" << n << ": " << p << endl;
+    }
+    for (int n = 1; n < 20; n++) {
+        auto p = chromatic_polynomial(complete_graph(n), 1);
+        auto p0 = chromatic_polynomial_K(n, 1);
+        //cout << "K_" << n << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: K_" << n << ": " << p << endl;
+    }
+    if (true) {
+        auto p = chromatic_polynomial(petersen_graph(), 1);
+        auto p0 = poly{ -352, 775, -814, 529, -230, 67, -12, 1 } *chromatic_polynomial_K(3, 1);
+        //cout << "Petersen" << ": " << "  " << clock() << " ms" << endl;
+        EXPECT_EQ(p0, p) << "ERROR: Petersen" << ": " << p << endl;
+    }
 }
