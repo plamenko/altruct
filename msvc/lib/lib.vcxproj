@@ -23,10 +23,12 @@
     <ClCompile Include="..\..\lib\algorithm\math\bits.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp" />
     <ClCompile Include="..\..\lib\algorithm\math\primes.cpp" />
+    <ClCompile Include="..\..\lib\io\iostream_overloads.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\chain_decomposition.h" />
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\chromatic_polynomial.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h" />

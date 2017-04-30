@@ -14,6 +14,7 @@
 
 /** std::ostream manipulator base */
 struct altruct_io_manipulator_base {};
+template<typename T = void>
 std::ostream& operator << (std::ostream& os, const altruct_io_manipulator_base& f) { return os; }
 /** std::ostream manipulator macro */
 #define ALTRUCT_IO_MANIPULATOR(manipulator_name, field, default_val) \
@@ -22,8 +23,8 @@ struct manipulator_name : public altruct_io_manipulator_base { \
     manipulator_name(decltype(field) val) : old_val(field) { field = val; } \
     ~manipulator_name() { field = old_val; } \
     static bool set_default() { field = default_val; return true; } \
-}; \
-bool manipulator_name##_initialized = manipulator_name::set_default();
+};
+//bool manipulator_name##_initialized = manipulator_name::set_default();
 
 
 /** std::ostream specialization for std::pair */
@@ -58,10 +59,11 @@ std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& contain
 
 
 /** std::ostream specialization for altruct::math::fraction */
-struct {
+struct iostream_fraction_state_t {
     bool always_output_denominator;
     bool output_as_pair;
-} iostream_fraction_state;
+};
+extern iostream_fraction_state_t iostream_fraction_state;
 ALTRUCT_IO_MANIPULATOR(io_fraction_denominator, iostream_fraction_state.always_output_denominator, false);
 ALTRUCT_IO_MANIPULATOR(io_fraction_as_pair, iostream_fraction_state.output_as_pair, false);
 template<typename T>
@@ -76,10 +78,11 @@ std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& r
 }
 
 /** std::ostream specialization for altruct::math::modulo */
-struct {
+struct iostream_modulo_state_t {
     bool output_modulus;
     bool output_as_pair;
-} iostream_modulo_state;
+};
+extern iostream_modulo_state_t iostream_modulo_state;
 ALTRUCT_IO_MANIPULATOR(io_modulo_modulus, iostream_modulo_state.output_modulus, false);
 ALTRUCT_IO_MANIPULATOR(io_modulo_as_pair, iostream_modulo_state.output_as_pair, false);
 template<typename T, int ID, int STORAGE_TYPE>
@@ -94,9 +97,10 @@ std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, 
 }
 
 /** std::ostream specialization for altruct::math::polynom */
-struct {
+struct iostream_polynom_state_t {
     bool output_as_vector;
-} iostream_polynom_state;
+};
+extern iostream_polynom_state_t iostream_polynom_state;
 ALTRUCT_IO_MANIPULATOR(io_polynom_as_vector, iostream_polynom_state.output_as_vector, true);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rhs) {

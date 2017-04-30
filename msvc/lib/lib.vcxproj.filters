@@ -13,6 +13,9 @@
     <ClCompile Include="..\..\lib\algorithm\math\bits.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lib\io\iostream_overloads.cpp">
+      <Filter>src\io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -71,6 +74,9 @@
     </Filter>
     <Filter Include="include\algorithm\graph">
       <UniqueIdentifier>{a06ea75e-7a4e-45fa-a9b8-337d3315e87e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\io">
+      <UniqueIdentifier>{54d55835-bab0-4154-9de1-0d35e5d7c349}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +312,9 @@
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\graph.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\chromatic_polynomial.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
   </ItemGroup>
