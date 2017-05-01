@@ -95,6 +95,30 @@ namespace {
         { { 1 }, { 7 } },
         { { 6 }, { 1 } },
     });
+    graph<edge> cyc_undir4({ // undirected, has cycles
+        { { 1 }, { 3 } },
+        { { 6 }, { 7 }, { 0 }, { 2 } },
+        { { 1 }, { 3 }, { 5 } },
+        { { 4 }, { 2 }, { 0 } },
+        { { 5 }, { 3 } },
+        { { 2 }, { 4 } },
+        { { 7 }, { 1 } },
+        { { 6 }, { 1 } },
+    });
+    graph<edge> cyc_undir5({ // undirected, has cycles
+        { { 1 }, { 7 } },
+        { { 0 }, { 2 }, { 3 }, { 4 } },
+        { { 1 }, { 3 } },
+        { { 1 }, { 2 } },
+        { { 1 }, { 5 }, { 6 }, { 7 }, { 11 } },
+        { { 4 }, { 6 } },
+        { { 4 }, { 5 } },
+        { { 0 }, { 4 }, { 8 }, { 9 }, { 10 } },
+        { { 7 }, { 9 } },
+        { { 7 }, { 8 } },
+        { { 7 }, { 11 } },
+        { { 4 }, { 10 } },
+    });
 }
 
 TEST(graph_test, iterative_dfs) {
@@ -116,14 +140,18 @@ TEST(graph_test, tarjan_scc) {
 
 TEST(graph_test, chain_decomposition) {
     const auto d = chain_decomposition(cyc_undir);
-    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 }, { 9, 3, 6, 9 }, { 4, 2, 1, 4 } }, {}, { { 13, 15, 14, 13 }, { 15, 17, 16, 15 } }}), d);
+    EXPECT_EQ((chain_decomposition_t{{ { { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 } }, { { 9, 3, 6, 9 } }, { { 4, 2, 1, 4 } } }, {}, { { { 13, 15, 14, 13 } }, { { 15, 17, 16, 15 } } }}), d);
     EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(cyc_undir, d)));
     EXPECT_EQ((vector<full_edge>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cut_edges(cyc_undir, d)));
     EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(cyc_undir, d)));
     const auto d2 = chain_decomposition(cyc_undir2);
-    EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 3, 2, 1, 0 }, { 0, 4, 5, 3 }, { 1, 4 } }}), d2);
+    EXPECT_EQ((chain_decomposition_t{ { { { 0, 3, 2, 1, 0 }, { 0, 4, 5, 3 }, { 1, 4 } } } }), d2);
     const auto d3 = chain_decomposition(cyc_undir3);
     EXPECT_EQ((vector<vector<int>>{{ { 0, 3, 2, 1, 4 }, { 1, 6, 7 } } }), sorted(biconnected_components(cyc_undir3, d3)));
+    const auto d4 = chain_decomposition(cyc_undir4);
+    EXPECT_EQ((vector<vector<int>>{{ 0, 3, 2, 1, 5, 4 }, { 1, 7, 6 }}), sorted(biconnected_components(cyc_undir4, d4)));
+    const auto d5 = chain_decomposition(cyc_undir5);
+    EXPECT_EQ((vector<vector<int>>{{ 0, 7, 4, 1, 11, 10 }, { 1, 3, 2 }, { 4, 6, 5 }, { 7, 9, 8 }}), sorted(biconnected_components(cyc_undir5, d5)));
 }
 
 TEST(graph_test, transitive_closure) {

@@ -62,18 +62,20 @@ altruct::math::polynom<I> chromatic_polynomial(const graph<E>& g, I id = I(1)) {
     int C = (int)d.size(), AE = g.num_edges() / 2, CE = 0;
     std::vector<graph<edge>> vg;
     std::vector<int> idx(n, -1);
-    for (const auto& vc : d) {
-        for (const auto& c : vc) {
-            CE += (int)c.size() - 1;
-            int u = c.front(), v = c.back();
-            // cycle indicates start of a new biconnected component
-            if (u == v) vg.push_back({}), idx[u] = -1;
-            for (int u : c) {
-                if (idx[u] == -1) idx[u] = vg.back().add_node();
-            }
-            for (int i = 1; i < (int)c.size(); i++) {
-                vg.back().add_edge(idx[c[i - 1]], idx[c[i]]);
-                vg.back().add_edge(idx[c[i]], idx[c[i - 1]]);
+    for (const auto& component : d) {
+        for (const auto& biconnected : component) {
+            vg.push_back({}); // a graph for each  biconnected component
+            idx[biconnected[0][0]] = -1;
+            for (const auto& chain : biconnected) {
+                CE += (int)chain.size() - 1;
+                for (int u : chain) {
+                    if (idx[u] == -1) idx[u] = vg.back().add_node();
+                }
+                for (int i = 1; i < (int)chain.size(); i++) {
+                    int u = idx[chain[i - 1]], v = idx[chain[i]];
+                    vg.back().add_edge(u, v);
+                    vg.back().add_edge(v, u);
+                }
             }
         }
     }
