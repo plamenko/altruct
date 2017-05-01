@@ -317,5 +317,8 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\chromatic_polynomial.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\binary_heap.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

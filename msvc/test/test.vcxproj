@@ -62,6 +62,7 @@
     <ClCompile Include="..\..\test\io\iostream_overloads_test.cpp" />
     <ClCompile Include="..\..\test\io\reader_test.cpp" />
     <ClCompile Include="..\..\test\io\writer_test.cpp" />
+    <ClCompile Include="..\..\test\structure\container\binary_heap_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\bit_vector_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lazy_segment_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />

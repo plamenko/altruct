@@ -30,6 +30,7 @@
     <ClCompile Include="..\..\sample\algorithm\random\mersenne_twister_sample.cpp" />
     <ClCompile Include="..\..\sample\algorithm\random\xorshift_sample.cpp" />
     <ClCompile Include="..\..\sample\main.cpp" />
+    <ClCompile Include="..\..\sample\test_sample.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}</ProjectGuid>
