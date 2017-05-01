@@ -12,6 +12,9 @@ void dirichlet_sample();
 void test_sample();
 
 int main() {
+  test_sample();
+  return 0;
+
   xorshift_sample();
 	mersenne_twister_sample();
 	fibonacci_mod_m_sample();
