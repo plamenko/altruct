@@ -11,10 +11,14 @@ using namespace std;
 
 namespace {
 template<typename T>
-std::string to_str(const T& val, const vector<altruct_io_manipulator_base>& manipulators = {}) {
+std::string to_str(const T& val, const vector<altruct_io_manipulator_base>& manipulators) {
     std::stringstream ss;
     ss << val;
     return ss.str();
+}
+template<typename T>
+std::string to_str(const T& val) {
+    return to_str(val, {});
 }
 }
 

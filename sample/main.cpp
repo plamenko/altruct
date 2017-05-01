@@ -9,8 +9,10 @@ void series_simple_counting_sample();
 void series_combinatoric_sample();
 void dirichlet_sample();
 
+void test_sample();
+
 int main() {
-	xorshift_sample();
+  xorshift_sample();
 	mersenne_twister_sample();
 	fibonacci_mod_m_sample();
 	linear_recurrence_sample();

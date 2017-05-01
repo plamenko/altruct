@@ -12,6 +12,24 @@
 #include "structure/math/polynom.h"
 #include "structure/math/matrix.h"
 
+/** Forward declarations */
+template<typename T1, typename T2>
+std::ostream& operator << (std::ostream& os, const std::pair<T1, T2>& rhs);
+template<typename T, typename A>
+std::ostream& operator << (std::ostream& os, const std::vector<T, A>& container);
+template<typename T, typename P, typename A>
+std::ostream& operator << (std::ostream& os, const std::set<T, P, A>& container);
+template<typename K, typename V, typename P, typename A>
+std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& container);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& rhs);
+template<typename T, int ID, int STORAGE_TYPE>
+std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, STORAGE_TYPE>& rhs);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rhs);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs);
+
 /** std::ostream manipulator base */
 struct altruct_io_manipulator_base {};
 template<typename T = void>
@@ -69,7 +87,7 @@ ALTRUCT_IO_MANIPULATOR(io_fraction_as_pair, iostream_fraction_state.output_as_pa
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& rhs) {
     if (iostream_fraction_state.output_as_pair) {
-        return os << make_pair(rhs.p, rhs.q);
+        return os << std::make_pair(rhs.p, rhs.q);
     } else if (iostream_fraction_state.always_output_denominator || !(rhs.q == altruct::math::identityOf(rhs.q))) {
         return os << rhs.p << "/" << rhs.q;
     } else {
@@ -88,7 +106,7 @@ ALTRUCT_IO_MANIPULATOR(io_modulo_as_pair, iostream_modulo_state.output_as_pair, 
 template<typename T, int ID, int STORAGE_TYPE>
 std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, STORAGE_TYPE>& rhs) {
     if (iostream_modulo_state.output_as_pair) {
-        return os << make_pair(rhs.v, rhs.M());
+        return os << std::make_pair(rhs.v, rhs.M());
     } else if (iostream_modulo_state.output_modulus) {
        return os << rhs.v << " (mod " << rhs.M() << ")";
     } else {

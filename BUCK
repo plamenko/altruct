@@ -41,3 +41,16 @@ cxx_test(
     ':altruct_lib',
   ],
 )
+
+cxx_binary(
+  name = 'altruct_samples',
+  srcs = glob([
+    'sample/**/*.cpp',
+  ],
+  excludes=[
+  ]),
+  headers = HEADERS,
+  deps = [
+    ':altruct_lib',
+  ],
+)

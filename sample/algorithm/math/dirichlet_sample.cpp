@@ -12,10 +12,10 @@ using namespace altruct::math;
 void dirichlet_sample() {
 	cout << "=== dirichlet_sample ===" << endl;
 	
-    char* message_n = "O(n)";
-    char* message_log = "O(n log n)";
-    char* message_log_log = "O(n log log n)";
-    char* message_log_log_vs = "O(n log log n) instead of O(n log n)";
+    const char* message_n = "O(n)";
+    const char* message_log = "O(n log n)";
+    const char* message_log_log = "O(n log log n)";
+    const char* message_log_log_vs = "O(n log log n) instead of O(n log n)";
 
     auto sec_since = [](clock_t T){ return double(clock() - T) / CLOCKS_PER_SEC; };
 

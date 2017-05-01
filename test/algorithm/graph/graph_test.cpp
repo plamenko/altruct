@@ -185,14 +185,14 @@ TEST(graph_test, heavy_light_decomposition) {
 }
 
 namespace {
-    auto path_graph = [&](int n) {
+    auto path_graph = [](int n) {
         graph<edge> g(n);
         for (int i = 1; i < n; i++) {
             g.add_edge2(i - 1, i);
         }
         return g;
     };
-    auto tree_graph = [&](int n) {
+    auto tree_graph = [](int n) {
         graph<edge> g(n);
         for (int i = 1; i < n; i++) {
             int p = rand() % i;
@@ -200,12 +200,12 @@ namespace {
         }
         return g;
     };
-    auto cycle_graph = [&](int n) {
+    auto cycle_graph = [](int n) {
         auto g = path_graph(n);
         if (n > 2) g.add_edge2(n - 1, 0);
         return g;
     };
-    auto complete_graph = [&](int n) {
+    auto complete_graph = [](int n) {
         graph<edge> g(n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < i; j++) {
@@ -214,7 +214,7 @@ namespace {
         }
         return g;
     };
-    auto petersen_graph = [&]() {
+    auto petersen_graph = []() {
         graph<edge> g(10);
         vector<full_edge> ve{
             { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 0 },

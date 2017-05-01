@@ -20,7 +20,7 @@ graph<edge> transitive_closure(const graph<E>& g) {
     graph<edge> res(g.size());
     for (int i = 0; i < g.size(); i++) {
         std::vector<int> d(g.size(), 0);
-        vector<int> stk{ i };
+        std::vector<int> stk{ i };
         d[i] = -1;
         while (!stk.empty()) {
             int u = stk.back(); stk.pop_back();
@@ -56,7 +56,7 @@ graph<edge> transitive_reduction(const graph<E>& g) {
     graph<edge> res(g.size());
     for (int i = 0; i < g.size(); i++) {
         std::vector<int> d(g.size(), 0);
-        vector<int> stk;
+        std::vector<int> stk;
         d[i] = -1;
         for (const auto& e : g[i]) {
             int v = e.v;

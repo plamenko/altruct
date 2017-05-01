@@ -54,7 +54,7 @@ public:
         }
 
         if (rule == RELABEL_TO_FRONT) {
-            deque<int> que;
+            std::deque<int> que;
             for (int v = 0; v < n; v++) {
                 if (v != source && v != sink) que.push_back(v);
             }
@@ -72,7 +72,7 @@ public:
                 }
             }
         } else if (rule == LARGEST_LABEL) {
-            vector<int> que;
+            std::vector<int> que;
             for (int v = 0; v < n; v++) {
                 if (v != source && v != sink) que.push_back(v);
             }

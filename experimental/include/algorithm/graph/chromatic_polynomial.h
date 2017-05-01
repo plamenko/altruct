@@ -14,7 +14,7 @@ namespace graph {
 template<typename I>
 altruct::math::polynom<I> chromatic_polynomial_T(int n, I id = I(1)) {
     typedef altruct::math::polynom<I> poly;
-    return poly{ zeroOf(id), id } *powT(poly{ -id, id }, n - 1);
+    return poly{ altruct::math::zeroOf(id), id } *powT(poly{ -id, id }, n - 1);
 }
 
 /** Chromatic polynomial of a cycle graph. */
@@ -45,12 +45,12 @@ template<typename I, typename E>
 altruct::math::polynom<I> chromatic_polynomial(const graph<E>& g, I id = I(1)) {
     typedef altruct::math::polynom<I> poly;
     int n = g.size();
-    poly k = { zeroOf(id), id };
+    poly k = { altruct::math::zeroOf(id), id };
     poly k1 = { -id, id };
     // Delete vertex that is connected to every other vertex (if it exists)
     for (int u = 0; u < n; u++) {
         if (g[u].size() < n - 1) continue;
-        vector<int> b(n);
+        std::vector<int> b(n);
         int cnt = 0;
         for (const E& e : g[u]) {
             if (!b[e.v]) b[e.v] = 1, cnt++;

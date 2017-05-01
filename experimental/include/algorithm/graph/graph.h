@@ -71,7 +71,7 @@ public:
     void delete_edge(int u, int v) {
         for (int i = 0; i < (int)adjl[u].size();) {
             if (adjl[u][i].v == v) {
-                swap(adjl[u][i], adjl[u].back());
+                std::swap(adjl[u][i], adjl[u].back());
                 adjl[u].pop_back();
             } else {
                 i++;
@@ -80,12 +80,12 @@ public:
     }
     void delete_node(int u) {
         int v = size() - 1;
-        swap(adjl[u], adjl[v]);
+        std::swap(adjl[u], adjl[v]);
         adjl.pop_back();
         for (auto& l : adjl) {
             for (int i = 0; i < (int)l.size();) {
                 if (l[i].v == u) {
-                    swap(l[i], l.back());
+                    std::swap(l[i], l.back());
                     l.pop_back();
                 } else {
                     if (l[i].v == v) l[i].v = u;
