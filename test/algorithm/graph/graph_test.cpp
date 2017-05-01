@@ -85,6 +85,16 @@ namespace {
         { { 0 }, { 1 }, { 5 } },
         { { 3 }, { 4 } },
     });
+    graph<edge> cyc_undir3({ // undirected, has cycles
+        { { 1 }, { 3 }, { 4 } },
+        { { 0 }, { 2 }, { 7 }, { 3 }, { 6 }, { 4 } },
+        { { 1 }, { 3 }, { 4 } },
+        { { 2 }, { 0 }, { 4 }, { 1 } },
+        { { 0 }, { 5 }, { 3 }, { 2 }, { 1 } },
+        { { 4 } },
+        { { 1 }, { 7 } },
+        { { 6 }, { 1 } },
+    });
 }
 
 TEST(graph_test, iterative_dfs) {
@@ -112,6 +122,8 @@ TEST(graph_test, chain_decomposition) {
     EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(cyc_undir, d)));
     const auto d2 = chain_decomposition(cyc_undir2);
     EXPECT_EQ((vector<vector<vector<int>>>{{ { 0, 3, 2, 1, 0 }, { 0, 4, 5, 3 }, { 1, 4 } }}), d2);
+    const auto d3 = chain_decomposition(cyc_undir3);
+    EXPECT_EQ((vector<vector<int>>{{ { 0, 3, 2, 1, 4 }, { 1, 6, 7 } } }), sorted(biconnected_components(cyc_undir3, d3)));
 }
 
 TEST(graph_test, transitive_closure) {
