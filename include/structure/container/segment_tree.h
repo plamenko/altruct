@@ -22,21 +22,21 @@ namespace container {
  * param id - neutral element with respect to `f`; i.e. `f(e, id) = f(id, e) = e`.
  *            e.g. `0` for addition, `1` for multiplication, `+inf` for minimum, etc.
  */
-template<typename T>
+template<typename T, typename F = std::function<T(T, T)>>
 class segment_tree {
 public:
 	std::vector<T> v;
-	std::function<T(T, T)> f;
+	F f;
 
 	segment_tree() {}
 	
-	segment_tree(size_t sz, std::function<T(T, T)> f, T id = T()) : f(f) {
+	segment_tree(size_t sz, const F& f, T id = T()) : f(f) {
 		v.resize(calc_pow2(sz) * 2, id);
 		//rebuild();
 	}
 
 	template<typename It>
-	segment_tree(It begin, It end, std::function<T(T, T)> f, T id = T()) : f(f) {
+	segment_tree(It begin, It end, const F& f, T id = T()) : f(f) {
 		auto sz = std::distance(begin, end);
 		v.resize(calc_pow2(sz) * 2, id);
 		std::copy(begin, end, v.begin() + size());

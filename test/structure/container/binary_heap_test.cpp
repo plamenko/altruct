@@ -69,7 +69,7 @@ TEST(binary_heap_test, pop_front) {
 
 TEST(binary_heap_test, sort) {
     vector<int> v1(100); for (int& a : v1) a = rand() % 10;
-    binary_heap<int>bh1(v1);
+    binary_heap<int> bh1(v1);
     bh1.sort();
     EXPECT_EQ(sorted(v1), bh1.v);
 }

@@ -24,24 +24,23 @@ namespace container {
  * param id     - neutral element with respect to `f`; i.e. `f(e, id) = f(id, e) = e`.
  *                e.g. `0` for addition, `1` for multiplication, `+inf` for minimum, etc.
  */
-template<typename T>
+template<
+    typename T,
+    typename F_UP = std::function<void(T& parent, const T& left, const T& right)>,
+    typename F_DOWN = std::function<void(T& parent, T& left, T& right)> >
 class lazy_segment_tree {
 public:
-	typedef std::function<bool(T& node)> update_functor;
-	typedef std::function<void(T& parent, const T& left, const T& right)> up_functor;
-	typedef std::function<void(T& parent, T& left, T& right)> down_functor;
-
 	std::vector<T> v;
-	up_functor f_up;     // for up-propagation on update
-	down_functor f_down; // for down-propagation for lazy updating
+	F_UP f_up;     // for up-propagation on update
+	F_DOWN f_down; // for down-propagation for lazy updating
 
-    lazy_segment_tree(size_t sz, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
+    lazy_segment_tree(size_t sz, const F_UP& f_up, const F_DOWN& f_down, T id = T()) : f_up(f_up), f_down(f_down) {
 		v.resize(calc_pow2(sz) * 2, id);
-		//rebuild(); // must be called manually
+		//rebuild must be called manually
 	}
 
 	template<typename It>
-    lazy_segment_tree(It begin, It end, up_functor f_up, down_functor f_down, T id = T()) : f_up(f_up), f_down(f_down) {
+    lazy_segment_tree(It begin, It end, const F_UP& f_up, const F_DOWN& f_down, T id = T()) : f_up(f_up), f_down(f_down) {
 		auto sz = std::distance(begin, end);
 		v.resize(calc_pow2(sz) * 2, id);
 		std::copy(begin, end, v.begin() + size());
@@ -63,8 +62,8 @@ public:
 
     // if `f` returns false, meaning that the segment cannot be updated as a whole,
     // `f` will be called again on both of its children individually and so on.
-	template<typename F>
-    void update(size_t begin, size_t end, F f) {
+	template<typename F_UPDATE> // // bool(T& node)
+    void update(size_t begin, size_t end, const F_UPDATE& f) {
 		propagate_down(begin, end);
 		size_t b = begin, e = end, i = size();
 		while (b < e) {
@@ -113,9 +112,9 @@ public:
 
 private:
     template<typename F>
-    void update_segment(size_t i, F f) {
-        // Compilers are not good enough in optimizing the recursive implementation.
-        // Since this is the innermost loop, unrolling it actually makes a difference.
+    void update_segment(size_t i, const F& f) {
+        // Compilers may not optimize the recursive implementation well enough.
+        // Since this is the innermost loop, unrolling it may make a difference.
         if (!f(v[i])) {
             update_down(i);
             update_segment(2 * i + 0, f);

@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <iterator>
-#include <functional>
 
 namespace altruct {
 namespace container {
@@ -20,19 +19,19 @@ namespace container {
  * param T   - element type
  * param cmp - comparison functor
  */
-template<typename T>
+template<typename T, typename CMP = std::less<T>>
 class binary_heap {
 public:
     std::vector<T> v;
-    std::function<bool(T, T)> cmp;
+    CMP cmp;
 
-    binary_heap(std::function<bool(T, T)> cmp = std::less<T>()) : cmp(cmp)  {}
-    binary_heap(size_t sz, std::function<bool(T, T)> cmp = std::less<T>()) : v(sz), cmp(cmp) {}
-    binary_heap(std::vector<T>& v, std::function<bool(T, T)> cmp = std::less<T>()) : v(v), cmp(cmp) {
+    binary_heap(const CMP& cmp = std::less<T>()) : cmp(cmp)  {}
+    binary_heap(size_t sz, const CMP& cmp = std::less<T>()) : v(sz), cmp(cmp) {}
+    binary_heap(std::vector<T>& v, const CMP& cmp = std::less<T>()) : v(v), cmp(cmp) {
         rebuild();
     }
     template<typename It>
-    binary_heap(It begin, It end, std::function<bool(T, T)> cmp = std::less<T>()) : v(begin, end), cmp(cmp) {
+    binary_heap(It begin, It end, const CMP& cmp = std::less<T>()) : v(begin, end), cmp(cmp) {
         rebuild();
     }
 
