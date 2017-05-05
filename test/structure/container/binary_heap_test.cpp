@@ -17,24 +17,6 @@ namespace {
         }
         EXPECT_EQ(sorted(v), sorted(bh.v));
     }
-    //template<typename T, typename F>
-    //T slow_get(const vector<T>& v, size_t begin, size_t end, F f, const T& id = T()) {
-    //    T t = id;
-    //    for (size_t i = begin; i < end; i++) {
-    //        t = f(t, v[i]);
-    //    }
-    //    return t;
-    //}
-
-    //template<typename T, typename F>
-    //void verify_all(const binary_heap<T>& st, const vector<T>& v, F f, const T& id = T()) {
-    //    for (size_t begin = 0; begin < v.size(); begin++) {
-    //        EXPECT_EQ(v[begin], st.get(begin)) << " unexpected result of get(" << begin << ")";
-    //        for (size_t end = begin; end < v.size(); end++) {
-    //            EXPECT_EQ(slow_get(v, begin, end, f, id), st.get(begin, end)) << " unexpected result of get(" << begin << ", " << end << ")";
-    //        }
-    //    }
-    //}
 }
 
 TEST(binary_heap_test, constructor) {

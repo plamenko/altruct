@@ -320,5 +320,8 @@
     <ClInclude Include="..\..\include\structure\container\binary_heap.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\binary_search_tree.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

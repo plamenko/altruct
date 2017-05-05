@@ -190,6 +190,9 @@
     <ClCompile Include="..\..\test\structure\container\binary_heap_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\binary_search_tree_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
