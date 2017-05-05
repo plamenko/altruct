@@ -178,6 +178,8 @@ public: // public types
         typename bst_const_iterator<T>,
         typename bst_iterator<T> > ::type iterator;
     typedef bst_const_iterator<T> const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
 protected: // member variables
     typedef bst_node<T>* node_ptr;
@@ -244,28 +246,21 @@ public: // constructor & size
         return root()->size;
     }
 
-    int count(const T& val) const {
-        return find(val).count();
-    }
-
 public: // iterators
-    iterator begin() {
-        return ++end();
-    }
-
-    const_iterator cbegin() const {
-        return ++cend();
-    }
-
-    iterator end() {
-        return nil;
-    }
-
-    const_iterator cend() const {
-        return nil;
-    }
+    iterator begin() { return ++end(); }
+    iterator end() { return nil; }
+    const_iterator cbegin() const { return ++cend(); }
+    const_iterator cend() const { return nil; }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+    const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public: // query & update
+    int count(const K& key) const {
+        return find(key).count();
+    }
+
     int count_less(const K& key) const {
         int k = 0;
         for (const_node_ptr ptr = root(); ptr != nil;) {
@@ -424,6 +419,10 @@ protected: // const casting logic
         return const_cast<node_ptr>(it.ptr);
     }
 
+    static const K& _key(const T& val) {
+        return bst_key<K, T>::of(val);
+    }
+
 protected: // pointer rewiring logic
     static node_ptr rotate_left(node_ptr ptr) {
         node_ptr ch = ptr->right;
@@ -506,10 +505,6 @@ private: // allocation logic
         _free_all(t->left);
         _free_all(t->right);
         _free(t);
-    }
-
-    const K& _key(const T& val) const {
-        return bst_key<K, T>::of(val);
     }
 };
 

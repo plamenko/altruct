@@ -3,6 +3,8 @@
 #include "algorithm/collections/collections.h"
 #include "io/iostream_overloads.h"
 
+#include <functional>
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -13,7 +15,7 @@ namespace {
     template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename ALLOC = allocator<bst_node<T>>>
     class binary_search_tree_dbg : public binary_search_tree<K, T, DUP, CMP, ALLOC> {
     public:
-        binary_search_tree_dbg(const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : cmp(cmp), alloc(alloc) : binary_search_tree(cmp, alloc) {}
+        binary_search_tree_dbg(const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : binary_search_tree(cmp, alloc) {}
 
         template<typename It>
         binary_search_tree_dbg(It begin, It end, const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : binary_search_tree(begin, end, cmp, alloc) {}
@@ -28,12 +30,12 @@ namespace {
                 return;
             }
             if (!ptr->left->is_nil()) {
-                ASSERT_FALSE(cmp(ptr->val, ptr->left->val)) << "ERROR: parent < left";
+                ASSERT_FALSE(cmp(_key(ptr->val), _key(ptr->left->val))) << "ERROR: parent < left";
                 ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
                 debug_check(ptr->left);
             }
             if (!ptr->right->is_nil()) {
-                ASSERT_FALSE(cmp(ptr->right->val, ptr->val)) << "ERROR: right < parent";
+                ASSERT_FALSE(cmp(_key(ptr->right->val), _key(ptr->val))) << "ERROR: right < parent";
                 ASSERT_FALSE(ptr->right->parent != ptr) << "ERROR: right not connected back to parent";
                 debug_check(ptr->right);
             }
@@ -55,6 +57,8 @@ namespace {
             }
         }
         EXPECT_EQ(vector<T>(c.begin(), c.end()), va);
+        EXPECT_EQ(c.size(), t.size());
+        EXPECT_EQ(c.empty(), t.empty());
     }
 
     template<typename T>
@@ -183,10 +187,42 @@ TEST(binary_search_tree_test, bst_key) {
 }
 
 TEST(binary_search_tree_test, constructor) {
+    set<int> s0;
+    binary_search_tree_dbg<int> t0;
+    verify_structure(t0, s0);
+
     set<int> s1; for (int i = 0; i < 100; i++) s1.insert(rand() % 10);
-    set<int> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
-    binary_search_tree_dbg<int>t1(s1.begin(), s1.end()); verify_structure(t1, s1);
-    binary_search_tree_dbg<int>t2(s2.begin(), s2.end()); verify_structure(t2, s2);
-    EXPECT_EQ(s1.size(), t1.size());
-    EXPECT_EQ(s2.size(), t2.size());
+    binary_search_tree_dbg<int> t1(s1.begin(), s1.end());
+    verify_structure(t1, s1);
+
+    t1.clear();
+    verify_structure(t1, s0);
+
+    set<int, std::greater<int>> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
+    binary_search_tree_dbg<int, int, bst_duplicate_handling::IGNORE, std::greater<int>> t2(s2.begin(), s2.end(), std::greater<int>());
+    verify_structure(t2, s2);
+}
+
+TEST(binary_search_tree_test, duplicate_handling) {
+    set<int> s1; for (int i = 0; i < 110; i++) s1.insert(rand() % 1000000000);
+    binary_search_tree_dbg<int, int, bst_duplicate_handling::IGNORE> t1(s1.begin(), s1.end());
+    verify_structure(t1, s1);
+
+    multiset<int> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
+    binary_search_tree_dbg<int, int, bst_duplicate_handling::COUNT> t2(s2.begin(), s2.end());
+    verify_structure(t2, s2);
+    
+    typedef pair<const int, string> entry;
+    multimap<int, string> s3; for (int i = 0; i < 110; i++) s3.insert({ rand() % 10, to_string(i) });
+    binary_search_tree_dbg<int, entry, bst_duplicate_handling::STORE> t3(s3.begin(), s3.end());
+    verify_structure(t3, s3);
+}
+
+TEST(binary_search_tree_test, iterators) {
+    set<int> s1; for (int i = 0; i < 110; i++) s1.insert(rand() % 1000000000);
+    binary_search_tree_dbg<int> t1(s1.begin(), s1.end());
+    EXPECT_EQ((vector<int>(s1.begin(), s1.end())), (vector<int>(t1.begin(), t1.end())));
+    EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
+    EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
+    EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
 }
