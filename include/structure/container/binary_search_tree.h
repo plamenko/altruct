@@ -60,6 +60,16 @@ struct bst_key<K, bst_entry<K, V>> {
 };
 
 /**
+ * A key helper template for maps.
+ */
+template<typename K, typename V>
+struct bst_key<K, std::pair<const K, V>> {
+    static const K& of(const std::pair<const K, V>& entry) {
+        return entry.first;
+    }
+};
+
+/**
  * Binary-search-tree node structure.
  *
  * Contains a reserved `balance` field to be used by subclasses for balancing.

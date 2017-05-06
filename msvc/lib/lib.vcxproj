@@ -90,6 +90,7 @@
     <ClInclude Include="..\..\include\structure\container\lohi_map.h" />
     <ClInclude Include="..\..\include\structure\container\segment_tree.h" />
     <ClInclude Include="..\..\include\structure\container\sqrt_map.h" />
+    <ClInclude Include="..\..\include\structure\container\treap.h" />
     <ClInclude Include="..\..\include\structure\graph\disjoint_set.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h" />

@@ -69,6 +69,7 @@
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\segment_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />
+    <ClCompile Include="..\..\test\structure\container\treap_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\double_int_test.cpp" />
