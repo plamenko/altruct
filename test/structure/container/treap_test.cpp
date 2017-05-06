@@ -1,11 +1,15 @@
 #include "structure/container/treap.h"
 
 #include "algorithm/collections/collections.h"
+#include "algorithm/random/xorshift.h"
 #include "io/iostream_overloads.h"
 #include "structure_test_util.h"
 
 #include <functional>
 #include <list>
+#include <set>
+#include <map>
+#include <chrono>
 
 #include "gtest/gtest.h"
 
@@ -478,4 +482,78 @@ TEST(treap_test, insert_erase_with_count) {
     tc.insert("b", 1);
     tc.insert("e", 2);
     verify_structure(tc, vector<string>{ "aaa", "aaa", "b", "b", "b", "cc", "cc", "cc", "e", "e" });
+}
+
+namespace {
+namespace x{
+    struct rdtsc_clock {
+        typedef unsigned long long rep;
+        typedef std::ratio<1, 2666666666> period; // My machine is 2.67 GHz
+        typedef std::chrono::duration<rep, period> duration;
+        typedef std::chrono::time_point<rdtsc_clock> time_point;
+        static const bool is_steady = true;
+        static time_point now() { return time_point(duration(__rdtsc())); }
+    };
+}
+namespace x {
+    typedef rdtsc_clock clock;
+    //typedef std::chrono::high_resolution_clock clock;
+    typedef std::chrono::duration<double, typename clock::period> duration;
+    duration since(clock::time_point t0) { return duration(clock::now() - t0); }
+} // x
+}
+
+template<typename S, typename T, typename K>
+void test_perf(const std::function<int()>& rnd, const string& title) {
+    S ms;
+    T mt(std::less<K>(), rnd);
+    using namespace std::chrono;
+    x::duration ds_i, ds_e, ds_c, ds_t; uint32_t cs_c = 0, cs_t = 0;
+    x::duration dt_i, dt_e, dt_c, dt_t; uint32_t ct_c = 0, ct_t = 0;
+    uint32_t iter = 0; double dur = 0, max_dur = 5.0; auto T0 = clock();
+    while (true) {
+        if (++iter % 10000 == 0 && (dur = double(clock() - T0) / CLOCKS_PER_SEC) > max_dur) break;
+        // 20% erase, 40% insert, 40% find
+        int prob = rnd() % 100;
+        if ((prob -= 20) < 0 && mt.size() != 0) {
+            int val = *mt.find_kth(rnd() % mt.size());
+            auto ts = x::clock::now(); ms.erase(ms.find(val)); ds_e += x::since(ts);
+            auto tt = x::clock::now(); mt.erase(mt.find(val), 1); dt_e += x::since(tt);
+        } else if ((prob -= 40) < 0) {
+            int val = rnd() % 1000;
+            auto ts = x::clock::now(); ms.insert(val); ds_i += x::since(ts);
+            auto tt = x::clock::now(); mt.insert(val); dt_i += x::since(tt);
+        } else if ((prob -= 40) < 0) {
+            int val = rnd() % 1000;
+            auto ts = x::clock::now(); cs_c += (int)ms.count(val); ds_c += x::since(ts);
+            auto tt = x::clock::now(); ct_c += (int)mt.count(val); dt_c += x::since(tt);
+        }
+    }
+    if (true) {
+        auto ts = x::clock::now(); for (const auto& e : ms) cs_t++; ds_t += x::since(ts);
+        auto tt = x::clock::now(); for (const auto& e : mt) ct_t++; dt_t += x::since(tt);
+    }
+    verify_structure(mt, ms);
+    auto dd = [](const x::duration& d) { return duration_cast<duration<double>>(d).count(); };
+    printf("impl cont rand insert erase count iter hits size iter dur\n");
+    printf("std %s %lf %lf %lf %lf %d %d %d %lf\n", title.c_str(), dd(ds_i), dd(ds_e), dd(ds_c), dd(ds_t), cs_c, cs_t, iter, dur);
+    printf("treap %s %lf %lf %lf %lf %d %d %d %lf\n", title.c_str(), dd(dt_i), dd(dt_e), dd(dt_c), dd(dt_t), ct_c, ct_t, iter, dur);
+}
+
+TEST(treap_test, perf) {
+    return; // skip perf tests by default
+    altruct::random::xorshift_64star xrnd;
+    auto crnd_func = [](){ return rand(); };
+    auto xrnd_func = [&](){ return int(xrnd.next() % (1 << 30)); };
+    auto init_crand_func = [&]() { srand(12345); return crnd_func; };
+    auto init_xrand_func = [&]() { xrnd.seed(12345); return xrnd_func; };
+    typedef treap_dbg<int, int, bst_duplicate_handling::IGNORE> treap_set_int;
+    test_perf<set<int>, treap_set_int, int>(init_crand_func(), "set_int crand");
+    test_perf<set<int>, treap_set_int, int>(init_xrand_func(), "set_int xrand");
+    typedef treap_dbg<int, int, bst_duplicate_handling::COUNT> treap_countset_int;
+    test_perf<multiset<int>, treap_countset_int, int>(init_crand_func(), "countset_int crand");
+    test_perf<multiset<int>, treap_countset_int, int>(init_xrand_func(), "countset_int xrand");
+    typedef treap_dbg<int, int, bst_duplicate_handling::STORE> treap_multiset_int;
+    test_perf<multiset<int>, treap_multiset_int, int>(init_crand_func(), "multiset_int crand");
+    test_perf<multiset<int>, treap_multiset_int, int>(init_xrand_func(), "multiset_int xrand");
 }
