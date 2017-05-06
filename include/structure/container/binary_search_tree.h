@@ -232,6 +232,31 @@ public: // constructor & size
         _destroy();
     }
 
+    binary_search_tree(binary_search_tree&& rhs) {
+        _init();
+        swap(rhs);
+    }
+
+    binary_search_tree(const binary_search_tree& rhs) :
+        binary_search_tree(rhs.cbegin(), rhs.cend(), rhs.cmp, rhs.alloc) {
+    }
+
+    binary_search_tree& operator=(binary_search_tree&& rhs) {
+        swap(std::move(rhs));
+        return *this;
+    }
+
+    binary_search_tree& operator=(const binary_search_tree& rhs) {
+        swap(binary_search_tree(rhs));
+        return *this;
+    }
+
+    void swap(binary_search_tree& rhs) {
+        std::swap(cmp, rhs.cmp);
+        std::swap(alloc, rhs.alloc);
+        std::swap(nil, rhs.nil);
+    }
+
     void clear() {
         _free(root());
         nil->left = nil;
@@ -340,6 +365,14 @@ public: // query & update
 
     iterator upper_bound(const K& key) {
         return remove_const(const_this()->upper_bound(key));
+    }
+
+    std::pair<const_iterator, const_iterator> equal_range(const K& key) const {
+        return{ lower_bound(key), upper_bound(key) };
+    }
+
+    std::pair<iterator, iterator> equal_range(const K& key) {
+        return{ lower_bound(key), upper_bound(key) };
     }
 
     iterator insert(const T& val, int cnt = 1) {
@@ -507,6 +540,13 @@ private: // allocation logic
         _free(t);
     }
 };
+
+//template<typename K, typename T, int DUP, typename CMP, typename ALLOC>
+//inline void swap(
+//    altruct::container::binary_search_tree<K, T, DUP, CMP, ALLOC>& lhs,
+//    altruct::container::binary_search_tree<K, T, DUP, CMP, ALLOC>& rhs) {
+//    lhs.swap(rhs);
+//}
 
 } // container
 } // altruct

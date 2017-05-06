@@ -201,6 +201,39 @@ TEST(binary_search_tree_test, constructor) {
     set<int, std::greater<int>> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
     binary_search_tree_dbg<int, int, bst_duplicate_handling::IGNORE, std::greater<int>> t2(s2.begin(), s2.end(), std::greater<int>());
     verify_structure(t2, s2);
+
+    // move constructor
+    binary_search_tree_dbg<int> t3(std::move(binary_search_tree_dbg<int>(s1.begin(), s1.end())));
+    verify_structure(t3, s1);
+    
+    // copy constructor
+    binary_search_tree_dbg<int> t4(t3);
+    verify_structure(t3, s1);
+    verify_structure(t4, s1);
+
+    // move assignment
+    t4 = std::move(binary_search_tree_dbg<int>(s1.begin(), s1.end()));
+    verify_structure(t4, s1);
+    
+    // copy assignment
+    t4 = t3;
+    verify_structure(t4, s1);
+    verify_structure(t3, s1);
+}
+
+TEST(binary_search_tree_test, swap) {
+    set<int> s1; for (int i = 0; i < 100; i++) s1.insert(rand() % 1000000000);
+    set<int> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
+    binary_search_tree_dbg<int> t1(s1.begin(), s1.end());
+    binary_search_tree_dbg<int> t2(s2.begin(), s2.end());
+    verify_structure(t1, s1);
+    verify_structure(t2, s2);
+    t1.swap(t2);
+    verify_structure(t2, s1);
+    verify_structure(t1, s2);
+    std::swap(t2, t1);
+    verify_structure(t1, s1);
+    verify_structure(t2, s2);
 }
 
 TEST(binary_search_tree_test, duplicate_handling) {
@@ -225,4 +258,9 @@ TEST(binary_search_tree_test, iterators) {
     EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
     EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
     EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
+}
+
+TEST(binary_search_tree_test, query) {
+    set<int> s;
+    s.swap(s);
 }
