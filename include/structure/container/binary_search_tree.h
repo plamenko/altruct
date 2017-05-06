@@ -216,24 +216,29 @@ protected: // member variables
     }
 
 public: // constructor & size
-    binary_search_tree(const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : cmp(cmp), alloc(alloc) {
+    ~binary_search_tree() {
+        _destroy();
+    }
+
+    binary_search_tree(const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
+        cmp(cmp), alloc(alloc) {
         _init();
     }
 
     template<typename It>
-    binary_search_tree(It begin, It end, const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : cmp(cmp), alloc(alloc) {
-        _init();
+    binary_search_tree(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) : 
+        binary_search_tree(cmp, alloc) {
         for (It it = begin; it != end; ++it) {
             insert(*it);
         }
     }
 
-    ~binary_search_tree() {
-        _destroy();
+    binary_search_tree(std::initializer_list<T> list) : 
+        binary_search_tree(list.begin(), list.end()) {
     }
 
-    binary_search_tree(binary_search_tree&& rhs) {
-        _init();
+    binary_search_tree(binary_search_tree&& rhs) : 
+        binary_search_tree() {
         swap(rhs);
     }
 
@@ -242,7 +247,7 @@ public: // constructor & size
     }
 
     binary_search_tree& operator=(binary_search_tree&& rhs) {
-        swap(std::move(rhs));
+        swap(rhs);
         return *this;
     }
 
@@ -281,9 +286,35 @@ public: // iterators
     const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
     const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
+public: // relational operators
+    template<typename It>
+    bool equal(It b1, It e1, It b2, It e2) const {
+        while (b1 != e1 && b2 != e2 && *b1 == *b2) ++b1, ++b2;
+        return b1 == e1 && b2 == e2;
+    }
+    bool operator == (const binary_search_tree& rhs) const {
+        return equal(cbegin(), cend(), rhs.cbegin(), rhs.cend());
+    }
+    bool operator < (const binary_search_tree& rhs) const {
+        return std::lexicographical_compare(cbegin(), cend(), rhs.cbegin(), rhs.cend());
+    }
+    bool operator != (const binary_search_tree& rhs) const { return !(*this == rhs); }
+    bool operator >  (const binary_search_tree& rhs) const { return rhs < *this; }
+    bool operator <= (const binary_search_tree& rhs) const { return !(rhs < *this); }
+    bool operator >= (const binary_search_tree& rhs) const { return !(*this < rhs); }
+
 public: // query & update
-    int count(const K& key) const {
-        return find(key).count();
+    int count_less_or_equal(const K& key) const {
+        int k = 0;
+        for (const_node_ptr ptr = root(); ptr != nil;) {
+            if (cmp(key, _key(ptr->val))) {
+                ptr = ptr->left;
+            } else {
+                k += ptr->size - ptr->right->size;
+                ptr = ptr->right;
+            }
+        }
+        return k;
     }
 
     int count_less(const K& key) const {
@@ -297,6 +328,14 @@ public: // query & update
             }
         }
         return k;
+    }
+
+    int count(const K& key) const {
+        if (DUPL == bst_duplicate_handling::STORE) {
+            return count_less_or_equal(key) - count_less(key);
+        } else {
+            return find(key).count();
+        }
     }
 
     const_iterator find_kth(int k) const {
@@ -317,16 +356,22 @@ public: // query & update
     }
 
     const_iterator find(const K& key) const {
+        const_node_ptr res = nil;
         for (const_node_ptr ptr = root(); ptr != nil;) {
-            if (cmp(key, _key(ptr->val))) {
-                ptr = ptr->left;
-            } else if (cmp(_key(ptr->val), key)) {
+            if (cmp(_key(ptr->val), key)) {
                 ptr = ptr->right;
+            } else if (cmp(key, _key(ptr->val))) {
+                ptr = ptr->left;
             } else {
-                return ptr;
+                if (DUP == bst_duplicate_handling::STORE) {
+                    res = ptr;
+                    ptr = ptr->left;
+                } else {
+                    return ptr;
+                }
             }
         }
-        return nil;
+        return res;
     }
 
     iterator find(const K& key) {
@@ -411,11 +456,20 @@ public: // query & update
         // ptr needs to be retraced up after insert
     }
 
-    iterator erase(const K& key, int cnt = 1) {
-        return erase(find(key), cnt);
+    iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {
+        if (DUP == bst_duplicate_handling::STORE) {
+            return erase(lower_bound(key), upper_bound(key));
+        } else {
+            return erase(find(key), cnt);
+        }
     }
 
-    iterator erase(const_iterator it, int cnt = 1) {
+    iterator erase(const_iterator b, const_iterator e, int cnt = std::numeric_limits<int>::max()) {
+        while (b != e) erase(b++);
+        return b;
+    }
+
+    iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
         node_ptr ptr = remove_const(it);
         if (ptr == nil) return nil;
         if (DUP != bst_duplicate_handling::COUNT) {

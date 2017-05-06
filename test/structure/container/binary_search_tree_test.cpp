@@ -2,6 +2,7 @@
 
 #include "algorithm/collections/collections.h"
 #include "io/iostream_overloads.h"
+#include "structure_test_util.h"
 
 #include <functional>
 
@@ -10,15 +11,41 @@
 using namespace std;
 using namespace altruct::container;
 using namespace altruct::collections;
+using namespace altruct::test_util;
 
 namespace {
     template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename ALLOC = allocator<bst_node<T>>>
     class binary_search_tree_dbg : public binary_search_tree<K, T, DUP, CMP, ALLOC> {
     public:
-        binary_search_tree_dbg(const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : binary_search_tree(cmp, alloc) {}
+        binary_search_tree_dbg(const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
+            binary_search_tree(cmp, alloc) {
+        }
 
         template<typename It>
-        binary_search_tree_dbg(It begin, It end, const CMP& cmp = std::less<K>(), const ALLOC& alloc = ALLOC()) : binary_search_tree(begin, end, cmp, alloc) {}
+        binary_search_tree_dbg(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) : 
+            binary_search_tree(begin, end, cmp, alloc) {
+        }
+
+        binary_search_tree_dbg(std::initializer_list<T> list) :
+            binary_search_tree(list) {}
+
+        binary_search_tree_dbg(binary_search_tree_dbg&& rhs) :
+            binary_search_tree(std::move(rhs)) {
+        }
+
+        binary_search_tree_dbg(const binary_search_tree_dbg& rhs) :
+            binary_search_tree(rhs) {
+        }
+
+        binary_search_tree_dbg& operator=(binary_search_tree_dbg&& rhs) {
+            binary_search_tree::operator=(std::move(rhs));
+            return *this;
+        }
+
+        binary_search_tree_dbg& operator=(const binary_search_tree_dbg& rhs) {
+            binary_search_tree::operator=(rhs);
+            return *this;
+        }
 
         void debug_check(const_node_ptr ptr = nullptr) const {
             if (ptr == nullptr) {
@@ -187,20 +214,24 @@ TEST(binary_search_tree_test, bst_key) {
 }
 
 TEST(binary_search_tree_test, constructor) {
+    // default
     set<int> s0;
     binary_search_tree_dbg<int> t0;
     verify_structure(t0, s0);
 
+    // range
     set<int> s1; for (int i = 0; i < 100; i++) s1.insert(rand() % 10);
     binary_search_tree_dbg<int> t1(s1.begin(), s1.end());
     verify_structure(t1, s1);
 
-    t1.clear();
-    verify_structure(t1, s0);
-
+    // range + comparator
     set<int, std::greater<int>> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
     binary_search_tree_dbg<int, int, bst_duplicate_handling::IGNORE, std::greater<int>> t2(s2.begin(), s2.end(), std::greater<int>());
     verify_structure(t2, s2);
+
+    // initializer list
+    binary_search_tree_dbg<int> ti{ 42, 3, 15 };
+    verify_structure(ti, (set<int>{42, 3, 15}));
 
     // move constructor
     binary_search_tree_dbg<int> t3(std::move(binary_search_tree_dbg<int>(s1.begin(), s1.end())));
@@ -219,6 +250,13 @@ TEST(binary_search_tree_test, constructor) {
     t4 = t3;
     verify_structure(t4, s1);
     verify_structure(t3, s1);
+    
+    // clear
+    t1.clear();
+    verify_structure(t1, s0);
+    // use after clear
+    t1.insert(12), t1.insert(8), t1.insert(4);
+    verify_structure(t1, (set<int>{12, 8, 4}));
 }
 
 TEST(binary_search_tree_test, swap) {
@@ -258,6 +296,16 @@ TEST(binary_search_tree_test, iterators) {
     EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
     EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
     EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
+}
+
+TEST(binary_search_tree_test, relational_operators) {
+    binary_search_tree_dbg<int> t{ 3, 8, 15, 16 };
+    ASSERT_COMPARISON_OPERATORS(+1, t, (binary_search_tree_dbg<int>{ }));                  // empty
+    ASSERT_COMPARISON_OPERATORS(0, t, (binary_search_tree_dbg<int>{ 3, 8, 15, 16 }));      // equal
+    ASSERT_COMPARISON_OPERATORS(+1, t, (binary_search_tree_dbg<int>{ 3, 8, 15 }));         // shorter
+    ASSERT_COMPARISON_OPERATORS(-1, t, (binary_search_tree_dbg<int>{ 3, 8, 15, 16, 17 })); // longer
+    ASSERT_COMPARISON_OPERATORS(-1, t, (binary_search_tree_dbg<int>{ 3, 9, 15 }));         // shorter but larger
+    ASSERT_COMPARISON_OPERATORS(+1, t, (binary_search_tree_dbg<int>{ 3, 7, 15, 16, 17 })); // longer but smaller
 }
 
 TEST(binary_search_tree_test, query) {
