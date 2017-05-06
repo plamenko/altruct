@@ -8,6 +8,58 @@ namespace altruct {
 namespace container {
 
 /**
+ * A map entry type.
+ */
+template<typename K, typename V>
+struct bst_entry {
+    std::pair<K, V> e;
+    
+    bst_entry() : e() {}
+    bst_entry(const std::pair<K, V> e) : e(e) {}
+    bst_entry(const std::pair<const K, V> e) : e(e) {}
+    bst_entry(const K& key, const V& val) : e(key, val) {}
+    
+    const K& key() const { return e.first; }
+    const V& val() const { return e.second; }
+    V& val() { return e.second; }
+    
+    bool operator == (const bst_entry& rhs) const { return e == rhs.e; }
+    bool operator != (const bst_entry& rhs) const { return e != rhs.e; }
+    bool operator < (const bst_entry& rhs) const { return e < rhs.e; }
+    bool operator > (const bst_entry& rhs) const { return e > rhs.e; }
+    bool operator <= (const bst_entry& rhs) const { return e <= rhs.e; }
+    bool operator >= (const bst_entry& rhs) const { return e >= rhs.e; }
+};
+
+/**
+ * A helper template for extracting key from the value.
+ */
+template<typename K, typename T>
+struct bst_key {
+    static const K& of(const T& val);
+};
+
+/**
+ * A key helper template for sets.
+ */
+template<typename K>
+struct bst_key<K, K> {
+    static const K& of(const K& val) {
+        return val;
+    }
+};
+
+/**
+ * A key helper template for maps.
+ */
+template<typename K, typename V>
+struct bst_key<K, bst_entry<K, V>> {
+    static const K& of(const bst_entry<K, V>& entry) {
+        return entry.key();
+    }
+};
+
+/**
  * Binary-search-tree node structure.
  *
  * Contains a reserved `balance` field to be used by subclasses for balancing.
@@ -123,34 +175,6 @@ namespace bst_duplicate_handling {
 }
 
 /**
- * A helper template for extracting key from the value.
- */
-template<typename K, typename T>
-struct bst_key {
-    static const K& of(const T& val);
-};
-
-/**
- * A key helper template for sets.
- */
-template<typename K>
-struct bst_key<K, K> {
-    static const K& of(const K& val) {
-        return val;
-    }
-};
-
-/**
- * A key helper template for maps.
- */
-template<typename K, typename V>
-struct bst_key<K, std::pair<const K, V>> {
-    static const K& of(const std::pair<const K, V>& val) {
-        return val.first;
-    }
-};
-
-/**
  * Binary search tree.
  *
  * Note, no balancing is being performed. This is left for subclasses.
@@ -164,7 +188,7 @@ struct bst_key<K, std::pair<const K, V>> {
  * Subclasses may choose to perform balancing in order to improve that.
  *
  * param K   - key type
- * param T   - value type (for maps this is going to be pair<const K, V>)
+ * param T   - value type (for maps this is going to be bst_entry<K, V>)
  * param DUP - duplicate handling mode
  * param CMP - comparison functor type
  * param ALLOC - allocator type
@@ -299,7 +323,7 @@ public: // relational operators
         return std::lexicographical_compare(cbegin(), cend(), rhs.cbegin(), rhs.cend());
     }
     bool operator != (const binary_search_tree& rhs) const { return !(*this == rhs); }
-    bool operator >  (const binary_search_tree& rhs) const { return rhs < *this; }
+    bool operator >  (const binary_search_tree& rhs) const { return (rhs < *this); }
     bool operator <= (const binary_search_tree& rhs) const { return !(rhs < *this); }
     bool operator >= (const binary_search_tree& rhs) const { return !(*this < rhs); }
 
@@ -331,7 +355,7 @@ public: // query & update
     }
 
     int count(const K& key) const {
-        if (DUPL == bst_duplicate_handling::STORE) {
+        if (DUP == bst_duplicate_handling::STORE) {
             return count_less_or_equal(key) - count_less(key);
         } else {
             return find(key).count();
@@ -466,7 +490,7 @@ public: // query & update
 
     iterator erase(const_iterator b, const_iterator e, int cnt = std::numeric_limits<int>::max()) {
         while (b != e) erase(b++);
-        return b;
+        return remove_const(b);
     }
 
     iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
@@ -482,7 +506,7 @@ public: // query & update
         cnt = it.count();
         // physically erase from the tree
         if (ptr->left != nil && ptr->right != nil) {
-            ptr = swap_with_next(ptr);
+            swap_with_descendant(ptr, bst_iterator_util<T>::inorder_next(ptr));
         }
         // there can be at most one child now
         node_ptr ch = (ptr->left != nil) ? ptr->left : ptr->right;
@@ -533,6 +557,24 @@ protected: // pointer rewiring logic
         return ch;
     }
 
+    static void swap_with_descendant(node_ptr ptr, node_ptr des) {
+        std::swap(ptr->parent, des->parent);
+        if (ptr->parent == ptr) ptr->parent = des;
+        make_link(ptr->parent, ptr, des);
+        make_link(des->parent, des, ptr);
+        std::swap(ptr->left, des->left);
+        if (des->left == des) des->left = ptr;
+        if (!ptr->left->is_nil()) ptr->left->parent = ptr;
+        if (!des->left->is_nil()) des->left->parent = des;
+        std::swap(ptr->right, des->right);
+        if (des->right == des) des->right = ptr;
+        if (!ptr->right->is_nil()) ptr->right->parent = ptr;
+        if (!des->right->is_nil()) des->right->parent = des;
+        std::swap(ptr->balance, des->balance);
+        std::swap(ptr->size, des->size);
+        propagate_size(ptr, des, des->count() - ptr->count());
+    }
+
     static void make_link(node_ptr par, node_ptr ch, bool go_left) {
         if (par->is_nil() || go_left) par->left = ch;
         if (par->is_nil() || !go_left) par->right = ch;
@@ -544,14 +586,6 @@ protected: // pointer rewiring logic
         if (par->right == old_ch) par->right = ch;
         if (par->left == old_ch) par->left = ch;
         if (!ch->is_nil()) ch->parent = par;
-    }
-
-    static node_ptr swap_with_next(node_ptr ptr) {
-        // we could rewire pointers, but it's simpler to just swap the values
-        node_ptr ch = bst_iterator_util<T>::inorder_next(ptr);
-        std::swap(ptr->val, ch->val);
-        propagate_size(ch, ptr, ptr->count() - ch->count());
-        return ch;
     }
 
     static void propagate_size(node_ptr ptr, node_ptr end, int cnt) {
@@ -594,13 +628,6 @@ private: // allocation logic
         _free(t);
     }
 };
-
-//template<typename K, typename T, int DUP, typename CMP, typename ALLOC>
-//inline void swap(
-//    altruct::container::binary_search_tree<K, T, DUP, CMP, ALLOC>& lhs,
-//    altruct::container::binary_search_tree<K, T, DUP, CMP, ALLOC>& rhs) {
-//    lhs.swap(rhs);
-//}
 
 } // container
 } // altruct
