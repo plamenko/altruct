@@ -6,7 +6,7 @@
 #include "structure_test_util.h"
 
 #include <functional>
-#include <list>
+#include <vector>
 #include <set>
 #include <map>
 #include <chrono>
@@ -82,26 +82,15 @@ namespace {
     template<typename K, typename T, int DUP, typename CMP, typename RAND, typename ALLOC, typename COLLECTION>
     void verify_structure(const treap_dbg<K, T, DUP, CMP, RAND, ALLOC>& t, const COLLECTION& c) {
         t.debug_check();
-        list<T> va;
+        vector<T> va;
         for (auto it = t.cbegin(); it != t.cend(); ++it) {
             for (int i = 0; i < it.count(); i++) {
                 va.push_back(*it);
             }
         }
-        EXPECT_EQ(list<T>(c.cbegin(), c.cend()), va);
+        EXPECT_EQ(vector<T>(c.cbegin(), c.cend()), va);
         EXPECT_EQ(c.size(), t.size());
         EXPECT_EQ(c.empty(), t.empty());
-    }
-
-    template<typename T>
-    bst_node<T> new_node(const T& val, bst_node<T>* nil) {
-        bst_node<T> t(val);
-        t.parent = nil;
-        t.left = nil;
-        t.right = nil;
-        t.balance = 0;
-        t.size = 0;
-        return t;
     }
 
     template<typename It>
@@ -115,150 +104,6 @@ namespace {
     iter_pair<It> make_range(const std::pair<It, It> t) {
         return t;
     }
-}
-
-TEST(treap_test, bst_entry) {
-    typedef bst_entry<int, string> entry;
-    entry e0;
-    EXPECT_EQ(0, e0.key());
-    EXPECT_EQ("", e0.val());
-
-    entry e1{ 42, "aaa" };
-    EXPECT_EQ(42, e1.key());
-    EXPECT_EQ("aaa", e1.val());
-
-    entry e2(42, "aaa");
-    EXPECT_EQ(42, e2.key());
-    EXPECT_EQ("aaa", e2.val());
-
-    entry e3(pair<int, string>(42, "aaa"));
-    EXPECT_EQ(42, e3.key());
-    EXPECT_EQ("aaa", e3.val());
-
-    entry e4(pair<const int, string>(42, "aaa"));
-    EXPECT_EQ(42, e4.key());
-    EXPECT_EQ("aaa", e4.val());
-
-    const entry e5{ 100, "b" };
-    EXPECT_EQ(100, e5.key());
-    EXPECT_EQ("b", e5.val());
-
-    e2.val() = "x";
-    EXPECT_EQ("x", e2.val());
-
-    EXPECT_EQ("abc", (bst_key<string, string>::of("abc")));
-    EXPECT_EQ(42, (bst_key<int, entry>::of({ 42, "def" })));
-
-    ASSERT_COMPARISON_OPERATORS(-1, e0, e3);
-    ASSERT_COMPARISON_OPERATORS(0, e1, e3);
-    ASSERT_COMPARISON_OPERATORS(+1, e5, e3);
-}
-
-TEST(treap_test, bst_node) {
-    bst_node<int> nodes[4] {10, 20, 30, 40};
-    (nodes + 0)->parent = (nodes + 0);
-    EXPECT_TRUE((nodes + 0)->is_nil());
-    (nodes + 1)->parent = (nodes + 0);
-    EXPECT_FALSE((nodes + 1)->is_nil());
-
-    (nodes + 1)->size = 25;
-    (nodes + 1)->left = (nodes + 2);
-    (nodes + 2)->size = 6;
-    (nodes + 1)->right = (nodes + 3);
-    (nodes + 3)->size = 8;
-    EXPECT_EQ(11, (nodes + 1)->count());
-}
-
-TEST(treap_test, bst_inorder) {
-    typedef treap_dbg<int> bst;
-    bst_node<int> nil(-1); nil.parent = &nil;
-    vector<bst_node<int>> nodes;
-    for (int i = 0; i < 12; i++) {
-        nodes.push_back(new_node(i, &nil));
-    }
-    bst::make_link(&nil, &nodes[5], true);
-    bst::make_link(&nodes[5], &nodes[1], true);
-    bst::make_link(&nodes[1], &nodes[0], true);
-    bst::make_link(&nodes[1], &nodes[4], false);
-    bst::make_link(&nodes[4], &nodes[3], true);
-    bst::make_link(&nodes[3], &nodes[2], true);
-    bst::make_link(&nodes[5], &nodes[9], false);
-    bst::make_link(&nodes[9], &nodes[6], true);
-    bst::make_link(&nodes[9], &nodes[11], false);
-    bst::make_link(&nodes[6], &nodes[7], false);
-    bst::make_link(&nodes[7], &nodes[8], false);
-    bst::make_link(&nodes[11], &nodes[10], true);
-    bst_node<int>* tmp = &nil;
-    for (int i = -1; i < 12; i++) {
-        EXPECT_EQ(i, tmp->val);
-        tmp = bst_iterator_util<int>::inorder_next(tmp);
-    }
-    for (int i = 11; i >= -1; i--) {
-        tmp = bst_iterator_util<int>::inorder_prev(tmp);
-        EXPECT_EQ(i, tmp->val);
-    }
-    bst_iterator<int> it(tmp);
-    for (int i = -1; i < 12; i++) {
-        EXPECT_EQ(i, *it);
-        ++it;
-    }
-    for (int i = 11; i >= -1; i--) {
-        --it;
-        EXPECT_EQ(i, *it);
-    }
-    for (int i = -1; i < 12; i++) {
-        EXPECT_EQ(i, *it);
-        it++;
-    }
-    for (int i = 11; i >= -1; i--) {
-        it--;
-        EXPECT_EQ(i, *it);
-    }
-    bst_const_iterator<int> cit(tmp);
-    for (int i = -1; i < 12; i++) {
-        EXPECT_EQ(i, *cit);
-        ++cit;
-    }
-    for (int i = 11; i >= -1; i--) {
-        --cit;
-        EXPECT_EQ(i, *cit);
-    }
-    for (int i = -1; i < 12; i++) {
-        EXPECT_EQ(i, *cit);
-        cit++;
-    }
-    for (int i = 11; i >= -1; i--) {
-        cit--;
-        EXPECT_EQ(i, *cit);
-    }
-}
-
-TEST(treap_test, bst_iterator) {
-    typedef bst_entry<int, string> entry;
-    entry e{ 42, "abc" };
-    bst_node<entry> t(e), r({}), s({});
-    t.size = 25;
-    t.left = &r;
-    r.size = 6;
-    t.right = &s;
-    s.size = 8;
-
-    bst_iterator<entry> it(&t);
-    EXPECT_EQ(e, *it);
-    EXPECT_EQ(e.key(), it->key());
-    EXPECT_EQ(e.val(), it->val());
-    EXPECT_TRUE(it == &t);
-    EXPECT_FALSE(it == &s);
-    EXPECT_EQ(11, it.count());
-
-    bst_const_iterator<entry> cit(&t);
-    EXPECT_EQ(e, *cit);
-    EXPECT_EQ(e.key(), cit->key());
-    EXPECT_EQ(e.val(), cit->val());
-    EXPECT_TRUE(cit == &t);
-    EXPECT_FALSE(cit == &s);
-    EXPECT_TRUE(cit == it);
-    EXPECT_EQ(11, cit.count());
 }
 
 TEST(treap_test, constructor) {
@@ -331,9 +176,9 @@ TEST(treap_test, duplicate_handling) {
     treap_dbg<int, int, bst_duplicate_handling::COUNT> t2(s2.begin(), s2.end());
     verify_structure(t2, s2);
 
-    typedef bst_entry<int, string> entry;
+    typedef pair<const int, string> ck_entry;
     multimap<int, string> s3; for (int i = 0; i < 110; i++) s3.insert({ rand() % 10, to_string(i) });
-    treap_dbg<int, entry, bst_duplicate_handling::STORE> t3(s3.begin(), s3.end());
+    treap_dbg<int, ck_entry, bst_duplicate_handling::STORE> t3(s3.begin(), s3.end());
     verify_structure(t3, s3);
 }
 
@@ -355,28 +200,29 @@ TEST(treap_test, relational_operators) {
     ASSERT_COMPARISON_OPERATORS(+1, (treap_dbg<int>{ 3, 9, 15 }), t);         // shorter but larger
     ASSERT_COMPARISON_OPERATORS(-1, (treap_dbg<int>{ 3, 7, 15, 16, 17 }), t); // longer but smaller
 
-    typedef bst_entry<int, string> entry;
-    typedef treap_dbg<int, entry, bst_duplicate_handling::STORE> tree;
+    typedef pair<const int, string> ck_entry;
+    typedef treap_dbg<int, ck_entry, bst_duplicate_handling::STORE> tree;
     tree t2{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } };
     ASSERT_COMPARISON_OPERATORS(0, (tree{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } }), t2);    // equal
     ASSERT_COMPARISON_OPERATORS(+1, (tree{ { 3, "abc" }, { 3, "dx" }, { 15, "ef" }, { 16, "ghi" } }), t2);  // keys equal, but value larger
 }
 
 TEST(treap_test, query) {
-    typedef bst_entry<string, int> entry;
+    typedef pair<string, int> entry;
+    typedef pair<const string, int> ck_entry;
     vector<int> c;
-    list<entry> d;
+    vector<entry> d;
     vector<string> vn{ "b", "d", "n", "q" }; // smaller keys
     vector<string> vk{ "c", "e", "o", "r" };
-    list<entry> ve;
-    list<entry> vi{ { "c", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 } };
-    list<entry> vu{ { "c", 1 }, { "e", 3 }, { "o", 1 }, { "r", 2 } };
-    list<entry> vc{ { "c", 1 }, { "e", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } };
-    list<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 } };
+    vector<entry> ve;
+    vector<entry> vi{ { "c", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 } };
+    vector<entry> vu{ { "c", 1 }, { "e", 3 }, { "o", 1 }, { "r", 2 } };
+    vector<entry> vc{ { "c", 1 }, { "e", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } };
+    vector<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 } };
     // construct all with vs!
-    treap_dbg<string, entry, bst_duplicate_handling::IGNORE> ti(vs.begin(), vs.end());
-    treap_dbg<string, entry, bst_duplicate_handling::COUNT> tc(vs.begin(), vs.end());
-    treap_dbg<string, entry, bst_duplicate_handling::STORE> ts(vs.begin(), vs.end());
+    treap_dbg<string, ck_entry, bst_duplicate_handling::IGNORE> ti(vs.begin(), vs.end());
+    treap_dbg<string, ck_entry, bst_duplicate_handling::COUNT> tc(vs.begin(), vs.end());
+    treap_dbg<string, ck_entry, bst_duplicate_handling::STORE> ts(vs.begin(), vs.end());
     // count_less_or_equal
     c.clear(); for (auto& k : vk) c.push_back(ti.count_less_or_equal(k)); EXPECT_EQ((vector<int>{ 1, 2, 3, 4 }), c);
     c.clear(); for (auto& k : vk) c.push_back(tc.count_less_or_equal(k)); EXPECT_EQ((vector<int>{ 1, 4, 5, 7 }), c);
@@ -424,48 +270,49 @@ TEST(treap_test, query) {
 }
 
 TEST(treap_test, insert) {
-    typedef bst_entry<string, int> entry;
-    list<entry> d;
-    list<entry> vi{ { "c", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 } };
-    list<entry> vc{ { "c", 1 }, { "e", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } };
-    list<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 } };
-    list<entry> vp = vs;
+    typedef pair<string, int> entry;
+    typedef pair<const string, int> ck_entry;
+    vector<entry> d;
+    vector<entry> vi{ { "c", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 } };
+    vector<entry> vc{ { "c", 1 }, { "e", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } };
+    vector<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 } };
+    vector<entry> vp = vs;
     do {
         // test all 420 key permutations, but keep entries with the same key in the same order
-        list<entry> vd; map<string, int> m; for (auto& e : vp) e.val() = ++m[e.key()], vd.push_back({ e.key(), 1 });
+        vector<entry> vd; map<string, int> m; for (auto& e : vp) e.second = ++m[e.first], vd.push_back({ e.first, 1 });
         // construct empty
-        treap_dbg<string, entry, bst_duplicate_handling::IGNORE> ti;
-        treap_dbg<string, entry, bst_duplicate_handling::COUNT> tc;
-        treap_dbg<string, entry, bst_duplicate_handling::STORE> ts;
+        treap_dbg<string, ck_entry, bst_duplicate_handling::IGNORE> ti;
+        treap_dbg<string, ck_entry, bst_duplicate_handling::COUNT> tc;
+        treap_dbg<string, ck_entry, bst_duplicate_handling::STORE> ts;
         // feed all with vp!
         d.clear(); for (const auto& e : vp) d.push_back(*ti.insert(e)); EXPECT_EQ(vd, d); verify_structure(ti, vi);
         d.clear(); for (const auto& e : vp) d.push_back(*tc.insert(e)); EXPECT_EQ(vd, d); verify_structure(tc, vc);
         d.clear(); for (const auto& e : vp) d.push_back(*ts.insert(e)); EXPECT_EQ(vp, d); verify_structure(ts, vs);
-    } while (next_permutation(vp.begin(), vp.end(), [](const entry& e1, const entry& e2){ return e1.key() < e2.key(); }));
+    } while (next_permutation(vp.begin(), vp.end(), [](const entry& e1, const entry& e2){ return e1.first < e2.first; }));
 }
 
 TEST(treap_test, erase) {
-    typedef bst_entry<string, int> entry;
-    //list<entry> vs{ { "e", 1 }, { "r", 1 }, { "r", 2 }, { "e", 2 }, { "c", 1 }, { "e", 3 }, { "o", 1 }, { "r", 3 } };
-    list<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 }, { "r", 3 } };
+    typedef pair<string, int> entry;
+    typedef pair<const string, int> ck_entry;
+    vector<entry> vs{ { "c", 1 }, { "e", 1 }, { "e", 2 }, { "e", 3 }, { "o", 1 }, { "r", 1 }, { "r", 2 }, { "r", 3 } };
     do {
         // test all 1120 key permutations, but keep entries with the same key in the same order
-        map<string, int> m; for (auto& e : vs) e.val() = ++m[e.key()];
+        map<string, int> m; for (auto& e : vs) e.second = ++m[e.first];
         // construct all with vs!
-        treap_dbg<string, entry, bst_duplicate_handling::IGNORE> ti(vs.begin(), vs.end());
-        treap_dbg<string, entry, bst_duplicate_handling::COUNT> tc(vs.begin(), vs.end());
-        treap_dbg<string, entry, bst_duplicate_handling::STORE> ts(vs.begin(), vs.end());
+        treap_dbg<string, ck_entry, bst_duplicate_handling::IGNORE> ti(vs.begin(), vs.end());
+        treap_dbg<string, ck_entry, bst_duplicate_handling::COUNT> tc(vs.begin(), vs.end());
+        treap_dbg<string, ck_entry, bst_duplicate_handling::STORE> ts(vs.begin(), vs.end());
         // erase by key
-        ti.erase("e"); verify_structure(ti, list<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 } });
-        tc.erase("e", 1); verify_structure(tc, list<entry>{{ "c", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 }, { "r", 1 } });
-        tc.erase("e"); verify_structure(tc, list<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 }, { "r", 1 } });
-        ts.erase("e"); verify_structure(ts, list<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 2 }, { "r", 3 } });
+        ti.erase("e"); verify_structure(ti, vector<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 } });
+        tc.erase("e", 1); verify_structure(tc, vector<entry>{{ "c", 1 }, { "e", 1 }, { "e", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 }, { "r", 1 } });
+        tc.erase("e"); verify_structure(tc, vector<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 }, { "r", 1 } });
+        ts.erase("e"); verify_structure(ts, vector<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 2 }, { "r", 3 } });
         // erase by position
-        ti.erase(ti.find_kth(2)); verify_structure(ti, list<entry>{{ "c", 1 }, { "o", 1 } });
-        tc.erase(tc.find_kth(3), 1); verify_structure(tc, list<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } });
-        tc.erase(tc.find_kth(3)); verify_structure(tc, list<entry>{{ "c", 1 }, { "o", 1 } });
-        ts.erase(ts.find_kth(3)); verify_structure(ts, list<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 3 } });
-    } while (next_permutation(vs.begin(), vs.end(), [](const entry& e1, const entry& e2){ return e1.key() < e2.key(); }));
+        ti.erase(ti.find_kth(2)); verify_structure(ti, vector<entry>{{ "c", 1 }, { "o", 1 } });
+        tc.erase(tc.find_kth(3), 1); verify_structure(tc, vector<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 1 } });
+        tc.erase(tc.find_kth(3)); verify_structure(tc, vector<entry>{{ "c", 1 }, { "o", 1 } });
+        ts.erase(ts.find_kth(3)); verify_structure(ts, vector<entry>{{ "c", 1 }, { "o", 1 }, { "r", 1 }, { "r", 3 } });
+    } while (next_permutation(vs.begin(), vs.end(), [](const entry& e1, const entry& e2){ return e1.first < e2.first; }));
 }
 
 TEST(treap_test, insert_erase_with_count) {

@@ -8,30 +8,6 @@ namespace altruct {
 namespace container {
 
 /**
- * A map entry type.
- */
-template<typename K, typename V>
-struct bst_entry {
-    std::pair<K, V> e;
-    
-    bst_entry() : e() {}
-    bst_entry(const std::pair<K, V> e) : e(e) {}
-    bst_entry(const std::pair<const K, V> e) : e(e) {}
-    bst_entry(const K& key, const V& val) : e(key, val) {}
-    
-    const K& key() const { return e.first; }
-    const V& val() const { return e.second; }
-    V& val() { return e.second; }
-    
-    bool operator == (const bst_entry& rhs) const { return e == rhs.e; }
-    bool operator != (const bst_entry& rhs) const { return e != rhs.e; }
-    bool operator < (const bst_entry& rhs) const { return e < rhs.e; }
-    bool operator > (const bst_entry& rhs) const { return e > rhs.e; }
-    bool operator <= (const bst_entry& rhs) const { return e <= rhs.e; }
-    bool operator >= (const bst_entry& rhs) const { return e >= rhs.e; }
-};
-
-/**
  * A helper template for extracting key from the value.
  */
 template<typename K, typename T>
@@ -46,16 +22,6 @@ template<typename K>
 struct bst_key<K, K> {
     static const K& of(const K& val) {
         return val;
-    }
-};
-
-/**
- * A key helper template for maps.
- */
-template<typename K, typename V>
-struct bst_key<K, bst_entry<K, V>> {
-    static const K& of(const bst_entry<K, V>& entry) {
-        return entry.key();
     }
 };
 
@@ -239,7 +205,7 @@ namespace bst_duplicate_handling {
  * Subclasses may choose to perform balancing in order to improve that.
  *
  * param K   - key type
- * param T   - value type (for maps this is going to be bst_entry<K, V>)
+ * param T   - value type (for maps this is going to be std::pair<const K, V>)
  * param DUP - duplicate handling mode
  * param CMP - comparison functor type
  * param ALLOC - allocator type
