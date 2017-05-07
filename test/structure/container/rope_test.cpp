@@ -83,14 +83,88 @@ TEST(rope_test, swap) {
     verify_structure(t2, v2);
 }
 
+template<typename It>
+void test_iterators_without_mutating(const vector<string>& v, It b, It e) {
+    // constructors & assignment
+    It it2, it1 = b, ite(e);
+    // pairwise
+    for (int i2, i1 = 0;; ++i1, ++it1) {
+        for (i2 = 0, it2 = b;; ++i2, ++it2) {
+            int d = i2 - i1;
+            // iterator arithmetics
+            //EXPECT_EQ(i1, it1.pos());
+            //EXPECT_EQ(i2, it2.pos());
+            EXPECT_EQ(i1 - i2, it1 - it2);
+            EXPECT_EQ(it2, it1 + d);
+            EXPECT_EQ(it2, it1 - (-d));
+            auto it = it1;
+            EXPECT_EQ(it2, it += d);
+            EXPECT_EQ(it1, it -= d);
+            // relational operators
+            EXPECT_EQ(i1 == i2, it1 == it2);
+            EXPECT_EQ(i1 != i2, it1 != it2);
+            EXPECT_EQ(i1 < i2, it1 < it2);
+            EXPECT_EQ(i1 > i2, it1 > it2);
+            EXPECT_EQ(i1 <= i2, it1 <= it2);
+            EXPECT_EQ(i1 >= i2, it1 >= it2);
+            if (it2 == ite) break;
+            if (it1 == ite) continue;
+            EXPECT_EQ(v[i2], it1[d]);  // []
+        }
+        if (it1 == ite) break;
+        // pre/post increment & decrement
+        auto it = it1;
+        EXPECT_EQ(it1, it++);
+        EXPECT_EQ(it1 + 1, it);
+        EXPECT_EQ(it1 + 1, it--);
+        EXPECT_EQ(it1, it);
+        EXPECT_EQ(it1 + 1, ++it);
+        EXPECT_EQ(it1, --it);
+        // dereferencing
+        EXPECT_EQ(v[i1].size(), it1->size()); // ->
+        EXPECT_EQ(v[i1], *it1);               // *
+    }
+}
+
+template<typename It>
+void test_iterators_mutations(vector<string>& v, It b, It e) {
+    It it2, it1 = b, ite(e);
+    for (int i2, i1 = 0; it1 != ite; ++i1, ++it1) {
+        for (i2 = 0, it2 = b; it2 != ite; ++i2, ++it2) {
+            int d = i2 - i1;
+            v[i2] = v[i2] + ".";
+            it1[d] = it1[d] + ".";     // mutable []
+            EXPECT_EQ(v[i2], it1[d]);  // []
+            v[i2].pop_back();
+            it1[d].pop_back();         // mutable []
+            EXPECT_EQ(v[i2], it1[d]);  // []
+        }
+        // dereferencing
+        v[i1].push_back('!');
+        v[i1].push_back('?');
+        v[i1] = v[i1].substr(2);
+        it1->push_back('!');                  // mutable ->
+        (*it1).push_back('?');                // mutable *
+        (*it1) = (*it1).substr(2);            // mutable *
+        EXPECT_EQ(v[i1].size(), it1->size()); // ->
+        EXPECT_EQ(v[i1], *it1);               // *
+    }
+}
+
 TEST(rope_test, iterators) {
-    vector<int> v1; for (int i = 0; i < 110; i++) v1.push_back(rand() % 1000000000);
-    rope<int> t1(v1.begin(), v1.end());
-    EXPECT_EQ((vector<int>(v1.begin(), v1.end())), (vector<int>(t1.begin(), t1.end())));
-    EXPECT_EQ((vector<int>(v1.cbegin(), v1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
-    EXPECT_EQ((vector<int>(v1.rbegin(), v1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
-    EXPECT_EQ((vector<int>(v1.crbegin(), v1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
-    // TODO: test all the functionality mandated by random_access_iterator_tag
+    vector<string> v; for (int i = 0; i < 110; i++) v.push_back(to_string(rand() % 1000000000));
+    rope<string> t(v.begin(), v.end());
+    EXPECT_EQ((vector<string>(v.begin(), v.end())), (vector<string>(t.begin(), t.end())));
+    EXPECT_EQ((vector<string>(v.cbegin(), v.cend())), (vector<string>(t.cbegin(), t.cend())));
+    EXPECT_EQ((vector<string>(v.rbegin(), v.rend())), (vector<string>(t.rbegin(), t.rend())));
+    EXPECT_EQ((vector<string>(v.crbegin(), v.crend())), (vector<string>(t.crbegin(), t.crend())));
+    test_iterators_without_mutating(v, t.cbegin(), t.cend());
+    test_iterators_without_mutating(v, t.begin(), t.end());
+    test_iterators_mutations(v, t.begin(), t.end());
+    auto vr = reversed(v);
+    test_iterators_without_mutating(vr, t.crbegin(), t.crend());
+    test_iterators_without_mutating(vr, t.rbegin(), t.rend());
+    test_iterators_mutations(vr, t.rbegin(), t.rend());
 }
 
 TEST(rope_test, relational_operators) {

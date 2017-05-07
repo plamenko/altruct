@@ -30,7 +30,7 @@ struct rope_iterator : public std::iterator<std::random_access_iterator_tag, T> 
     rope_iterator operator--(int) { auto old = *this; --*this; return old; }
     rope_iterator& operator++() { ptr = bst_iterator_util<T>::inorder_next(ptr); return *this; }
     rope_iterator operator++(int) { auto old = *this; ++*this; return old; }
-    rope_iterator& operator+=(difference_type off) { ptr = bst_iterator_util<T>::inorder_add(ptr, off); return *this; }
+    rope_iterator& operator+=(difference_type off) { ptr = bst_iterator_util<T>::inorder_add(ptr, int(off)); return *this; }
     rope_iterator operator+(difference_type off) const { rope_iterator it = *this; return it += off; }
     rope_iterator& operator-=(difference_type off) { return *this += -off; }
     rope_iterator operator-(difference_type off) const { rope_iterator it = *this; return it -= off; }
@@ -61,10 +61,10 @@ struct rope_const_iterator : public std::iterator<std::random_access_iterator_ta
     rope_const_iterator operator--(int) { auto old = *this; --*this; return old; }
     rope_const_iterator& operator++() { ptr = bst_iterator_util<T>::inorder_next(ptr); return *this; }
     rope_const_iterator operator++(int) { auto old = *this; ++*this; return old; }
-    rope_const_iterator& operator+=(difference_type off) { ptr = bst_iterator_util<T>::inorder_add(ptr, off); return *this; }
-    rope_const_iterator operator+(difference_type off) const { rope_iterator it = *this; return it += off; }
+    rope_const_iterator& operator+=(difference_type off) { ptr = bst_iterator_util<T>::inorder_add(ptr, int(off)); return *this; }
+    rope_const_iterator operator+(difference_type off) const { rope_const_iterator it = *this; return it += off; }
     rope_const_iterator& operator-=(difference_type off) { return *this += -off; }
-    rope_const_iterator operator-(difference_type off) const { rope_iterator it = *this; return it -= off; }
+    rope_const_iterator operator-(difference_type off) const { rope_const_iterator it = *this; return it -= off; }
     difference_type operator-(const rope_const_iterator& rhs) const { return pos() - rhs.pos(); }
     const T& operator[](difference_type off) const { return *(*this + off); }
 };

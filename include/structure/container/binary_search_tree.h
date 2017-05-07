@@ -132,9 +132,9 @@ struct bst_iterator_util {
 
     // inorder add; for nil this returns nil
     static const_node_ptr inorder_add(const_node_ptr ptr, int off) {
-        node_ptr nil;
+        const_node_ptr nil;
         int pos = bst_iterator_util<T>::inorder_pos(ptr, &nil);
-        return bst_iterator_util<T>::inorder_kth(nil, pos + off);
+        return bst_iterator_util<T>::inorder_kth(nil->left, pos + off);
     }
     static node_ptr inorder_add(node_ptr ptr, int off) {
         return remove_const(inorder_add(const_node_ptr(ptr), off));
