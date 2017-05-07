@@ -326,5 +326,8 @@
     <ClInclude Include="..\..\include\structure\container\treap.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\structure\container\rope.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

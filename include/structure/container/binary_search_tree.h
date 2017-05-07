@@ -130,6 +130,47 @@ struct bst_iterator_util {
         return remove_const(inorder_next(const_node_ptr(ptr)));
     }
 
+    // inorder add; for nil this returns nil
+    static const_node_ptr inorder_add(const_node_ptr ptr, int off) {
+        node_ptr nil;
+        int pos = bst_iterator_util<T>::inorder_pos(ptr, &nil);
+        return bst_iterator_util<T>::inorder_kth(nil, pos + off);
+    }
+    static node_ptr inorder_add(node_ptr ptr, int off) {
+        return remove_const(inorder_add(const_node_ptr(ptr), off));
+    }
+
+    // inorder position; for nil this returns the size
+    static int inorder_pos(const_node_ptr ptr, const_node_ptr* out_nil = nullptr) {
+        int k = ptr->left->size; bool was_right = false;
+        for (; !ptr->is_nil(); ptr = ptr->parent) {
+            if (was_right) k += ptr->size - ptr->right->size;
+            was_right = ptr->parent->right == ptr;
+        }
+        if (out_nil) *out_nil = ptr;
+        return k;
+    }
+    static int inorder_pos(node_ptr ptr, node_ptr* out_nil = nullptr) {
+        return inorder_pos(const_node_ptr(ptr), (const_node_ptr*)out_nil);
+    }
+
+    // node pointer at k-th position within the subtree rooted at ptr
+    static const_node_ptr inorder_kth(const_node_ptr ptr, int k) {
+        while (!ptr->is_nil()) {
+            if (k < ptr->left->size) {
+                ptr = ptr->left;
+            } else if ((k -= ptr->size - ptr->right->size) >= 0) {
+                ptr = ptr->right;
+            } else {
+                return ptr;
+            }
+        }
+        return ptr;
+    }
+    static node_ptr inorder_kth(node_ptr ptr, int k) {
+        return remove_const(inorder_kth(const_node_ptr(ptr), k));
+    }
+
 private:
     static node_ptr remove_const(const_node_ptr ptr) { return const_cast<node_ptr>(ptr); }
 };
@@ -373,16 +414,7 @@ public: // query & update
     }
 
     const_iterator find_kth(int k) const {
-        for (const_node_ptr ptr = root(); ptr != nil;) {
-            if (k < ptr->left->size) {
-                ptr = ptr->left;
-            } else if ((k -= ptr->size - ptr->right->size) >= 0) {
-                ptr = ptr->right;
-            } else {
-                return ptr;
-            }
-        }
-        return nil;
+        return bst_iterator_util<T>::inorder_kth(root(), k);
     }
 
     iterator find_kth(int k) {
@@ -458,14 +490,18 @@ public: // query & update
         node_ptr ptr, par = nil; bool go_left = true;
         for (ptr = root(); ptr != nil;) {
             par = ptr;
-            if (go_left = cmp(_key(val), _key(ptr->val))) {
+            if (cmp(_key(val), _key(ptr->val))) {
+                go_left = true;
                 ptr = ptr->left;
             } else if (cmp(_key(ptr->val), _key(val))) {
+                go_left = false;
                 ptr = ptr->right;
             } else {
                 if (DUP == bst_duplicate_handling::STORE) {
+                    go_left = false;
                     ptr = ptr->right;
                 } else if (DUP == bst_duplicate_handling::COUNT) {
+                    par = ptr->parent;
                     break;
                 } else {
                     return ptr;
@@ -473,19 +509,7 @@ public: // query & update
 
             }
         }
-        if (ptr == nil) {
-            ptr = _buy(val);
-            ptr->parent = par;
-            ptr->left = nil;
-            ptr->right = nil;
-            ptr->size = 0;
-            make_link(par, ptr, go_left);
-        }
-        if (DUP != bst_duplicate_handling::COUNT) {
-            cnt = 1;
-        }
-        propagate_size(ptr, nil, cnt);
-        return ptr;
+        return insert_node(par, go_left, val, cnt);
         // Note for balancing:
         // ptr needs to be retraced up after insert
     }
@@ -504,26 +528,7 @@ public: // query & update
     }
 
     iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
-        node_ptr ptr = remove_const(it);
-        if (ptr == nil) return nil;
-        if (DUP != bst_duplicate_handling::COUNT) {
-            cnt = 1;
-        }
-        if (cnt < it.count()) {
-            propagate_size(ptr, nil, -cnt);
-            return ptr;
-        }
-        cnt = it.count();
-        // physically erase from the tree
-        if (ptr->left != nil && ptr->right != nil) {
-            swap_with_descendant(ptr, bst_iterator_util<T>::inorder_next(ptr));
-        }
-        // there can be at most one child now
-        node_ptr ch = (ptr->left != nil) ? ptr->left : ptr->right;
-        node_ptr par = ptr->parent;
-        make_link(par, ch, ptr);
-        propagate_size(par, nil, -cnt);
-        return par;
+        return erase_node(remove_const(it), cnt);
         // Note for balancing:
         // for avl like trees: `par` needs to be retraced up after erase
         // for treap like trees: `ptr` needs to be retraced down before erase
@@ -542,6 +547,46 @@ protected: // const casting logic
 
     static const K& _key(const T& val) {
         return bst_key<K, T>::of(val);
+    }
+
+protected: // insert & erase
+    node_ptr insert_node(node_ptr par, bool go_left, const T& val, int cnt) {
+        node_ptr ptr = go_left ? par->left : par->right;
+        if (ptr == nil) {
+            ptr = _buy(val);
+            ptr->parent = par;
+            ptr->left = nil;
+            ptr->right = nil;
+            ptr->size = 0;
+            make_link(par, ptr, go_left);
+        }
+        if (DUP != bst_duplicate_handling::COUNT) {
+            cnt = 1;
+        }
+        propagate_size(ptr, nil, cnt);
+        return ptr;
+    }
+
+    node_ptr erase_node(node_ptr ptr, int cnt) {
+        if (ptr == nil) return nil;
+        if (DUP != bst_duplicate_handling::COUNT) {
+            cnt = 1;
+        }
+        if (cnt < ptr->count()) {
+            propagate_size(ptr, nil, -cnt);
+            return ptr;
+        }
+        cnt = ptr->count();
+        // physically erase from the tree
+        if (ptr->left != nil && ptr->right != nil) {
+            swap_with_descendant(ptr, bst_iterator_util<T>::inorder_next(ptr));
+        }
+        // there can be at most one child now
+        node_ptr ch = (ptr->left != nil) ? ptr->left : ptr->right;
+        node_ptr par = ptr->parent;
+        make_link(par, ch, ptr);
+        propagate_size(par, nil, -cnt);
+        return par;
     }
 
 protected: // pointer rewiring logic

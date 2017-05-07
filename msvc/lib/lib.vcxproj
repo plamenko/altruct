@@ -88,6 +88,7 @@
     <ClInclude Include="..\..\include\structure\container\bit_vector.h" />
     <ClInclude Include="..\..\include\structure\container\lazy_segment_tree.h" />
     <ClInclude Include="..\..\include\structure\container\lohi_map.h" />
+    <ClInclude Include="..\..\include\structure\container\rope.h" />
     <ClInclude Include="..\..\include\structure\container\segment_tree.h" />
     <ClInclude Include="..\..\include\structure\container\sqrt_map.h" />
     <ClInclude Include="..\..\include\structure\container\treap.h" />

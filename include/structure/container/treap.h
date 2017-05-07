@@ -66,18 +66,13 @@ public:
         return *this;
     }
 
+    void swap(treap& rhs) {
+        binary_search_tree::swap(rhs);
+        std::swap(rnd, rhs.rnd);
+    }
+
     iterator insert(const T& val, int cnt = 1) {
-        auto it = binary_search_tree::insert(val, cnt);
-        auto ptr = remove_const(it);
-        ptr->balance = rnd();
-        while (ptr->balance < ptr->parent->balance) {
-            if (ptr->parent->left == ptr) {
-                rotate_right(ptr->parent);
-            } else {
-                rotate_left(ptr->parent);
-            }
-        }
-        return it;
+        return retrace_up(binary_search_tree::insert(val, cnt));
     }
 
     iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {
@@ -94,6 +89,25 @@ public:
     }
 
     iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
+        return binary_search_tree::erase(retrace_down(it), cnt);
+    }
+
+protected:
+    iterator retrace_up(const_iterator it) {
+        auto ptr = remove_const(it);
+        if (ptr->is_nil()) return ptr;
+        ptr->balance = rnd();
+        while (ptr->balance < ptr->parent->balance) {
+            if (ptr->parent->left == ptr) {
+                rotate_right(ptr->parent);
+            } else {
+                rotate_left(ptr->parent);
+            }
+        }
+        return ptr;
+    }
+
+    iterator retrace_down(const_iterator it) {
         auto ptr = remove_const(it);
         if (ptr->is_nil()) return ptr;
         while (!ptr->left->is_nil() && !ptr->right->is_nil()) {
@@ -103,7 +117,7 @@ public:
                 rotate_left(ptr);
             }
         }
-        return binary_search_tree::erase(it, cnt);
+        return ptr;
     }
 };
 

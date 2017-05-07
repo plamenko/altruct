@@ -79,8 +79,8 @@ namespace {
     };
 
     // Note: relies on iterator functioning properly
-    template<typename K, typename T, int DUP, typename CMP, typename ALLOC, typename COLLECTION>
-    void verify_structure(const treap_dbg<K, T, DUP, CMP, ALLOC>& t, const COLLECTION& c) {
+    template<typename K, typename T, int DUP, typename CMP, typename RAND, typename ALLOC, typename COLLECTION>
+    void verify_structure(const treap_dbg<K, T, DUP, CMP, RAND, ALLOC>& t, const COLLECTION& c) {
         t.debug_check();
         list<T> va;
         for (auto it = t.cbegin(); it != t.cend(); ++it) {
