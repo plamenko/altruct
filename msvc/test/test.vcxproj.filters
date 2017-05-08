@@ -199,6 +199,9 @@
     <ClCompile Include="..\..\test\structure\container\rope_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\convergents_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

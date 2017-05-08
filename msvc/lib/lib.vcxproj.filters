@@ -329,5 +329,8 @@
     <ClInclude Include="..\..\include\structure\container\rope.h">
       <Filter>include\structure\container</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\algorithm\math\convergents.h">
+      <Filter>include\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

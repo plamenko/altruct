@@ -51,6 +51,7 @@
     <ClInclude Include="..\..\include\algorithm\hash\std_tuple_hash.h" />
     <ClInclude Include="..\..\include\algorithm\math\base.h" />
     <ClInclude Include="..\..\include\algorithm\math\comb_mod_pp.h" />
+    <ClInclude Include="..\..\include\algorithm\math\convergents.h" />
     <ClInclude Include="..\..\include\algorithm\math\convolutions.h" />
     <ClInclude Include="..\..\include\algorithm\math\bits.h" />
     <ClInclude Include="..\..\include\algorithm\math\combinatorics.h" />
