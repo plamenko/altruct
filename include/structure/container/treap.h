@@ -27,18 +27,30 @@ namespace container {
  * param CMP - comparison functor type
  * param ALLOC - allocator type
  */
-template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename RAND = std::function<int()>, typename ALLOC = allocator<bst_node<T>>>
+template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename RAND = std::function<int()>, typename ALLOC = std::allocator<bst_node<T>>>
 class treap : public binary_search_tree<K, T, DUP, CMP, ALLOC> {
+protected:
+    typedef binary_search_tree<K, T, DUP, CMP, ALLOC> bst_t;
+    typedef typename bst_t::node_ptr node_ptr;
+    typedef typename bst_t::const_node_ptr const_node_ptr;
+public:
+    typedef K key_type;
+    typedef T value_type;
+    typedef typename bst_t::iterator iterator;
+    typedef typename bst_t::const_iterator const_iterator;
+    typedef typename bst_t::reverse_iterator reverse_iterator;
+    typedef typename bst_t::const_reverse_iterator const_reverse_iterator;
+
 public:
     RAND rnd;
 
     treap(const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-        binary_search_tree(cmp, alloc), rnd(rnd) {
+        bst_t(cmp, alloc), rnd(rnd) {
     }
 
     template<typename It>
     treap(It begin, It end, const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-        binary_search_tree(cmp, alloc), rnd(rnd) {
+        bst_t(cmp, alloc), rnd(rnd) {
         for (It it = begin; it != end; ++it) {
             insert(*it);
         }
@@ -62,59 +74,60 @@ public:
     }
 
     treap& operator=(const treap& rhs) {
-        swap(treap(rhs));
+        treap rhs_copy(rhs);
+        swap(rhs_copy);
         return *this;
     }
 
     void swap(treap& rhs) {
-        binary_search_tree::swap(rhs);
+        bst_t::swap(rhs);
         std::swap(rnd, rhs.rnd);
     }
 
     iterator insert(const T& val, int cnt = 1) {
-        return retrace_up(binary_search_tree::insert(val, cnt));
+        return retrace_up(bst_t::insert(val, cnt));
     }
 
     iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {
         if (DUP == bst_duplicate_handling::STORE) {
-            return erase(lower_bound(key), upper_bound(key));
+            return erase(bst_t::lower_bound(key), bst_t::upper_bound(key));
         } else {
-            return erase(find(key), cnt);
+            return erase(bst_t::find(key), cnt);
         }
     }
 
     iterator erase(const_iterator b, const_iterator e, int cnt = std::numeric_limits<int>::max()) {
         while (b != e) erase(b++);
-        return remove_const(b);
+        return bst_t::remove_const(b);
     }
 
     iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
-        return binary_search_tree::erase(retrace_down(it), cnt);
+        return bst_t::erase(retrace_down(it), cnt);
     }
 
 protected:
     iterator retrace_up(const_iterator it) {
-        auto ptr = remove_const(it);
+        auto ptr = bst_t::remove_const(it);
         if (ptr->is_nil()) return ptr;
         ptr->balance = rnd();
         while (ptr->balance < ptr->parent->balance) {
             if (ptr->parent->left == ptr) {
-                rotate_right(ptr->parent);
+                bst_t::rotate_right(ptr->parent);
             } else {
-                rotate_left(ptr->parent);
+                bst_t::rotate_left(ptr->parent);
             }
         }
         return ptr;
     }
 
     iterator retrace_down(const_iterator it) {
-        auto ptr = remove_const(it);
+        auto ptr = bst_t::remove_const(it);
         if (ptr->is_nil()) return ptr;
         while (!ptr->left->is_nil() && !ptr->right->is_nil()) {
             if (ptr->left->balance < ptr->right->balance) {
-                rotate_right(ptr);
+                bst_t::rotate_right(ptr);
             } else {
-                rotate_left(ptr);
+                bst_t::rotate_left(ptr);
             }
         }
         return ptr;

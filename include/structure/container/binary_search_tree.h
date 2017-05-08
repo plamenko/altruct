@@ -210,14 +210,15 @@ namespace bst_duplicate_handling {
  * param CMP - comparison functor type
  * param ALLOC - allocator type
  */
-template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename ALLOC = allocator<bst_node<T>>>
+template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename ALLOC = std::allocator<bst_node<T>>>
 class binary_search_tree {
 public: // public types
     typedef K key_type;
     typedef T value_type;
-    typedef typename std::conditional<std::is_same<key_type, value_type>::value,
-        typename bst_const_iterator<T>,
-        typename bst_iterator<T> > ::type iterator;
+    typedef typename std::conditional<
+        std::is_same<K, T>::value,
+        bst_const_iterator<T>,
+        bst_iterator<T> >::type iterator;
     typedef bst_const_iterator<T> const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -293,7 +294,8 @@ public: // constructor & size
     }
 
     binary_search_tree& operator=(const binary_search_tree& rhs) {
-        swap(binary_search_tree(rhs));
+        binary_search_tree rhs_copy(rhs);
+        swap(rhs_copy);
         return *this;
     }
 

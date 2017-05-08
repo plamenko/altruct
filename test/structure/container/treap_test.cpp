@@ -21,60 +21,68 @@ using namespace altruct::test_util;
 namespace {
     template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename RAND = std::function<int()>, typename ALLOC = allocator<bst_node<T>>>
     class treap_dbg : public treap<K, T, DUP, CMP, RAND, ALLOC> {
+    protected:
+        typedef treap<K, T, DUP, CMP, RAND, ALLOC> treap_t;
+        typedef typename treap_t::node_ptr node_ptr;
+        typedef typename treap_t::const_node_ptr const_node_ptr;
+    public:
+        typedef K key_type;
+        typedef T value_type;
+        typedef typename treap_t::iterator iterator;
+        typedef typename treap_t::const_iterator const_iterator;
+        typedef typename treap_t::reverse_iterator reverse_iterator;
+        typedef typename treap_t::const_reverse_iterator const_reverse_iterator;
+
     public:
         treap_dbg(const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-            treap(cmp, rnd, alloc) {
+            treap_t(cmp, rnd, alloc) {
         }
 
         template<typename It>
         treap_dbg(It begin, It end, const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-            treap(begin, end, cmp, rnd, alloc) {
+            treap_t(begin, end, cmp, rnd, alloc) {
         }
 
         treap_dbg(std::initializer_list<T> list) :
-            treap(list) {}
+            treap_t(list) {}
 
         treap_dbg(treap_dbg&& rhs) :
-            treap(std::move(rhs)) {
+            treap_t(std::move(rhs)) {
         }
 
         treap_dbg(const treap_dbg& rhs) :
-            treap(rhs) {
+            treap_t(rhs) {
         }
 
         treap_dbg& operator=(treap_dbg&& rhs) {
-            treap::operator=(std::move(rhs));
+            treap_t::operator=(std::move(rhs));
             return *this;
         }
 
         treap_dbg& operator=(const treap_dbg& rhs) {
-            treap::operator=(rhs);
+            treap_t::operator=(rhs);
             return *this;
         }
 
         void debug_check(const_node_ptr ptr = nullptr) const {
             if (ptr == nullptr) {
-                ptr = root();
-                ASSERT_TRUE(nil->parent == nil) << "ERROR: nil not connected back to itself";
-                ASSERT_TRUE(nil->left == nil->right) << "ERROR: nil left & right roots out of sync";
+                ptr = treap_t::root();
+                ASSERT_TRUE(treap_t::nil->parent == treap_t::nil) << "ERROR: nil not connected back to itself";
+                ASSERT_TRUE(treap_t::nil->left == treap_t::nil->right) << "ERROR: nil left & right roots out of sync";
             }
-            if (ptr == nil) {
+            if (ptr->is_nil()) {
                 return;
             }
             if (!ptr->left->is_nil()) {
-                ASSERT_FALSE(cmp(_key(ptr->val), _key(ptr->left->val))) << "ERROR: parent < left";
+                ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->val), treap_t::_key(ptr->left->val))) << "ERROR: parent < left";
                 ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
                 debug_check(ptr->left);
             }
             if (!ptr->right->is_nil()) {
-                ASSERT_FALSE(cmp(_key(ptr->right->val), _key(ptr->val))) << "ERROR: right < parent";
+                ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->right->val), treap_t::_key(ptr->val))) << "ERROR: right < parent";
                 ASSERT_FALSE(ptr->right->parent != ptr) << "ERROR: right not connected back to parent";
                 debug_check(ptr->right);
             }
-        }
-
-        static void make_link(node_ptr par, node_ptr ch, bool go_left) {
-            treap::make_link(par, ch, go_left);
         }
     };
 
@@ -339,12 +347,14 @@ namespace x{
         typedef std::chrono::duration<rep, period> duration;
         typedef std::chrono::time_point<rdtsc_clock> time_point;
         static const bool is_steady = true;
-        static time_point now() { return time_point(duration(__rdtsc())); }
+        // TODO: extract this to altruct::chrono and use rtdsc intrinsics on each compiler
+        //static time_point now() { return time_point(duration(__rdtsc())); }
+        static time_point now() { return time_point(duration(0)); }
     };
 }
 namespace x {
-    typedef rdtsc_clock clock;
-    //typedef std::chrono::high_resolution_clock clock;
+    //typedef rdtsc_clock clock;
+    typedef std::chrono::high_resolution_clock clock;
     typedef std::chrono::duration<double, typename clock::period> duration;
     duration since(clock::time_point t0) { return duration(clock::now() - t0); }
 } // x

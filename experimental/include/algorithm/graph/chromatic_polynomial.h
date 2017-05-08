@@ -101,7 +101,7 @@ altruct::math::polynom<I> chromatic_polynomial(const graph<E>& g, I id = I(1)) {
             // dense: addition-contraction
             // add edge incident to the highest degree vertex
             int u = 0; for (int i = 0; i < n; i++) if (g[u].size() < g[i].size()) u = i;
-            vector<int> used(n); used[u] = 1; for (const E& e : g[u]) used[e.v] = 1;
+            std::vector<int> used(n); used[u] = 1; for (const E& e : g[u]) used[e.v] = 1;
             int v = -1; for (int i = 0; i < n; i++) if ((v < 0 || g[v].size() < g[i].size()) && !used[i]) v = i;
             auto ga = g; ga.add_edge(u, v); ga.add_edge(v, u);
             auto gc = g; gc.contract(u, v);

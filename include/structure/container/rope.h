@@ -14,6 +14,8 @@ namespace container {
 template<typename T>
 struct rope_iterator : public std::iterator<std::random_access_iterator_tag, T> {
     typedef bst_node<T>* node_ptr;
+    typedef std::iterator<std::random_access_iterator_tag, T> it_t;
+    typedef typename it_t::difference_type difference_type;
     node_ptr ptr;
     rope_iterator(node_ptr ptr = nullptr) : ptr(ptr) { }
     int count() const { return ptr->count(); }
@@ -44,6 +46,8 @@ struct rope_iterator : public std::iterator<std::random_access_iterator_tag, T> 
 template<typename T>
 struct rope_const_iterator : public std::iterator<std::random_access_iterator_tag, const T> {
     typedef const bst_node<T>* const_node_ptr;
+    typedef std::iterator<std::random_access_iterator_tag, T> it_t;
+    typedef typename it_t::difference_type difference_type;
     const_node_ptr ptr;
     rope_const_iterator(const_node_ptr ptr = nullptr) : ptr(ptr) { }
     rope_const_iterator(rope_iterator<T> it) : ptr(it.ptr) { }
@@ -87,8 +91,12 @@ struct rope_const_iterator : public std::iterator<std::random_access_iterator_ta
  * param CMP - comparison functor type
  * param ALLOC - allocator type
  */
-template<typename T, typename RAND = std::function<int()>, typename ALLOC = allocator<bst_node<T>>>
+template<typename T, typename RAND = std::function<int()>, typename ALLOC = std::allocator<bst_node<T>>>
 class rope : protected treap<T, T, bst_duplicate_handling::COUNT, std::less<T>, RAND, ALLOC> {
+protected:
+    typedef treap<T, T, bst_duplicate_handling::COUNT, std::less<T>, RAND, ALLOC> treap_t;
+    typedef typename treap_t::node_ptr node_ptr;
+    typedef typename treap_t::const_node_ptr const_node_ptr;
 public:
     typedef T value_type;
     typedef rope_iterator<T> iterator;
@@ -97,12 +105,12 @@ public:
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     rope(const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-        treap(std::less<T>(), rnd, alloc) {
+        treap_t(std::less<T>(), rnd, alloc) {
     }
 
     template<typename It>
     rope(It begin, It end, const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-        treap(std::less<T>(), rnd, alloc) {
+        treap_t(std::less<T>(), rnd, alloc) {
         for (It it = begin; it != end; ++it) {
             push_back(*it);
         }
@@ -126,31 +134,32 @@ public:
     }
 
     rope& operator=(const rope& rhs) {
-        swap(rope(rhs));
+        rope rhs_copy(rhs);
+        swap(rhs_copy);
         return *this;
     }
 
     void swap(rope& rhs) {
-        treap::swap(rhs);
+        treap_t::swap(rhs);
     }
 
     void clear() {
-        treap::clear();
+        treap_t::clear();
     }
 
     bool empty() const {
-        return treap::empty();
+        return treap_t::empty();
     }
 
     int size() const {
-        return treap::size();
+        return treap_t::size();
     }
 
 public: // iterators
     iterator begin() { return ++end(); }
-    iterator end() { return nil; }
+    iterator end() { return treap_t::nil; }
     const_iterator cbegin() const { return ++cend(); }
-    const_iterator cend() const { return nil; }
+    const_iterator cend() const { return treap_t::nil; }
     reverse_iterator rbegin() { return reverse_iterator(end()); }
     reverse_iterator rend() { return reverse_iterator(begin()); }
     const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
@@ -158,7 +167,7 @@ public: // iterators
 
 public: // relational operators
     bool operator == (const rope& rhs) const {
-        return treap::equal(cbegin(), cend(), rhs.cbegin(), rhs.cend());
+        return treap_t::equal(cbegin(), cend(), rhs.cbegin(), rhs.cend());
     }
     bool operator < (const rope& rhs) const {
         return std::lexicographical_compare(cbegin(), cend(), rhs.cbegin(), rhs.cend());
@@ -170,11 +179,11 @@ public: // relational operators
 
 public: // query & update
     const_iterator find_kth(int k) const {
-        return treap::find_kth(k).ptr;
+        return treap_t::find_kth(k).ptr;
     }
 
     iterator find_kth(int k) {
-        return remove_const(treap::find_kth(k));
+        return treap_t::remove_const(treap_t::find_kth(k));
     }
 
     void push_back(const T& val) {
@@ -187,7 +196,7 @@ public: // query & update
 
     void insert(const_iterator it, const T& val) {
         bool go_left = it.ptr->left->is_nil(); if (!go_left) --it;
-        retrace_up(insert_node(remove_const(it.ptr), go_left, val, 1));
+        treap_t::retrace_up(treap_t::insert_node(treap_t::remove_const(it.ptr), go_left, val, 1));
     }
 
     void erase(int b, int e) {
@@ -203,7 +212,7 @@ public: // query & update
     }
 
     void erase(const_iterator it) {
-        erase_node(remove_const(retrace_down(it.ptr)), 1);
+        treap_t::erase_node(treap_t::remove_const(treap_t::retrace_down(it.ptr)), 1);
     }
 
     const T& at(int pos) const {
@@ -211,7 +220,7 @@ public: // query & update
     }
 
     T& at(int pos) {
-        return remove_const(find_kth(pos).ptr)->val;
+        return treap_t::remove_const(find_kth(pos).ptr)->val;
     }
     
     const T& operator[](int pos) const {
