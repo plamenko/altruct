@@ -117,6 +117,23 @@ TEST(base_test, maxT) {
 	EXPECT_EQ(-2.0, maxT(-2.0, -5.0));
 }
 
+TEST(base_test, boundT) {
+    EXPECT_EQ(-1, boundT(2, -5, -1));
+    EXPECT_EQ(1, boundT(2, -5, 1));
+    EXPECT_EQ(2, boundT(2, -5, 2));
+    EXPECT_EQ(2, boundT(2, -5, 4));
+    EXPECT_EQ(2, boundT(2, 1, 5));
+    EXPECT_EQ(2, boundT(2, 2, 5));
+    EXPECT_EQ(3, boundT(2, 3, 5));
+    EXPECT_EQ(-3.0, boundT(-2.0, -5.0, -3.0));
+    EXPECT_EQ(-2.0, boundT(-2.0, -5.0, -2.0));
+    EXPECT_EQ(-2.0, boundT(-2.0, -5.0, -1.0));
+    EXPECT_EQ(-2.0, boundT(-2.0, -5.0, 1.0));
+    EXPECT_EQ(-2.0, boundT(-2.0, -2.0, 5.0));
+    EXPECT_EQ(-1.0, boundT(-2.0, -1.0, 5.0));
+    EXPECT_EQ(1.0, boundT(-2.0, 1.0, 5.0));
+}
+
 TEST(base_test, powT) {
 	EXPECT_EQ(1, powT(0, 0));
 	EXPECT_EQ(1, powT(+1, 0));

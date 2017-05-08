@@ -86,7 +86,7 @@ T zeroOf(const T& x) { return zeroT<T>::of(x); }
  * Absolute value.
  */
 template <typename T>
-T absT(const T &x) {
+T absT(const T& x) {
 	T e0 = zeroOf(x);
 	return (x < e0) ? -x : x;
 }
@@ -95,7 +95,7 @@ T absT(const T &x) {
  * Minimum.
  */
 template <typename T>
-T minT(const T &x, const T &y) {
+T minT(const T& x, const T& y) {
 	return (x < y) ? x : y;
 }
 
@@ -103,8 +103,16 @@ T minT(const T &x, const T &y) {
  * Maximum.
  */
 template <typename T>
-T maxT(const T &x, const T &y) {
+T maxT(const T& x, const T& y) {
 	return (x < y) ? y : x;
+}
+
+/**
+ * Bounds `x` to the `[L, R]` range.
+ */
+template<typename T>
+T boundT(const T& x, const T& l, const T& r) {
+    return minT(maxT(x, l), r);
 }
 
 /**
