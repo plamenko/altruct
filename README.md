@@ -121,10 +121,27 @@ needs to be brought to a higher quality bar that is required here.
 
 * Algorithm:
   * Graph:
-    * Dinic blocking flow (max flow)
-    * Heavy-light Decomposition of a tree
-    * Iterative DFS
-    * Lowest Common Ancestor
+    * Base
+      * Graph structure
+      * Iterative DFS
+    * Shortest paths & spanning trees
+      * Dijkstra
+      * Floyd-Warshall
+    * Flow & matching
+      * Bipartite matching
+      * Dinic blocking flow (max flow)	 
+      * Push-Relabel flow (max flow)
+    * Decompositions & connectivity
+      * Chain decomposition
+        * Biconnectivity
+        * Cut edges & vertices
+      * Heavy-light Decomposition of a tree
+      * Lowest Common Ancestor
+      * Tarjan strongly connected components
+      * Transitive closure & reduction
+      * Topological sort
+    * NP-hard
+      * Chromatic polynomial
   * Hash:
     * Polynomial hash (useful for string related problems)
     * std::tuple hash
@@ -141,8 +158,12 @@ needs to be brought to a higher quality bar that is required here.
       * hi_bit, lo_bit, is_pow2, next_pow2
     * Combinatorial primes:
       * factorial/binomial/multinomial prime exponent
+      * factorial/binomial modulo prime power
     * Combinatorics:
       * next_partition, next_combination, nth_permutation
+    * Counting
+      * Stirling number (first and second kind)
+      * Partitions number
     * Convolutions:
       * Slow and/or/xor/max/cyclic convolution (O(n^2) implementation)
       * Fast and/or/xor/max convolution (FFT-like O(n log n) implementation)
@@ -150,6 +171,10 @@ needs to be brought to a higher quality bar that is required here.
       * Fast Walsh-Hadamard transform
 	  * Fast Arithmetic transform
       * Fast Fourier transform
+    * Continued fractions:
+      * Convergents, semi-convergents
+      * Best rational approximations to sqrt(d)
+      * Closest lattice point to a line
     * Fractions:
       * Farey sequence
     * Diophantine equations
@@ -207,9 +232,17 @@ needs to be brought to a higher quality bar that is required here.
 	    * arbitrary arithmetic functions in O(n log n)
 		* multiplicative functions in O(n log log n)
       * Sum of multiplicative functions in O(n^(2/3)):
+		* Divisor-Sigma in O(n log log n)
 		* Mertens function (sum of Moebius-Mu)
 		* Totient summatory function (sum of Euler-Phi)
 		* Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
+	* Sequences
+	  * Delta, Dirichlet, Zero, One, Identity, Square, Cube
+	  * Triangular, Tetrahedral, Pyramidal, Octahedral, Dodecahedral, Icosahedral
+	  * Divisor-Sigma family partial sums
+	* Triples
+	  * Pythagorean (90 degree) triples
+	  * Eisenstein (60 & 120 degree) triples
   * Random:
     * Mersene Twister
     * XorShift
@@ -224,6 +257,10 @@ needs to be brought to a higher quality bar that is required here.
 * Structure:
   * Container:
     * Aho-Corasick trie
+    * Binary heap
+    * Binary search tree (no balancing)
+    * Treap - a variant of [randomized BST](https://en.wikipedia.org/wiki/Treap)
+    * Rope - efficient [array tree](https://en.wikipedia.org/wiki/Rope_(data_structure))
     * Palindrome tree
     * Suffix array
     * Bit vector (std::bitset + std::vector<bool> + more)
