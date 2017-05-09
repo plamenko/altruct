@@ -40,7 +40,7 @@ TEST(convergents_test, convergents) {
 }
 
 TEST(convergents_test, line_closest_lattice_point) {
-    int u = 7;
+    int u = 10;
     for (int a = -u; a <= u; a++) {
         for (int b = -u; b <= u; b++) {
             for (int c = -u; c <= u; c++) {
@@ -52,7 +52,34 @@ TEST(convergents_test, line_closest_lattice_point) {
                         for (int x1 = l; x1 <= r; x1++) {
                             int y1 = (b == 0) ? 0 : div_round(a * x1 + c, -b);
                             int d1 = absT(a * x1 + b * y1 + c);
-                            EXPECT_FALSE(d1 < d0) << "ERROR: (" << a << " " << b << " " << c << ") (" << l << " " << r << "): " << d1 << " < " << d0;
+                            if (d1 < d0) EXPECT_FALSE(d1 < d0) << "ERROR: (" << a << " " << b << " " << c << ") (" << l << " " << r << "): " << d1 << " < " << d0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST(convergents_test, minimize_floor_ladder) {
+    int u = 5;
+    for (int a = -u; a <= u; a++) {
+        for (int b = -u; b <= u; b++) {
+            for (int c = -u; c <= u; c++) {
+                for (int d = -u; d <= u; d++) {
+                    for (int e = -u; e <= u; e++) {
+                        if (e == 0) continue;
+                        for (int l = -u; l <= u; l++) {
+                            for (int r = l; r <= u; r++) {
+                                int x0 = minimize_floor_ladder(a, b, c, d, e, l, r);
+                                int y0 = div_floor(c * x0 + d, e);
+                                int s0 = a * x0 + b * y0;
+                                for (int x1 = l; x1 <= r; x1++) {
+                                    int y1 = div_floor(c * x1 + d, e);
+                                    int s1 = a * x1 + b * y1;
+                                    if (s1 < s0) EXPECT_FALSE(s1 < s0) << "ERROR: (" << a << " " << b << " " << c << " " << d << " " << e << ") (" << l << " " << r << "): " << s1 << " < " << s0;
+                                }
+                            }
                         }
                     }
                 }

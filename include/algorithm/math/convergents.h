@@ -92,12 +92,9 @@ I line_closest_lattice_point(I a, I b, I c, I x_min, I x_max) {
     if (b == 0) return boundT<I>(div_round<I>(c, -a), x_min, x_max);
     if (a < 0) a = -a, c = -c;
     if (b < 0) b = -b;
-    if (a >= b) a %= b;
+    a %= b;
     if (a == 0) return x_min;
-    auto eval = [&](I x){
-        I y = div_round<I>(a * x + c, -b);
-        return absT<I>(a * x + b * y + c);
-    };
+    auto dist = [&](I x, I y) { return absT<I>(a * x + b * y + c); };
     // Reciprocally, for any fixed `round((A x + C) / -B) = y`,
     // the best `x` is `x = round((B y + C) / -A)`. This gives
     // `B y + C + A round((B y + C) / -A)`, which is the same
@@ -108,9 +105,37 @@ I line_closest_lattice_point(I a, I b, I c, I x_min, I x_max) {
     I y_max = div_floor<I>(a * (x_min * 2 - 1) + c * 2, -b * 2);
     I y = line_closest_lattice_point<I>(b, -a, c, y_min, y_max);
     I x = boundT<I>(div_round<I>(b * y + c, -a), x_min, x_max);
-    if (x != x_min && eval(x_min) < eval(x)) x = x_min;
-    if (x != x_max && eval(x_max) < eval(x)) x = x_max;
+    if (x != x_min && dist(x_min, y_min) < dist(x, y)) x = x_min, y = y_min;
+    if (x != x_max && dist(x_max, y_max) < dist(x, y)) x = x_max, y = y_max;
     return x;
+}
+
+/**
+ * Finds `x` within `[x_min, x_max]` that minimizes `A x + B floor((C x + D) / E)`.
+ * Similar to `line_closest_lattice_point` but a slighlty different condition.
+ * When plotted points look like a ladder hence the function name.
+ */
+template<typename I>
+I minimize_floor_ladder(I a, I b, I c, I d, I e, I x_min, I x_max) {
+    if (x_min >= x_max) return x_min;
+    if (e < 0) c = -c, d = -d, e = -e;
+    if (c < 0) b = -b, c = -c, d = e - d - 1;
+    a += b * (c / e), c %= e;
+    I x_ext = (a < 0) ? x_max : x_min;
+    if (b == 0 || c == 0) return x_ext;
+    I y_min = div_floor<I>(c * x_min + d, e);
+    I y_max = div_floor<I>(c * x_max + d, e);
+    if (y_min == y_max) return x_ext;
+    I f = (a < 0) ? (e - d - 1) : (c - d - 1);
+    if (a < 0) {
+        I y = minimize_floor_ladder<I>(b, a, e, f, c, y_min, y_max - 1);
+        I x = div_floor<I>(e * y + f, c);
+        return ((a * x_max + b * y_max) < (a * x + b * y)) ? x_max : x;
+    } else {
+        I y = minimize_floor_ladder<I>(b, a, e, f, c, y_min + 1, y_max);
+        I x = div_floor<I>(e * y + f, c);
+        return ((a * x_min + b * y_min) < (a * x + b * y)) ? x_min : x;
+    }
 }
 
 } // math
