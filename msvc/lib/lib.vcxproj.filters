@@ -332,5 +332,8 @@
     <ClInclude Include="..\..\include\structure\graph\graph.h">
       <Filter>include\structure\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\sat2.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -36,6 +36,7 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\push_relabel_flow.h" />
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\sat2.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\tarjan_scc.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\topological_sort.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\transitive_closure.h" />

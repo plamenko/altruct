@@ -12,6 +12,7 @@
 #include "algorithm/graph/bipartite_matching.h"
 #include "algorithm/graph/lowest_common_ancestor.h"
 #include "algorithm/graph/heavy_light_decomposition.h"
+#include "algorithm/graph/sat2.h"
 
 #include "algorithm/collections/collections.h"
 #include "io/iostream_overloads.h"
@@ -316,4 +317,23 @@ TEST(graph_algorithms_test, chromatic_polynomial) {
         //cout << "Petersen" << ": " << "  " << clock() << " ms" << endl;
         EXPECT_EQ(p0, p) << "ERROR: Petersen" << ": " << p << endl;
     }
+}
+
+TEST(graph_algorithms_test, sat2) {
+    // (x0 || -x1) (-x0 || x2)
+    vector<pair<int, int>> clauses1{ { 2 * 0 + 1, 2 * 1 + 0 }, { 2 * 0 + 0, 2 * 2 + 1 } };
+    EXPECT_EQ((vector<int>{0, 0, 1}), sat2(clauses1));
+    
+    vector<int> sol2{ -1, -1, -1 };
+    EXPECT_EQ(true, sat2(sol2, clauses1));
+    EXPECT_EQ((vector<int>{0, 0, 1}), sol2);
+
+    vector<int> sol3{ -1, 1, -1 };
+    EXPECT_EQ(true, sat2(sol3, clauses1));
+    EXPECT_EQ((vector<int>{1, 1, 1}), sol3);
+
+    // (x0 || x1) (x0 || -x1) (-x0 || x1) (-x0 || -x1)
+    vector<pair<int, int>> clauses2{ { 2 * 0 + 1, 2 * 1 + 1 }, { 2 * 0 + 1, 2 * 1 + 0 }, { 2 * 0 + 0, 2 * 1 + 1 }, { 2 * 0 + 0, 2 * 1 + 0 } };
+    EXPECT_EQ((vector<int>()), sat2(clauses2));
+
 }
