@@ -273,9 +273,9 @@ std::vector<int> prime_exponents(const std::vector<std::pair<P, int>> &vf) {
 /**
  * Calculates number of divisors from a factorization.
  */
-template<typename P>
-int divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
-	int r = 1;
+template<typename P, typename I = P>
+I divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
+	I r = 1;
 	for (const auto& f : vf) {
 		r *= f.second + 1;
 	}
@@ -285,11 +285,11 @@ int divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
 /**
  * Calculates Euler Phi from a factorization.
  */
-template<typename P>
-P euler_phi(const std::vector<std::pair<P, int>> &vf) {
-	P r = 1;
+template<typename P, typename I = P>
+I euler_phi(const std::vector<std::pair<P, int>> &vf) {
+	I r = 1;
 	for (const auto& f : vf) {
-		r *= powT(f.first, f.second - 1) * (f.first - 1);
+		r *= powT<I>(f.first, f.second - 1) * (f.first - 1);
 	}
 	return r;
 }
@@ -297,12 +297,12 @@ P euler_phi(const std::vector<std::pair<P, int>> &vf) {
 /**
  * Calculates Carmichael Lambda from a factorization.
  */
-template<typename P>
-P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
-	P r = 1;
+template<typename P, typename I = P>
+I carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
+	I r = 1;
 	for (const auto& f : vf) {
 		int e = (f.first == 2 && f.second > 2) ? f.second - 1 : f.second;
-		r = lcm<P>(r, powT(f.first, e - 1) * (f.first - 1));
+		r = lcm<I>(r, powT<I>(f.first, e - 1) * (f.first - 1));
 	}
 	return r;
 }
@@ -319,9 +319,9 @@ P carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
  * @param unique_only - if true, the sign and order won't be taken into account
  *                      i.e. (1, 2) is considered the same as (-2, -1)
  */
-template<typename P>
-P squares_r(const std::vector<std::pair<P, int>> &vf, bool unique_only) {
-	P B = 1; int s = 1, q = 1;
+template<typename P, typename I = P>
+I squares_r(const std::vector<std::pair<P, int>> &vf, bool unique_only) {
+	I B = 1; int s = 1, q = 1;
 	for (const auto& f : vf) {
 		if (f.first % 4 == 1) {
 			B *= f.second + 1;
@@ -507,6 +507,18 @@ template<typename I, typename P, typename E>
 I factor_out(I n, P p, E& e) {
     while (n % p == 0) n /= p, e++;
     return n;
+}
+
+/**
+ * Reconstructs number from its factorization.
+ */
+template<typename P, typename I = P>
+I from_factorization(const std::vector<std::pair<P, int>>& vf) {
+    I r = 1;
+    for (const auto& f : vf) {
+        r *= powT<I>(f.first, f.second);
+    }
+    return r;
 }
 
 /**

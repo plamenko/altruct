@@ -299,6 +299,11 @@ TEST(primes_test, factor_out) {
     EXPECT_EQ(1015, e4);
 }
 
+TEST(primes_test, from_factorization) {
+    EXPECT_EQ(1, from_factorization<int>({}));
+    EXPECT_EQ(7593750000000000, (from_factorization<int, int64_t>({ { 2, 10 }, { 3, 5 }, { 5, 15 } })));
+}
+
 TEST(primes_test, fraction_reduce) {
     auto gcd_f = [](int x, int y){return gcd(x, y); };
     vector<int> num0{ 2 * 6, 5, 35, 22 };
