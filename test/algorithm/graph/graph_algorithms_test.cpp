@@ -1,3 +1,4 @@
+#include "structure/graph/graph.h"
 #include "algorithm/graph/iterative_dfs.h"
 #include "algorithm/graph/topological_sort.h"
 #include "algorithm/graph/tarjan_scc.h"
@@ -121,24 +122,24 @@ namespace {
     });
 }
 
-TEST(graph_test, iterative_dfs) {
+TEST(graph_algorithms_test, iterative_dfs) {
     // TODO
 }
 
-TEST(graph_test, in_degrees) {
+TEST(graph_algorithms_test, in_degrees) {
     EXPECT_EQ((vector<int>{3, 2, 1, 0, 3, 0, 2, 0, 0, 0, 1}), in_degrees(dag_neg1));
 }
 
-TEST(graph_test, topological_sort) {
+TEST(graph_algorithms_test, topological_sort) {
     EXPECT_EQ((vector<int>{ 9, 8, 10, 7, 5, 6, 3, 1, 2, 0, 4 }), topological_sort(dag_neg1));
 }
 
-TEST(graph_test, tarjan_scc) {
+TEST(graph_algorithms_test, tarjan_scc) {
     EXPECT_EQ((vector<vector<int>>{{ 9 }, { 8 }, { 10 }, { 7 }, { 5 }, { 6 }, { 3 }, { 2 }, { 1 }, { 0 }, { 4 } }), tarjan_scc(dag_neg1));
     EXPECT_EQ((vector<vector<int>>{{ 7 }, { 1, 3, 2, 0 }, { 6, 5, 4 } }), tarjan_scc(cyc_neg1));
 }
 
-TEST(graph_test, chain_decomposition) {
+TEST(graph_algorithms_test, chain_decomposition) {
     const auto d = chain_decomposition(cyc_undir);
     EXPECT_EQ((chain_decomposition_t{{ { { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 } }, { { 9, 3, 6, 9 } }, { { 4, 2, 1, 4 } } }, {}, { { { 13, 15, 14, 13 } }, { { 15, 17, 16, 15 } } }}), d);
     EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(cyc_undir, d)));
@@ -154,14 +155,14 @@ TEST(graph_test, chain_decomposition) {
     EXPECT_EQ((vector<vector<int>>{{ 0, 7, 4, 1, 11, 10 }, { 1, 3, 2 }, { 4, 6, 5 }, { 7, 9, 8 }}), sorted(biconnected_components(cyc_undir5, d5)));
 }
 
-TEST(graph_test, transitive_closure) {
+TEST(graph_algorithms_test, transitive_closure) {
     EXPECT_EQ(graph<edge>({{ 4 }, { 4, 0 }, { 0, 4 }, { 2, 0, 1, 4 }, {}, { 1, 6, 4, 0 }, {}, { 6 }, { 10 }, {}, {} }), transitive_closure(dag_neg1));
     EXPECT_EQ(graph<edge>({ { 4 }, { 0 }, { 0 }, { 1, 2 }, {}, { 1, 6 }, {}, { 6 }, { 10 }, {}, {} }), transitive_reduction(dag_neg1));
     EXPECT_EQ(graph<edge>({ { 4 }, { 0 }, { 0 }, { 1, 2 }, {}, { 1, 6 }, {}, { 6 }, { 10 }, {}, {} }), transitive_reduction(transitive_closure(dag_neg1)));
     EXPECT_EQ(graph<edge>({ { 2, 3, 1, 4, 5, 6 }, { 0, 2, 3, 4, 5, 6 }, { 3, 1, 4, 5, 6, 0 }, { 1, 4, 5, 6, 0, 2 }, { 5, 6 }, { 6, 4 }, { 4, 5 }, { 5, 6, 4 } }), transitive_closure(cyc_neg1));
 }
 
-TEST(graph_test, floyd_warshall) {
+TEST(graph_algorithms_test, floyd_warshall) {
     int INF = 1000000000;
     EXPECT_EQ((vector<vector<iedge>> {
         { { 0, 0 }, { 2, -1 }, { 2, -2 }, { 2, 0 }, { 2, -8 }, { 2, -6 }, { 2, -3 }, { -1, INF } },
@@ -175,7 +176,7 @@ TEST(graph_test, floyd_warshall) {
     }), floyd_warshall(cyc_neg1, INF));
 }
 
-TEST(graph_test, dijkstra) {
+TEST(graph_algorithms_test, dijkstra) {
     int INF = 1000000000;
     EXPECT_EQ((vector<iedge>{{ 0, 0 }, { 3, 5 }, { 0, 2 }, { 2, 4 }, { 3, 12 }, { 4, 14 }, { 5, 17 }, { -1, INF } }), dijkstra(cyc_pos1, 0, INF));
     EXPECT_EQ((vector<iedge>{{ 1, 4 }, { 1, 0 }, { 1, 3 }, { 2, 5 }, { 3, 13 }, { 4, 15 }, { 5, 18 }, { -1, INF } }), dijkstra(cyc_pos1, 1, INF));
@@ -199,34 +200,34 @@ void test_max_flow(const vector<vector<T>>& capacities, const vector<vector<T>>&
     EXPECT_EQ(expected_flows, actual_flows);
 }
 
-TEST(graph_test, dinic_flow) {
+TEST(graph_algorithms_test, dinic_flow) {
     test_max_flow<dinic_flow<int>, int>({ { 0 } }, { { 0 } });
     test_max_flow<dinic_flow<int>, int>({ { 0, 5 }, { 7, 0 } }, { { 0, 5 }, { 7, 0 } });
     test_max_flow<dinic_flow<int>, int>({ { 0, 3, 5 }, { 0, 0, 2 }, { 0, 0, 0 } }, { { 0, 3, 7 }, { 0, 0, 2 }, { 0, 0, 0 } });
     test_max_flow<dinic_flow<double>, double>({ { 0, 5, 2 }, { 7, 0, 4 }, { 1, 3, 0 } }, { { 0, 7, 6 }, { 8, 0, 6 }, { 4, 4, 0 } });
 }
 
-TEST(graph_test, push_relabel_flow) {
+TEST(graph_algorithms_test, push_relabel_flow) {
     test_max_flow<push_relabel_flow<int>, int>({ { 0 } }, { { 0 } });
     test_max_flow<push_relabel_flow<int>, int>({ { 0, 5 }, { 7, 0 } }, { { 0, 5 }, { 7, 0 } });
     test_max_flow<push_relabel_flow<int>, int>({ { 0, 3, 5 }, { 0, 0, 2 }, { 0, 0, 0 } }, { { 0, 3, 7 }, { 0, 0, 2 }, { 0, 0, 0 } });
     test_max_flow<push_relabel_flow<double>, double>({ { 0, 5, 2 }, { 7, 0, 4 }, { 1, 3, 0 } }, { { 0, 7, 6 }, { 8, 0, 6 }, { 4, 4, 0 } });
 }
 
-TEST(graph_test, bipartite_matching) {
+TEST(graph_algorithms_test, bipartite_matching) {
     typedef std::vector<full_edge> edges_t;
     EXPECT_EQ((edges_t()), bipartite_matching(0, edges_t()));
     EXPECT_EQ((edges_t{ { 0, 2 }, { 1, 3 } }), bipartite_matching(4, edges_t{ { 0, 2 }, { 0, 3 }, { 1, 3 } }));
     EXPECT_EQ((edges_t{ { 0, 2 }, { 1, 3 } }), bipartite_matching(4, edges_t{ { 0, 2 }, { 1, 2 }, { 1, 3 } }));
 }
 
-TEST(graph_test, lowest_common_ancestor) {
+TEST(graph_algorithms_test, lowest_common_ancestor) {
 	graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
 	lowest_common_ancestor lca(t);
 	EXPECT_EQ(0, lca.ancestor(1, 3));
 }
 
-TEST(graph_test, heavy_light_decomposition) {
+TEST(graph_algorithms_test, heavy_light_decomposition) {
 	graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
 	heavy_light_decomposition_ex hld(t);
 	EXPECT_EQ(3, hld.parent(3, 0));
@@ -277,7 +278,7 @@ namespace {
     typedef polynom<int> poly;
 }
 
-TEST(graph_test, chromatic_polynomial) {
+TEST(graph_algorithms_test, chromatic_polynomial) {
     for (int n = 1; n < 20; n++) {
         auto p = chromatic_polynomial(path_graph(n), 1);
         auto p0 = chromatic_polynomial_T(n, 1);

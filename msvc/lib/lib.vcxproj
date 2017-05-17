@@ -32,7 +32,6 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h" />
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\graph.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h" />
     <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h" />
@@ -94,6 +93,7 @@
     <ClInclude Include="..\..\include\structure\container\sqrt_map.h" />
     <ClInclude Include="..\..\include\structure\container\treap.h" />
     <ClInclude Include="..\..\include\structure\graph\disjoint_set.h" />
+    <ClInclude Include="..\..\include\structure\graph\graph.h" />
     <ClInclude Include="..\..\include\structure\math\complex.h" />
     <ClInclude Include="..\..\include\structure\math\fenwick_tree.h" />
     <ClInclude Include="..\..\include\structure\math\fraction.h" />

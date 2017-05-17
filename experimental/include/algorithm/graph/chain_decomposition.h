@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph.h"
+#include "structure/graph/graph.h"
 
 #include <vector>
 #include <unordered_set>

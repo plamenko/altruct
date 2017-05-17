@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph.h"
+#include "structure/graph/graph.h"
 
 #include "algorithm/graph/iterative_dfs.h"
 #include "structure/container/segment_tree.h"

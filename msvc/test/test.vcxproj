@@ -28,7 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp" />
-    <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\graph\graph_algorithms_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\hash\polynomial_hash_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\hash\std_hash_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\base_test.cpp" />
@@ -73,6 +73,7 @@
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\treap_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
+    <ClCompile Include="..\..\test\structure\graph\graph_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\double_int_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fenwick_tree_test.cpp" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph.h"
+#include "structure/graph/graph.h"
 
 #include <vector>
 #include <algorithm>
@@ -15,7 +15,8 @@ namespace graph {
  *
  * Uses Dinic's maximum flow lgorithm.
  */
-std::vector<full_edge> bipartite_matching(int nodes, const std::vector<full_edge>& edges) {
+template<typename E = full_edge>
+std::vector<E> bipartite_matching(int nodes, const std::vector<E>& edges) {
     int src = nodes++;
     int sink = nodes++;
     std::vector<std::vector<int>> cap(nodes, std::vector<int>(nodes));
@@ -26,7 +27,7 @@ std::vector<full_edge> bipartite_matching(int nodes, const std::vector<full_edge
     }
     dinic_flow<int> d(cap);
     d.calc_max_flow(src, sink);
-    std::vector<full_edge> selected;
+    std::vector<E> selected;
     for (const auto& e : edges) {
         if (d.flow[e.u][e.v]) selected.push_back(e);
     }

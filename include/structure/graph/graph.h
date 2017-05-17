@@ -46,7 +46,7 @@ struct weighted_edge : public edge {
  * there should be a corresponding edge {v, u}, with the same accompanying data
  * such as weight and similar.
  *
- * @param E - edge type
+ * @param E - edge type (`full_edge` is not supported)
  */
 template<typename E>
 class graph {
@@ -67,7 +67,12 @@ public:
 
     int add_node() { adjl.push_back({}); return size() - 1; }
     void add_edge(int u, const E& e) { adjl[u].push_back(e); }
-    void add_edge2(int u, const E& e) { adjl[u].push_back(e); adjl[e.v].push_back(e); adjl[e.v].back().v = u; }
+    
+    void add_edge2(int u, const E& e) {
+        adjl[u].push_back(e);
+        adjl[e.v].push_back(e);
+        adjl[e.v].back().v = u;
+    }
 
     void delete_edge(int u, int v) {
         for (int i = 0; i < (int)adjl[u].size();) {
@@ -79,6 +84,7 @@ public:
             }
         }
     }
+    
     void delete_node(int u) {
         int v = size() - 1;
         std::swap(adjl[u], adjl[v]);
@@ -95,6 +101,7 @@ public:
             }
         }
     }
+    
     void contract(int u, int v) {
         delete_edge(u, v);
         delete_edge(v, u);
@@ -103,6 +110,7 @@ public:
         delete_node(v);
         for (int u = 0; u < size(); u++) deduplicate_edges(u);
     }
+    
     void deduplicate_edges(int u) {
         sort(adjl[u].begin(), adjl[u].end());
         auto it = unique(adjl[u].begin(), adjl[u].end());
@@ -116,6 +124,6 @@ public:
 namespace std {
 template<>
 struct hash<altruct::graph::full_edge> {
-    size_t operator()(const altruct::graph::full_edge& e) const { return e.u * 0x9e3779b9 + e.v; }
+    size_t operator()(const altruct::graph::full_edge& e) const { return e.u * size_t(0x9e3779b9) + e.v; }
 };
 }

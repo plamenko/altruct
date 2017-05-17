@@ -311,9 +311,6 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\chain_decomposition.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\graph.h">
-      <Filter>include\algorithm\graph</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\experimental\include\algorithm\graph\chromatic_polynomial.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
@@ -331,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\algorithm\math\convergents.h">
       <Filter>include\algorithm\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\structure\graph\graph.h">
+      <Filter>include\structure\graph</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

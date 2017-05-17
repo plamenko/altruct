@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graph.h"
+#include "structure/graph/graph.h"
 #include "algorithm/graph/chain_decomposition.h"
 #include "structure/math/polynom.h"
 

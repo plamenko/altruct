@@ -31,5 +31,19 @@ void assert_comparison_operators(int expected, const TL& lhs, const TR& rhs, con
 #define ASSERT_COMPARISON_OPERATORS(expected, lhs, rhs) \
 	assert_comparison_operators(expected, lhs, rhs, ALTRUCT_AT)
 
+template<typename TL, typename TR>
+void assert_basic_comparison_operators(int expected, const TL& lhs, const TR& rhs, const char* message) {
+    ASSERT_EQ(to_str(expected == 0), to_str(lhs == rhs)) << message;
+    ASSERT_EQ(to_str(expected != 0), to_str(!(lhs == rhs))) << message;
+    ASSERT_EQ(to_str(expected < 0), to_str(lhs < rhs)) << message;
+    ASSERT_EQ(to_str(expected >= 0), to_str(!(lhs < rhs))) << message;
+    ASSERT_EQ(to_str(expected <= 0), to_str(!(rhs < lhs))) << message;
+    ASSERT_EQ(to_str(expected > 0), to_str(rhs < lhs)) << message;
+}
+
+#define ASSERT_BASIC_COMPARISON_OPERATORS(expected, lhs, rhs) \
+    assert_basic_comparison_operators(expected, lhs, rhs, ALTRUCT_AT)
+
+
 } // structure
 } // altruct

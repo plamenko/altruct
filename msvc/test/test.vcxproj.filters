@@ -109,9 +109,6 @@
     <ClCompile Include="..\..\test\io\fast_io_test.cpp">
       <Filter>io</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\algorithm\graph\graph_test.cpp">
-      <Filter>algorithm\graph</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\io\reader_test.cpp">
       <Filter>io</Filter>
     </ClCompile>
@@ -201,6 +198,12 @@
     </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\convergents_test.cpp">
       <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\graph\graph_test.cpp">
+      <Filter>structure\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\graph\graph_algorithms_test.cpp">
+      <Filter>algorithm\graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
