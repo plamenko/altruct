@@ -141,7 +141,7 @@ void invert(It begin, It end, T id = T(1)) {
  *
  * `v[i] <- -v[i]`
  */
-template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+template<typename It>
 void negate(It begin, It end) {
 	for (It it = begin; it != end; ++it) {
 		*it = -*it;
@@ -154,7 +154,7 @@ void negate(It begin, It end) {
  *
  * `v[i] <- v[i] * (-1)^i`
  */
-template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+template<typename It>
 void alternate(It begin, It end) {
 	int s = 1;
 	for (It it = begin; it != end; ++it, s = -s) {
