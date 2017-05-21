@@ -335,5 +335,11 @@
     <ClInclude Include="..\..\experimental\include\algorithm\graph\sat2.h">
       <Filter>include\algorithm\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\experimental\include\algorithm\graph\prim_spanning_tree.h">
+      <Filter>include\algorithm\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\experimental\include\structure\container\prefix_tree.h">
+      <Filter>include\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

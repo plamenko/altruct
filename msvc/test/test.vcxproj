@@ -68,6 +68,7 @@
     <ClCompile Include="..\..\test\structure\container\bit_vector_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lazy_segment_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\lohi_map_test.cpp" />
+    <ClCompile Include="..\..\test\structure\container\prefix_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\rope_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\segment_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\sqrt_map_test.cpp" />

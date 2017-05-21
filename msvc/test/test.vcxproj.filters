@@ -205,6 +205,9 @@
     <ClCompile Include="..\..\test\algorithm\graph\graph_algorithms_test.cpp">
       <Filter>algorithm\graph</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\container\prefix_tree_test.cpp">
+      <Filter>structure\container</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

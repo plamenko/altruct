@@ -2,6 +2,7 @@
 
 #include "algorithm/collections/collections.h"
 
+#include <stdint.h>
 #include <vector>
 #include <iterator>
 #include <functional>
@@ -16,7 +17,7 @@ namespace container {
  * Time complexities:
  *   build: `O(n)`
  */
-template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ALPHA_T = char>
+template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ALPHA_T = uint8_t>
 class palindrome_tree {
 	typedef INDEX_T index_t;
 	typedef ALPHA_T alpha_t;
