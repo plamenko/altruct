@@ -58,6 +58,7 @@
     <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\search\binary_search_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\search\kmp_search_test.cpp" />
+    <ClCompile Include="..\..\test\chrono\chrono_test.cpp" />
     <ClCompile Include="..\..\test\concurrency\concurrency_test.cpp" />
     <ClCompile Include="..\..\test\io\fast_io_test.cpp" />
     <ClCompile Include="..\..\test\io\iostream_overloads_test.cpp" />

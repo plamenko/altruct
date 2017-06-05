@@ -208,6 +208,9 @@
     <ClCompile Include="..\..\test\structure\container\prefix_tree_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\chrono\chrono_test.cpp">
+      <Filter>chrono</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -248,6 +251,9 @@
     </Filter>
     <Filter Include="algorithm\graph">
       <UniqueIdentifier>{e668ac73-3685-472b-9840-c636e22544ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="chrono">
+      <UniqueIdentifier>{e319d8bc-4518-421f-a412-b99eef8321bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

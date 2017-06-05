@@ -78,6 +78,9 @@
     <Filter Include="src\io">
       <UniqueIdentifier>{54d55835-bab0-4154-9de1-0d35e5d7c349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\chrono">
+      <UniqueIdentifier>{14d4de33-4b14-45fd-97e7-44ecc9ac6c40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\algorithm\math\base.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="..\..\experimental\include\structure\container\prefix_tree.h">
       <Filter>include\structure\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\chrono\chrono.h">
+      <Filter>include\chrono</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
