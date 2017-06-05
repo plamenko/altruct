@@ -1,5 +1,5 @@
-﻿#include "algorithm/math/primes.h"
-#include "structure/math/polynom.h"
+﻿#include "altruct/algorithm/math/primes.h"
+#include "altruct/structure/math/polynom.h"
 
 #include <algorithm>
 #include <vector>

@@ -1,5 +1,5 @@
-#include "algorithm/math/recurrence.h"
-#include "structure/math/matrix.h"
+#include "altruct/algorithm/math/recurrence.h"
+#include "altruct/structure/math/matrix.h"
 
 #include "gtest/gtest.h"
 

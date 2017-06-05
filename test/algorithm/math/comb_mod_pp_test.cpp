@@ -1,6 +1,6 @@
-#include "algorithm/math/comb_mod_pp.h"
-#include "algorithm/math/ranges.h"
-#include "algorithm/collections/collections.h"
+#include "altruct/algorithm/math/comb_mod_pp.h"
+#include "altruct/algorithm/math/ranges.h"
+#include "altruct/algorithm/collections/collections.h"
 
 #include "gtest/gtest.h"
 

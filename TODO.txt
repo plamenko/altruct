@@ -1,7 +1,3 @@
-rename lib -> src
-nest include files under include/altruct, rather than directly under include/
-(this means all altruct include directive will become #include "altruct/...")
-
 castT (this allows for proper casting)
 	make all altruct types implement castT
 	add cast tests for all classes

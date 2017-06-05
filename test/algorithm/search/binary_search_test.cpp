@@ -1,4 +1,4 @@
-#include "algorithm/search/binary_search.h"
+#include "altruct/algorithm/search/binary_search.h"
 
 #include "gtest/gtest.h"
 

@@ -1,5 +1,5 @@
-#include "algorithm/math/sequences.h"
-#include "structure/math/modulo.h"
+#include "altruct/algorithm/math/sequences.h"
+#include "altruct/structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 

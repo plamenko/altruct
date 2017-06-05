@@ -1,5 +1,5 @@
-﻿#include "algorithm/math/convolutions.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/algorithm/math/convolutions.h"
+#include "altruct/structure/math/modulo.h"
 
 #include <algorithm>
 #include <vector>

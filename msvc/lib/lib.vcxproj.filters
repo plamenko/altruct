@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\lib\algorithm\math\primes.cpp">
+    <ClCompile Include="..\..\src\algorithm\math\primes.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\algorithm\math\base.cpp">
+    <ClCompile Include="..\..\src\algorithm\math\base.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\algorithm\math\modulos.cpp">
+    <ClCompile Include="..\..\src\algorithm\math\modulos.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\algorithm\math\bits.cpp">
+    <ClCompile Include="..\..\src\algorithm\math\bits.cpp">
       <Filter>src\algorithm\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lib\io\iostream_overloads.cpp">
+    <ClCompile Include="..\..\src\io\iostream_overloads.cpp">
       <Filter>src\io</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,316 +36,319 @@
     <Filter Include="include">
       <UniqueIdentifier>{7bd4a3b5-b940-4802-bbea-4cfc412d3f4a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm">
+    <Filter Include="include\altruct">
+      <UniqueIdentifier>{7bd4a3b5-b940-4802-bbea-4cfc412d3f4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\altruct\algorithm">
       <UniqueIdentifier>{9f5b1ed9-6c6b-4b14-bdbc-64ec7a8c5d4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\math">
+    <Filter Include="include\altruct\algorithm\math">
       <UniqueIdentifier>{b9edc163-4288-4569-a5ad-3fccf97e8474}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\structure">
+    <Filter Include="include\altruct\structure">
       <UniqueIdentifier>{818361a8-0e79-48ef-9121-0b54cab6a6f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\structure\math">
+    <Filter Include="include\altruct\structure\math">
       <UniqueIdentifier>{e782747d-be26-42f2-8338-77b2c231062f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\collections">
+    <Filter Include="include\altruct\algorithm\collections">
       <UniqueIdentifier>{2f7fd685-9de2-43c4-9251-426e0f3883c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\concurrency">
+    <Filter Include="include\altruct\concurrency">
       <UniqueIdentifier>{bfb9e335-fb2b-487d-9500-457225c57cf0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\random">
+    <Filter Include="include\altruct\algorithm\random">
       <UniqueIdentifier>{1d163c5b-f6ff-45f5-895a-cf2e8cdd4dd4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\structure\graph">
+    <Filter Include="include\altruct\structure\graph">
       <UniqueIdentifier>{d812d264-bc4b-4e32-a5d6-2b4f5a2b2a62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\hash">
+    <Filter Include="include\altruct\algorithm\hash">
       <UniqueIdentifier>{92618945-b6cc-4555-b6c9-3641752fb9ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\structure\container">
+    <Filter Include="include\altruct\structure\container">
       <UniqueIdentifier>{cf5d0bed-1d40-421e-aab1-30537cdea569}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\search">
+    <Filter Include="include\altruct\algorithm\search">
       <UniqueIdentifier>{f87e2f96-d6d2-42cc-bafe-3774bf5cc0fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\io">
+    <Filter Include="include\altruct\io">
       <UniqueIdentifier>{1279d389-d147-4357-b6ca-7d28e151016d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\algorithm\graph">
+    <Filter Include="include\altruct\algorithm\graph">
       <UniqueIdentifier>{a06ea75e-7a4e-45fa-a9b8-337d3315e87e}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\io">
       <UniqueIdentifier>{54d55835-bab0-4154-9de1-0d35e5d7c349}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\chrono">
+    <Filter Include="include\altruct\chrono">
       <UniqueIdentifier>{14d4de33-4b14-45fd-97e7-44ecc9ac6c40}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\algorithm\math\base.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\base.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\fft.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\fft.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\primes.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\primes.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\recurrence.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\recurrence.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\matrix.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\matrix.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\modulo.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\modulo.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\polynom.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\polynom.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\prime_holder.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\prime_holder.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\polynoms.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\polynoms.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\modulos.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\modulos.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\quadratic.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\quadratic.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\complex.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\complex.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\fraction.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\fraction.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\fractions.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\fractions.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\comb_primes.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\comb_primes.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\reduce.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\reduce.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\combinatorics.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\combinatorics.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\collections\collections.h">
-      <Filter>include\algorithm\collections</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\collections\collections.h">
+      <Filter>include\altruct\algorithm\collections</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\concurrency\concurrency.h">
-      <Filter>include\concurrency</Filter>
+    <ClInclude Include="..\..\include\altruct\concurrency\concurrency.h">
+      <Filter>include\altruct\concurrency</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\vectorNd.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\vectorNd.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\random\xorshift.h">
-      <Filter>include\algorithm\random</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\random\xorshift.h">
+      <Filter>include\altruct\algorithm\random</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\random\random.h">
-      <Filter>include\algorithm\random</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\random\random.h">
+      <Filter>include\altruct\algorithm\random</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\random\mersenne_twister.h">
-      <Filter>include\algorithm\random</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\random\mersenne_twister.h">
+      <Filter>include\altruct\algorithm\random</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\graph\disjoint_set.h">
-      <Filter>include\structure\graph</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\graph\disjoint_set.h">
+      <Filter>include\altruct\structure\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\sums.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\sums.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\fenwick_tree.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\fenwick_tree.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\hash\std_hash_combine.h">
-      <Filter>include\algorithm\hash</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\hash\std_hash_combine.h">
+      <Filter>include\altruct\algorithm\hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\hash\std_tuple_hash.h">
-      <Filter>include\algorithm\hash</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\hash\std_tuple_hash.h">
+      <Filter>include\altruct\algorithm\hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\series.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\series.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\ranges.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\ranges.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\polynom_mod.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\polynom_mod.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\gmp_helpers.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\gmp_helpers.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\nimber.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\nimber.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\sqrt_map.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\sqrt_map.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\lohi_map.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\lohi_map.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\search\binary_search.h">
-      <Filter>include\algorithm\search</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\search\binary_search.h">
+      <Filter>include\altruct\algorithm\search</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\segment_tree.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\segment_tree.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\prime_pi.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\prime_pi.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\io\fast_io.h">
-      <Filter>include\io</Filter>
+    <ClInclude Include="..\..\include\altruct\io\fast_io.h">
+      <Filter>include\altruct\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\iterative_dfs.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\iterative_dfs.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\lowest_common_ancestor.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\lowest_common_ancestor.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\heavy_light_decomposition.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\heavy_light_decomposition.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\io\reader.h">
-      <Filter>include\io</Filter>
+    <ClInclude Include="..\..\include\altruct\io\reader.h">
+      <Filter>include\altruct\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\io\writer.h">
-      <Filter>include\io</Filter>
+    <ClInclude Include="..\..\include\altruct\io\writer.h">
+      <Filter>include\altruct\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\hash\polynomial_hash.h">
-      <Filter>include\algorithm\hash</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\hash\polynomial_hash.h">
+      <Filter>include\altruct\algorithm\hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\search\kmp_search.h">
-      <Filter>include\algorithm\search</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\search\kmp_search.h">
+      <Filter>include\altruct\algorithm\search</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\container\palindrome_tree.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\container\palindrome_tree.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\container\range_minimum_query.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\container\range_minimum_query.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\container\suffix_array.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\container\suffix_array.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\container\aho_corasick_trie.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\container\aho_corasick_trie.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\permutation.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\permutation.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\bits.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\bits.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\root_wrapper.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\root_wrapper.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\bit_vector.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\bit_vector.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\convolutions.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\convolutions.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\vector2d.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\vector2d.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\vector3d.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\vector3d.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\math\double_int.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\math\double_int.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\math\galois_field_2.h">
-      <Filter>include\structure\math</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\math\galois_field_2.h">
+      <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\counting.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\counting.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\divisor_sums.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\divisor_sums.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\prime_counting.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\prime_counting.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\pell.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\pell.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\triples.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\triples.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\lazy_segment_tree.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\lazy_segment_tree.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\comb_mod_pp.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\comb_mod_pp.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\sequences.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\sequences.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\io\iostream_overloads.h">
-      <Filter>include\io</Filter>
+    <ClInclude Include="..\..\include\altruct\io\iostream_overloads.h">
+      <Filter>include\altruct\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\bipartite_matching.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\bipartite_matching.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\push_relabel_flow.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\push_relabel_flow.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\dinic_flow.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\dinic_flow.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\topological_sort.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\topological_sort.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\tarjan_scc.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\tarjan_scc.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\transitive_closure.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\transitive_closure.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\floyd_warshall.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\floyd_warshall.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\dijkstra.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\dijkstra.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\chain_decomposition.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\chain_decomposition.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\chromatic_polynomial.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\chromatic_polynomial.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\binary_heap.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\binary_heap.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\binary_search_tree.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\binary_search_tree.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\treap.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\treap.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\container\rope.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\container\rope.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\algorithm\math\convergents.h">
-      <Filter>include\algorithm\math</Filter>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\convergents.h">
+      <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\structure\graph\graph.h">
-      <Filter>include\structure\graph</Filter>
+    <ClInclude Include="..\..\include\altruct\structure\graph\graph.h">
+      <Filter>include\altruct\structure\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\sat2.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\sat2.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\algorithm\graph\prim_spanning_tree.h">
-      <Filter>include\algorithm\graph</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\algorithm\graph\prim_spanning_tree.h">
+      <Filter>include\altruct\algorithm\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\experimental\include\structure\container\prefix_tree.h">
-      <Filter>include\structure\container</Filter>
+    <ClInclude Include="..\..\experimental\include\altruct\structure\container\prefix_tree.h">
+      <Filter>include\altruct\structure\container</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\chrono\chrono.h">
-      <Filter>include\chrono</Filter>
+    <ClInclude Include="..\..\include\altruct\chrono\chrono.h">
+      <Filter>include\altruct\chrono</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿#include "algorithm/collections/collections.h"
+﻿#include "altruct/algorithm/collections/collections.h"
 
 #include "gtest/gtest.h"
 

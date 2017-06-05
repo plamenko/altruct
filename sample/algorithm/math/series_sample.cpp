@@ -1,9 +1,9 @@
 #include <iostream>
 #include <iomanip>
 
-#include "algorithm/math/ranges.h"
-#include "structure/math/modulo.h"
-#include "structure/math/series.h"
+#include "altruct/algorithm/math/ranges.h"
+#include "altruct/structure/math/modulo.h"
+#include "altruct/structure/math/series.h"
 
 using namespace std;
 using namespace altruct::math;

@@ -1,4 +1,4 @@
-#include "algorithm/random/xorshift.h"
+#include "altruct/algorithm/random/xorshift.h"
 
 #include "gtest/gtest.h"
 

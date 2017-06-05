@@ -1,5 +1,5 @@
-﻿#include "algorithm/math/prime_pi.h"
-#include "structure/math/prime_holder.h"
+﻿#include "altruct/algorithm/math/prime_pi.h"
+#include "altruct/structure/math/prime_holder.h"
 
 #include <algorithm>
 

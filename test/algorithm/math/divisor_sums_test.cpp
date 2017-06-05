@@ -1,8 +1,8 @@
-#include "algorithm/collections/collections.h"
-#include "algorithm/math/divisor_sums.h"
-#include "algorithm/math/primes.h"
-#include "algorithm/math/ranges.h"
-#include "structure/math/modulo.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/algorithm/math/divisor_sums.h"
+#include "altruct/algorithm/math/primes.h"
+#include "altruct/algorithm/math/ranges.h"
+#include "altruct/structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 

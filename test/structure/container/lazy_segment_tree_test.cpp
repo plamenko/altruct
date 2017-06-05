@@ -1,4 +1,4 @@
-#include "structure/container/lazy_segment_tree.h"
+#include "altruct/structure/container/lazy_segment_tree.h"
 
 #include "gtest/gtest.h"
 

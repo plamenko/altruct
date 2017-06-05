@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "algorithm/random/mersenne_twister.h"
+#include "altruct/algorithm/random/mersenne_twister.h"
 
 using namespace std;
 using namespace altruct::random;

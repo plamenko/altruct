@@ -1,7 +1,7 @@
-#include "structure/container/prefix_tree.h"
+#include "altruct/structure/container/prefix_tree.h"
 
-#include "algorithm/collections/collections.h"
-#include "io/iostream_overloads.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/io/iostream_overloads.h"
 #include "structure_test_util.h"
 
 #include <functional>

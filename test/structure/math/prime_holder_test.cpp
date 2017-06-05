@@ -1,4 +1,4 @@
-﻿#include "structure/math/prime_holder.h"
+﻿#include "altruct/structure/math/prime_holder.h"
 
 #include "gtest/gtest.h"
 

@@ -1,4 +1,4 @@
-#include "algorithm/math/fractions.h"
+#include "altruct/algorithm/math/fractions.h"
 
 #include "gtest/gtest.h"
 

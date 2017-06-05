@@ -1,4 +1,4 @@
-﻿#include "structure/math/permutation.h"
+﻿#include "altruct/structure/math/permutation.h"
 
 #include "gtest/gtest.h"
 

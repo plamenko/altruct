@@ -1,6 +1,6 @@
-﻿#include "algorithm/collections/collections.h"
-#include "algorithm/math/counting.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/algorithm/collections/collections.h"
+#include "altruct/algorithm/math/counting.h"
+#include "altruct/structure/math/modulo.h"
 
 #include <algorithm>
 #include <vector>

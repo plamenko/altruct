@@ -1,6 +1,6 @@
-﻿#include "algorithm/collections/collections.h"
-#include "structure/math/series.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/algorithm/collections/collections.h"
+#include "altruct/structure/math/series.h"
+#include "altruct/structure/math/modulo.h"
 #include "structure_test_util.h"
 
 #include "gtest/gtest.h"

@@ -1,5 +1,5 @@
-﻿#include "algorithm/hash/std_hash_combine.h"
-#include "algorithm/hash/std_tuple_hash.h"
+﻿#include "altruct/algorithm/hash/std_hash_combine.h"
+#include "altruct/algorithm/hash/std_tuple_hash.h"
 
 #include "gtest/gtest.h"
 

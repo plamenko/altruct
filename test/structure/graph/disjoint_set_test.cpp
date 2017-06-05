@@ -1,4 +1,4 @@
-﻿#include "structure/graph/disjoint_set.h"
+﻿#include "altruct/structure/graph/disjoint_set.h"
 
 #include "gtest/gtest.h"
 

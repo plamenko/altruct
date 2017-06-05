@@ -1,4 +1,4 @@
-﻿#include "structure/math/nimber.h"
+﻿#include "altruct/structure/math/nimber.h"
 
 #include "gtest/gtest.h"
 

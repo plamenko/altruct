@@ -1,4 +1,4 @@
-#include "algorithm/math/convergents.h"
+#include "altruct/algorithm/math/convergents.h"
 
 #include "gtest/gtest.h"
 

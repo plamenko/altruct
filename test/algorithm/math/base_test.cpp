@@ -1,4 +1,4 @@
-﻿#include "algorithm/math/base.h"
+﻿#include "altruct/algorithm/math/base.h"
 
 #include "gtest/gtest.h"
 

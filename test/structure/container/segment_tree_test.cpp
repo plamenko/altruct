@@ -1,4 +1,4 @@
-#include "structure/container/segment_tree.h"
+#include "altruct/structure/container/segment_tree.h"
 
 #include "gtest/gtest.h"
 

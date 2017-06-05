@@ -1,5 +1,5 @@
-﻿#include "algorithm/math/fft.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/algorithm/math/fft.h"
+#include "altruct/structure/math/modulo.h"
 
 #include <algorithm>
 #include <vector>

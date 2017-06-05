@@ -1,7 +1,7 @@
-#include "structure/container/binary_heap.h"
+#include "altruct/structure/container/binary_heap.h"
 
-#include "algorithm/collections/collections.h"
-#include "io/iostream_overloads.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/io/iostream_overloads.h"
 
 #include "gtest/gtest.h"
 

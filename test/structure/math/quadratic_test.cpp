@@ -1,4 +1,4 @@
-﻿#include "structure/math/quadratic.h"
+﻿#include "altruct/structure/math/quadratic.h"
 
 #include "gtest/gtest.h"
 

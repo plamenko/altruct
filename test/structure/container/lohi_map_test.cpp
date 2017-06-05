@@ -1,5 +1,5 @@
-#include "algorithm/math/base.h"
-#include "structure/container/lohi_map.h"
+#include "altruct/algorithm/math/base.h"
+#include "altruct/structure/container/lohi_map.h"
 
 #include "gtest/gtest.h"
 

@@ -1,5 +1,5 @@
-#include "algorithm/math/sums.h"
-#include "algorithm/math/primes.h"
+#include "altruct/algorithm/math/sums.h"
+#include "altruct/algorithm/math/primes.h"
 
 #include "gtest/gtest.h"
 

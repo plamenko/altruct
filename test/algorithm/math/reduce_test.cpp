@@ -1,4 +1,4 @@
-﻿#include "algorithm/math/reduce.h"
+﻿#include "altruct/algorithm/math/reduce.h"
 
 #include "gtest/gtest.h"
 

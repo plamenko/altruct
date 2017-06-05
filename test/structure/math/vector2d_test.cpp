@@ -1,4 +1,4 @@
-﻿#include "structure/math/vector2d.h"
+﻿#include "altruct/structure/math/vector2d.h"
 
 #include "structure_test_util.h"
 

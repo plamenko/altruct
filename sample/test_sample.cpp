@@ -3,9 +3,9 @@
 #include <iomanip>
 #include <vector>
 
-#include "structure/math/modulo.h"
-#include "structure/math/prime_holder.h"
-#include "io/iostream_overloads.h"
+#include "altruct/structure/math/modulo.h"
+#include "altruct/structure/math/prime_holder.h"
+#include "altruct/io/iostream_overloads.h"
 
 using namespace std;
 using namespace altruct::math;

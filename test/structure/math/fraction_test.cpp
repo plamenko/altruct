@@ -1,5 +1,5 @@
-﻿#include "structure/math/fraction.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/structure/math/fraction.h"
+#include "altruct/structure/math/modulo.h"
 
 #include "structure_test_util.h"
 

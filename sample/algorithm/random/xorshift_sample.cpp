@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "algorithm/random/xorshift.h"
+#include "altruct/algorithm/random/xorshift.h"
 
 using namespace std;
 using namespace altruct::random;

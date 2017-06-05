@@ -1,4 +1,4 @@
-#include "algorithm/search/kmp_search.h"
+#include "altruct/algorithm/search/kmp_search.h"
 
 #include "gtest/gtest.h"
 

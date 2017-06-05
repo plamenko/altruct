@@ -1,5 +1,5 @@
-#include "algorithm/math/polynoms.h"
-#include "structure/math/fraction.h"
+#include "altruct/algorithm/math/polynoms.h"
+#include "altruct/structure/math/fraction.h"
 
 #include "gtest/gtest.h"
 

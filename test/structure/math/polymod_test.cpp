@@ -1,5 +1,5 @@
-﻿#include "structure/math/polynom.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/structure/math/polynom.h"
+#include "altruct/structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 

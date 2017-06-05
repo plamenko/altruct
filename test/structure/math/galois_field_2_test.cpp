@@ -1,4 +1,4 @@
-﻿#include "structure/math/galois_field_2.h"
+﻿#include "altruct/structure/math/galois_field_2.h"
 
 #include "structure_test_util.h"
 

@@ -1,4 +1,4 @@
-﻿#include "concurrency/concurrency.h"
+﻿#include "altruct/concurrency/concurrency.h"
 
 #include "gtest/gtest.h"
 

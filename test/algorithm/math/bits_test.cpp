@@ -1,4 +1,4 @@
-﻿#include "algorithm/math/bits.h"
+﻿#include "altruct/algorithm/math/bits.h"
 
 #include "gtest/gtest.h"
 #include <ctime>

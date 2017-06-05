@@ -1,4 +1,4 @@
-#include "io/fast_io.h"
+#include "altruct/io/fast_io.h"
 
 #include "gtest/gtest.h"
 

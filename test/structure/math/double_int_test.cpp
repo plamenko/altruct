@@ -1,5 +1,5 @@
-﻿#include "structure/math/double_int.h"
-#include "algorithm/random/xorshift.h"
+﻿#include "altruct/structure/math/double_int.h"
+#include "altruct/algorithm/random/xorshift.h"
 
 #include "gtest/gtest.h"
 

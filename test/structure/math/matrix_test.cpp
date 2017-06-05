@@ -1,5 +1,5 @@
-﻿#include "structure/math/matrix.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/structure/math/matrix.h"
+#include "altruct/structure/math/modulo.h"
 #include "structure_test_util.h"
 
 #include "gtest/gtest.h"

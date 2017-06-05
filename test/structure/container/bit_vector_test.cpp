@@ -1,7 +1,7 @@
-#include "algorithm/collections/collections.h"
-#include "algorithm/math/base.h"
-#include "algorithm/random/xorshift.h"
-#include "structure/container/bit_vector.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/algorithm/math/base.h"
+#include "altruct/algorithm/random/xorshift.h"
+#include "altruct/structure/container/bit_vector.h"
 
 #include "structure_test_util.h"
 

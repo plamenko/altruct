@@ -1,5 +1,5 @@
-﻿#include "algorithm/math/base.h"
-#include "structure/math/fenwick_tree.h"
+﻿#include "altruct/algorithm/math/base.h"
+#include "altruct/structure/math/fenwick_tree.h"
 
 #include "gtest/gtest.h"
 

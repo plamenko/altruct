@@ -1,6 +1,6 @@
-#include "structure/graph/graph.h"
+#include "altruct/structure/graph/graph.h"
 
-#include "io/iostream_overloads.h"
+#include "altruct/io/iostream_overloads.h"
 #include "structure_test_util.h"
 
 #include "gtest/gtest.h"

@@ -1,6 +1,6 @@
-#include "algorithm/math/prime_counting.h"
-#include "algorithm/math/primes.h"
-#include "structure/math/modulo.h"
+#include "altruct/algorithm/math/prime_counting.h"
+#include "altruct/algorithm/math/primes.h"
+#include "altruct/structure/math/modulo.h"
 
 #include "gtest/gtest.h"
 

@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <vector>
 
-#include "algorithm/math/primes.h"
-#include "algorithm/math/divisor_sums.h"
+#include "altruct/algorithm/math/primes.h"
+#include "altruct/algorithm/math/divisor_sums.h"
 
 using namespace std;
 using namespace altruct::math;

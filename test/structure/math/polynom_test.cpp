@@ -1,6 +1,6 @@
-﻿#include "algorithm/math/fft.h"
-#include "structure/math/polynom.h"
-#include "structure/math/modulo.h"
+﻿#include "altruct/algorithm/math/fft.h"
+#include "altruct/structure/math/polynom.h"
+#include "altruct/structure/math/modulo.h"
 #include "structure_test_util.h"
 
 #include "gtest/gtest.h"

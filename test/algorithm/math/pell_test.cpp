@@ -1,5 +1,5 @@
-#include "algorithm/collections/collections.h"
-#include "algorithm/math/pell.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/algorithm/math/pell.h"
 
 #include "gtest/gtest.h"
 

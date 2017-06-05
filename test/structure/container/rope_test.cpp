@@ -1,8 +1,8 @@
-#include "structure/container/rope.h"
+#include "altruct/structure/container/rope.h"
 
-#include "algorithm/collections/collections.h"
-#include "algorithm/random/xorshift.h"
-#include "io/iostream_overloads.h"
+#include "altruct/algorithm/collections/collections.h"
+#include "altruct/algorithm/random/xorshift.h"
+#include "altruct/io/iostream_overloads.h"
 #include "structure_test_util.h"
 
 #include <functional>

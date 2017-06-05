@@ -1,4 +1,4 @@
-﻿#include "algorithm/math/comb_primes.h"
+﻿#include "altruct/algorithm/math/comb_primes.h"
 
 #include <algorithm>
 #include <vector>

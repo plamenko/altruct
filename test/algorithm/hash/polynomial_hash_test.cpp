@@ -1,4 +1,4 @@
-#include "algorithm/hash/polynomial_hash.h"
+#include "altruct/algorithm/hash/polynomial_hash.h"
 
 #include "gtest/gtest.h"
 

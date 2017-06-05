@@ -1,4 +1,4 @@
-#include "structure/math/root_wrapper.h"
+#include "altruct/structure/math/root_wrapper.h"
 
 #include "gtest/gtest.h"
 

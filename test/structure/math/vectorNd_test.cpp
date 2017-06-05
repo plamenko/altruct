@@ -1,5 +1,5 @@
-﻿#include "structure/math/vectorNd.h"
-#include "algorithm/math/modulos.h"
+﻿#include "altruct/structure/math/vectorNd.h"
+#include "altruct/algorithm/math/modulos.h"
 
 #include "gtest/gtest.h"
 

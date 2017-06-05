@@ -1,4 +1,4 @@
-﻿#include "algorithm/math/combinatorics.h"
+﻿#include "altruct/algorithm/math/combinatorics.h"
 
 #include <algorithm>
 #include <vector>

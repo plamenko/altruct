@@ -1,4 +1,4 @@
-#include "algorithm/random/random.h"
+#include "altruct/algorithm/random/random.h"
 
 #include <map>
 

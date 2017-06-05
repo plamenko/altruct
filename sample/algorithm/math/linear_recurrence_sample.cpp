@@ -1,8 +1,8 @@
 #include <iostream>
 #include <iomanip>
 
-#include "structure/math/modulo.h"
-#include "algorithm/math/recurrence.h"
+#include "altruct/structure/math/modulo.h"
+#include "altruct/algorithm/math/recurrence.h"
 
 using namespace std;
 using namespace altruct::math;
