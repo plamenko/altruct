@@ -122,7 +122,7 @@ public:
 		}
 	}
 
-	// Calls `visitor(chain_begin, chain_end, path_first, path_last, path_length)`
+	// Calls `visitor(chain_begin, chain_end, path_first, path_last, path_length, direction)`
 	// for each linear segment `[chain_begin, chain_end)`, and the corresponding
 	// path segment `[path_first, path_last]` on the path from `u` to `v`.
 	// `chain_begin` and `chain_end` are indices in the HLD-linearized tree.
@@ -142,7 +142,7 @@ public:
 			int len = lca.depth(w) - lca.depth(p);
 			int end_pos = hld.position(w) + 1;
 			int uw_dist = lca.depth(u) - lca.depth(w);
-			visitor(end_pos - len, end_pos, uw_dist + len - 1, uw_dist, uv_dist);
+			visitor(end_pos - len, end_pos, uw_dist + len - 1, uw_dist, uv_dist, true);
 			w = p;
 		}
 		// going up from `v` to `a`
@@ -152,7 +152,7 @@ public:
 			int len = lca.depth(w) - lca.depth(p);
 			int end_pos = hld.position(w) + 1;
 			int uw_dist = uv_dist - (lca.depth(v) - lca.depth(w));
-			visitor(end_pos - len, end_pos, uw_dist - len, uw_dist - 1, uv_dist);
+			visitor(end_pos - len, end_pos, uw_dist - len, uw_dist - 1, uv_dist, false);
 			w = p;
 		}
 		return uv_dist;
