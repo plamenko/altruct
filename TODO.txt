@@ -1,4 +1,6 @@
 rename lib -> src
+nest include files under include/altruct, rather than directly under include/
+(this means all altruct include directive will become #include "altruct/...")
 
 castT (this allows for proper casting)
 	make all altruct types implement castT
@@ -8,8 +10,6 @@ castT (this allows for proper casting)
 
 altruct::chrono
 	rdtsc clock
-
-Pretty printers for ostream
 
 Tests
 	use compare macro to simplify comparison operator tests
@@ -26,7 +26,7 @@ Collections
 	transform_indexed
 
 I/O
-	vector, set, pair, map
+	Pretty printers for ostream (partially done already)
 	make simple_reader_stream actually implement istream ?
 	make simple_writer_stream actually implement ostream ?
 
@@ -68,7 +68,3 @@ discrete logarithm + tests
 	pollard_rho_logarithm
 	baby-step giant-step table
 divisors2 (min, max) + tests
-
-minimize s=Ax+By such that c x = d y (mod f), x,y>0
-	Hacker Rank: Minion of the Year
-	
