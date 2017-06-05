@@ -7,6 +7,7 @@
 #include "algorithm/graph/transitive_closure.h"
 #include "algorithm/graph/floyd_warshall.h"
 #include "algorithm/graph/dijkstra.h"
+#include "algorithm/graph/prim_spanning_tree.h"
 #include "algorithm/graph/dinic_flow.h"
 #include "algorithm/graph/push_relabel_flow.h"
 #include "algorithm/graph/bipartite_matching.h"
@@ -60,24 +61,24 @@ namespace {
         { { 5, 10 }, { 5, 6 }, { 5, 11 } },
     });
     graph<iedge> cyc_undir({ // undirected, has cycles, multiple components
-        { { 5, 21 }, { 7, 28 }, { 8, 23 } },
+/*0*/   { { 5, 21 }, { 7, 27 }, { 8, 23 } },
         { { 2, 31 }, { 4, 33 } },
-        { { 1, 27 }, { 4, 35 } },
+        { { 1, 31 }, { 4, 35 } },
         { { 6, 28 }, { 9, 26 } },
-        { { 1, 34 }, { 2, 28 }, { 9, 34 } },
-        { { 0, 31 }, { 7, 26 }, { 9, 29 } },
-        { { 3, 25 }, { 9, 28 } },
-        { { 0, 32 }, { 5, 33 }, { 8, 31 }, { 9, 30 } },
-        { { 0, 29 }, { 7, 35 } },
-        { { 4, 26 }, { 5, 28 }, { 6, 30 }, { 7, 32 }, { 3, 24 } },
-        { { 11, 45 } },
-        { { 10, 38 }, { 12, 45 } },
-        { { 11, 42 } },
+        { { 1, 33 }, { 2, 35 }, { 9, 34 } },
+/*5*/   { { 0, 21 }, { 7, 26 }, { 9, 29 } },
+        { { 3, 28 }, { 9, 28 } },
+        { { 0, 27 }, { 5, 26 }, { 8, 31 }, { 9, 30 } },
+        { { 0, 23 }, { 7, 31 } },
+        { { 4, 34 }, { 5, 29 }, { 6, 28 }, { 7, 30 }, { 3, 26 } },
+/*10*/  { { 11, 45 } },
+        { { 10, 45 }, { 12, 38 } },
+        { { 11, 38 } },
         { { 14, 55 }, { 15, 57 } },
-        { { 13, 57 }, { 15, 54 } },
-        { { 13, 53 }, { 14, 52 }, { 16, 54 }, { 17, 50 } },
+        { { 13, 55 }, { 15, 54 } },
+/*15*/  { { 13, 57 }, { 14, 54 }, { 16, 58 }, { 17, 50 } },
         { { 15, 58 }, { 17, 55 } },
-        { { 15, 58 }, { 16, 56 } },
+        { { 15, 50 }, { 16, 55 } },
     });
     graph<edge> cyc_undir2({ // undirected, has cycles
         { { 1 }, { 3 }, { 4 } },
@@ -187,6 +188,19 @@ TEST(graph_algorithms_test, dijkstra) {
     EXPECT_EQ((vector<iedge>{{ -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 6, 10 }, { 5, 0 }, { 5, 3 }, { -1, INF } }), dijkstra(cyc_pos1, 5, INF));
     EXPECT_EQ((vector<iedge>{{ -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 6, 7 }, { 4, 9 }, { 6, 0 }, { -1, INF } }), dijkstra(cyc_pos1, 6, INF));
     EXPECT_EQ((vector<iedge>{{ -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { 6, 16 }, { 7, 6 }, { 5, 9 }, { 7, 0 } }), dijkstra(cyc_pos1, 7, INF));
+}
+
+TEST(graph_algorithms_test, prim_spanning_tree) {
+    int INF = 1000000000;
+    EXPECT_EQ((vector<iedge>{
+        { 0, 0 }, { 4, 33 }, { 1, 31 }, { 9, 26 }, { 9, 34 }, { 0, 21 }, { 9, 28 }, { 5, 26 }, { 0, 23 }, { 5, 29 },
+        { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF } }), prim_spanning_tree(cyc_undir, 0, INF));
+    EXPECT_EQ((vector<iedge>{
+        { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF },
+        { 10, 0 }, { 10, 45 }, { 11, 38 }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF } }), prim_spanning_tree(cyc_undir, 10, INF));
+    EXPECT_EQ((vector<iedge>{
+        { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF }, { -1, INF },
+        { -1, INF }, { -1, INF }, { -1, INF }, { 14, 55 }, { 15, 54 }, { 17, 50 }, { 16, 0 }, { 16, 55 } }), prim_spanning_tree(cyc_undir, 16, INF));
 }
 
 template<typename MAX_FLOW_IMPL, typename T>

@@ -127,6 +127,7 @@ needs to be brought to a higher quality bar that is required here.
     * Shortest paths & spanning trees
       * Dijkstra
       * Floyd-Warshall
+      * Prim's minimum spanning tree
     * Flow & matching
       * Bipartite matching
       * Dinic blocking flow (max flow)	 
