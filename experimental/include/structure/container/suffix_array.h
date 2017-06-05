@@ -35,6 +35,7 @@ public:
 		build_all(begin, end);
 	}
 
+private:
 	template<typename It>
 	void build_all(It begin, It end) {
 		build_suffix_array(begin, end);
@@ -214,6 +215,7 @@ public:
 		_lcp_arr_rmq.build(_lcp_arr.begin(), _lcp_arr.end());
 	}
 
+public:
 	// gets the longest-common-prefix of two suffixes
 	// (starting at positions `i` and `j` respectively)
 	index_t get_lcp(index_t i, index_t j) const {
