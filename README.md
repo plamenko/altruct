@@ -203,8 +203,9 @@ needs to be brought to a higher quality bar that is required here.
       * Miller-Rabin primality test
       * Integer digits for a base
     * Prime counting:
-      * PrimeSum in O(n^(5/7))
       * PrimePi in O(n^(5/7))
+      * PrimeSum in O(n^(5/7))
+      * PrimePowerSum in O(n^(5/7))
     * Ranges:
       * Arithmetic progression
       * Powers, Factorials, Inverse
