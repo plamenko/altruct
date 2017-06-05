@@ -43,7 +43,7 @@ T sum(F f, I a, I b, T zero = T(0)) {
 }
 
 /**
- * Calculates sum of powers: `Sum[k^p, {k, 1, n}]` in `O(p^2)`.
+ * Calculates sum of powers: `Sum[k^p, {k, 1, n}]` in `O(p)`.
  *
  * Note: for powers bigger than 3, T must be a field.
  * Example fields that are suitable: double, fraction, modulo.
@@ -51,12 +51,13 @@ T sum(F f, I a, I b, T zero = T(0)) {
  * @param B - vector of Bernoulli numbers of the second kind up to `p`.
  */
 template<typename T, typename I>
-T sum_pow(int p, I n, const std::vector<T>& B) {
-	T e0 = zeroT<T>::of(B[0]), e1 = identityT<T>::of(B[0]);
-	if (p == 0) return e1 * n;
-	if (p == 1) return e1 * n * (n + 1) / 2;
-	if (p == 2) return e1 * n * (n + 1) * (n * 2 + 1) / 6;
-	if (p == 3) return sqT<T>(sum_pow<T, I>(1, n, B));
+T sum_pow(int p, I N, const std::vector<T>& B) {
+	T e0 = zeroOf(B[0]), e1 = identityOf(B[0]);
+    T n = castOf(e1, N);
+	if (p == 0) return n;
+	if (p == 1) return n * (n + e1) / 2;
+	if (p == 2) return n * (n + e1) * (n * 2 + e1) / 6;
+    if (p == 3) return sqT<T>(n * (n + e1) / 2);
 	//Faulhaber's formula
 	T r = e0;
 	T n_k = e1;
@@ -94,10 +95,10 @@ T sum_pow(int p, I n, T id = T(1)) {
 template<typename T, typename I>
 T sum_powx(int m, T x, I n) {
 	T T0 = zeroT<T>::of(x), T1 = identityT<T>::of(x);
-	auto Tn = T1 * n;
-	polynom<T> p{ 0, 1 }, q{ 1 }, z{ 0, -1, 1 };
+	T Tn = castOf(T1, n);
+	polynom<T> p{ T0, T1 }, q{ T1 }, z{ T0, -T1, T1 };
 	for (int k = 1; k <= m; k++) {
-		auto Tk = T1 * k;
+		auto Tk = castOf(T1, k);
 		p = z * p.derivative() - (polynom<T>{Tn, Tk - Tn}) * p;
 		q = z * q.derivative() - (polynom<T>{T0, Tk - T0}) * q;
 	}
@@ -118,7 +119,7 @@ T sum_sqrt(F f, I n, T zero = T(0)) {
 		r += f(n / k);
 	}
 	for (I m = 1; m < q; m++) {
-		r += f(m) * ((n / m) - (n / (m + 1)));
+		r += f(m) * castOf(zero, (n / m) - (n / (m + 1)));
 	}
 	return r;
 }
