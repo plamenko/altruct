@@ -98,7 +98,7 @@ public:
     // Returns a copy of the word at the given 1-based index.
     template<typename F>
     word_t get(index_t word_id, F letter) const {
-        vector<decltype(letter(0))> w;
+        std::vector<decltype(letter(0))> w;
         for (node_t* t = words[word_id]; t != root; t = t->parent) {
             w.push_back(letter(t->ord));
         }
@@ -182,7 +182,7 @@ private:
     index_t _erase(node_t* t) {
         index_t word_id = t->word_id;
         if (word_id == 0) return 0;
-        swap(words[word_id], words.back());
+        std::swap(words[word_id], words.back());
         words[word_id]->word_id = word_id;
         words.pop_back();
         t->word_id = 0;

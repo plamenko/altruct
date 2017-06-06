@@ -3,7 +3,7 @@ HEADERS = subdir_glob([
     ('experimental/include', '**/*.h'),
   ],
   excludes = [
-    'include/concurrency/concurrency.h',
+    'include/altruct/concurrency/concurrency.h',
   ],
   prefix='');
 
@@ -21,7 +21,7 @@ def merge_dicts(list_of_dicts):
 cxx_library(
   name = 'altruct_lib',
   srcs = glob([
-    'lib/**/*.cpp',
+    'src/**/*.cpp',
   ],
   excludes=[
   ]),

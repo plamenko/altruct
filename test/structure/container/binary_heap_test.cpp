@@ -66,14 +66,14 @@ TEST(binary_heap_test, test_perf) {
     binary_heap<int> bh(va);
     bh.sort();
     auto dT0 = clock() - T0;
-    printf("%d ms\n", dT0);
+    printf("%0.3lf s\n", dT0/double(CLOCKS_PER_SEC));
     // mod10  1448 ms
     // any    3723 ms
 
     auto T1 = clock();
     sort(va.begin(), va.end());
     auto dT1 = clock() - T1;
-    printf("%d ms\n", dT1);
+    printf("%0.3lf s\n", dT1/double(CLOCKS_PER_SEC));
     // mod10  162 ms
     // any    815 ms
 

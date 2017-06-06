@@ -66,7 +66,7 @@ std::vector<std::pair<I, I>> convergents(const std::vector<I> &va, I semi_conver
         // Technically, if a_i is even, a_i / 2 is admissible only if the
         // corresponding semiconvergent is better than the previous convergent.
         // We do not check for it here however.
-        I a0 = a_i - min<I>(semi_convergents, a_i / 2);
+        I a0 = a_i - std::min<I>(semi_convergents, a_i / 2);
         for (I a = a0; a <= a_i; a++) {
             p = a * p1 + p2;
             q = a * q1 + q2;
