@@ -108,6 +108,15 @@ public:
 		hld(g) {
 	}
 
+    // forwarding methods
+    int depth(int u) { return lca.depth(u); }
+    int ancestor(int u, int v) { return lca.ancestor(u, v); }
+    int distance(int u, int v) { return lca.distance(u, v); }
+    int parent(int u) { return hld.parent(u); }
+    int position(int u) { return hld.position(u); }
+    int node(int u) { return hld.node(u); }
+    int subtree_size(int u) { return hld.subtree_size(u); }
+
 	// `k-th` parent (ancestor) of `u`;
 	// -1 if `u` has less than `k` ancestors
 	int parent(int u, int k = 1) {
