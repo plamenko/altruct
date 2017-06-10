@@ -28,9 +28,9 @@ struct rdtsc_clock {
 #endif
 };
 
-template<typename CLOCK>
-double since(typename CLOCK::time_point T0) {
-    return std::chrono::duration<double>(CLOCK::now() - T0).count();
+template<typename TIME_POINT>
+double since(const TIME_POINT& T0) {
+    return std::chrono::duration<double>(TIME_POINT::clock::now() - T0).count();
 }
 
 }

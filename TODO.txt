@@ -4,9 +4,6 @@ castT (this allows for proper casting)
 	revisit casts in various altruct methods
 	tests for gmp_helpers
 
-altruct::chrono
-	rdtsc clock
-
 Tests
 	use compare macro to simplify comparison operator tests
 	helper methods to anonymous namespace
@@ -54,7 +51,6 @@ Trees
 	splay tree
 
 Graphs
-	matching (bipartite)
 	hungarian algorithm
 	min-cost max-flow
 

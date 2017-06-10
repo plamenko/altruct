@@ -22,7 +22,7 @@ void test_chrono_empty_loop() {
 
     // get the clock ticks per iteration
     auto ticks_per_iter = dduration(t1 - t0) / N;
-    auto ticks_per_iter2 = since<clock>(t0) / N;
+    auto ticks_per_iter2 = since(t0) / N;
     std::cout << ticks_per_iter.count() << " clock ticks per iteration\n";
 
     // convert to real time units
