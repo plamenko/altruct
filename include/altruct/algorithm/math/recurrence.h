@@ -82,16 +82,16 @@ A linear_recurrence_next(const std::vector<T> &f_coeff, const std::vector<A> &f_
  * n-th Fibonacci number
  */
 template<typename T, typename I>
-T fibonacci(I n) {
-	return linear_recurrence<T, T>({ 1, 1 }, {0, 1}, n);
+T fibonacci(I n, T id = T(1)) {
+	return linear_recurrence<T, T>({ id, id }, {id - id, id}, n);
 }
 
 /**
  * n-th element of the Lucas L sequence
  */
 template<typename T, typename I>
-T lucas_l(I n) {
-	return linear_recurrence<T, T>({ 1, 1 }, { 2, 1 }, n);
+T lucas_l(I n, T id = T(1)) {
+    return linear_recurrence<T, T>({ id, id }, { id + id, id }, n);
 }
 
 /**
@@ -99,7 +99,8 @@ T lucas_l(I n) {
  */
 template<typename T, typename I>
 T lucas_u(T p, T q, I n) {
-	return linear_recurrence<T, T>({ p, -q }, { 0, 1 }, n);
+    auto id = identityOf(p);
+    return linear_recurrence<T, T>({ p, -q }, { id - id, id }, n);
 }
 
 /**
@@ -107,7 +108,8 @@ T lucas_u(T p, T q, I n) {
  */
 template<typename T, typename I>
 T lucas_v(T p, T q, I n) {
-	return linear_recurrence<T, T>({ p, -q }, { 2, p }, n);
+    auto id = identityOf(p);
+    return linear_recurrence<T, T>({ p, -q }, { id + id, p }, n);
 }
 
 /**
