@@ -353,5 +353,8 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\squares_r.h">
       <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\factorization.h">
+      <Filter>include\altruct\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

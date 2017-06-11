@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\combinatorics.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\comb_primes.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\counting.h" />
+    <ClInclude Include="..\..\include\altruct\algorithm\math\factorization.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\fft.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\fractions.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\gmp_helpers.h" />

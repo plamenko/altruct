@@ -1,5 +1,5 @@
 #include "altruct/algorithm/collections/collections.h"
-#include "altruct/algorithm/math/primes.h"
+#include "altruct/algorithm/math/factorization.h"
 #include "altruct/algorithm/math/triples.h"
 
 #include "gtest/gtest.h"

@@ -2,6 +2,7 @@
 
 #include "altruct/algorithm/math/base.h"
 #include "altruct/algorithm/math/primes.h"
+#include "altruct/algorithm/math/factorization.h"
 #include "altruct/structure/math/modulo.h"
 
 #include <vector>

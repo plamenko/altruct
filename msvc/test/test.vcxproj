@@ -39,6 +39,7 @@
     <ClCompile Include="..\..\test\algorithm\math\convergents_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\convolutions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\counting_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\factorization_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fft_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fractions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />

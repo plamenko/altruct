@@ -1,5 +1,5 @@
 ﻿#include "altruct/algorithm/math/squares_r.h"
-#include "altruct/algorithm/math/primes.h"
+#include "altruct/algorithm/math/factorization.h"
 
 #include <algorithm>
 #include <vector>

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "altruct/algorithm/math/base.h"
+#include "altruct/algorithm/math/primes.h"
 
 namespace altruct {
 namespace math {
