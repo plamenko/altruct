@@ -211,6 +211,9 @@
     <ClCompile Include="..\..\test\chrono\chrono_test.cpp">
       <Filter>chrono</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\math\squares_r_test.cpp">
+      <Filter>algorithm\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

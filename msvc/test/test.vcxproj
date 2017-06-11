@@ -51,6 +51,7 @@
     <ClCompile Include="..\..\test\algorithm\math\recurrence_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\reduce_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\sequences_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\squares_r_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\divisor_sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\triples_test.cpp" />

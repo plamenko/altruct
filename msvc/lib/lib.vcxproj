@@ -73,6 +73,7 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\recurrence.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\reduce.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\sequences.h" />
+    <ClInclude Include="..\..\include\altruct\algorithm\math\squares_r.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\sums.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\divisor_sums.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\triples.h" />

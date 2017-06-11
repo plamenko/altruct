@@ -308,36 +308,6 @@ I carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
 }
 
 /**
- * Calculates the number of representations of n as a sum of 2 squares from a factorization of `n`.
- *
- * E.g. some unique representations:
- *   4 = 0^2 + 2^2
- *   5 = 1^2 + 2^2
- *   8 = 2^2 + 2^2
- *   25 = 3^2 + 4^2 = 0^2 + 5^2
- *
- * @param unique_only - if true, the sign and order won't be taken into account
- *                      i.e. (1, 2) is considered the same as (-2, -1)
- */
-template<typename P, typename I = P>
-I squares_r(const std::vector<std::pair<P, int>> &vf, bool unique_only) {
-	I B = 1; int s = 1, q = 1;
-	for (const auto& f : vf) {
-		if (f.first % 4 == 1) {
-			B *= f.second + 1;
-		} else if (f.first % 4 == 3) {
-			if (f.second % 2 == 1) B = 0;
-		} else if (f.first == 2) {
-			if (f.second % 2 == 1) s = -1;
-		}
-		if (f.second % 2 == 1) q = 0;
-	}
-	if (!unique_only) return B * 4;
-	if (B % 2 == 1) B -= s;
-	return B / 2 + q;
-}
-
-/**
  * Miller-Rabin primality test.
  *
  * Probabilistic primality test with accuracy `4^-k`, where `k` is the number of bases tested.
