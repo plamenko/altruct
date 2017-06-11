@@ -52,6 +52,7 @@ void squares_r_prime_init(I n) {
 template<typename P, typename I = P>
 std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>> &vf, bool unique_only) {
     std::vector<std::pair<I, I>> v{ { 0, 1 } };
+    I q = 1;
     for (const auto& f : vf) {
         I p = f.first; int e = f.second;
         if (p % 4 == 1) {
@@ -70,22 +71,20 @@ std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>
             }
         } else if (p % 4 == 3) {
             if (e % 2 == 1) {
-                v.clear();
-                break;
+                return{};
             }
-            I q = powT(p, e / 2);
-            for (auto& t : v) {
-                t.first *= q, t.second *= q;
-            }
+            q *= powT(p, e / 2);
         } else if (p == 2) {
-            I q = powT(p, e / 2);
-            for (auto& t : v) {
-                t.first *= q, t.second *= q;
-                if (e % 2 == 1) {
+            if (e % 2 == 1) {
+                for (auto& t : v) {
                     t = { t.second - t.first, t.second + t.first };
                 }
             }
+            q *= powT(p, e / 2);
         }
+    }
+    for (auto& t : v) {
+        t.first *= q, t.second *= q;
     }
     if (!unique_only) {
         for (int i = (int)v.size() - 1; i >= 0; i--) {
