@@ -2,6 +2,7 @@
 
 #include "base.h"
 
+#include <set>
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
@@ -63,9 +64,9 @@ std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>
                 for (auto& t : v) {
                     I a = t.first, b = t.second;
                     I e1 = absT(a * c - b * d), f1 = (a * d + b * c);
-                    if (e1 > f1) swap(e1, f1); s.insert({ e1, f1 });
+                    if (e1 > f1) std::swap(e1, f1); s.insert({ e1, f1 });
                     I e2 = absT(a * d - b * c), f2 = (a * c + b * d);
-                    if (e2 > f2) swap(e2, f2); s.insert({ e2, f2 });
+                    if (e2 > f2) std::swap(e2, f2); s.insert({ e2, f2 });
                 }
                 v.assign(s.begin(), s.end());
             }

@@ -45,9 +45,9 @@ TEST(squares_r_test, squares_r_list) {
         for (int u = 0; u < 2; u++) {
             auto vr = squares_r_list(vf, u == 1);
             int r = squares_r(vf, u == 1);
-            ASSERT_EQ(r, vr.size()) << "ERROR: " << i << " " << r << " " << vr << endl;
+            ASSERT_EQ(r, vr.size()) << "ERROR: " << i << " " << r << " " << testing::PrintToString(vr) << endl;
             for (const auto& t : vr) {
-                ASSERT_EQ(i, sqT(t.first) + sqT(t.second)) << "ERROR: " << i << " " << t << endl;
+                ASSERT_EQ(i, sqT(t.first) + sqT(t.second)) << "ERROR: " << i << " " << testing::PrintToString(t) << endl;
             }
         }
     }
