@@ -46,12 +46,12 @@ In the future I may set up some continuous integration tests running.
 Here is a naive implementation for calculating the n-th term of a linear recurrence of degree L (in modulo M arithmetic) that works in O(L * n).
 
 ```
-	int a_k3 = 1, a_k2 = 4, a_k1 = 7; // a[k-3], a[k-2], a[k-1]
-	for (int k = 3; k <= n; k++) {
-		int a_k = (2 * a_k1 - 1 * a_k2 + 1 * a_k3) % 1009;
-		a_k3 = a_k2, a_k2 = a_k1, a_k1 = a_k;
-	}
-	cout << a_k1 << endl;
+    int a_k3 = 1, a_k2 = 4, a_k1 = 7; // a[k-3], a[k-2], a[k-1]
+    for (int k = 3; k <= n; k++) {
+        int a_k = (2 * a_k1 - 3 * a_k2 + 5 * a_k3) % 1009;
+        a_k3 = a_k2, a_k2 = a_k1, a_k1 = a_k;
+    }
+    cout << a_k1 << endl;
 ```
 
 Here is how to do this in O(L^2 log n) by composing the mathematical structures Altruct provides.
@@ -60,21 +60,21 @@ where each operation is performed modulo characteristic polynomial in O(L^2). Th
 algorithm that uses matrix eponentiation but that would cost O(L^3) instead of O(L^2) per step.
 
 ```
-	typedef modulo<int, 1009> mod;
-	typedef polynom<mod> poly;
-	typedef moduloX<poly> polymod;
-	// the initial values
-	poly init = { 1, 4, 7 };
-	// the characteristic polynomial of our recurrence
-	// 0 == a[n] - 2 a[n - 1] - a[n - 2] + a[n - 3]
-	poly p = { -1, +1, -2, 1 };
-	poly x = { 0, 1 }; // 0 + 1*x
-	polymod xn = powT(polymod(x, p), n); // x^n % p(x)
-	mod r = 0;
-	for (int i = 0; i < p.size(); i++) {
-		r += init[i] * xn.v[i];
-	}
-	cout << r.v << endl;
+    typedef modulo<int, 1009> mod;
+    typedef polynom<mod> poly;
+    typedef moduloX<poly> polymod;
+    // the initial values
+    poly init = { 1, 4, 7 };
+    // the characteristic polynomial of our recurrence
+    // 0 == -a[n] + 2 a[n - 1] - 3 a[n - 2] + 5 a[n - 3]
+    poly p = { 5, -3, +2, -1 };
+    poly x = { 0, 1 }; // 0 + 1*x
+    polymod xn = powT(polymod(x, p), n); // x^n % p(x)
+    mod r = 0;
+    for (int i = 0; i < p.size(); i++) {
+        r += init[i] * xn.v[i];
+    }
+    cout << r.v << endl;
 ```
 
 But of course, the aforementioned algorithm is already implemented as `linear_recurrence`,
@@ -82,7 +82,7 @@ so for that you can just use the Altruct function and not have to implement it b
 
 ```
     typedef modulo<int, 1009> mod;
-	cout << linear_recurrence<mod, mod>({ 2, -1, +1 }, { 1, 4, 7 }, n).v << endl;
+    cout << linear_recurrence<mod, mod>({ 2, -3, +5 }, { 1, 4, 7 }, n).v << endl;
 ```
 
 Observe how in the above example, the actual type used is `modulo<polynom<modulo<int>>>`.
@@ -170,7 +170,7 @@ needs to be brought to a higher quality bar that is required here.
       * Fast and/or/xor/max convolution (FFT-like O(n log n) implementation)
       * Fast ordinary/cyclic convolution (FFT O(n log n) implementation)
       * Fast Walsh-Hadamard transform
-	  * Fast Arithmetic transform
+      * Fast Arithmetic transform
       * Fast Fourier transform
     * Continued fractions:
       * Convergents, semi-convergents
@@ -182,7 +182,7 @@ needs to be brought to a higher quality bar that is required here.
       * Generalized Pell's equation `x^2 - D y^2 = N`
     * Modulos:
       * Chinese Remainder Theorem
-	  * Garner algorithm
+      * Garner algorithm
       * Jacobi symbol
       * Cipolla algorithm (modular square root)
       * Hensel lift (square root modulo prime power)
@@ -223,39 +223,40 @@ needs to be brought to a higher quality bar that is required here.
     * Sums:
       * Sum of arbitrary function f
       * Sum of powers
-	  * Sum of `floor((a * k + b) / q)` in O(log n)
+      * Sum of `floor((a * k + b) / q)` in O(log n)
       * Sum of `f(k, floor(n / k))` in O(sqrt n)
-	* Divisor sums:
-	  * Dirichlet convolution, division, inverse:
-	    * arbitrary arithmetic functions in O(n log n)
-		* multiplicative functions in O(n log log n)
-		* completely multiplicative functions in O(n)
-	  * Moebius transform:
-	    * arbitrary arithmetic functions in O(n log n)
-		* multiplicative functions in O(n log log n)
+    * Divisor sums:
+      * Dirichlet convolution, division, inverse:
+        * arbitrary arithmetic functions in O(n log n)
+        * multiplicative functions in O(n log log n)
+        * completely multiplicative functions in O(n)
+      * Moebius transform:
+        * arbitrary arithmetic functions in O(n log n)
+        * multiplicative functions in O(n log log n)
       * Sum of multiplicative functions in O(n^(2/3)):
-		* Divisor-Sigma in O(n log log n)
-		* Mertens function (sum of Moebius-Mu)
-		* Totient summatory function (sum of Euler-Phi)
-		* Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
-	* Sequences
-	  * Delta, Dirichlet, Zero, One, Identity, Square, Cube
-	  * Triangular, Tetrahedral, Pyramidal, Octahedral, Dodecahedral, Icosahedral
-	  * Divisor-Sigma family partial sums
-	* Triples
-	  * Pythagorean (90 degree) triples
-	  * Eisenstein (60 & 120 degree) triples
+        * Divisor-Sigma in O(n log log n)
+        * Mertens function (sum of Moebius-Mu)
+        * Totient summatory function (sum of Euler-Phi)
+        * Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
+    * Sequences
+      * Delta, Dirichlet, Zero, One, Identity, Square, Cube
+      * Triangular, Tetrahedral, Pyramidal, Octahedral, Dodecahedral, Icosahedral
+      * Divisor-Sigma family partial sums
+    * Triples
+      * Pythagorean (90 degree) triples
+      * Eisenstein (60 & 120 degree) triples
   * Random:
     * Mersene Twister
     * XorShift
   * Search:
     * Binary search
     * Knuth-Morris-Pratt algorithm (string search)
+
 * I/O:
   * Fast I/O
   * Reader: File / Stream / String / Buffered / Simple
   * Writer: File / Stream / String / Buffered / Simple
-	
+
 * Structure:
   * Container:
     * Aho-Corasick trie
