@@ -1,0 +1,8 @@
+--config
+cxx.cppflags=-stdlib=libc++ -std=gnu++14 -pthread -O3 -g2
+--config
+cxx.cflags=-stdlib=libc++ -std=gnu++14 -pthread -O3 -g2
+--config
+cxx.cxxppflags=-stdlib=libc++ -std=gnu++14 -pthread -O3 -g2
+--config
+cxx.cxxflags=-stdlib=libc++ -std=gnu++14 -pthread -O3 -g2

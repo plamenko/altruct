@@ -5,18 +5,18 @@ HEADERS = subdir_glob([
   excludes = [
     'include/altruct/concurrency/concurrency.h',
   ],
-  prefix='');
+  prefix='')
 
 TEST_UTIL_HEADERS = subdir_glob([
     ('test_util/include', '**/*.h'),
   ],
-  prefix='');
+  prefix='')
 
 def merge_dicts(list_of_dicts):
   r = {}
   for d in list_of_dicts:
     r.update(d)
-  return r;
+  return r
 
 cxx_library(
   name = 'altruct_lib',
