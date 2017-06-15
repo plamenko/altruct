@@ -1,62 +1,62 @@
 castT (this allows for proper casting)
-	make all altruct types implement castT
-	add cast tests for all classes
-	revisit casts in various altruct methods
-	tests for gmp_helpers
+    make all altruct types implement castT
+    add cast tests for all classes
+    revisit casts in various altruct methods
+    tests for gmp_helpers
 
 Tests
-	use compare macro to simplify comparison operator tests
-	helper methods to anonymous namespace
-	add to_modx helpers to test_util
-	add tests for experimental classes and make them be proper.
-	
+    use compare macro to simplify comparison operator tests
+    helper methods to anonymous namespace
+    add to_modx helpers to test_util
+    add tests for experimental classes and make them be proper.
+
 PRNG
-	range [] both inc
-	range [) inc exc
-	range () both exc
+    range [] both inc
+    range [) inc exc
+    range () both exc
 
 Collections
-	transform_indexed
+    transform_indexed
 
 I/O
-	Pretty printers for ostream (partially done already)
-	make simple_reader_stream actually implement istream ?
-	make simple_writer_stream actually implement ostream ?
+    Pretty printers for ostream (partially done already)
+    make simple_reader_stream actually implement istream ?
+    make simple_writer_stream actually implement ostream ?
 
 modulo class
-	more efficient 64bit multiplication
-	see compiler intrinsics
-	
+    more efficient 64bit multiplication
+    see compiler intrinsics
+
 double_int class?
-	signed, unsigned
-	do multiplication in a scalable way (karatsuba like)
-	do division
-	compare speed with gmp
-	
+    signed, unsigned
+    do multiplication in a scalable way (karatsuba like)
+    do division
+    compare speed with gmp
+
 Search
-	ternary search & golden ratio?
+    ternary search & golden ratio?
 
 Hashes
-	sha1, md5
+    sha1, md5
 
 Geometry
-	Voronoi, ...
+    Voronoi, ...
 
 Sparse matrix
-	add tests
-	move to altruct
-	add element_wrapper
-	
+    add tests
+    move to altruct
+    add element_wrapper
+
 Trees
-	splay tree
+    splay tree
 
 Graphs
-	hungarian algorithm
-	min-cost max-flow
+    hungarian algorithm
+    min-cost max-flow
 
 make LCA use RMQ structure?
 
 discrete logarithm + tests
-	pollard_rho_logarithm
-	baby-step giant-step table
+    pollard_rho_logarithm
+    baby-step giant-step table
 divisors2 (min, max) + tests

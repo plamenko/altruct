@@ -72,13 +72,13 @@ template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution(TBL& h, F1 f, F2 g, int n) {
     auto e0 = zeroOf(castOf(h[0], f(1))); // TODO: pass via argument?
     for (int i = 0; i < n; i++) {
-		h[i] = e0;
-	}
-	for (int d = 1; d < n; d++) {
-		for (int e = 1, i = d; i < n; i += d, e++) {
+        h[i] = e0;
+    }
+    for (int d = 1; d < n; d++) {
+        for (int e = 1, i = d; i < n; i += d, e++) {
             h[i] += castOf(e0, f(d)) * castOf(e0, g(e));
-		}
-	}
+        }
+    }
 }
 
 /**
@@ -99,16 +99,16 @@ template<typename F1, typename F2, typename TBL>
 void dirichlet_division(TBL& h, F1 f, F2 g, int n) {
     auto e1 = identityOf(castOf(h[0], f(1))); // TODO: pass via argument?
     auto g1 = castOf(e1, g(1));
-	auto ig1 = e1 / g1;
-	for (int i = 1; i < n; i++) {
+    auto ig1 = e1 / g1;
+    for (int i = 1; i < n; i++) {
         h[i] = castOf(e1, f(i));
-	}
-	for (int d = 1; d < n; d++) {
-		h[d] *= ig1;
-		for (int j = 2, i = d * 2; i < n; i += d, j++) {
+    }
+    for (int d = 1; d < n; d++) {
+        h[d] *= ig1;
+        for (int j = 2, i = d * 2; i < n; i += d, j++) {
             h[i] -= castOf(e1, g(j)) * h[d];
-		}
-	}
+        }
+    }
 }
 
 /**
@@ -129,7 +129,7 @@ template<typename F1, typename TBL>
 void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
     auto e1 = identityOf(castOf(f_inv[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
     auto e = [&](int n){ return (n == 1) ? e1 : e0; };
-	dirichlet_division(f_inv, e, f, n);
+    dirichlet_division(f_inv, e, f, n);
 }
 
 /**
@@ -143,13 +143,13 @@ void dirichlet_inverse(TBL& f_inv, F1 f, int n) {
  */
 template<typename TBL>
 void calc_multiplicative(TBL& f, int n, int* pa, int m) {
-	for (int i = 0; i < m && pa[i] < n; i++) {
-		for (int64_t qq = pa[i]; qq < n; qq *= pa[i]) {
-			for (int q = (int)qq, l = 2, m = 2 * q; m < n; m += q, l++) {
-				if (l % pa[i] != 0) f[m] *= f[q];
-			}
-		}
-	}
+    for (int i = 0; i < m && pa[i] < n; i++) {
+        for (int64_t qq = pa[i]; qq < n; qq *= pa[i]) {
+            for (int q = (int)qq, l = 2, m = 2 * q; m < n; m += q, l++) {
+                if (l % pa[i] != 0) f[m] *= f[q];
+            }
+        }
+    }
 }
 
 /**
@@ -173,25 +173,25 @@ void dirichlet_convolution_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, in
     auto e1 = identityOf(castOf(h[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
     typedef decltype(e1) T;
     for (int i = 1; i < n; i++) {
-		h[i] = e1;
-	}
-	int q[32]; T fq[32], gq[32];
-	for (int i = 0; i < m && pa[i] < n; i++) {
-		int m = 0;
-		for (int64_t qq = 1; qq < n; qq *= pa[i]) {
+        h[i] = e1;
+    }
+    int q[32]; T fq[32], gq[32];
+    for (int i = 0; i < m && pa[i] < n; i++) {
+        int m = 0;
+        for (int64_t qq = 1; qq < n; qq *= pa[i]) {
             fq[m] = castOf(e1, f((int)qq));
             gq[m] = castOf(e1, g((int)qq));
-			q[m++] = (int)qq;
-		}
-		for (int k = 0; k < m; k++) {
-			auto hq_k = e0;
-			for (int j = 0; j <= k; j++) {
-				hq_k += fq[k - j] * gq[j];
-			}
-			h[q[k]] = hq_k;
-		}
-	}
-	calc_multiplicative(h, n, pa, m);
+            q[m++] = (int)qq;
+        }
+        for (int k = 0; k < m; k++) {
+            auto hq_k = e0;
+            for (int j = 0; j <= k; j++) {
+                hq_k += fq[k - j] * gq[j];
+            }
+            h[q[k]] = hq_k;
+        }
+    }
+    calc_multiplicative(h, n, pa, m);
 }
 
 /**
@@ -215,25 +215,25 @@ void dirichlet_division_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m
     auto e1 = identityOf(castOf(h[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
     typedef decltype(e0) T;
     for (int i = 1; i < n; i++) {
-		h[i] = e1;
-	}
-	int q[32]; T gq[32], hq[32];
-	for (int i = 0; i < m && pa[i] < n; i++) {
-		int m = 0;
-		for (int64_t qq = 1; qq < n; qq *= pa[i]) {
-			gq[m] = castOf(e1, g((int)qq));
-			q[m++] = (int)qq;
-		}
-		hq[0] = e1;
-		for (int k = 1; k < m; k++) {
-			hq[k] = castOf(e1, f(q[k]));
-			for (int j = 0; j < k; j++) {
-				hq[k] -= gq[k - j] * hq[j];
-			}
-			h[q[k]] = hq[k];
-		}
-	}
-	calc_multiplicative(h, n, pa, m);
+        h[i] = e1;
+    }
+    int q[32]; T gq[32], hq[32];
+    for (int i = 0; i < m && pa[i] < n; i++) {
+        int m = 0;
+        for (int64_t qq = 1; qq < n; qq *= pa[i]) {
+            gq[m] = castOf(e1, g((int)qq));
+            q[m++] = (int)qq;
+        }
+        hq[0] = e1;
+        for (int k = 1; k < m; k++) {
+            hq[k] = castOf(e1, f(q[k]));
+            for (int j = 0; j < k; j++) {
+                hq[k] -= gq[k - j] * hq[j];
+            }
+            h[q[k]] = hq[k];
+        }
+    }
+    calc_multiplicative(h, n, pa, m);
 }
 
 /**
@@ -255,7 +255,7 @@ template<typename F1, typename TBL>
 void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
     auto e1 = identityOf(castOf(f_inv[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
     auto e = [&](int n){ return (n == 1) ? e1 : e0; };
-	dirichlet_division_multiplicative(f_inv, e, f, n, pa, m);
+    dirichlet_division_multiplicative(f_inv, e, f, n, pa, m);
 }
 
 /**
@@ -269,10 +269,10 @@ void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
  */
 template<typename TBL>
 void calc_completely_multiplicative(TBL& f, int n, int* pf) {
-	for (int i = 2; i < n; i++) {
-		int p = pf[i];
-		if (pf[i] != i) f[i] = f[i / p] * f[p];
-	}
+    for (int i = 2; i < n; i++) {
+        int p = pf[i];
+        if (pf[i] != i) f[i] = f[i / p] * f[p];
+    }
 }
 
 /**
@@ -297,13 +297,13 @@ template<typename F1, typename F2, typename TBL>
 void dirichlet_convolution_completely_multiplicative(TBL& h, F1 f, F2 g, int n, int *pf) {
     auto e1 = identityOf(castOf(h[0], f(1))); // TODO: pass via argument?
     auto f1 = castOf(e1, f(1)), g1 = castOf(e1, g(1));
-	for (int i = 1; i < n; i++) {
-		h[i] = e1;
-	}
-	for (int p = 2; p < n; p++) {
-		if (pf[p] == p) h[p] = castOf(e1, f(p)) * g1 + castOf(e1, g(p)) * f1;
-	}
-	calc_completely_multiplicative(h, n, pf);
+    for (int i = 1; i < n; i++) {
+        h[i] = e1;
+    }
+    for (int p = 2; p < n; p++) {
+        if (pf[p] == p) h[p] = castOf(e1, f(p)) * g1 + castOf(e1, g(p)) * f1;
+    }
+    calc_completely_multiplicative(h, n, pf);
 }
 
 /**
@@ -330,12 +330,12 @@ template<typename F1, typename F2, typename TBL>
 void dirichlet_division_completely_multiplicative(TBL& h, F1 f, F2 g, int n, int* pf) {
     auto e1 = identityOf(castOf(h[0], f(1))); // TODO: pass via argument?
     for (int i = 1; i < n; i++) {
-		h[i] = e1;
-	}
-	for (int p = 2; p < n; p++) {
-		if (pf[p] == p) h[p] = castOf(e1, f(p)) - castOf(e1, g(p));
-	}
-	calc_completely_multiplicative(h, n, pf);
+        h[i] = e1;
+    }
+    for (int p = 2; p < n; p++) {
+        if (pf[p] == p) h[p] = castOf(e1, f(p)) - castOf(e1, g(p));
+    }
+    calc_completely_multiplicative(h, n, pf);
 }
 
 /**
@@ -361,7 +361,7 @@ template<typename F1, typename TBL>
 void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* pf) {
     auto e1 = identityOf(castOf(f_inv[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
     auto e = [&](int n){ return (n == 1) ? e1 : e0; };
-	dirichlet_division_completely_multiplicative(f_inv, e, f, n, pf);
+    dirichlet_division_completely_multiplicative(f_inv, e, f, n, pf);
 }
 
 /**
@@ -421,16 +421,16 @@ void moebius_transform_multiplicative(TBL& g, F f, int n, int* pa, int m) {
  */
 template<typename F1, typename F2, typename TBL>
 void sieve_m_multiplicative_inv(TBL& M, F1 t, F2 p_inv, int n, int* pa, int m) {
-	auto dt = [&](int n){ return (n == 1) ? t(n) : t(n) - t(n - 1); };
-	dirichlet_convolution_multiplicative(M, p_inv, dt, n, pa, m);
-	for (int i = 1; i < n; i++) M[i] += M[i - 1];
+    auto dt = [&](int n){ return (n == 1) ? t(n) : t(n) - t(n - 1); };
+    dirichlet_convolution_multiplicative(M, p_inv, dt, n, pa, m);
+    for (int i = 1; i < n; i++) M[i] += M[i - 1];
 }
 template<typename F1, typename F2, typename TBL>
 void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pa, int m) {
-	auto p_inv = M;
-	dirichlet_inverse_multiplicative(p_inv, p, n, pa, m);
-	auto _p_inv = [&](int n){ return p_inv[n]; };
-	sieve_m_multiplicative_inv(M, t, _p_inv, n, pa, m);
+    auto p_inv = M;
+    dirichlet_inverse_multiplicative(p_inv, p, n, pa, m);
+    auto _p_inv = [&](int n){ return p_inv[n]; };
+    sieve_m_multiplicative_inv(M, t, _p_inv, n, pa, m);
 }
 
 /**
@@ -455,17 +455,17 @@ template<typename F1, typename F2, typename TBL>
 void sieve_m(TBL& M, F1 t, F2 p, int n) {
     auto e1 = identityOf(castOf(M[0], p(1))); // TODO: pass via argument?
     auto ip1 = e1 / castOf(e1, p(1));
-	M[1] = castOf(e1, t(1));
-	for (int i = 2; i < n; i++) {
-		M[i] = castOf(e1, t(i)) - castOf(e1, t(i - 1));
-	}
-	for (int d = 1; d < n; d++) {
-		M[d] *= ip1;
-		for (int j = 2, i = d * 2; i < n; i += d, j++) {
-			M[i] -= castOf(e1, p(j)) * M[d];
-		}
-		if (d > 1) M[d] += M[d - 1];
-	}
+    M[1] = castOf(e1, t(1));
+    for (int i = 2; i < n; i++) {
+        M[i] = castOf(e1, t(i)) - castOf(e1, t(i - 1));
+    }
+    for (int d = 1; d < n; d++) {
+        M[d] *= ip1;
+        for (int j = 2, i = d * 2; i < n; i += d, j++) {
+            M[i] -= castOf(e1, p(j)) * M[d];
+        }
+        if (d > 1) M[d] += M[d - 1];
+    }
 }
 
 /**
@@ -485,15 +485,15 @@ template<typename F1, typename TBL>
 void sieve_m(TBL& M, F1 t, int n) {
     auto e1 = identityOf(castOf(M[0], t(1))); // TODO: pass via argument?
     M[1] = castOf(e1, t(1));
-	for (int i = 2; i < n; i++) {
-		M[i] = castOf(e1, t(i)) - castOf(e1, t(i - 1));
-	}
-	for (int d = 1; d < n; d++) {
-		for (int i = d * 2; i < n; i += d) {
-			M[i] -= M[d];
-		}
-		if (d > 1) M[d] += M[d - 1];
-	}
+    for (int i = 2; i < n; i++) {
+        M[i] = castOf(e1, t(i)) - castOf(e1, t(i - 1));
+    }
+    for (int d = 1; d < n; d++) {
+        for (int i = d * 2; i < n; i += d) {
+            M[i] -= M[d];
+        }
+        if (d > 1) M[d] += M[d - 1];
+    }
 }
 
 /**
@@ -529,17 +529,17 @@ void sieve_m(TBL& M, F1 t, int n) {
 template<typename T, typename I, typename F1, typename F2, typename TBL>
 T sum_m(F1 t, F2 s, I n, TBL& tbl, T id) {
     T e0 = zeroOf(id);
-	if (n < 1) return e0;
-	if (tbl.count(n)) return tbl[n];
+    if (n < 1) return e0;
+    if (tbl.count(n)) return tbl[n];
     auto r = castOf(e0, t(n)), p1 = castOf(e0, s(1) - s(0));
-	I q = sqrtT(n);
-	for (I k = 2; k <= n / q; k++) {
+    I q = sqrtT(n);
+    for (I k = 2; k <= n / q; k++) {
         r -= castOf(e0, s(k) - s(k - 1)) * sum_m<T>(t, s, n / k, tbl, id);
-	}
-	for (I m = 1; m < q; m++) {
+    }
+    for (I m = 1; m < q; m++) {
         r -= castOf(e0, s(n / m) - s(n / (m + 1))) * sum_m<T>(t, s, m, tbl, id);
-	}
-	return tbl[n] = r / p1;
+    }
+    return tbl[n] = r / p1;
 }
 
 /**
@@ -558,17 +558,17 @@ T sum_m(F1 t, F2 s, I n, TBL& tbl, T id) {
 template<typename T, typename I, typename F, typename TBL>
 T sum_m(F t, I n, TBL& tbl, T id) {
     T e0 = zeroOf(id);
-	if (n < 1) return e0;
-	if (tbl.count(n)) return tbl[n];
+    if (n < 1) return e0;
+    if (tbl.count(n)) return tbl[n];
     auto r = castOf(e0, t(n));
-	I q = sqrtT(n);
-	for (I k = 2; k <= n / q; k++) {
-		r -= sum_m<T>(t, n / k, tbl, id);
-	}
-	for (I m = 1; m < q; m++) {
+    I q = sqrtT(n);
+    for (I k = 2; k <= n / q; k++) {
+        r -= sum_m<T>(t, n / k, tbl, id);
+    }
+    for (I m = 1; m < q; m++) {
         r -= sum_m<T>(t, m, tbl, id) * castOf(e0, (n / m) - (n / (m + 1)));
-	}
-	return tbl[n] = r;
+    }
+    return tbl[n] = r;
 }
 
 /**
@@ -582,8 +582,8 @@ T sum_m(F t, I n, TBL& tbl, T id) {
  */
 template<typename T, typename I, typename TBL>
 T mertens(I n, TBL& tbl, T id = T(1)) {
-	// p = 1, f = mu, g = delta, t = 1
-	return sum_m<T>([&](I k){ return id; }, n, tbl, id);
+    // p = 1, f = mu, g = delta, t = 1
+    return sum_m<T>([&](I k){ return id; }, n, tbl, id);
 }
 
 /**
@@ -622,37 +622,37 @@ T mertens(I n, TBL& tbl, T id = T(1)) {
  */
 template<typename T, typename I>
 std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<I>& vn, int U) {
-	T e1 = identityOf(g[0]), e0 = zeroOf(e1);
+    T e1 = identityOf(g[0]), e0 = zeroOf(e1);
 
-	// initialize polynomials
+    // initialize polynomials
     auto p = powT(polynom<T>{ e0, e1 }, L);
-	auto s = polynom_sum(p);
-	auto t = polynom_sum(p * g);
+    auto s = polynom_sum(p);
+    auto t = polynom_sum(p * g);
 
-	//// wrapping functions that evaluate polynomials
+    //// wrapping functions that evaluate polynomials
     auto _g = [&](I n){ return g(castOf(e0, n)); };
     auto _p = [&](I n){ return p(castOf(e0, n)); };
     auto _s = [&](I n){ return s(castOf(e0, n)); };
     auto _t = [&](I n){ return t(castOf(e0, n)); };
 
-	// preprocess `phi_D = mu * g_D` up to `U`
-	I n = *std::max_element(vn.begin(), vn.end());
-	if (U <= 0) U = (int)isq(icbrt(n)); // TODO: cast
-	altruct::container::sqrt_map<I, T> mm(U, n);
-	moebius_transform(mm, _g, U);
-	// preprocess `Sum[p(k) * phi_D[k], {k, 1, n}]` up to `U`
-	mm[0] = e0;
-	for (int k = 1; k < U; k++) {
-		mm[k] = mm[k - 1] + _p(k) * mm[k];
-	}
+    // preprocess `phi_D = mu * g_D` up to `U`
+    I n = *std::max_element(vn.begin(), vn.end());
+    if (U <= 0) U = (int)isq(icbrt(n)); // TODO: cast
+    altruct::container::sqrt_map<I, T> mm(U, n);
+    moebius_transform(mm, _g, U);
+    // preprocess `Sum[p(k) * phi_D[k], {k, 1, n}]` up to `U`
+    mm[0] = e0;
+    for (int k = 1; k < U; k++) {
+        mm[k] = mm[k - 1] + _p(k) * mm[k];
+    }
 
-	// calculate the values of interest with `sum_m`
-	std::vector<T> v;
-	for (auto k : vn) {
-		mm.reset_max(k);
-		v.push_back(sum_m<T>(_t, _s, k, mm, e1));
-	}
-	return v;
+    // calculate the values of interest with `sum_m`
+    std::vector<T> v;
+    for (auto k : vn) {
+        mm.reset_max(k);
+        v.push_back(sum_m<T>(_t, _s, k, mm, e1));
+    }
+    return v;
 }
 
 /**
@@ -677,14 +677,14 @@ std::vector<T> sum_g_L(const polynom<T>& g, int L, const std::vector<I>& vn, int
 template<typename T>
 std::vector<T> sum_phi_D_L(int D, int L, const std::vector<int64_t>& vn, int U, T id = T(1)) {
     polynom<T> g_phi_D{ id };
-	for (int i = 0; i < D; i++) {
+    for (int i = 0; i < D; i++) {
         g_phi_D *= polynom<T>{ castOf(id, i), id } / castOf(id, i + 1);
-	}
-	return sum_g_L(g_phi_D, L, vn, U);
+    }
+    return sum_g_L(g_phi_D, L, vn, U);
 }
 template<typename T>
 T sum_phi_D_L(int D, int L, int64_t n, int U, T id = T(1)) {
-	return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, U, id).back();
+    return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, U, id).back();
 }
 
 /**

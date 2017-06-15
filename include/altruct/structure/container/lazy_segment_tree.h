@@ -30,61 +30,61 @@ template<
     typename F_DOWN = std::function<void(T& parent, T& left, T& right)> >
 class lazy_segment_tree {
 public:
-	std::vector<T> v;
-	F_UP f_up;     // for up-propagation on update
-	F_DOWN f_down; // for down-propagation for lazy updating
+    std::vector<T> v;
+    F_UP f_up;     // for up-propagation on update
+    F_DOWN f_down; // for down-propagation for lazy updating
 
     lazy_segment_tree(size_t sz, const F_UP& f_up, const F_DOWN& f_down, T id = T()) : f_up(f_up), f_down(f_down) {
-		v.resize(calc_pow2(sz) * 2, id);
-		//rebuild must be called manually
-	}
+        v.resize(calc_pow2(sz) * 2, id);
+        //rebuild must be called manually
+    }
 
-	template<typename It>
+    template<typename It>
     lazy_segment_tree(It begin, It end, const F_UP& f_up, const F_DOWN& f_down, T id = T()) : f_up(f_up), f_down(f_down) {
-		auto sz = std::distance(begin, end);
-		v.resize(calc_pow2(sz) * 2, id);
-		std::copy(begin, end, v.begin() + size());
-		rebuild();
-	}
+        auto sz = std::distance(begin, end);
+        v.resize(calc_pow2(sz) * 2, id);
+        std::copy(begin, end, v.begin() + size());
+        rebuild();
+    }
 
-	T get(size_t begin, size_t end) {
-		propagate_down(begin, end);
-		T tl = v[0], tr = v[0]; // id
-		size_t b = begin, e = end, i = size();
-		while (b < e) {
-			if (b & 1) f_up(tl, tl, v[i + b++]);
-			if (e & 1) f_up(tr, v[i + --e], tr);
-			b /= 2, e /= 2, i /= 2;
-		}
-		f_up(tl, tl, tr);
-		return tl;
-	}
+    T get(size_t begin, size_t end) {
+        propagate_down(begin, end);
+        T tl = v[0], tr = v[0]; // id
+        size_t b = begin, e = end, i = size();
+        while (b < e) {
+            if (b & 1) f_up(tl, tl, v[i + b++]);
+            if (e & 1) f_up(tr, v[i + --e], tr);
+            b /= 2, e /= 2, i /= 2;
+        }
+        f_up(tl, tl, tr);
+        return tl;
+    }
 
     // if `f` returns false, meaning that the segment cannot be updated as a whole,
     // `f` will be called again on both of its children individually and so on.
-	template<typename F_UPDATE> // // bool(T& node)
+    template<typename F_UPDATE> // // bool(T& node)
     void update(size_t begin, size_t end, const F_UPDATE& f) {
-		propagate_down(begin, end);
-		size_t b = begin, e = end, i = size();
-		while (b < e) {
+        propagate_down(begin, end);
+        size_t b = begin, e = end, i = size();
+        while (b < e) {
             if (b & 1) update_segment(i + b++, f);
             if (e & 1) update_segment(i + --e, f);
-			b /= 2, e /= 2, i /= 2;
-		}
-		propagate_up(begin, end);
-	}
+            b /= 2, e /= 2, i /= 2;
+        }
+        propagate_up(begin, end);
+    }
 
-	// `rebuild` must be called after all modifications are made.
-	T& operator[] (size_t index) {
-		index += size();
-		return v[index];
-	}
+    // `rebuild` must be called after all modifications are made.
+    T& operator[] (size_t index) {
+        index += size();
+        return v[index];
+    }
 
-	void rebuild() {
-		for (size_t i = size() - 1; i > 0; i--) {
-			update_up(i);
-		}
-	}
+    void rebuild() {
+        for (size_t i = size() - 1; i > 0; i--) {
+            update_up(i);
+        }
+    }
 
     void rebuild(size_t begin, size_t end) {
         size_t b = begin + size(), e = end - 1 + size();
@@ -107,8 +107,8 @@ public:
     }
 
     size_t size() {
-		return v.size() / 2;
-	}
+        return v.size() / 2;
+    }
 
 private:
     template<typename F>
@@ -136,52 +136,52 @@ private:
         //    }
         //}
     }
-    
+
     void propagate_down(size_t begin, size_t end) {
-		update_from_root(top(begin));
-		update_from_root(top(end) - 1);
-	}
+        update_from_root(top(begin));
+        update_from_root(top(end) - 1);
+    }
 
-	void update_from_root(size_t i) {
-		for (int h = calc_height(i); h >= 1; h--) {
-			update_down(i >> h);
-		}
-	}
+    void update_from_root(size_t i) {
+        for (int h = calc_height(i); h >= 1; h--) {
+            update_down(i >> h);
+        }
+    }
 
-	void update_down(size_t i) {
-		f_down(v[i], v[2 * i + 0], v[2 * i + 1]);
-	}
+    void update_down(size_t i) {
+        f_down(v[i], v[2 * i + 0], v[2 * i + 1]);
+    }
 
-	void propagate_up(size_t begin, size_t end) {
-		update_to_root(top(begin));
-		update_to_root(top(end) - 1);
-	}
+    void propagate_up(size_t begin, size_t end) {
+        update_to_root(top(begin));
+        update_to_root(top(end) - 1);
+    }
 
-	void update_to_root(size_t i) {
-		while ((i /= 2) > 0) {
-			update_up(i);
-		}
-	}
+    void update_to_root(size_t i) {
+        while ((i /= 2) > 0) {
+            update_up(i);
+        }
+    }
 
-	void update_up(size_t i) {
-		f_up(v[i], v[2 * i + 0], v[2 * i + 1]);
-	}
+    void update_up(size_t i) {
+        f_up(v[i], v[2 * i + 0], v[2 * i + 1]);
+    }
 
-	size_t top(size_t begin) {
-		size_t i = size() + begin;
-		while (i % 2 == 0) i /= 2;
-		return i;
-	}
+    size_t top(size_t begin) {
+        size_t i = size() + begin;
+        while (i % 2 == 0) i /= 2;
+        return i;
+    }
 
-	static int calc_height(size_t sz) {
-		int h = 0; while (sz >= (size_t)1 << h) h++;
-		return h - 1;
-	}
+    static int calc_height(size_t sz) {
+        int h = 0; while (sz >= (size_t)1 << h) h++;
+        return h - 1;
+    }
 
-	static size_t calc_pow2(size_t sz) {
-		size_t w = 1; while (w < sz) w *= 2;
-		return w;
-	}
+    static size_t calc_pow2(size_t sz) {
+        size_t w = 1; while (w < sz) w *= 2;
+        return w;
+    }
 };
 
 } // container

@@ -14,7 +14,7 @@ namespace random {
  */
 template<typename U>
 double integer_to_double_0_1(U val) {
-	return val * (1.0 / (double)std::numeric_limits<U>::max());
+    return val * (1.0 / (double)std::numeric_limits<U>::max());
 }
 
 /**
@@ -26,8 +26,8 @@ double integer_to_double_0_1(U val) {
  */
 template<typename U, typename V>
 V integer_to_range(U val, V min, V max) {
-	V width = max - min + 1;
-	return (width == 0) ? V(val) : min + val % width;
+    V width = max - min + 1;
+    return (width == 0) ? V(val) : min + val % width;
 }
 
 /**
@@ -35,7 +35,7 @@ V integer_to_range(U val, V min, V max) {
  */
 template<typename U>
 U neg(const U& val) {
-	return U(0) - val;
+    return U(0) - val;
 }
 
 /**
@@ -46,8 +46,8 @@ U neg(const U& val) {
  */
 template<typename U>
 U biggest_multiple(U width) {
-	// 2^L - ((2^L - w) % w)
-	return (width == 0) ? 0 : neg(neg(width) % width);
+    // 2^L - ((2^L - w) % w)
+    return (width == 0) ? 0 : neg(neg(width) % width);
 }
 
 /**
@@ -71,13 +71,13 @@ U biggest_multiple(U width) {
  */
 template<typename U>
 U uniform_next(std::function<U(void)> next, U min, U max) {
-	U multiple = biggest_multiple<U>(max - min + 1);
-	U val;
-	int iter = 0;
-	do {
-		val = next();
-	} while (multiple != 0 && val >= multiple && ++iter < 20);
-	return integer_to_range<U>(val, min, max);
+    U multiple = biggest_multiple<U>(max - min + 1);
+    U val;
+    int iter = 0;
+    do {
+        val = next();
+    } while (multiple != 0 && val >= multiple && ++iter < 20);
+    return integer_to_range<U>(val, min, max);
 }
 
 } // random

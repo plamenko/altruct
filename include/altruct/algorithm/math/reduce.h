@@ -17,11 +17,11 @@ namespace math {
  */
 template<typename C, typename F, typename T>
 T reduce(const C& c, const F& f, T id) {
-	T r = id;
-	for (const auto& e : c) {
-		r = f(r, e);
-	}
-	return r;
+    T r = id;
+    for (const auto& e : c) {
+        r = f(r, e);
+    }
+    return r;
 }
 
 /**
@@ -32,7 +32,7 @@ T reduce(const C& c, const F& f, T id) {
  */
 template<typename C, typename T = typename C::value_type>
 T reduce_sum(const C& c, T id = T(0)) {
-	return reduce(c, [](const T& r, const T& e) { return r + e;  }, id);
+    return reduce(c, [](const T& r, const T& e) { return r + e;  }, id);
 }
 
 /**
@@ -43,7 +43,7 @@ T reduce_sum(const C& c, T id = T(0)) {
  */
 template<typename C, typename T = typename C::value_type>
 T reduce_product(const C& c, T id = T(1)) {
-	return reduce(c, [](const T& r, const T& e) { return r * e;  }, id);
+    return reduce(c, [](const T& r, const T& e) { return r * e;  }, id);
 }
 
 /**
@@ -54,7 +54,7 @@ T reduce_product(const C& c, T id = T(1)) {
  */
 template<typename C, typename T = typename C::value_type>
 T reduce_min(const C& c, T id = +std::numeric_limits<T>::max()) {
-	return reduce(c, [](const T& r, const T& e) { return e < r ? e : r; }, id);
+    return reduce(c, [](const T& r, const T& e) { return e < r ? e : r; }, id);
 }
 
 /**
@@ -65,7 +65,7 @@ T reduce_min(const C& c, T id = +std::numeric_limits<T>::max()) {
  */
 template<typename C, typename T = typename C::value_type>
 T reduce_max(const C& c, T id = -std::numeric_limits<T>::max()) {
-	return reduce(c, [](const T& r, const T& e) { return r < e ? e : r; }, id);
+    return reduce(c, [](const T& r, const T& e) { return r < e ? e : r; }, id);
 }
 
 /**
@@ -76,7 +76,7 @@ T reduce_max(const C& c, T id = -std::numeric_limits<T>::max()) {
  */
 template<typename C, typename T = typename C::value_type>
 T reduce_mex(const C& c, T id = 0) {
-	return reduce(c, [](const T& r, const T& e) { return r < e ? r : r + 1; }, id);
+    return reduce(c, [](const T& r, const T& e) { return r < e ? r : r + 1; }, id);
 }
 
 } // math

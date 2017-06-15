@@ -8,15 +8,15 @@ namespace altruct {
 namespace math {
 
 // TODO: Use compiler built-ins when available:
-//   GCC: __builtin_clz, __builtin_ctz, __builtin_popcount 
-//   MSVS: _BitScanForward, _BitScanReverse 
+//   GCC: __builtin_clz, __builtin_ctz, __builtin_popcount
+//   MSVS: _BitScanForward, _BitScanReverse
 
 /**
  * Size in bits of the given type.
  */
 template<typename T>
 struct bit_size {
-	static const int value = sizeof(T) * 8;
+    static const int value = sizeof(T) * 8;
 };
 template<typename T>
 const int bit_size<T>::value;
@@ -65,65 +65,64 @@ uint64_t bit_reverse(uint64_t x);
 /**
  * or_down recursive template.
  *
- *	x |= (x >> 32);
- *	x |= (x >> 16);
- *	x |= (x >> 8);
- *	x |= (x >> 4);
- *	x |= (x >> 2);
- *	x |= (x >> 1);
+ *  x |= (x >> 32);
+ *  x |= (x >> 16);
+ *  x |= (x >> 8);
+ *  x |= (x >> 4);
+ *  x |= (x >> 2);
+ *  x |= (x >> 1);
  */
 template<typename I, int SHIFT>
 struct _or_down {
-	static I of(I x) {
-		return _or_down<I, SHIFT / 2>::of(x | (x >> SHIFT));
-	}
+    static I of(I x) {
+        return _or_down<I, SHIFT / 2>::of(x | (x >> SHIFT));
+    }
 };
 template<typename I>
 struct _or_down<I, 0> {
-	static I of(I x) {
-		return x;
-	}
+    static I of(I x) {
+        return x;
+    }
 };
 template<typename I>
 I or_down(I x) {
-	return _or_down<I, bit_size<I>::value / 2>::of(x);
+    return _or_down<I, bit_size<I>::value / 2>::of(x);
 }
 
 /**
  * xor_down recursive template.
  *
- *	x ^= (x >> 32);
- *	x ^= (x >> 16);
- *	x ^= (x >> 8);
- *	x ^= (x >> 4);
- *	x ^= (x >> 2);
- *	x ^= (x >> 1);
+ *  x ^= (x >> 32);
+ *  x ^= (x >> 16);
+ *  x ^= (x >> 8);
+ *  x ^= (x >> 4);
+ *  x ^= (x >> 2);
+ *  x ^= (x >> 1);
  */
 template<typename I, int SHIFT>
 struct _xor_down {
-	static I of(I x) {
-		return _xor_down<I, SHIFT / 2>::of(x ^ (x >> SHIFT));
-	}
+    static I of(I x) {
+        return _xor_down<I, SHIFT / 2>::of(x ^ (x >> SHIFT));
+    }
 };
 template<typename I>
 struct _xor_down<I, 0> {
-	static I of(I x) {
-		return x;
-	}
+    static I of(I x) {
+        return x;
+    }
 };
 template<typename I>
 I xor_down(I x) {
-	return _xor_down<I, bit_size<I>::value / 2>::of(x);
+    return _xor_down<I, bit_size<I>::value / 2>::of(x);
 }
 
 /**
  * Performs two's complement negation.
- * without a compiler warning for unsigned types.
+ * Without a compiler warning for unsigned types.
  */
 template<typename I>
 I neg(I x) {
-	typedef typename std::make_signed<I>::type SI;
-	return I(-SI(x));
+    return I(~x) + I(1);
 }
 
 /**
@@ -131,7 +130,7 @@ I neg(I x) {
  */
 template<typename I>
 I gray_to_bin(I x) {
-	return xor_down(x);
+    return xor_down(x);
 }
 
 /**
@@ -139,7 +138,7 @@ I gray_to_bin(I x) {
  */
 template<typename I>
 I bin_to_gray(I x) {
-	return (x ^ (x >> 1));
+    return (x ^ (x >> 1));
 }
 
 /**
@@ -147,8 +146,8 @@ I bin_to_gray(I x) {
  */
 template<typename I>
 I hi_bit(I x) {
-	x = or_down(x);
-	return (x ^ (x >> 1));
+    x = or_down(x);
+    return (x ^ (x >> 1));
 }
 
 /**
@@ -156,7 +155,7 @@ I hi_bit(I x) {
  */
 template<typename I>
 I lo_bit(I x) {
-	return (x & neg(x));
+    return (x & neg(x));
 }
 
 /**
@@ -165,7 +164,7 @@ I lo_bit(I x) {
  */
 template<typename I>
 bool is_not_pow2(I x) {
-	return (x & (x - 1)) != 0;
+    return (x & (x - 1)) != 0;
 }
 
 /**
@@ -174,7 +173,7 @@ bool is_not_pow2(I x) {
  */
 template<typename I>
 bool is_pow2(I x) {
-	return (x & (x - 1)) == 0;
+    return (x & (x - 1)) == 0;
 }
 
 /**
@@ -183,7 +182,7 @@ bool is_pow2(I x) {
  */
 template<typename I>
 I next_pow2(I x) {
-	return I(or_down(x) + 1);
+    return I(or_down(x) + 1);
 }
 
 /**
@@ -191,7 +190,7 @@ I next_pow2(I x) {
  */
 template<typename I>
 int lzc(I x) {
-	return bit_size<I>::value - bit_cnt1(or_down(x));
+    return bit_size<I>::value - bit_cnt1(or_down(x));
 }
 
 /**
@@ -199,7 +198,7 @@ int lzc(I x) {
  */
 template<typename I>
 int tzc(I x) {
-	return bit_cnt1(I(lo_bit(x) - 1));
+    return bit_cnt1(I(lo_bit(x) - 1));
 }
 
 /**
@@ -208,8 +207,8 @@ int tzc(I x) {
  */
 template<typename I>
 I sign_mag(I x) {
-	const I HI_BIT = I(1) << (bit_size<I>::value - 1);
-	return (x & HI_BIT) ? neg(x) ^ HI_BIT : x;
+    const I HI_BIT = I(1) << (bit_size<I>::value - 1);
+    return (x & HI_BIT) ? neg(x) ^ HI_BIT : x;
 }
 
 } // math

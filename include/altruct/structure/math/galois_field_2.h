@@ -18,41 +18,41 @@ namespace math {
 template<typename I = uint32_t>
 class galois_field_2 {
 public:
-	I v;
+    I v;
 
-	galois_field_2(const I& v = 0) : v(v) {}
+    galois_field_2(const I& v = 0) : v(v) {}
 
-	bool operator == (const galois_field_2 &rhs) const { return (v == rhs.v); }
-	bool operator != (const galois_field_2 &rhs) const { return (v != rhs.v); }
-	bool operator <  (const galois_field_2 &rhs) const { return (v <  rhs.v); }
-	bool operator >  (const galois_field_2 &rhs) const { return (v >  rhs.v); }
-	bool operator <= (const galois_field_2 &rhs) const { return (v <= rhs.v); }
-	bool operator >= (const galois_field_2 &rhs) const { return (v >= rhs.v); }
+    bool operator == (const galois_field_2 &rhs) const { return (v == rhs.v); }
+    bool operator != (const galois_field_2 &rhs) const { return (v != rhs.v); }
+    bool operator <  (const galois_field_2 &rhs) const { return (v <  rhs.v); }
+    bool operator >  (const galois_field_2 &rhs) const { return (v >  rhs.v); }
+    bool operator <= (const galois_field_2 &rhs) const { return (v <= rhs.v); }
+    bool operator >= (const galois_field_2 &rhs) const { return (v >= rhs.v); }
 
-	galois_field_2  operator +  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r += rhs; }
-	galois_field_2  operator -  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r -= rhs; }
-	galois_field_2  operator -  ()                          const { galois_field_2 r(*this); return r; }
-	galois_field_2  operator *  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r *= rhs; }
-	galois_field_2  operator /  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r /= rhs; }
+    galois_field_2  operator +  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r += rhs; }
+    galois_field_2  operator -  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r -= rhs; }
+    galois_field_2  operator -  ()                          const { galois_field_2 r(*this); return r; }
+    galois_field_2  operator *  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r *= rhs; }
+    galois_field_2  operator /  (const galois_field_2 &rhs) const { galois_field_2 r(*this); return r /= rhs; }
 
-	galois_field_2& operator += (const galois_field_2 &rhs) { v ^= rhs.v; return *this; }
-	galois_field_2& operator -= (const galois_field_2 &rhs) { v ^= rhs.v; return *this; }
-	galois_field_2& operator *= (const galois_field_2 &rhs) { v &= rhs.v; return *this; }
-	galois_field_2& operator /= (const galois_field_2 &rhs) { v |= ~rhs.v; return *this; }
+    galois_field_2& operator += (const galois_field_2 &rhs) { v ^= rhs.v; return *this; }
+    galois_field_2& operator -= (const galois_field_2 &rhs) { v ^= rhs.v; return *this; }
+    galois_field_2& operator *= (const galois_field_2 &rhs) { v &= rhs.v; return *this; }
+    galois_field_2& operator /= (const galois_field_2 &rhs) { v |= ~rhs.v; return *this; }
 };
 
 template<typename I>
 struct identityT<galois_field_2<I>> {
-	static galois_field_2<I> of(const galois_field_2<I>& x) {
-		return galois_field_2<I>(~I(0));
-	}
+    static galois_field_2<I> of(const galois_field_2<I>& x) {
+        return galois_field_2<I>(~I(0));
+    }
 };
 
 template<typename I>
 struct zeroT<galois_field_2<I>> {
-	static galois_field_2<I> of(const galois_field_2<I>& x) {
-		return galois_field_2<I>(I(0));
-	}
+    static galois_field_2<I> of(const galois_field_2<I>& x) {
+        return galois_field_2<I>(I(0));
+    }
 };
 
 } // math

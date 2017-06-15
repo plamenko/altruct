@@ -17,13 +17,13 @@ namespace math {
  */
 template<typename I>
 fraction<I> farey_neighbour(const I& n, const fraction<I>& f_prev, const fraction<I>& f) {
-	I p = f_prev.p, q = f_prev.q;
-	if (f_prev.q == 0) {
-		gcd_ex(f.q, f.p, &p, &q);
-		(f_prev.p < 0) ? p = -p : q = -q;
-	}
-	I k = (n + q) / f.q;
-	return fraction<I>(k * f.p - p, k * f.q - q);
+    I p = f_prev.p, q = f_prev.q;
+    if (f_prev.q == 0) {
+        gcd_ex(f.q, f.p, &p, &q);
+        (f_prev.p < 0) ? p = -p : q = -q;
+    }
+    I k = (n + q) / f.q;
+    return fraction<I>(k * f.p - p, k * f.q - q);
 }
 
 } // math

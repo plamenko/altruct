@@ -29,12 +29,12 @@ namespace math {
 template<typename R>
 std::vector<R> factorials_mod_pp_skipped(int n, int p, int e = 1) {
     moduloX<R> r(1, powT(castOf<R>(p), e));
-	std::vector<R> tbl(n + 1);
-	for (int i = 0; i <= n; i++) {
+    std::vector<R> tbl(n + 1);
+    for (int i = 0; i <= n; i++) {
         if (i % p != 0) r *= castOf<R>(i);
-		tbl[i] = r.v;
-	}
-	return tbl;
+        tbl[i] = r.v;
+    }
+    return tbl;
 }
 
 /**
@@ -134,16 +134,16 @@ template<typename R, typename I>
 std::pair<moduloX<R>, I> factorial_mod_pp_reduced_2_modx(I n, int p, int e, const R* fact_table) {
     int pe = powT(p, e);
     // fact_table[p^e] == (p == 2 && k != 2) +1 : -1;
-	bool sign = !(p == 2 && e != 2);
+    bool sign = !(p == 2 && e != 2);
     moduloX<R> f(fact_table[0], castOf<R>(pe));
     I a = 0;
-	while (n > 1) {
-		I q = n / pe, r = n % pe;
+    while (n > 1) {
+        I q = n / pe, r = n % pe;
         if (sign && (q % 2 != 0)) f = -f;
         f *= fact_table[castOf<int>(r)]; n /= p;
-		a += n;
-	}
-	return{ f, a };
+        a += n;
+    }
+    return{ f, a };
 }
 template<typename R, typename I>
 std::pair<R, I> factorial_mod_pp_reduced_2(I n, int p, int e, const R* fact_table) {
@@ -179,7 +179,7 @@ std::pair<R, I> binomial_mod_pp_reduced_2(I n, I k, int p, int e, const R* fact_
     auto fl = factorial_mod_pp_reduced_2_modx(I(n - k), p, e, fact_table);
     auto b = fn.first / (fk.first * fl.first);
     auto a = fn.second - (fk.second + fl.second);
-	return{ b.v, a };
+    return{ b.v, a };
 }
 
 /**

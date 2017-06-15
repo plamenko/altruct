@@ -52,9 +52,9 @@ R castOf(const R& ref, const T& x) { return castT<R, T>::of(ref, x); }
  */
 template<typename T>
 struct identityT {
-	static T of(const T& x) {
-		return T(1);
-	}
+    static T of(const T& x) {
+        return T(1);
+    }
 };
 template<typename T>
 T identityOf(const T& x) { return identityT<T>::of(x); }
@@ -75,9 +75,9 @@ T identityOf(const T& x) { return identityT<T>::of(x); }
  */
 template<typename T>
 struct zeroT {
-	static T of(const T& x) {
-		return T(0);
-	}
+    static T of(const T& x) {
+        return T(0);
+    }
 };
 template<typename T>
 T zeroOf(const T& x) { return zeroT<T>::of(x); }
@@ -87,8 +87,8 @@ T zeroOf(const T& x) { return zeroT<T>::of(x); }
  */
 template <typename T>
 T absT(const T& x) {
-	T e0 = zeroOf(x);
-	return (x < e0) ? -x : x;
+    T e0 = zeroOf(x);
+    return (x < e0) ? -x : x;
 }
 
 /**
@@ -96,7 +96,7 @@ T absT(const T& x) {
  */
 template <typename T>
 T minT(const T& x, const T& y) {
-	return (x < y) ? x : y;
+    return (x < y) ? x : y;
 }
 
 /**
@@ -104,7 +104,7 @@ T minT(const T& x, const T& y) {
  */
 template <typename T>
 T maxT(const T& x, const T& y) {
-	return (x < y) ? y : x;
+    return (x < y) ? y : x;
 }
 
 /**
@@ -124,13 +124,13 @@ T boundT(const T& x, const T& l, const T& r) {
  */
 template<typename T, typename I>
 T powT(T x, I y) {
-	T e1 = identityOf(x);
-	T r = e1;
-	for (; y > 0; y /= 2) {
-		if (y % 2 != 0) r *= x;
-		x *= x;
-	}
-	return r;
+    T e1 = identityOf(x);
+    T r = e1;
+    for (; y > 0; y /= 2) {
+        if (y % 2 != 0) r *= x;
+        x *= x;
+    }
+    return r;
 }
 
 /**
@@ -140,9 +140,9 @@ T powT(T x, I y) {
  */
 template<typename T>
 T gcd(T a, T b) {
-	T e0 = zeroOf(a);
-	while (a != e0) { T r = b % a; b = a; a = r; }
-	return b;
+    T e0 = zeroOf(a);
+    while (a != e0) { T r = b % a; b = a; a = r; }
+    return b;
 }
 
 /**
@@ -159,21 +159,20 @@ T gcd(T a, T b) {
  */
 template<typename T>
 T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
-	T e0 = zeroOf(a), e1 = identityOf(a);
-	T r, q, g = a, h = b;
-	T xo = e0, xn = e1;
-	T yo = e1, yn = e0;
-	while (h != e0) {
-		q = g / h;
-		r = g  - q * h;  g  = h;  h  = r;
-		r = xn - q * xo; xn = xo; xo = r;
-		r = yn - q * yo; yn = yo; yo = r;
-//		T gn = a * xn + b * yn;
-	}
-	if (x) *x = xn;
-	if (y) *y = yn;
-//	if (y) *y = (b != e0) ? (g - a * xn) / b : e0;
-	return g;
+    T e0 = zeroOf(a), e1 = identityOf(a);
+    T r, q, g = a, h = b;
+    T xo = e0, xn = e1;
+    T yo = e1, yn = e0;
+    while (h != e0) {
+        q = g / h;
+        r = g  - q * h;  g  = h;  h  = r;
+        r = xn - q * xo; xn = xo; xo = r;
+        r = yn - q * yo; yn = yo; yo = r;
+        // T gn = a * xn + b * yn;
+    }
+    if (x) *x = xn;
+    if (y) *y = yn;
+    return g;
 }
 
 /**
@@ -186,13 +185,13 @@ T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
  */
 template<typename T>
 T gcd_max(T a, T b) {
-	T e0 = zeroOf(b);
-	if (b == e0) return a;
-	T go = e0, g = 1;
-	while (go != g) {
-		go = g; g = gcd(g * a, b);
-	}
-	return g;
+    T e0 = zeroOf(b);
+    if (b == e0) return a;
+    T go = e0, g = 1;
+    while (go != g) {
+        go = g; g = gcd(g * a, b);
+    }
+    return g;
 }
 
 /**
@@ -202,7 +201,7 @@ T gcd_max(T a, T b) {
  */
 template<typename T>
 T lcm(const T& a, const T& b) {
-	return a * (b / gcd(a, b));
+    return a * (b / gcd(a, b));
 }
 
 /**
@@ -224,7 +223,7 @@ int32_t icbrtc(int64_t x);
  */
 template<typename T>
 T sqT(T x) {
-	return x * x;
+    return x * x;
 }
 
 /**
@@ -235,16 +234,16 @@ T sqT(T x) {
  */
 template<typename T>
 T sqrtT(T x, T eps = T(1)) {
-	if (x < 0) return -sqrtT<T>(-x, eps);
-	if (x == 0) return 0;
-	if (x == 1) return 1;
-	T q1 = x / 2;
-	T q2 = x / q1;
-	while (absT(T(q1 - q2)) > eps) {
-		q1 = (q1 + q2) / 2;
-		q2 = x / q1;
-	}
-	return minT(q1, q2);
+    if (x < 0) return -sqrtT<T>(-x, eps);
+    if (x == 0) return 0;
+    if (x == 1) return 1;
+    T q1 = x / 2;
+    T q2 = x / q1;
+    while (absT(T(q1 - q2)) > eps) {
+        q1 = (q1 + q2) / 2;
+        q2 = x / q1;
+    }
+    return minT(q1, q2);
 }
 template<> inline float sqrtT(float x, float) { return sqrt(x); }
 template<> inline double sqrtT(double x, double) { return sqrt(x); }
@@ -263,7 +262,7 @@ template<> inline uint64_t sqrtT(uint64_t x, uint64_t) { return isqrt(x); }
  */
 template<typename I>
 bool is_square(I x) {
-	return (sqT(sqrtT(x)) == x);
+    return (sqT(sqrtT(x)) == x);
 }
 
 /**
@@ -271,7 +270,7 @@ bool is_square(I x) {
  */
 template<typename T>
 T cbT(T x) {
-	return x * x * x;
+    return x * x * x;
 }
 
 /**
@@ -282,18 +281,18 @@ T cbT(T x) {
  */
 template<typename T>
 T cbrtT(T x, T eps = T(1)) {
-	if (x < 0) return -cbrtT<T>(-x, eps);
-	if (x == 0) return 0;
-	if (x == 1) return 1;
-	T r0 = 0;
-	T r1 = sqrtT(x, eps);
-	T r2 = x / sqT(r1);
-	while (r1 != r0 && absT(T(r1 - r2)) > eps) {
-		r0 = r1;
-		r1 = (r1 + r1 + r2) / 3;
-		r2 = x / sqT(r1);
-	}
-	return minT(r1, r2);
+    if (x < 0) return -cbrtT<T>(-x, eps);
+    if (x == 0) return 0;
+    if (x == 1) return 1;
+    T r0 = 0;
+    T r1 = sqrtT(x, eps);
+    T r2 = x / sqT(r1);
+    while (r1 != r0 && absT(T(r1 - r2)) > eps) {
+        r0 = r1;
+        r1 = (r1 + r1 + r2) / 3;
+        r2 = x / sqT(r1);
+    }
+    return minT(r1, r2);
 }
 template<> inline float cbrtT(float x, float) { return cbrt(x); }
 template<> inline double cbrtT(double x, double) { return cbrt(x); }
@@ -309,7 +308,7 @@ template<> inline uint64_t cbrtT(uint64_t x, uint64_t) { return icbrt(x); }
  */
 template<typename I>
 bool is_cube(I x) {
-	return (cbT(cbrtT(x)) == x);
+    return (cbT(cbrtT(x)) == x);
 }
 
 /**
@@ -317,20 +316,20 @@ bool is_cube(I x) {
  */
 template<typename I>
 I div_floor(I a, I b) {
-	if (b < 0) a = -a, b = -b;
-	return (a < 0) ? I((a + 1) / b - 1) : I(a / b);
+    if (b < 0) a = -a, b = -b;
+    return (a < 0) ? I((a + 1) / b - 1) : I(a / b);
 }
 
 template<typename I>
 I div_ceil(I a, I b) {
-	if (b < 0) a = -a, b = -b;
-	return (a > 0) ? I((a - 1) / b + 1) : I(a / b);
+    if (b < 0) a = -a, b = -b;
+    return (a > 0) ? I((a - 1) / b + 1) : I(a / b);
 }
 
 template<typename I>
 I div_round(I a, I b) {
-	if (b < 0) a = -a, b = -b;
-	return (a > 0) ? I((a + b / 2) / b) : I((a - b / 2) / b);
+    if (b < 0) a = -a, b = -b;
+    return (a > 0) ? I((a + b / 2) / b) : I((a - b / 2) / b);
 }
 
 /**
@@ -338,7 +337,7 @@ I div_round(I a, I b) {
  */
 template<typename I>
 I multiple(I a, I b) {
-	return div_ceil(b, a) * a;
+    return div_ceil(b, a) * a;
 }
 
 } // math

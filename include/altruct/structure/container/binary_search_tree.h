@@ -268,18 +268,18 @@ public: // constructor & size
     }
 
     template<typename It>
-    binary_search_tree(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) : 
+    binary_search_tree(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
         binary_search_tree(cmp, alloc) {
         for (It it = begin; it != end; ++it) {
             insert(*it);
         }
     }
 
-    binary_search_tree(std::initializer_list<T> list) : 
+    binary_search_tree(std::initializer_list<T> list) :
         binary_search_tree(list.begin(), list.end()) {
     }
 
-    binary_search_tree(binary_search_tree&& rhs) : 
+    binary_search_tree(binary_search_tree&& rhs) :
         binary_search_tree() {
         swap(rhs);
     }

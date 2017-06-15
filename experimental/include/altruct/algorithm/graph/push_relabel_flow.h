@@ -19,7 +19,7 @@ public:
     std::vector<std::vector<int>> adjl; // adjl[a] is the adjacency list of a.
     std::vector<std::vector<T>> cap;    // cap[a][b] is the capacity from a to b.
     std::vector<std::vector<T>> flow;   // flow[a][b] is the occupied flow from a to b.
-    
+
     std::vector<int> height;            // height of node.
     std::vector<T> excess;              // flow into node minus flow from node.
     std::vector<int> seen;              // neighbours seen since last relabel.
@@ -41,7 +41,7 @@ public:
     T calc_max_flow(int source, int sink, int rule = RELABEL_TO_FRONT) {
         int n = (int)cap.size();
         if (source == sink) return 0;
-        
+
         flow.assign(n, std::vector<T>(n, 0));
         height.assign(n, 0);
         excess.assign(n, 0);

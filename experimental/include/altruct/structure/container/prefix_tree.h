@@ -26,12 +26,12 @@ namespace container {
 template<int ALPHABET_SIZE = 26, typename INDEX_T = int, typename ALPHA_T = uint8_t, typename WORD_T = std::string>
 class prefix_tree {
 public:
-	typedef INDEX_T index_t;
-	typedef ALPHA_T alpha_t;
+    typedef INDEX_T index_t;
+    typedef ALPHA_T alpha_t;
     typedef WORD_T word_t;
 
 protected:
-	struct node_t {
+    struct node_t {
         index_t word_id = 0;
         index_t num_ch = 0;
         alpha_t ord = 0;
@@ -40,7 +40,7 @@ protected:
         node_t() {
             for (int i = 0; i < ALPHABET_SIZE; i++) next[i] = nullptr;
         }
-	};
+    };
 
     std::allocator<node_t> alloc;
     index_t nodes;
@@ -48,9 +48,9 @@ protected:
     std::vector<node_t*> words;
 
 public:
-	prefix_tree() : nodes(0), root(nullptr) {
+    prefix_tree() : nodes(0), root(nullptr) {
         _init();
-	}
+    }
 
     ~prefix_tree() {
         words.clear();
@@ -142,9 +142,9 @@ public:
     }
 
     // helper functors for ordinal <-> letter conversion
-	static alpha_t ordinal_digit(char c) { return alpha_t(c - '0'); }
+    static alpha_t ordinal_digit(char c) { return alpha_t(c - '0'); }
     static alpha_t ordinal_lower_alpha(char c) { return alpha_t(c - 'a'); }
-	static alpha_t ordinal_upper_alpha(char c) { return alpha_t(c - 'A'); }
+    static alpha_t ordinal_upper_alpha(char c) { return alpha_t(c - 'A'); }
     static char letter_digit(alpha_t o) { return char(o + '0'); }
     static char letter_lower_alpha(alpha_t o) { return char(o + 'a'); }
     static char letter_upper_alpha(alpha_t o) { return char(o + 'A'); }

@@ -30,35 +30,35 @@ namespace graph {
  */
 template<typename F, typename E>
 void iterative_dfs(const graph<E>& g, F visitor, int source = -1) {
-	std::vector<int> visited(g.size());
-	std::vector<std::pair<int, int>> stk;
-	// this outer loop allows us to handle a disconnected graph
+    std::vector<int> visited(g.size());
+    std::vector<std::pair<int, int>> stk;
+    // this outer loop allows us to handle a disconnected graph
     int of = (source != -1) ? source : 0;
     int ol = (source != -1) ? source : g.size() - 1;
-	for (int o = of; o <= ol; o++) {
-		if (visited[o]) continue;
+    for (int o = of; o <= ol; o++) {
+        if (visited[o]) continue;
         if (visitor(o, -1, o, 0)) {
             visited[o] = 1;
             stk.push_back({ o, 0 });
         }
-		while (!stk.empty()) {
-			int d = (int)stk.size();
-			int u = stk.back().first;
-			int i = stk.back().second;
-			if (i < (int)g[u].size()) {
-				int v = g[u][i].v;
-				stk.back().second++;
-				if (visited[v]) continue;
-				if (visitor(o, u, v, d)) {
-					visited[v] = 1;
-					stk.push_back({ v, 0 });
-				}
-			} else {
-				stk.pop_back();
-				visitor(o, u, -1, d);
-			}
-		}
-	}
+        while (!stk.empty()) {
+            int d = (int)stk.size();
+            int u = stk.back().first;
+            int i = stk.back().second;
+            if (i < (int)g[u].size()) {
+                int v = g[u][i].v;
+                stk.back().second++;
+                if (visited[v]) continue;
+                if (visitor(o, u, v, d)) {
+                    visited[v] = 1;
+                    stk.push_back({ v, 0 });
+                }
+            } else {
+                stk.pop_back();
+                visitor(o, u, -1, d);
+            }
+        }
+    }
 }
 
 } // graph

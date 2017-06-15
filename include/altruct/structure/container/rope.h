@@ -222,7 +222,7 @@ public: // query & update
     T& at(int pos) {
         return treap_t::remove_const(find_kth(pos).ptr)->val;
     }
-    
+
     const T& operator[](int pos) const {
         return at(pos);
     }

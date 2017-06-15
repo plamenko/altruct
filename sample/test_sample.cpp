@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "altruct/chrono/chrono.h"
+#include "altruct/algorithm/math/bits.h"
 #include "altruct/structure/math/modulo.h"
 #include "altruct/structure/math/prime_holder.h"
 #include "altruct/io/iostream_overloads.h"
@@ -17,7 +18,6 @@ using namespace altruct::chrono;
 
 void test_sample() {
     typedef chrono::high_resolution_clock clk;
-
     typedef modulo<int, 1000000007, modulo_storage::CONSTANT> mod;
     mod r = 0;
     auto T0 = clk::now();

@@ -35,7 +35,7 @@ namespace {
         }
 
         template<typename It>
-        binary_search_tree_dbg(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) : 
+        binary_search_tree_dbg(It begin, It end, const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
             bst_t(begin, end, cmp, alloc) {
         }
 
@@ -255,7 +255,7 @@ TEST(binary_search_tree_test, constructor) {
     // move constructor
     binary_search_tree_dbg<int> t3(std::move(binary_search_tree_dbg<int>(s1.begin(), s1.end())));
     verify_structure(t3, s1);
-    
+
     // copy constructor
     binary_search_tree_dbg<int> t4(t3);
     verify_structure(t3, s1);
@@ -264,12 +264,12 @@ TEST(binary_search_tree_test, constructor) {
     // move assignment
     t4 = std::move(binary_search_tree_dbg<int>(s1.begin(), s1.end()));
     verify_structure(t4, s1);
-    
+
     // copy assignment
     t4 = t3;
     verify_structure(t4, s1);
     verify_structure(t3, s1);
-    
+
     // clear
     t1.clear();
     verify_structure(t1, s0);
@@ -301,7 +301,7 @@ TEST(binary_search_tree_test, duplicate_handling) {
     multiset<int> s2; for (int i = 0; i < 110; i++) s2.insert(rand() % 1000000000);
     binary_search_tree_dbg<int, int, bst_duplicate_handling::COUNT> t2(s2.begin(), s2.end());
     verify_structure(t2, s2);
-    
+
     typedef pair<const int, string> ck_entry;
     multimap<int, string> s3; for (int i = 0; i < 110; i++) s3.insert({ rand() % 10, to_string(i) });
     binary_search_tree_dbg<int, ck_entry, bst_duplicate_handling::STORE> t3(s3.begin(), s3.end());
@@ -325,7 +325,7 @@ TEST(binary_search_tree_test, relational_operators) {
     ASSERT_COMPARISON_OPERATORS(+1, (binary_search_tree_dbg<int>{ 3, 8, 15, 16, 17 }), t); // longer
     ASSERT_COMPARISON_OPERATORS(+1, (binary_search_tree_dbg<int>{ 3, 9, 15 }), t);         // shorter but larger
     ASSERT_COMPARISON_OPERATORS(-1, (binary_search_tree_dbg<int>{ 3, 7, 15, 16, 17 }), t); // longer but smaller
-    
+
     typedef pair<const int, string> ck_entry;
     typedef binary_search_tree_dbg<int, ck_entry, bst_duplicate_handling::STORE> tree;
     tree t2{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } };

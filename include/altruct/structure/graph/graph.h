@@ -67,7 +67,7 @@ public:
 
     int add_node() { adjl.push_back({}); return size() - 1; }
     void add_edge(int u, const E& e) { adjl[u].push_back(e); }
-    
+
     void add_edge2(int u, const E& e) {
         adjl[u].push_back(e);
         adjl[e.v].push_back(e);
@@ -84,7 +84,7 @@ public:
             }
         }
     }
-    
+
     void delete_node(int u) {
         int v = size() - 1;
         std::swap(adjl[u], adjl[v]);
@@ -101,7 +101,7 @@ public:
             }
         }
     }
-    
+
     void contract(int u, int v) {
         delete_edge(u, v);
         delete_edge(v, u);
@@ -110,7 +110,7 @@ public:
         delete_node(v);
         for (int u = 0; u < size(); u++) deduplicate_edges(u);
     }
-    
+
     void deduplicate_edges(int u) {
         sort(adjl[u].begin(), adjl[u].end());
         auto it = unique(adjl[u].begin(), adjl[u].end());

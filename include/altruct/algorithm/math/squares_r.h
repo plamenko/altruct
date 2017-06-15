@@ -119,20 +119,20 @@ std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>
  */
 template<typename P, typename I = P>
 I squares_r(const std::vector<std::pair<P, int>> &vf, bool unique_only) {
-	I B = 1; int s = 1, q = 1;
-	for (const auto& f : vf) {
-		if (f.first % 4 == 1) {
-			B *= f.second + 1;
-		} else if (f.first % 4 == 3) {
-			if (f.second % 2 == 1) B = 0;
-		} else if (f.first == 2) {
-			if (f.second % 2 == 1) s = -1;
-		}
-		if (f.second % 2 == 1) q = 0;
-	}
-	if (!unique_only) return B * 4;
-	if (B % 2 == 1) B -= s;
-	return B / 2 + q;
+    I B = 1; int s = 1, q = 1;
+    for (const auto& f : vf) {
+        if (f.first % 4 == 1) {
+            B *= f.second + 1;
+        } else if (f.first % 4 == 3) {
+            if (f.second % 2 == 1) B = 0;
+        } else if (f.first == 2) {
+            if (f.second % 2 == 1) s = -1;
+        }
+        if (f.second % 2 == 1) q = 0;
+    }
+    if (!unique_only) return B * 4;
+    if (B % 2 == 1) B -= s;
+    return B / 2 + q;
 }
 
 } // math

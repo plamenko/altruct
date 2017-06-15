@@ -16,7 +16,7 @@ Templates allow powerful and fast abstractions at a cost of higher compilation t
  There are many challenges involved in properly organizing the code, properly testing it,
  making sure it is robust and portable, and finally making it open source.
 
- 
+
 ## Unit test coverage and samples
 Altruct has extensive unit tests coverage powered by `googletest`.
 Those unit tests are also its best usage examples.
@@ -196,7 +196,7 @@ needs to be brought to a higher quality bar that is required here.
     * Primes:
       * Precompute for a range (1 to n, or segmented):
         * Primes, Prime-Pi, Euler-Phi (Totient), Moebius-Mu, Divisor-Sigma, Prime-Factor
-        * Moebius transform, factorization 
+        * Moebius transform, factorization
       * Compute from a given factorization:
         * Divisors, Euler-Phi, Carmichael-Lambda
         * SquaresR
@@ -289,4 +289,3 @@ needs to be brought to a higher quality bar that is required here.
     * `fenwick_tree` - A [Fenwick tree](https://en.wikipedia.org/wiki/Fenwick_tree) structure a.k.a. "logaritamska struktura" in Croatia
     * `prime_holder` - A utility container that keeps a range of primes and related functions
     * `root_wrapper` - A utility class that wraps the root powers used in FFT
-

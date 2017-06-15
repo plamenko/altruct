@@ -12,15 +12,15 @@ namespace math {
 namespace {
 int8_t _tbl_ilog2_16_full[1 << 16];
 int8_t _tbl_ilog2_16[16] = {
-	0, 7, 1, 13, 8, 10, 2, 14, 6, 12, 9, 5, 11, 4, 3, 15 };
+    0, 7, 1, 13, 8, 10, 2, 14, 6, 12, 9, 5, 11, 4, 3, 15 };
 int8_t _tbl_ilog2_32[32] = {
-	0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
-	8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31 };
+    0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+    8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31 };
 int8_t _tbl_ilog2_64[64] = {
-	0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61,
-	51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62,
-	57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
-	45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5, 63 };
+    0, 58, 1, 59, 47, 53, 2, 60, 39, 48, 27, 54, 33, 42, 3, 61,
+    51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4, 62,
+    57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
+    45, 25, 31, 35, 16, 9, 12, 44, 24, 15, 8, 23, 7, 6, 5, 63 };
 }
 int ilog2(uint8_t x) { return _tbl_ilog2_16_full[x]; }
 int ilog2(uint16_t x) { return _tbl_ilog2_16_full[x]; }
@@ -63,11 +63,11 @@ uint16_t _bit_reverse_16(uint16_t x) { return (uint16_t(bit_reverse(uint8_t(x)))
  * operations, this overhead would be unacceptable.
  */
 bool _altruct_math_bits_init() {
-	for (int x = 2; x < (1 << 16); x++) _tbl_ilog2_16_full[x] = _tbl_ilog2_16_full[x / 2] + 1;
-	for (int x = 1; x < (1 << 16); x++) _tbl_cnt1_16[x] = _tbl_cnt1_16[x / 2] + (x & 1);
-	for (int x = 1; x < (1 << 8); x++) _tbl_rev_8[x] = _bit_reverse_8(uint8_t(x));
-	for (int x = 1; x < (1 << 16); x++) _tbl_rev_16[x] = _bit_reverse_16(uint16_t(x));
-	return true;
+    for (int x = 2; x < (1 << 16); x++) _tbl_ilog2_16_full[x] = _tbl_ilog2_16_full[x / 2] + 1;
+    for (int x = 1; x < (1 << 16); x++) _tbl_cnt1_16[x] = _tbl_cnt1_16[x / 2] + (x & 1);
+    for (int x = 1; x < (1 << 8); x++) _tbl_rev_8[x] = _bit_reverse_8(uint8_t(x));
+    for (int x = 1; x < (1 << 16); x++) _tbl_rev_16[x] = _bit_reverse_16(uint16_t(x));
+    return true;
 }
 bool _altruct_math_bits_initialized = _altruct_math_bits_init();
 

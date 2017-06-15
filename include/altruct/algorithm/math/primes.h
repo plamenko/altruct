@@ -227,16 +227,16 @@ void factor_integer(std::vector<std::pair<int, int>> &vf, std::vector<int> vn, c
  */
 template<typename D, typename P>
 void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D maxd = 0, D d = 1, int i = 0) {
-	if (i >= (int)vf.size()) {
-		vd.push_back(d);
-		return;
-	}
-	const auto &f = vf[i];
-	for (int e = 0; e <= f.second; e++) {
-		divisors(vd, vf, maxd, d, i + 1);
-		if (maxd > 0 && d > maxd / f.first) break;
-		d *= f.first;
-	}
+    if (i >= (int)vf.size()) {
+        vd.push_back(d);
+        return;
+    }
+    const auto &f = vf[i];
+    for (int e = 0; e <= f.second; e++) {
+        divisors(vd, vf, maxd, d, i + 1);
+        if (maxd > 0 && d > maxd / f.first) break;
+        d *= f.first;
+    }
 }
 
 /**
@@ -246,12 +246,12 @@ void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D ma
  */
 template<typename P>
 std::vector<P> prime_factors(const std::vector<std::pair<P, int>> &vf) {
-	std::vector<P> vp;
-	vp.reserve(vf.size());
-	for (const auto& f : vf) {
-		vp.push_back(f.first);
-	}
-	return vp;
+    std::vector<P> vp;
+    vp.reserve(vf.size());
+    for (const auto& f : vf) {
+        vp.push_back(f.first);
+    }
+    return vp;
 }
 
 /**
@@ -261,12 +261,12 @@ std::vector<P> prime_factors(const std::vector<std::pair<P, int>> &vf) {
 */
 template<typename P>
 std::vector<int> prime_exponents(const std::vector<std::pair<P, int>> &vf) {
-	std::vector<int> ve;
-	ve.reserve(vf.size());
-	for (const auto& f : vf) {
-		ve.push_back(f.second);
-	}
-	return ve;
+    std::vector<int> ve;
+    ve.reserve(vf.size());
+    for (const auto& f : vf) {
+        ve.push_back(f.second);
+    }
+    return ve;
 }
 
 /**
@@ -274,11 +274,11 @@ std::vector<int> prime_exponents(const std::vector<std::pair<P, int>> &vf) {
  */
 template<typename P, typename I = P>
 I divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
-	I r = 1;
-	for (const auto& f : vf) {
-		r *= f.second + 1;
-	}
-	return r;
+    I r = 1;
+    for (const auto& f : vf) {
+        r *= f.second + 1;
+    }
+    return r;
 }
 
 /**
@@ -286,11 +286,11 @@ I divisor_sigma0(const std::vector<std::pair<P, int>> &vf) {
  */
 template<typename P, typename I = P>
 I euler_phi(const std::vector<std::pair<P, int>> &vf) {
-	I r = 1;
-	for (const auto& f : vf) {
-		r *= powT<I>(f.first, f.second - 1) * (f.first - 1);
-	}
-	return r;
+    I r = 1;
+    for (const auto& f : vf) {
+        r *= powT<I>(f.first, f.second - 1) * (f.first - 1);
+    }
+    return r;
 }
 
 /**
@@ -298,12 +298,12 @@ I euler_phi(const std::vector<std::pair<P, int>> &vf) {
  */
 template<typename P, typename I = P>
 I carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
-	I r = 1;
-	for (const auto& f : vf) {
-		int e = (f.first == 2 && f.second > 2) ? f.second - 1 : f.second;
-		r = lcm<I>(r, powT<I>(f.first, e - 1) * (f.first - 1));
-	}
-	return r;
+    I r = 1;
+    for (const auto& f : vf) {
+        int e = (f.first == 2 && f.second > 2) ? f.second - 1 : f.second;
+        r = lcm<I>(r, powT<I>(f.first, e - 1) * (f.first - 1));
+    }
+    return r;
 }
 
 /**
@@ -315,14 +315,14 @@ I carmichael_lambda(const std::vector<std::pair<P, int>> &vf) {
  */
 template<typename I, typename B>
 std::vector<B> integer_digits(const I& n, const B& b, int len = 0) {
-	std::vector<B> vd;
-	for (I t = n; t > 0; t /= b) {
-		vd.push_back(castOf<B, I>(t % b));
-	}
+    std::vector<B> vd;
+    for (I t = n; t > 0; t /= b) {
+        vd.push_back(castOf<B, I>(t % b));
+    }
     while ((int)vd.size() < len) {
-		vd.push_back(0);
-	}
-	return vd;
+        vd.push_back(0);
+    }
+    return vd;
 }
 
 /**

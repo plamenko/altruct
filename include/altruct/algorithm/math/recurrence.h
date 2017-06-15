@@ -70,12 +70,12 @@ A linear_recurrence(const std::vector<T> &f_coeff, const std::vector<A> &f_init,
  */
 template<typename T, typename A>
 A linear_recurrence_next(const std::vector<T> &f_coeff, const std::vector<A> &f_init) {
-	int L = (int)f_coeff.size();
-	A r = zeroOf(f_init[0]);
-	for (int i = 0; i < L; i++) {
+    int L = (int)f_coeff.size();
+    A r = zeroOf(f_init[0]);
+    for (int i = 0; i < L; i++) {
         r += castOf(r, f_coeff[i]) * f_init[f_init.size() - 1 - i];
-	}
-	return r;
+    }
+    return r;
 }
 
 /**
@@ -83,7 +83,7 @@ A linear_recurrence_next(const std::vector<T> &f_coeff, const std::vector<A> &f_
  */
 template<typename T, typename I>
 T fibonacci(I n, T id = T(1)) {
-	return linear_recurrence<T, T>({ id, id }, {id - id, id}, n);
+    return linear_recurrence<T, T>({ id, id }, {id - id, id}, n);
 }
 
 /**
@@ -117,15 +117,15 @@ T lucas_v(T p, T q, I n) {
  */
 template<typename T>
 std::vector<T> bernoulli_b(int n, T id = T(1)) {
-	std::vector<T> a(n+1), b(n+1);
-	for (int m = 0; m <= n; m++) {
-		a[m] = id / (m + 1);
-		for (int j = m; j >= 1; j--) {
-			a[j - 1] = (a[j - 1] - a[j]) * j;
-		}
-		b[m] = a[0];
-	}
-	return b;
+    std::vector<T> a(n+1), b(n+1);
+    for (int m = 0; m <= n; m++) {
+        a[m] = id / (m + 1);
+        for (int j = m; j >= 1; j--) {
+            a[j - 1] = (a[j - 1] - a[j]) * j;
+        }
+        b[m] = a[0];
+    }
+    return b;
 }
 
 /**
@@ -133,7 +133,7 @@ std::vector<T> bernoulli_b(int n, T id = T(1)) {
  *
  * Works for an arbitrary field. The field requirement means that all non-zero
  * elements need to have a multiplicative inverse.
- * 
+ *
  * @param a - the first 2L elements (or more) of the sequence,
  *            where L is the degree of the polynomial
  *

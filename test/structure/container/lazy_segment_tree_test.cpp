@@ -8,24 +8,24 @@ using namespace altruct::container;
 int inf = numeric_limits<int>::max();
 
 struct atom_min {
-	int val;
-	bool pending;
+    int val;
+    bool pending;
 
-	atom_min(int val = inf) : val(val), pending(false) {}
+    atom_min(int val = inf) : val(val), pending(false) {}
 
-	static void resolve_up(atom_min& parent, const atom_min& left, const atom_min& right) {
-		parent.val = min(left.val, right.val);
-	}
+    static void resolve_up(atom_min& parent, const atom_min& left, const atom_min& right) {
+        parent.val = min(left.val, right.val);
+    }
 
-	static void resolve_down(atom_min& parent, atom_min& left, atom_min& right) {
-		if (!parent.pending) return;
-		left = right = parent;
-		parent.pending = false;
-	}
+    static void resolve_down(atom_min& parent, atom_min& left, atom_min& right) {
+        if (!parent.pending) return;
+        left = right = parent;
+        parent.pending = false;
+    }
 
-	static std::function<bool(atom_min&)> set_functor(int val) {
+    static std::function<bool(atom_min&)> set_functor(int val) {
         return [val](atom_min& t){ t.val = val; t.pending = true; return true; };
-	}
+    }
 };
 
 struct atom_sum {
@@ -67,60 +67,60 @@ struct atom_sum {
 
 template<typename T, typename F>
 T slow_get(const vector<T>& v, size_t begin, size_t end, F f, const T& id = T()) {
-	T t = id;
-	for (size_t i = begin; i < end; i++) {
-		f(t, t, v[i]);
-	}
-	return t;
+    T t = id;
+    for (size_t i = begin; i < end; i++) {
+        f(t, t, v[i]);
+    }
+    return t;
 }
 
 template<typename T, typename F>
 void verify_all(lazy_segment_tree<T>& st, const vector<T>& v, F f, const T& id = T()) {
-	for (size_t begin = 0; begin < v.size(); begin++) {
-		for (size_t end = begin; end < v.size(); end++) {
-			EXPECT_EQ(slow_get(v, begin, end, f, id).val, st.get(begin, end).val) << " unexpected result of get(" << begin << ", " << end << ")";
-		}
-	}
+    for (size_t begin = 0; begin < v.size(); begin++) {
+        for (size_t end = begin; end < v.size(); end++) {
+            EXPECT_EQ(slow_get(v, begin, end, f, id).val, st.get(begin, end).val) << " unexpected result of get(" << begin << ", " << end << ")";
+        }
+    }
 }
 
 TEST(lazy_segment_tree_test, build_int_min) {
-	vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
+    vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
 
     lazy_segment_tree<atom_min> st1(v.size(), atom_min::resolve_up, atom_min::resolve_down);
-	EXPECT_EQ(16, st1.size());
-	for (size_t i = 0; i < v.size(); i++) st1.update(i, i + 1, atom_min::set_functor(v[i].val));
-	verify_all(st1, v, atom_min::resolve_up);
+    EXPECT_EQ(16, st1.size());
+    for (size_t i = 0; i < v.size(); i++) st1.update(i, i + 1, atom_min::set_functor(v[i].val));
+    verify_all(st1, v, atom_min::resolve_up);
 
     lazy_segment_tree<atom_min> st2(v.begin(), v.end(), atom_min::resolve_up, atom_min::resolve_down);
-	EXPECT_EQ(16, st2.size());
-	verify_all(st2, v, atom_min::resolve_up);
+    EXPECT_EQ(16, st2.size());
+    verify_all(st2, v, atom_min::resolve_up);
 }
 
 TEST(lazy_segment_tree_test, modify_int_min) {
-	vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
-	// make modifications both on verification vector v1
-	// and the actual component under test st1;
-	// set elements at random indices
-	vector<int> beg{ 5, 1, 3, 8, 7, 9, 6, 2, 0, 4 };
-	vector<int> end{ 9, 7, 4, 10, 8, 10, 9, 4, 10, 7 };
-	vector<atom_min> v1(v.size(), inf);
+    vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
+    // make modifications both on verification vector v1
+    // and the actual component under test st1;
+    // set elements at random indices
+    vector<int> beg{ 5, 1, 3, 8, 7, 9, 6, 2, 0, 4 };
+    vector<int> end{ 9, 7, 4, 10, 8, 10, 9, 4, 10, 7 };
+    vector<atom_min> v1(v.size(), inf);
     lazy_segment_tree<atom_min> st1(v.size(), atom_min::resolve_up, atom_min::resolve_down);
-	for (size_t i = 0; i < v.size(); i++) {
-		int b = beg[i], e = end[i];
-		fill(v1.begin() + b, v1.begin() + e, v[b]);
-		st1.update(b, e, atom_min::set_functor(v[b].val));
-		verify_all(st1, v1, atom_min::resolve_up);
-	}
+    for (size_t i = 0; i < v.size(); i++) {
+        int b = beg[i], e = end[i];
+        fill(v1.begin() + b, v1.begin() + e, v[b]);
+        st1.update(b, e, atom_min::set_functor(v[b].val));
+        verify_all(st1, v1, atom_min::resolve_up);
+    }
 }
 
 TEST(lazy_segment_tree_test, modify_rebuild) {
-	vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
+    vector<atom_min> v{ 2, -3, 4, 6, 11, 1, 0, -5, 7, -3 };
     lazy_segment_tree<atom_min> st(v.begin(), v.end(), atom_min::resolve_up, atom_min::resolve_down);
-	st[3].val = v[3].val = 9;
-	st[6].val = v[6].val = 2;
-	st[8].val = v[8].val = -7;
-	st.rebuild();
-	verify_all(st, v, atom_min::resolve_up);
+    st[3].val = v[3].val = 9;
+    st[6].val = v[6].val = 2;
+    st[8].val = v[8].val = -7;
+    st.rebuild();
+    verify_all(st, v, atom_min::resolve_up);
 }
 
 TEST(lazy_segment_tree_test, modify_range_rebuild) {
@@ -145,7 +145,7 @@ TEST(lazy_segment_tree_test, deep_modify) {
         { 2, -1, 0 }, { 2, 10, 0 }, { 2, 12, 0 }, { 2, -5, 0 }, { 2, 4, 0 }, { 2, 4, 0 }, { 2, -3, 0 }, { 2, 14, 0 }, { 2, 4, 0 }, { 2, -2, 0 }, { 1, 1, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
         { 1, 2, 0 }, { 1, -3, 0 }, { 1, 4, 0 }, { 1, 6, 0 }, { 1, 11, 0 }, { 1, 1, 0 }, { 1, 0, 0 }, { 1, -5, 0 }, { 1, 7, 0 }, { 1, -3, 0 }, { 1, 3, 0 }, { 1, 1, 0 }, { 1, -4, 0 }, { 1, 1, 0 }, { 1, 5, 0 }, { 1, 9, 0 }, { 1, -2, 0 }, { 1, 6, 0 }, { 1, -5, 0 }, { 1, 3, 0 }, { 1, 1, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, };
     EXPECT_EQ(e, st.v);
-    
+
     auto st0 = st; st0.update(5, 21, atom_sum::add_functor(8));
     vector<atom_sum> e0{
         { 0, 0, 0 },
@@ -156,7 +156,7 @@ TEST(lazy_segment_tree_test, deep_modify) {
         { 2, -1, 0 }, { 2, 10, 0 }, { 2, 20, 0 }, { 2, 11, 8 }, { 2, 4, 0 }, { 2, 4, 0 }, { 2, -3, 0 }, { 2, 14, 0 }, { 2, 4, 0 }, { 2, -2, 0 }, { 1, 9, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
         { 1, 2, 0 }, { 1, -3, 0 }, { 1, 4, 0 }, { 1, 6, 0 }, { 1, 11, 0 }, { 1, 9, 8 }, { 1, 0, 0 }, { 1, -5, 0 }, { 1, 7, 0 }, { 1, -3, 0 }, { 1, 3, 0 }, { 1, 1, 0 }, { 1, -4, 0 }, { 1, 1, 0 }, { 1, 5, 0 }, { 1, 9, 0 }, { 1, -2, 0 }, { 1, 6, 0 }, { 1, -5, 0 }, { 1, 3, 0 }, { 1, 9, 8 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, };
     EXPECT_EQ(e0, st0.v);
-    
+
     auto st1 = st0; st1.update(3, 17, atom_sum::add_functor(10, 1));
     vector<atom_sum> e1{
         { 0, 0, 0 },

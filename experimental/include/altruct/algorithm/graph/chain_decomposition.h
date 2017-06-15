@@ -18,7 +18,7 @@ namespace graph {
  * Each bi-connected component consists of a list of chains, the first
  * chain being a cycle and the rest of them simple paths.
  * Each chain consists of a list of vertices in the order they appear in it.
- * 
+ *
  * Essentially: [component_id][biconnected_component_id][chain_id][vertex_id]
  */
 typedef std::vector<std::vector<std::vector<std::vector<int>>>> chain_decomposition_t;
@@ -33,7 +33,7 @@ typedef std::vector<std::vector<std::vector<std::vector<int>>>> chain_decomposit
  */
 template<typename E>
 chain_decomposition_t chain_decomposition(const graph<E>& g) {
-    std::vector<int> que; 
+    std::vector<int> que;
     std::vector<int> ord(g.size(), -1);
     std::vector<int> par(g.size(), -1);
     iterative_dfs(g, [&](int root, int parent, int node, int depth) {

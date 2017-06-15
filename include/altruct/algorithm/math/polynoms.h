@@ -7,7 +7,7 @@
 
 namespace altruct {
 namespace math {
-		
+
 /**
  * Searches for argument `x` within the monotonic interval `[b, e]` so that `p(x) = y`.
  *
@@ -21,24 +21,24 @@ namespace math {
  */
 template<typename P, typename F>
 F monotonic_search(const P &p, const F &b, const F& e, const F& y, const F& epsy = 0, const F& epsx = 0, int max_iter = 200) {
-	F lo = b, hi = e, mid = e;
-	F val_b = p(b), val_e = p(e);
-	if (-epsy <= val_b && val_b <= epsy) return b;
-	if (-epsy <= val_e && val_e <= epsy) return e;
-	int s = (val_b > val_e) ? -1 : +1;
-	while (hi - lo > epsx && max_iter-- > 0) {
-		mid = (lo + hi) / 2;
-		if (mid == lo || mid == hi) return mid;
-		F val = p(mid);
-		if (-epsy <= val && val <= epsy) return mid;
-		if ((s > 0) ? (val < y) : (val > y)) {
-			lo = mid;
-		}
-		else {
-			hi = mid;
-		}
-	}
-	return mid;
+    F lo = b, hi = e, mid = e;
+    F val_b = p(b), val_e = p(e);
+    if (-epsy <= val_b && val_b <= epsy) return b;
+    if (-epsy <= val_e && val_e <= epsy) return e;
+    int s = (val_b > val_e) ? -1 : +1;
+    while (hi - lo > epsx && max_iter-- > 0) {
+        mid = (lo + hi) / 2;
+        if (mid == lo || mid == hi) return mid;
+        F val = p(mid);
+        if (-epsy <= val && val <= epsy) return mid;
+        if ((s > 0) ? (val < y) : (val > y)) {
+            lo = mid;
+        }
+        else {
+            hi = mid;
+        }
+    }
+    return mid;
 }
 
 /**
@@ -54,30 +54,30 @@ F monotonic_search(const P &p, const F &b, const F& e, const F& y, const F& epsy
  */
 template<typename T, typename F>
 std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsz = 0, const F& epsy = 0, const F& epsx = 0, int max_iter = 200) {
-	int l = std::max(p.deg(), 1);
-	// derivations
-	std::vector<polynom<T>> pd(l);
-	pd[0] = p;
-	for (int i = 1; i < l; i++)
-		pd[i] = pd[i - 1].derivative();
-	// derivations' zeros
-	std::vector<F> z(l + 1);
-	for (int i = l - 1; i >= 0; i--) {
-		z[0] = -inf; z[l - i] = inf;
-		for (int j = l - i; j >= 1; j--) {
-			z[j] = monotonic_search<polynom<T>, F>(pd[i], z[j - 1], z[j], 0, epsy, epsx, max_iter);
-		}
-	}
-	// keep only actual zeros
-	int n = 0;
-	for (int i = 0; i <= l; i++) {
-		F y = p(z[i]);
-		if (-epsz <= y && y <= epsz) {
-			z[n++] = z[i];
-		}
-	}
-	z.resize(n);
-	return z;
+    int l = std::max(p.deg(), 1);
+    // derivations
+    std::vector<polynom<T>> pd(l);
+    pd[0] = p;
+    for (int i = 1; i < l; i++)
+        pd[i] = pd[i - 1].derivative();
+    // derivations' zeros
+    std::vector<F> z(l + 1);
+    for (int i = l - 1; i >= 0; i--) {
+        z[0] = -inf; z[l - i] = inf;
+        for (int j = l - i; j >= 1; j--) {
+            z[j] = monotonic_search<polynom<T>, F>(pd[i], z[j - 1], z[j], 0, epsy, epsx, max_iter);
+        }
+    }
+    // keep only actual zeros
+    int n = 0;
+    for (int i = 0; i <= l; i++) {
+        F y = p(z[i]);
+        if (-epsz <= y && y <= epsz) {
+            z[n++] = z[i];
+        }
+    }
+    z.resize(n);
+    return z;
 }
 
 /**
@@ -87,19 +87,19 @@ std::vector<F> find_zeros(const polynom<T>& p, const F& inf, const F& epsz = 0, 
  */
 template<typename T>
 polynom<T> polynom_sum(const polynom<T>& p) {
-	T id = identityT<T>::of(p.ZERO_COEFF);
-	polynom<T> s = zeroOf(p);
-	std::vector<T> b = bernoulli_b<T>(p.deg(), id);
-	for (int m = p.deg(); m >= 0; m--) {
-		T c = p[m] / (m + 1);
-		if (c == p.ZERO_COEFF) continue;
-		for (int k = 0; k <= m; k++) {
-			s[m + 1 - k] += c * b[k];
-			c *= (m + 1 - k);
-			c /= (k + 1);
-		}
-	}
-	return s;
+    T id = identityT<T>::of(p.ZERO_COEFF);
+    polynom<T> s = zeroOf(p);
+    std::vector<T> b = bernoulli_b<T>(p.deg(), id);
+    for (int m = p.deg(); m >= 0; m--) {
+        T c = p[m] / (m + 1);
+        if (c == p.ZERO_COEFF) continue;
+        for (int k = 0; k <= m; k++) {
+            s[m + 1 - k] += c * b[k];
+            c *= (m + 1 - k);
+            c /= (k + 1);
+        }
+    }
+    return s;
 }
 
 } // math

@@ -61,7 +61,7 @@ container::sqrt_map<I, T> prime_power_sum_sqrt(int z, I n, T id) {
  */
 template<typename T, typename I>
 container::sqrt_map<I, T> prime_sum_sqrt(I n, T id) {
-	return prime_power_sum_sqrt(1, n, id);
+    return prime_power_sum_sqrt(1, n, id);
 }
 
 /**
@@ -69,7 +69,7 @@ container::sqrt_map<I, T> prime_sum_sqrt(I n, T id) {
  */
 template<typename T, typename I>
 T prime_sum(I n, T id) {
-	return (n < 1) ? zeroT<T>::of(id) : prime_sum_sqrt<T, I>(n, id)[n];
+    return (n < 1) ? zeroT<T>::of(id) : prime_sum_sqrt<T, I>(n, id)[n];
 }
 
 /**
@@ -82,7 +82,7 @@ T prime_sum(I n, T id) {
  */
 template<typename I = int64_t>
 container::sqrt_map<I, I> prime_pi_sqrt(I n) {
-	return prime_power_sum_sqrt(0, n, I(1));
+    return prime_power_sum_sqrt(0, n, I(1));
 }
 
 /**
@@ -90,7 +90,7 @@ container::sqrt_map<I, I> prime_pi_sqrt(I n) {
  */
 template<typename I = int64_t>
 I prime_pi(I n) {
-	return (n < 1) ? 0 : prime_pi_sqrt<I>(n)[n];
+    return (n < 1) ? 0 : prime_pi_sqrt<I>(n)[n];
 }
 
 } // math

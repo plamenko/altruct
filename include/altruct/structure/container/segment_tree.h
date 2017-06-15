@@ -25,71 +25,71 @@ namespace container {
 template<typename T, typename F = std::function<T(T, T)>>
 class segment_tree {
 public:
-	std::vector<T> v;
-	F f;
+    std::vector<T> v;
+    F f;
 
-	segment_tree() {}
-	
-	segment_tree(size_t sz, const F& f, T id = T()) : f(f) {
-		v.resize(calc_pow2(sz) * 2, id);
-		//rebuild();
-	}
+    segment_tree() {}
 
-	template<typename It>
-	segment_tree(It begin, It end, const F& f, T id = T()) : f(f) {
-		auto sz = std::distance(begin, end);
-		v.resize(calc_pow2(sz) * 2, id);
-		std::copy(begin, end, v.begin() + size());
-		rebuild();
-	}
+    segment_tree(size_t sz, const F& f, T id = T()) : f(f) {
+        v.resize(calc_pow2(sz) * 2, id);
+        //rebuild();
+    }
 
-	void set(size_t index, const T& t) {
-		index += size();
-		v[index] = t;
-		while ((index /= 2) > 0) {
-			update(index);
-		}
-	}
+    template<typename It>
+    segment_tree(It begin, It end, const F& f, T id = T()) : f(f) {
+        auto sz = std::distance(begin, end);
+        v.resize(calc_pow2(sz) * 2, id);
+        std::copy(begin, end, v.begin() + size());
+        rebuild();
+    }
 
-	// If the returned element is being modified,
-	// the index won't be updated automatically.
-	// Use `set` instead to update immediately,
-	// or `rebuild` after all modifications.
-	T& operator[] (size_t index) {
-		index += size();
-		return v[index];
-	}
+    void set(size_t index, const T& t) {
+        index += size();
+        v[index] = t;
+        while ((index /= 2) > 0) {
+            update(index);
+        }
+    }
 
-	const T& operator[] (size_t index) const {
-		index += size();
-		return v[index];
-	}
+    // If the returned element is being modified,
+    // the index won't be updated automatically.
+    // Use `set` instead to update immediately,
+    // or `rebuild` after all modifications.
+    T& operator[] (size_t index) {
+        index += size();
+        return v[index];
+    }
 
-	T get(size_t index) const {
-		index += size();
-		return v[index];
-	}
-	
-	T get(size_t begin, size_t end) const {
-		T tl = v[0], tr = v[0]; // id
-		size_t i = size();
-		while (begin < end) {
-			if (begin & 1) tl = f(tl, v[i + begin++]);
-			if (end & 1) tr = f(v[i + --end], tr);
-			begin /= 2, end /= 2, i /= 2;
-		}
-		return f(tl, tr);
-	}
+    const T& operator[] (size_t index) const {
+        index += size();
+        return v[index];
+    }
 
-	size_t size() const {
-		return v.size() / 2;
-	}
+    T get(size_t index) const {
+        index += size();
+        return v[index];
+    }
 
-	void rebuild() {
-		for (size_t i = size() - 1; i > 0; i--) {
-			update(i);
-		}
-	}
+    T get(size_t begin, size_t end) const {
+        T tl = v[0], tr = v[0]; // id
+        size_t i = size();
+        while (begin < end) {
+            if (begin & 1) tl = f(tl, v[i + begin++]);
+            if (end & 1) tr = f(v[i + --end], tr);
+            begin /= 2, end /= 2, i /= 2;
+        }
+        return f(tl, tr);
+    }
+
+    size_t size() const {
+        return v.size() / 2;
+    }
+
+    void rebuild() {
+        for (size_t i = size() - 1; i > 0; i--) {
+            update(i);
+        }
+    }
 
     void rebuild(size_t begin, size_t end) {
         size_t b = begin + size(), e = end - 1 + size();
@@ -101,14 +101,14 @@ public:
         }
     }
 private:
-	void update(size_t i) {
-		v[i] = f(v[2 * i + 0], v[2 * i + 1]);
-	}
+    void update(size_t i) {
+        v[i] = f(v[2 * i + 0], v[2 * i + 1]);
+    }
 
-	static size_t calc_pow2(size_t sz) {
-		size_t w = 1; while (w < sz) w *= 2;
-		return w;
-	}
+    static size_t calc_pow2(size_t sz) {
+        size_t w = 1; while (w < sz) w *= 2;
+        return w;
+    }
 };
 
 } // container

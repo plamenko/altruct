@@ -86,86 +86,86 @@ std::vector<T> take(const C& c, size_t n) {
  * Returns a vector of the elements in the range [begin, end) that satisfy predicate `p`.
  */
 template<
-	typename It,
-	typename P,
-	typename T = typename std::iterator_traits<It>::value_type
+    typename It,
+    typename P,
+    typename T = typename std::iterator_traits<It>::value_type
 >
 std::vector<T> filter(It begin, It end, P p) {
-	std::vector<T> r;
-	for (It it = begin; it != end; ++it) {
-		if (p(*it)) r.push_back(*it);
-	}
-	return r;
+    std::vector<T> r;
+    for (It it = begin; it != end; ++it) {
+        if (p(*it)) r.push_back(*it);
+    }
+    return r;
 }
 
 /**
  * Returns a vector of the elements in the collection `c` that satisfy predicate `p`.
  */
 template<
-	typename C,
-	typename P,
-	typename T = typename C::value_type
+    typename C,
+    typename P,
+    typename T = typename C::value_type
 >
 std::vector<T> filter(const C& c, P p) {
-	return filter(c.begin(), c.end(), p);
+    return filter(c.begin(), c.end(), p);
 }
 
 /**
  * Returns a vector of the elements in the range [begin, end) transformed by functor `f`.
  */
 template<
-	typename It,
-	typename F,
-	typename T = typename std::result_of<F(typename std::iterator_traits<It>::value_type)>::type
+    typename It,
+    typename F,
+    typename T = typename std::result_of<F(typename std::iterator_traits<It>::value_type)>::type
 >
 std::vector<T> transform(It begin, It end, F f) {
-	std::vector<T> r;
-	for (It it = begin; it != end; ++it) {
-		r.push_back(f(*it));
-	}
-	return r;
+    std::vector<T> r;
+    for (It it = begin; it != end; ++it) {
+        r.push_back(f(*it));
+    }
+    return r;
 }
 
 /**
  * Returns a vector of the elements in the collection `c` transformed by functor `f`.
  */
 template<
-	typename C,
-	typename F,
-	typename T = typename std::result_of<F(typename C::value_type)>::type
+    typename C,
+    typename F,
+    typename T = typename std::result_of<F(typename C::value_type)>::type
 >
 std::vector<T> transform(const C& c, F f) {
-	return transform(c.begin(), c.end(), f);
+    return transform(c.begin(), c.end(), f);
 }
 
 /**
  * Returns Run-Length encoding of the elements in the range [begin, end).
  */
 template<
-	typename It,
-	typename T = typename std::iterator_traits<It>::value_type
+    typename It,
+    typename T = typename std::iterator_traits<It>::value_type
 >
 std::vector<std::pair<T, int>> run_length(It begin, It end) {
-	std::vector<std::pair<T, int>> r;
-	for (It it = begin; it != end; ++it) {
-		if (!r.empty() && r.back().first == *it) {
-			r.back().second++;
-		} else {
-			r.push_back({ *it, 1 });
-		}
-	}
-	return r;
+    std::vector<std::pair<T, int>> r;
+    for (It it = begin; it != end; ++it) {
+        if (!r.empty() && r.back().first == *it) {
+            r.back().second++;
+        } else {
+            r.push_back({ *it, 1 });
+        }
+    }
+    return r;
 }
 
 /**
  * Returns Run-Length encoding of the elements in collection `c`.
  */
 template<
-	typename C,
-	typename T = typename C::value_type
+    typename C,
+    typename T = typename C::value_type
 >
 std::vector<std::pair<T, int>> run_length(const C& c) {
-	return run_length(c.begin(), c.end());
+    return run_length(c.begin(), c.end());
 }
 
 /**
@@ -176,14 +176,14 @@ std::vector<std::pair<T, int>> run_length(const C& c) {
  */
 template<typename It1, typename It2>
 int compare(It1 b1, It1 e1, It2 b2, It2 e2, size_t max_len = -1) {
-	while (b1 != e1 && b2 != e2 && max_len != 0) {
-		if (!(*b1 == *b2)) return (*b1 < *b2) ? -1 : +1;
-		++b1, ++b2, --max_len;
-	}
-	if (max_len == 0) return 0;
-	if (b2 != e2) return -1;
-	if (b1 != e1) return +1;
-	return 0;
+    while (b1 != e1 && b2 != e2 && max_len != 0) {
+        if (!(*b1 == *b2)) return (*b1 < *b2) ? -1 : +1;
+        ++b1, ++b2, --max_len;
+    }
+    if (max_len == 0) return 0;
+    if (b2 != e2) return -1;
+    if (b1 != e1) return +1;
+    return 0;
 }
 
 /**
@@ -192,8 +192,8 @@ int compare(It1 b1, It1 e1, It2 b2, It2 e2, size_t max_len = -1) {
  */
 template<typename C>
 void reserve_more(C& c, size_t sz) {
-	if (c.size() + sz <= c.capacity()) return;
-	c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
+    if (c.size() + sz <= c.capacity()) return;
+    c.reserve(std::max(c.size() + sz, c.capacity() + c.capacity() / 2));
 }
 
 } // collections

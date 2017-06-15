@@ -97,7 +97,7 @@ TEST(graph_test, mutation) {
     auto g1 = g;
     EXPECT_EQ(8, g1.size());
     EXPECT_EQ(13, g1.num_edges());
-    
+
     EXPECT_EQ(8, g1.add_node());
     EXPECT_EQ(9, g1.size());
     EXPECT_EQ(13, g1.num_edges());

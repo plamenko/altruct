@@ -16,23 +16,23 @@ namespace math {
  */
 template<typename T, typename R>
 void fft(T *data, int size, R root) {
-	R w, e1 = identityT<R>::of(root);
-	int m, h, i, j, k;
-	for (m = size; h = m / 2, m > 1; m /= 2, root *= root) {
-		for (i = 0, w = e1; i < h; i++, w *= root) {
-			for (j = i; j < size; j += m) {
-				k = j + h;
-				T t = data[j] - data[k];
-				data[j] += data[k];
-				data[k] = t * T(w);
-			}
-		}
-	}
-	// reorder: swap(a[j], a[bitrev(j)])
-	for (int i = 0, j = 1; j < size - 1; j++) {
-		for (int k = size / 2; (i ^= k) < k; k /= 2);
-		if (j < i) std::swap(data[i], data[j]);
-	}
+    R w, e1 = identityT<R>::of(root);
+    int m, h, i, j, k;
+    for (m = size; h = m / 2, m > 1; m /= 2, root *= root) {
+        for (i = 0, w = e1; i < h; i++, w *= root) {
+            for (j = i; j < size; j += m) {
+                k = j + h;
+                T t = data[j] - data[k];
+                data[j] += data[k];
+                data[k] = t * T(w);
+            }
+        }
+    }
+    // reorder: swap(a[j], a[bitrev(j)])
+    for (int i = 0, j = 1; j < size - 1; j++) {
+        for (int k = size / 2; (i ^= k) < k; k /= 2);
+        if (j < i) std::swap(data[i], data[j]);
+    }
 }
 
 /**
@@ -47,17 +47,17 @@ void fft(T *data, int size, R root) {
  */
 template<typename T, typename R>
 void fft_rec(T *dest, T *src, int size, const R& root, int off = 1) {
-	if (size <= 1) { *dest = *src; return; }
-	int h = size / 2;
-	R root2 = root * root;
-	R rooti = identityT<R>::of(root);
-	fft_rec(dest, src, h, root2, off * 2);
-	fft_rec(dest + h, src + off, h, root2, off * 2);
-	for (int i = 0; i < h; i++, rooti *= root) {
-		T z = dest[i + h] * T(rooti);
-		dest[i + h] = dest[i] - z;
-		dest[i] += z;
-	}
+    if (size <= 1) { *dest = *src; return; }
+    int h = size / 2;
+    R root2 = root * root;
+    R rooti = identityT<R>::of(root);
+    fft_rec(dest, src, h, root2, off * 2);
+    fft_rec(dest + h, src + off, h, root2, off * 2);
+    for (int i = 0; i < h; i++, rooti *= root) {
+        T z = dest[i + h] * T(rooti);
+        dest[i + h] = dest[i] - z;
+        dest[i] += z;
+    }
 }
 
 /**
@@ -83,20 +83,20 @@ void fft_rec(T *dest, T *src, int size, const R& root, int off = 1) {
  */
 template<typename T, typename R>
 void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const R& root_base, int root_order) {
-	R root = powT(root_base, root_order / size);
-	R iroot = powT(root, size - 1); // == root^-1
-	// convert to frequency domain
-	fft_rec(dataR, data1, size, root); std::swap(data1, dataR);
-	fft_rec(dataR, data2, size, root); std::swap(data2, dataR);
-	// convolution in time domain is a pointwise
-	// multiplication in frequency domain
-	for (int i = 0; i < size; i++) dataR[i] = data1[i] * data2[i];
-	// inverse transform is same as original transform,
-	// but with inverse root and elements divided by size
-	R e1 = identityT<R>::of(root);
-	std::swap(data1, dataR); fft_rec(dataR, data1, size, iroot);
-	T isize = T(e1) / T(size);
-	for (int i = 0; i < size; i++) dataR[i] *= isize;
+    R root = powT(root_base, root_order / size);
+    R iroot = powT(root, size - 1); // == root^-1
+    // convert to frequency domain
+    fft_rec(dataR, data1, size, root); std::swap(data1, dataR);
+    fft_rec(dataR, data2, size, root); std::swap(data2, dataR);
+    // convolution in time domain is a pointwise
+    // multiplication in frequency domain
+    for (int i = 0; i < size; i++) dataR[i] = data1[i] * data2[i];
+    // inverse transform is same as original transform,
+    // but with inverse root and elements divided by size
+    R e1 = identityT<R>::of(root);
+    std::swap(data1, dataR); fft_rec(dataR, data1, size, iroot);
+    T isize = T(e1) / T(size);
+    for (int i = 0; i < size; i++) dataR[i] *= isize;
 }
 
 /**
@@ -112,14 +112,14 @@ void fft_cyclic_convolution(T *dataR, T *data1, T *data2, int size, const R& roo
  */
 template<typename T, typename R, typename It>
 std::vector<T> convolution(It u_begin, It u_end, It v_begin, It v_end, const R& root_base, int root_order) {
-	R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
-	std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
-	int n = (int)(u.size() + v.size() - 1);
-	int l = 1; while (l < n) l *= 2;
-	r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
-	fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
-	r.resize(n);
-	return r;
+    R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
+    std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
+    int n = (int)(u.size() + v.size() - 1);
+    int l = 1; while (l < n) l *= 2;
+    r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
+    fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
+    r.resize(n);
+    return r;
 }
 
 /**
@@ -136,20 +136,20 @@ std::vector<T> convolution(It u_begin, It u_end, It v_begin, It v_end, const R& 
  */
 template<typename T, typename R, typename It>
 std::vector<T> cyclic_convolution(It u_begin, It u_end, It v_begin, It v_end, const R& root_base, int root_order) {
-	R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
-	std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
-	int u_size = (int)u.size(), v_size = (int)v.size();
-	int vv_size = multiple(v_size, u_size);
-	int n = v_size + u_size - 1;
-	int nn = vv_size + u_size - 1;
-	int l = 1; while (l < nn) l *= 2;
-	r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
-	for (int i = v_size; i < vv_size; i++) v[i] = v[i - v_size];
-	for (int i = 1; i < u_size; i++) v[l - i] = v[vv_size - i];
-	fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
-	for (int i = 1; i < u_size; i++) r[n - i] = r[u_size - 1 - i];
-	r.resize(n);
-	return r;
+    R e1 = identityT<R>::of(root_base); T e0 = zeroT<T>::of(T(e1));
+    std::vector<T> r, u(u_begin, u_end), v(v_begin, v_end);
+    int u_size = (int)u.size(), v_size = (int)v.size();
+    int vv_size = multiple(v_size, u_size);
+    int n = v_size + u_size - 1;
+    int nn = vv_size + u_size - 1;
+    int l = 1; while (l < nn) l *= 2;
+    r.resize(l, e0); u.resize(l, e0); v.resize(l, e0);
+    for (int i = v_size; i < vv_size; i++) v[i] = v[i - v_size];
+    for (int i = 1; i < u_size; i++) v[l - i] = v[vv_size - i];
+    fft_cyclic_convolution(&r[0], &u[0], &v[0], l, root_base, root_order);
+    for (int i = 1; i < u_size; i++) r[n - i] = r[u_size - 1 - i];
+    r.resize(n);
+    return r;
 }
 
 } // math

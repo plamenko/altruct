@@ -17,17 +17,17 @@ namespace search {
  */
 template<typename T, typename D, typename F>
 T binary_search2(T lo, T hi, D eps, F f) {
-	T mid = lo, mid0 = hi;
-	while (mid != mid0 && (hi - lo) >= eps) {
-		mid0 = mid;
-		mid = lo + (hi - lo) / 2;
-		if (f(mid)) {
-			lo = mid + eps;
-		} else {
-			hi = mid;
-		}
-	}
-	return lo;
+    T mid = lo, mid0 = hi;
+    while (mid != mid0 && (hi - lo) >= eps) {
+        mid0 = mid;
+        mid = lo + (hi - lo) / 2;
+        if (f(mid)) {
+            lo = mid + eps;
+        } else {
+            hi = mid;
+        }
+    }
+    return lo;
 }
 
 /**
@@ -37,11 +37,11 @@ T binary_search2(T lo, T hi, D eps, F f) {
  */
 template<typename T, typename D, typename V, typename F>
 T lower_bound(T lo, T hi, D eps, F f, const V& val, bool decreasing = false) {
-	if (decreasing) {
-		return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) > val; });
-	} else {
-		return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) < val; });
-	}
+    if (decreasing) {
+        return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) > val; });
+    } else {
+        return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) < val; });
+    }
 }
 
 /**
@@ -51,11 +51,11 @@ T lower_bound(T lo, T hi, D eps, F f, const V& val, bool decreasing = false) {
  */
 template<typename T, typename D, typename V, typename F>
 T upper_bound(T lo, T hi, D eps, F f, const V& val, bool decreasing = false) {
-	if (decreasing) {
-		return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) >= val; });
-	} else {
-		return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) <= val; });
-	}
+    if (decreasing) {
+        return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) >= val; });
+    } else {
+        return binary_search2(lo, hi, eps, [&](const T& mid){ return f(mid) <= val; });
+    }
 }
 
 } // search

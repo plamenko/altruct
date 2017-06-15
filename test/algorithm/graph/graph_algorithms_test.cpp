@@ -237,17 +237,17 @@ TEST(graph_algorithms_test, bipartite_matching) {
 }
 
 TEST(graph_algorithms_test, lowest_common_ancestor) {
-	graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
-	lowest_common_ancestor lca(t);
-	EXPECT_EQ(0, lca.ancestor(1, 3));
+    graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
+    lowest_common_ancestor lca(t);
+    EXPECT_EQ(0, lca.ancestor(1, 3));
 }
 
 TEST(graph_algorithms_test, heavy_light_decomposition) {
-	graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
-	heavy_light_decomposition_ex hld(t);
-	EXPECT_EQ(3, hld.parent(3, 0));
-	EXPECT_EQ(2, hld.parent(3, 1));
-	EXPECT_EQ(0, hld.parent(3, 2));
+    graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
+    heavy_light_decomposition_ex hld(t);
+    EXPECT_EQ(3, hld.parent(3, 0));
+    EXPECT_EQ(2, hld.parent(3, 1));
+    EXPECT_EQ(0, hld.parent(3, 2));
 }
 
 namespace {
@@ -337,7 +337,7 @@ TEST(graph_algorithms_test, sat2) {
     // (x0 || -x1) (-x0 || x2)
     vector<pair<int, int>> clauses1{ { 2 * 0 + 1, 2 * 1 + 0 }, { 2 * 0 + 0, 2 * 2 + 1 } };
     EXPECT_EQ((vector<int>{0, 0, 1}), sat2(clauses1));
-    
+
     vector<int> sol2{ -1, -1, -1 };
     EXPECT_EQ(true, sat2(sol2, clauses1));
     EXPECT_EQ((vector<int>{0, 0, 1}), sol2);

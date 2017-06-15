@@ -20,7 +20,7 @@ struct rdtsc_clock {
     typedef std::chrono::time_point<rdtsc_clock> time_point;
     static const bool is_steady = true;
     static time_point now() { return time_point(duration(_now())); }
-    
+
 #ifdef _MSC_VER
     static long long _now() { return __rdtsc(); }
 #elif __GNUC__

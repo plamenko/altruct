@@ -107,7 +107,7 @@ std::vector<triple<I>> pythagorean_triples_fixed_leg(I leg, const std::vector<st
  * Eisenstein triple (a, b, c) satisfies:
  *   0 < a < b < c <= c_max
  *   a^2 - ac + c^2 = b^2  // 60 degrees (oposite to the side b)
- */ 
+ */
 template<typename I, typename F>
 void eisenstein_triples60(I c_max, bool only_primitive, F visitor) {
     // a = (m^2 - n^2), b = (m^2 - mn + n^2), c = (2mn - n^2)

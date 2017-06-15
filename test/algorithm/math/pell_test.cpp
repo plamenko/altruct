@@ -13,7 +13,7 @@ typedef quadraticX<int64_t> quadx;
 
 vector<quadx> to_quadx(int D, const vector<pair<int64_t, int64_t>>& v) {
     return transform(v, [&](pair<int64_t, int64_t> q) {
-    	return quadx(q.first, q.second, D);
+        return quadx(q.first, q.second, D);
     });
 }
 
@@ -172,7 +172,7 @@ TEST(pell_test, pell) {
     EXPECT_EQ((vector<pair<int64_t, int64_t>>{{ 13, 1 }, { 10663, 851 }, { 579160, 46222 }, { 483790960, 38610722 }, { 26277068347, 2097138361 }, { 21950079635497, 1751807067011 }}), calc(157, +12));
     // x^2 - 157 y^2 = -12
     EXPECT_EQ((vector<pair<int64_t, int64_t>>{{ 50, 4 }, { 2719, 217 }, { 2271269, 181267 }, { 123363799, 9845503 }, { 103049745749, 8224265053 }, { 5597138921710, 446700316396 }}), calc(157, -12));
-    
+
     // x^2 - 13 y^2 = 108
     EXPECT_EQ((vector<pair<int64_t, int64_t>>{{ -15, 3 }, { -11, 1 }, { 11, 1 }, { 15, 3 }, { 24, 6 }, { 41, 11 }, { 80, 22 }, { 141, 39 }, { 249, 69 }, { 440, 122 }, { 869, 241 }, { 1536, 426 }}), calc(13, 108));
 }
@@ -184,7 +184,7 @@ TEST(pell_test, pell1_solutions) {
     // x^2 - 13 y^2 = -1
     auto vs2 = sorted(pell1<int64_t>(13, -1, 0, 0, 1));
     EXPECT_EQ(to_quadx(13, { { 18, 5 } }), vs2);
-    
+
     // x^2 - 13 y^2 = +1
     auto vs3 = sorted(pell1<int64_t>(13, +1, 0, 0, 4));
     EXPECT_EQ(to_quadx(13, { { 649, 180 }, { 842401, 233640 }, { 1093435849, 303264540 }, { 1419278889601, 393637139280 } }), vs3);
@@ -200,7 +200,7 @@ TEST(pell_test, pell_solutions) {
     // x^2 - 13 y^2 = -1
     auto vs4 = sorted(pell<int64_t>(13, -1, factor_integer_slow(1), 0, 0, 4));
     EXPECT_EQ(to_quadx(13, { { 18, 5 }, { 23382, 6485 }, { 30349818, 8417525 }, { 39394040382, 10925940965 } }), vs4);
-    
+
     // x^2 - 13 y^2 = 108
     auto vs12 = sorted(pell<int64_t>(13, 108, factor_integer_slow(108), 0, 0, 12));
     EXPECT_EQ(to_quadx(13, { { 11, 1 }, { 11, 1 }, { 15, 3 }, { 15, 3 }, { 24, 6 }, { 41, 11 }, { 80, 22 }, { 141, 39 }, { 249, 69 }, { 440, 122 }, { 869, 241 }, { 1536, 426 } }), vs12);

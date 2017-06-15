@@ -24,27 +24,27 @@ namespace search {
  */
 template<typename RanIt, typename F>
 size_t kmp_search(RanIt t, size_t n, RanIt p, size_t m, F callback) {
-	if (m == 0) return 0;
-	if (m > n) return n;
-	// preprocess
-	std::vector<size_t> b(m + 1, -1);
-	for (size_t i = 0, j = -1; i < m;) {
-		while (j != -1 && p[i] != p[j]) j = b[j];
-		i++; j++;
-		b[i] = j;
-	}
-	// search
-	size_t r = n;
-	for (size_t i = 0, j = 0; i < n;) {
-		while (j != -1 && t[i] != p[j]) j = b[j];
-		i++; j++;
-		if (j == m) {
-			r = i - j;
-			if (!callback(r)) break;
-			j = b[j];
-		}
-	}
-	return r;
+    if (m == 0) return 0;
+    if (m > n) return n;
+    // preprocess
+    std::vector<size_t> b(m + 1, -1);
+    for (size_t i = 0, j = -1; i < m;) {
+        while (j != -1 && p[i] != p[j]) j = b[j];
+        i++; j++;
+        b[i] = j;
+    }
+    // search
+    size_t r = n;
+    for (size_t i = 0, j = 0; i < n;) {
+        while (j != -1 && t[i] != p[j]) j = b[j];
+        i++; j++;
+        if (j == m) {
+            r = i - j;
+            if (!callback(r)) break;
+            j = b[j];
+        }
+    }
+    return r;
 }
 
 } // search
