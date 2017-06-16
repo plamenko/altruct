@@ -122,6 +122,62 @@ namespace {
         { { 7 }, { 11 } },
         { { 4 }, { 10 } },
     });
+    graph<edge> blocks1({ // biconnected blocks with satelite trees
+        { { 1 }, { 3 } },
+        { { 0 }, { 2 } },
+        { { 1 }, { 3 }, { 6 }, { 8 } },
+        { { 0 }, { 2 }, { 4 }, { 5 }, { 9 }, { 10 } },
+        { { 3 }, { 5 }, { 13 } },
+        { { 3 }, { 4 } },
+        { { 2 }, { 7 } },
+        { { 6 }, { 8 }, { 11 }, { 12 } },
+        { { 2 }, { 7 } },
+        { { 3 }, { 10 } },
+        { { 3 }, { 9 }, { 14 } },
+        { { 7 } },
+        { { 7 } },
+        { { 4 } },
+        { { 10 }, { 15 }, { 16 } },
+        { { 14 } },
+        { { 14 } },
+        { { 18 }, { 19 }, { 23 } },
+        { { 17 }, { 19 }, { 20 } },
+        { { 17 }, { 17 }, { 21 } },
+        { { 18 } },
+        { { 19 }, { 22 } },
+        { { 21 } },
+        { { 17 }, { 24 }, { 25 } },
+        { { 23 } },
+        { { 23 } },
+    });
+    graph<edge> blocks1_bctree({
+        { { 6 }, { 5 } },
+        { { 5 }, { 8 } },
+        { { 6 }, { 7 } },
+        { { 6 }, { 9 } },
+        { { 11 }, { 13 }, { 12 } },
+        { { 0 }, { 1 } },
+        { { 0 }, { 2 }, { 3 } },
+        { { 2 }, { 18 } },
+        { { 1 }, { 16 }, { 17 } },
+        { { 3 }, { 10 } },
+        { { 9 }, { 19 }, { 20 } },
+        { { 4 }, { 15 } },
+        { { 4 }, { 21 } },
+        { { 4 }, { 14 } },
+        { { 13 }, { 22 } },
+        { { 11 }, { 23 }, { 24 } },
+        { { 8 } },
+        { { 8 } },
+        { { 7 } },
+        { { 10 } },
+        { { 10 } },
+        { { 12 } },
+        { { 14 } },
+        { { 15 } },
+        { { 15 } },
+    });
+    vector<int> blocks1_map{ 0, 0, 5, 6, 7, 2, 1, 8, 1, 3, 9, 16, 17, 18, 10, 19, 20, 11, 12, 13, 21, 14, 22, 15, 23, 24 };
 }
 
 TEST(graph_algorithms_test, iterative_dfs) {
@@ -155,6 +211,15 @@ TEST(graph_algorithms_test, chain_decomposition) {
     EXPECT_EQ((vector<vector<int>>{{ 0, 3, 2, 1, 5, 4 }, { 1, 7, 6 }}), sorted(biconnected_components(cyc_undir4, d4)));
     const auto d5 = chain_decomposition(cyc_undir5);
     EXPECT_EQ((vector<vector<int>>{{ 0, 7, 4, 1, 11, 10 }, { 1, 3, 2 }, { 4, 6, 5 }, { 7, 9, 8 }}), sorted(biconnected_components(cyc_undir5, d5)));
+    
+    const auto d6 = chain_decomposition(blocks1);
+    const auto ve6 = cut_edges(blocks1, d6);
+    const auto va6 = cut_vertices(blocks1, d6);
+    const auto vb6 = biconnected_components(blocks1, d6);
+    EXPECT_EQ((vector<full_edge>{{ 4, 13 }, { 7, 11 }, { 7, 12 }, { 10, 14 }, { 14, 15 }, { 14, 16 }, { 17, 23 }, { 18, 20 }, { 19, 21 }, { 21, 22 }, { 23, 24 }, { 23, 25 } }), sorted(ve6));
+    EXPECT_EQ((vector<int>{ 2, 3, 4, 7, 10, 14, 17, 18, 19, 21, 23 }), sorted(va6));
+    EXPECT_EQ((vector<vector<int>>{{ 0, 3, 2, 1 }, { 2, 8, 7, 6 }, { 3, 5, 4 }, { 3, 10, 9 }, { 17, 19, 18 }}), sorted(vb6));
+    EXPECT_EQ(make_pair(blocks1_bctree, blocks1_map), block_cut_tree(blocks1, vb6, va6));
 }
 
 TEST(graph_algorithms_test, transitive_closure) {

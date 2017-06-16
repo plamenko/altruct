@@ -117,15 +117,15 @@ std::vector<full_edge> cut_edges(const graph<E>& g, const chain_decomposition_t&
  */
 template<typename E>
 std::vector<int> cut_vertices(const graph<E>& g, const chain_decomposition_t& d) {
-    std::vector<int> is_cut(g.size(), 0);
-    for (int u = 0; u < g.size(); u++) {
-        // vertex is an articulation point if its degree is at least 2 ...
-        if (g[u].size() >= 2) is_cut[u] = 1;
-    }
+    // 0 - not an articulation point
+    // 1 - articulation point that's part of some biconnected block
+    // 2 - articulation point that's not part of any biconnected block
+    std::vector<int> is_cut(g.size(), 2);
+    // vertex is an articulation point if:
     for (const auto& component : d) {
         for (const auto& biconnected : component) {
             for (const auto& chain : biconnected) {
-                // ... and is not in any biconnected component ...
+                // is not in any biconnected component ...
                 for (int u : chain) is_cut[u] = 0;
             }
         }
@@ -135,6 +135,16 @@ std::vector<int> cut_vertices(const graph<E>& g, const chain_decomposition_t& d)
             // ... or it is a first vertex of a non-first biconnected-component
             is_cut[component[i][0][0]] = 1;
         }
+    }
+    for (int u = 0; u < g.size(); u++) {
+        // ... or it is connected to some tree
+        for (const auto& e : g[u]) {
+            if (!is_cut[u] && is_cut[e.v] == 2) is_cut[u] = 1;
+        }
+    }
+    for (int u = 0; u < g.size(); u++) {
+        // .. and its degree is at least 2
+        if (g[u].size() < 2) is_cut[u] = 0;
     }
     std::vector<int> cutv;
     for (int u = 0; u < g.size(); u++) {
@@ -171,6 +181,87 @@ std::vector<std::vector<int>> biconnected_components(const graph<E>& g, const ch
     }
     return vbc;
 }
+
+/**
+ * Builds a Block-Cut Tree of an undirected graph and the corresponding node map.
+ *
+ * Note: The first `vb.size()` nodes of the resulting tree correspond 1-to-1 to the
+ * biconnected components. The following `va.size()` nodes correspond 1-to-1 to the
+ * articulation points. The remaining nodes correspond to leaf and isolated nodes.
+ * I.e. nodes that were not in any biconnected component nor an articulation point.
+ * Nodes in the resulting tree are connected if and only if the corresponding nodes
+ * were connected in the original graph and were not in the same bi-component.
+ *
+ * Complexity: O(m)
+ *
+ * @param g - an undirected graph with `n` nodes and `m` edges
+ * @param vb - list of biconnected components (each component is a list of vertices)
+ * @param va - list of articulation points (cut vertices)
+ * @return - block-cut tree and a map from original nodes to the block-cut tree nodes
+ */
+template<typename E>
+std::pair<graph<E>, std::vector<int>> block_cut_tree(const graph<E>& g, const std::vector<std::vector<int>>& vb, const std::vector<int>& va) {
+    graph<E> t;
+    vector<int> idx(g.size(), -1);
+    vector<int> non(g.size(), 1);
+    // nodes for blocks (biconnected components)
+    for (const auto& b : vb) {
+        int i = t.add_node();
+        for (auto u : b) idx[u] = i;
+    }
+    // nodes for articulation points
+    for (int u : va) {
+        idx[u] = t.add_node();
+    }
+    // nodes for leafs & isolated nodes
+    for (int u = 0; u < g.size(); u++) {
+        if (g[u].size() <= 1) idx[u] = t.add_node();
+    }
+    // edges for block - art.pt.
+    for (int i = 0; i < (int)vb.size(); i++) {
+        for (auto u : vb[i]) {
+            non[u] = 0;
+            if (idx[u] != i) t.add_edge2(idx[u], i);
+        }
+    }
+    // edges for art.pt. - non-block
+    for (int u = 0; u < g.size(); u++) {
+        for (const auto& e : g[u]) {
+            if (non[u] || non[e.v]) {
+                t.add_edge(idx[u], idx[e.v]);
+            }
+        }
+    }
+    return{ t, idx };
+}
+
+/**
+ * Encapsulates various biconnectivity information of an undirected graph.
+ *
+ * Complexity: O(m)
+ *
+ * @param g - an undirected graph with `n` nodes and `m` edges
+ */
+template<typename E = edge>
+struct biconnectivity {
+    typedef std::vector<int> vertices_t;
+    chain_decomposition_t decomposition; // chain_decomposition
+    std::vector<full_edge> cut_edges;    // cut edges (bridges)
+    vertices_t cut_vertices;             // cut vertices (articulation points)
+    std::vector<vertices_t> components;  // biconnected components
+    graph<E> block_cut_tree;             // block-cut tree
+    vertices_t bc_tree_idx;              // mapping from original nodes to the block-cut tree nodes
+
+    biconnectivity(const graph<E>& g) {
+        decomposition = ::chain_decomposition(g);
+        cut_edges = ::cut_edges(g, decomposition);
+        cut_vertices = ::cut_vertices(g, decomposition);
+        components = ::biconnected_components(g, decomposition);
+        auto ti = ::block_cut_tree<>(g, components, cut_vertices);
+        block_cut_tree = ti.first;
+        bc_tree_idx = ti.second;
+    }
+};
 
 } // graph
 } // altruct
