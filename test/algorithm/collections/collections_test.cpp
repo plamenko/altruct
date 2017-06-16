@@ -75,6 +75,12 @@ TEST(collections_test, compare) {
     EXPECT_EQ(0, compare(s1.begin(), s1.end(), s4.begin(), s4.end(), 0));
 }
 
+TEST(collections_test, contains) {
+    EXPECT_EQ(false, contains(vector<int>(), 5));
+    EXPECT_EQ(false, contains(vector<int>{2, 4, 7}, 5));
+    EXPECT_EQ(true, contains(vector<int>{2, 4, 7}, 4));
+}
+
 TEST(collections_test, reserve_more) {
     vector<int> v;
     // set initial capacity to 100

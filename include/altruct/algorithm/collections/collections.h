@@ -187,6 +187,18 @@ int compare(It1 b1, It1 e1, It2 b2, It2 e2, size_t max_len = -1) {
 }
 
 /**
+ * Returns whether the given collection contains the given value.
+ */
+template<typename It, typename T>
+bool contains(It b, It e, const T& val) {
+    return std::find(b, e, val) != e;
+}
+template<typename C, typename T>
+bool contains(const C& c, const T& val) {
+    return contains(c.begin(), c.end(), val);
+}
+
+/**
  * Reserves space for at least `c.size() + sz` elements,
  * while maintaining exponential growth.
  */
