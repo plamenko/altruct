@@ -177,6 +177,14 @@ namespace {
         { { 15 } },
     });
     vector<int> blocks1_map{ 0, 0, 6, 7, 8, 2, 1, 9, 1, 3, 10, 17, 18, 19, 11, 20, 21, 12, 13, 14, 22, 15, 23, 16, 5, 5 };
+    graph<edge> binary_tree(int n) {
+        graph<edge> g(n);
+        for (int i = 0; i < n / 2; i++) {
+            if (i * 2 + 1 < n) g.add_edge2(i, i * 2 + 1);
+            if (i * 2 + 2 < n) g.add_edge2(i, i * 2 + 2);
+        }
+        return g;
+    }
 }
 
 TEST(graph_algorithms_test, iterative_dfs) {
@@ -308,11 +316,36 @@ TEST(graph_algorithms_test, lowest_common_ancestor) {
 }
 
 TEST(graph_algorithms_test, heavy_light_decomposition) {
-    graph<edge> t({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
-    heavy_light_decomposition_ex hld(t);
-    EXPECT_EQ(3, hld.parent(3, 0));
-    EXPECT_EQ(2, hld.parent(3, 1));
-    EXPECT_EQ(0, hld.parent(3, 2));
+    graph<edge> t1({ { 1, 2 }, { 0 }, { 0, 3 }, { 2 } });
+    heavy_light_decomposition_ex hld1(t1);
+    EXPECT_EQ(3, hld1.parent(3, 0));
+    EXPECT_EQ(2, hld1.parent(3, 1));
+    EXPECT_EQ(0, hld1.parent(3, 2));
+    
+    auto t2 = binary_tree(31);
+    heavy_light_decomposition_ex hld2(t2);
+    
+    vector<vector<int>> vp2e, stk2e;
+    int len2e = hld2.walk_edges(19, 25, [&](int chain_begin, int chain_end, int path_first, int path_last, int path_length, bool direction) {
+        if (direction) {
+            vp2e.push_back({ t2.size() - chain_end, t2.size() - chain_begin, path_last, path_first + 1, direction });
+        } else {
+            stk2e.push_back({ chain_begin, chain_end, path_first, path_last + 1, direction });
+        }
+    });
+    while (!stk2e.empty()) vp2e.push_back(stk2e.back()), stk2e.pop_back();
+    EXPECT_EQ((vector<vector<int>>{{ 19, 22, 0, 3, 1 }, { 29, 30, 3, 4, 1 }, { 16, 18, 4, 6, 0 }, { 21, 23, 6, 8, 0 }}), vp2e);
+
+    vector<vector<int>> vp2n, stk2n;
+    int len2n = hld2.walk_nodes(19, 25, [&](int chain_begin, int chain_end, int path_first, int path_last, int path_length, bool direction) {
+        if (direction) {
+            vp2n.push_back({ t2.size() - chain_end, t2.size() - chain_begin, path_last, path_first + 1, direction });
+        } else {
+            stk2n.push_back({ chain_begin, chain_end, path_first, path_last + 1, direction });
+        }
+    });
+    while (!stk2n.empty()) vp2n.push_back(stk2n.back()), stk2n.pop_back();
+    EXPECT_EQ((vector<vector<int>>{{ 19, 22, 0, 3, 1 }, { 29, 30, 3, 4, 1 }, { 0, 1, 4, 5, 0 }, { 16, 18, 5, 7, 0 }, { 21, 23, 7, 9, 0 }}), vp2n);
 }
 
 namespace {
