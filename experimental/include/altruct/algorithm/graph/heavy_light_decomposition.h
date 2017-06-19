@@ -139,11 +139,13 @@ public:
     // path (i.e. distances from `u`).
     // Note that the bounds of a path segment are both inclusive, and also that
     // `path_first` might be bigger than `path_last` if a path segment goes in the
-    // direction opposite of the direction of its corresponding chain segment.
+    // direction opposite (true) of the direction of its corresponding chain segment.
+    // @param include_ancestor - whether to include ancestor(u, v) node during the traversal
+    //    when traversing edges this should be false, when traversing nodes it should be true
     template<typename F>
-    int walk(int u, int v, F visitor) {
+    int walk(int u, int v, F visitor, bool include_ancestor) {
         int a = lca.ancestor(u, v);
-        int uv_dist = lca.distance(u, v);
+        int uv_dist = lca.distance(u, v) + include_ancestor;
         // going up from `u` to `a`, note that this is in reverse direction of the chain segment
         for (int w = u; w != a;) {
             int p = hld.parent(w);
@@ -164,7 +166,20 @@ public:
             visitor(end_pos - len, end_pos, uw_dist - len, uw_dist - 1, uv_dist, false);
             w = p;
         }
+        if (include_ancestor) {
+            int pos = hld.position(a);
+            int dist = lca.depth(u) - lca.depth(a);
+            visitor(pos, pos + 1, dist, dist, uv_dist, false);
+        }
         return uv_dist;
+    }
+    template<typename F>
+    int walk_nodes(int u, int v, F visitor) {
+        return walk(u, v, visitor, true);
+    }
+    template<typename F>
+    int walk_edges(int u, int v, F visitor) {
+        return walk(u, v, visitor, false);
     }
 };
 
