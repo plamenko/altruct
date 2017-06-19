@@ -147,37 +147,36 @@ namespace {
         { { 19 }, { 22 } },
         { { 21 } },
         { { 17 }, { 24 }, { 25 } },
-        { { 23 } },
-        { { 23 } },
+        { { 23 }, { 25 } },
+        { { 23 }, { 24 } },
     });
     graph<edge> blocks1_bctree({
-        { { 6 }, { 5 } },
-        { { 5 }, { 8 } },
-        { { 6 }, { 7 } },
+        { { 7 }, { 6 } },
         { { 6 }, { 9 } },
-        { { 11 }, { 13 }, { 12 } },
+        { { 7 }, { 8 } },
+        { { 7 }, { 10 } },
+        { { 12 }, { 14 }, { 13 } },
+        { { 16 } },
         { { 0 }, { 1 } },
         { { 0 }, { 2 }, { 3 } },
-        { { 2 }, { 18 } },
-        { { 1 }, { 16 }, { 17 } },
-        { { 3 }, { 10 } },
-        { { 9 }, { 19 }, { 20 } },
+        { { 2 }, { 19 } },
+        { { 1 }, { 17 }, { 18 } },
+        { { 3 }, { 11 } },
+        { { 10 }, { 20 }, { 21 } },
+        { { 4 }, { 16 } },
+        { { 4 }, { 22 } },
         { { 4 }, { 15 } },
-        { { 4 }, { 21 } },
-        { { 4 }, { 14 } },
-        { { 13 }, { 22 } },
-        { { 11 }, { 23 }, { 24 } },
+        { { 23 }, { 14 } },
+        { { 5 }, { 12 } },
+        { { 9 } },
+        { { 9 } },
         { { 8 } },
-        { { 8 } },
-        { { 7 } },
-        { { 10 } },
-        { { 10 } },
-        { { 12 } },
-        { { 14 } },
-        { { 15 } },
+        { { 11 } },
+        { { 11 } },
+        { { 13 } },
         { { 15 } },
     });
-    vector<int> blocks1_map{ 0, 0, 5, 6, 7, 2, 1, 8, 1, 3, 9, 16, 17, 18, 10, 19, 20, 11, 12, 13, 21, 14, 22, 15, 23, 24 };
+    vector<int> blocks1_map{ 0, 0, 6, 7, 8, 2, 1, 9, 1, 3, 10, 17, 18, 19, 11, 20, 21, 12, 13, 14, 22, 15, 23, 16, 5, 5 };
 }
 
 TEST(graph_algorithms_test, iterative_dfs) {
@@ -198,11 +197,12 @@ TEST(graph_algorithms_test, tarjan_scc) {
 }
 
 TEST(graph_algorithms_test, chain_decomposition) {
-    const auto d = chain_decomposition(cyc_undir);
-    EXPECT_EQ((chain_decomposition_t{{ { { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 } }, { { 9, 3, 6, 9 } }, { { 4, 2, 1, 4 } } }, {}, { { { 13, 15, 14, 13 } }, { { 15, 17, 16, 15 } } }}), d);
-    EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(cyc_undir, d)));
-    EXPECT_EQ((vector<full_edge>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(cut_edges(cyc_undir, d)));
-    EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(cyc_undir, d)));
+    const auto d1 = chain_decomposition(cyc_undir);
+    const auto ve1 = cut_edges(cyc_undir, d1);
+    EXPECT_EQ((chain_decomposition_t{{ { { 0, 7, 5, 0 }, { 0, 8, 7 }, { 5, 9, 7 } }, { { 9, 3, 6, 9 } }, { { 4, 2, 1, 4 } } }, {}, { { { 13, 15, 14, 13 } }, { { 15, 17, 16, 15 } } }}), d1);
+    EXPECT_EQ((vector<full_edge>{{ 4, 9 }, { 10, 11 }, { 11, 12 } }), sorted(ve1));
+    EXPECT_EQ((vector<int>{ 4, 9, 11, 15 }), sorted(cut_vertices(cyc_undir, d1, ve1)));
+    EXPECT_EQ((vector<vector<int>>{{ 0, 7, 5, 8, 9 }, { 4, 2, 1 }, { 9, 3, 6 }, { 13, 15, 14 }, { 15, 17, 16 } }), sorted(biconnected_components(cyc_undir, d1)));
     const auto d2 = chain_decomposition(cyc_undir2);
     EXPECT_EQ((chain_decomposition_t{ { { { 0, 3, 2, 1, 0 }, { 0, 4, 5, 3 }, { 1, 4 } } } }), d2);
     const auto d3 = chain_decomposition(cyc_undir3);
@@ -214,12 +214,12 @@ TEST(graph_algorithms_test, chain_decomposition) {
     
     const auto d6 = chain_decomposition(blocks1);
     const auto ve6 = cut_edges(blocks1, d6);
-    const auto va6 = cut_vertices(blocks1, d6);
+    const auto va6 = cut_vertices(blocks1, d6, ve6);
     const auto vb6 = biconnected_components(blocks1, d6);
-    EXPECT_EQ((vector<full_edge>{{ 4, 13 }, { 7, 11 }, { 7, 12 }, { 10, 14 }, { 14, 15 }, { 14, 16 }, { 17, 23 }, { 18, 20 }, { 19, 21 }, { 21, 22 }, { 23, 24 }, { 23, 25 } }), sorted(ve6));
+    EXPECT_EQ((vector<full_edge>{{ 4, 13 }, { 7, 11 }, { 7, 12 }, { 10, 14 }, { 14, 15 }, { 14, 16 }, { 17, 23 }, { 18, 20 }, { 19, 21 }, { 21, 22 } }), sorted(ve6));
     EXPECT_EQ((vector<int>{ 2, 3, 4, 7, 10, 14, 17, 18, 19, 21, 23 }), sorted(va6));
-    EXPECT_EQ((vector<vector<int>>{{ 0, 3, 2, 1 }, { 2, 8, 7, 6 }, { 3, 5, 4 }, { 3, 10, 9 }, { 17, 19, 18 }}), sorted(vb6));
-    EXPECT_EQ(make_pair(blocks1_bctree, blocks1_map), block_cut_tree(blocks1, vb6, va6));
+    EXPECT_EQ((vector<vector<int>>{{ 0, 3, 2, 1 }, { 2, 8, 7, 6 }, { 3, 5, 4 }, { 3, 10, 9 }, { 17, 19, 18 }, { 23, 25, 24 }}), sorted(vb6));
+    EXPECT_EQ(make_pair(blocks1_bctree, blocks1_map), block_cut_tree(blocks1, ve6, va6, vb6));
 }
 
 TEST(graph_algorithms_test, transitive_closure) {
