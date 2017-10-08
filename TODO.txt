@@ -51,6 +51,7 @@ Trees
     splay tree
 
 Graphs
+    dominators - move impl to altruct
     hungarian algorithm
     min-cost max-flow
 

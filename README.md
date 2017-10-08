@@ -252,6 +252,14 @@ needs to be brought to a higher quality bar that is required here.
     * Binary search
     * Knuth-Morris-Pratt algorithm (string search)
 
+* Chrono
+  * RDTSC clock
+  * since helper
+
+* Concurrency
+  * lock helper
+  * parallel_execute
+
 * I/O:
   * Fast I/O
   * Reader: File / Stream / String / Buffered / Simple
