@@ -93,5 +93,61 @@ I prime_pi(I n) {
     return (n < 1) ? 0 : prime_pi_sqrt<I>(n)[n];
 }
 
+/**
+ * Calculates `PrimePi1[n / k]` and `PrimePi3[n / k` for each `k` in `[1, n]` in `O(n^(5/7))`.
+ *
+ * Where:
+ *  `PrimePi1[n] := Sum[If[IsPrime[k] && (k % 4) == 1, 1, 0], {k, 1, n}]`
+ *  `PrimePi3[n] := Sum[If[IsPrime[k] && (k % 4) == 3, 1, 0], {k, 1, n}]`
+ * Note:
+ *  `PrimePi[n] = PrimePi1[n] + PrimePi3[n] + [n >= 2]`
+ *
+ * Note, there is only `O(sqrt n)` different values and the result is given as two `sqrt_map`.
+ */
+template<typename I = int64_t>
+std::vector<container::sqrt_map<I, I>> prime_pi13_sqrt(I n) {
+    I q = sqrtT(n) + 1;
+    std::vector<container::sqrt_map<I, I>> res{
+        container::sqrt_map<I, I>(q, n), // pi1
+        container::sqrt_map<I, I>(q, n), // pi3
+    };
+    if (n <= 1) return res;
+    std::vector<I> keys;
+    for (I i = 1; i <= q; i++) keys.push_back(n / i);
+    for (I k = n / q - 1; k > 0; k--) keys.push_back(k);
+    for (I k : keys) {
+        res[0][k] = (k - 1) / 4;
+        res[1][k] = (k + 1) / 4;
+    }
+    for (I p = 2; p < q; p++) {
+        auto s0 = res[0][p - 1];
+        auto s1 = res[1][p - 1];
+        if (s0 == res[0][p] && s1 == res[1][p]) continue;
+        I p2 = sqT(p);
+        for (I k : keys) {
+            if (k < p2) break;
+            res[p % 4 == 3][k] -= res[0][k / p] - s0;
+            res[p % 4 == 1][k] -= res[1][k / p] - s1;
+        }
+    }
+    return res;
+}
+
+/**
+ * Calculates `PrimePi1[n]` in `O(n^(5/7))`.
+ */
+template<typename I = int64_t>
+I prime_pi1(I n) {
+    return (n < 1) ? 0 : prime_pi13_sqrt<I>(n)[0][n];
+}
+
+/**
+ * Calculates `PrimePi3[n]` in `O(n^(5/7))`.
+ */
+template<typename I = int64_t>
+I prime_pi3(I n) {
+    return (n < 1) ? 0 : prime_pi13_sqrt<I>(n)[1][n];
+}
+
 } // math
 } // altruct

@@ -89,3 +89,18 @@ TEST(prime_counting_test, prime_pi) {
     }
     EXPECT_EQ(ve, va);
 }
+
+TEST(prime_counting_test, prime_pi13) {
+    vector<char> vq(1000);
+    primes(nullptr, vq.data(), (int)vq.size());
+    vector<int64_t> ve1, va1, ve3, va3;
+    int c1 = 0, c3 = 0;
+    for (int n = 0; n < vq.size(); n++) {
+        ve1.push_back(c1 += vq[n] && (n % 4 == 1));
+        va1.push_back(prime_pi1(n));
+        ve3.push_back(c3 += vq[n] && (n % 4 == 3));
+        va3.push_back(prime_pi3(n));
+    }
+    EXPECT_EQ(ve1, va1);
+    EXPECT_EQ(ve3, va3);
+}
