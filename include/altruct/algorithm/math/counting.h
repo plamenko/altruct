@@ -157,13 +157,37 @@ T stirling_s2(I n, int k, T id = T(1)) {
 }
 
 /**
+ * Series expansion of the Euler function up to `n`.
+ *
+ *  Euler[x] = Product[1 - x^k, {k, 1, inf}]
+ *
+ * Complexity: `O(n)`
+ */
+template<typename T>
+std::vector<T> euler_function(int n, T id = T(1)) {
+    // See https://en.wikipedia.org/wiki/Pentagonal_number_theorem
+    T e0 = zeroT<T>::of(id);
+    std::vector<T> e(n, e0);
+    e[0] = id;
+    for (int k = 4, m = 1; m < n; m += k, k += 3) {
+        e[m] = (k % 2 == 0) ? -id : id;
+    }
+    for (int k = 5, m = 2; m < n; m += k, k += 3) {
+        e[m] = (k % 2 == 0) ? id : -id;
+    }
+    return e;
+}
+
+/**
  * Partition numbers up to `n`.
+ *
  *   p[n] = number of partitions of n
  *
  * Complexity: `O(n sqrt n)`
+ * Note: this can be calculated in `O(M(n))` by `partitions_p`
  */
 template<typename T>
-std::vector<T> partitions_p(int n, T id = T(1)) {
+std::vector<T> partitions_p_slow(int n, T id = T(1)) {
     // See https://en.wikipedia.org/wiki/Pentagonal_number_theorem
     T e0 = zeroT<T>::of(id);
     std::vector<T> p(n, e0);
@@ -181,14 +205,16 @@ std::vector<T> partitions_p(int n, T id = T(1)) {
 
 /**
  * Distinct partition numbers up to `n`.
+ *
  *   q[n] = number of partitions of n into distinct parts
  *
  * Complexity: `O(n sqrt n)`
+ * Note: this can be calculated in `O(M(n))` by `partitions_p_distinct`
  */
 template<typename T>
-std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
+std::vector<T> partitions_p_distinct_slow(int n, T id = T(1)) {
     // See https://oeis.org/A000009 Jerome Malenfant, Feb 16 2011
-    auto q = partitions_p(n, id);
+    auto q = partitions_p_slow(n, id);
     for (int i = n - 1; i >= 0; i--) {
         for (int k = 8, m = 2; m <= i; m += k, k += 6) {
             q[i] += (k % 4 == 0) ? -q[i - m] : q[i - m];
@@ -198,6 +224,45 @@ std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
         }
     }
     return q;
+}
+
+/**
+ * Partition numbers up to `n`.
+ *
+ *   p[n] = number of partitions of n
+ *
+ * Complexity: `O(n log n)`
+ */
+template<typename T>
+std::vector<T> partitions_p(int n, T id = T(1)) {
+    auto e = seriesX<T>(euler_function(n, id));
+    return e.inverse().p.c;
+}
+
+/**
+ * Distinct partition numbers up to `n`.
+ *
+ *   q[n] = number of partitions of n into distinct parts
+ *
+ * Complexity: `O(n log n)`
+ */
+template<typename T>
+std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
+    auto e = seriesX<T>(euler_function(n, id));
+    return (e.sub_mul(-id) * e.sub_pow(4) / sqT(e.sub_pow(2))).p.c;
+}
+
+/**
+ * Distinct odd partition numbers up to `n`.
+ *
+ *   q1[n] = number of partitions of n into distinct odd parts
+ *
+ * Complexity: `O(n log n)`
+ */
+template<typename T>
+std::vector<T> partitions_p_distinct_odd(int n, T id = T(1)) {
+    auto e = seriesX<T>(euler_function(n, id));
+    return (sqT(e.sub_pow(2)) / (e * e.sub_pow(4))).p.c;
 }
 
 } // math

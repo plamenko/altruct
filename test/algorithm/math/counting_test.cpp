@@ -114,6 +114,23 @@ TEST(counting_test, stirling_s2) {
     }
 }
 
+TEST(counting_test, partitions_p_slow) {
+    typedef moduloX<int> modx;
+    modx id(1, 1000000007);
+    vector<modx> expected = to_modx(1009, { { 1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77, 101, 135, 176, 231, 297, 385, 490, 627 } })[0];
+    auto actual = partitions_p_slow(21, id);
+    EXPECT_EQ(expected, actual);
+}
+
+TEST(counting_test, partitions_p_distinct_slow) {
+    typedef moduloX<int> modx;
+    modx id(1, 1000000007);
+    vector<modx> expected = to_modx(1009, { { 1, 1, 1, 2, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 22, 27, 32, 38, 46, 54, 64, 76, 89, 104, 122, 142, 165 } })[0];
+    auto actual = partitions_p_distinct_slow(27, id);
+    EXPECT_EQ(expected, actual);
+}
+
+
 TEST(counting_test, partitions_p) {
     typedef moduloX<int> modx;
     modx id(1, 1000000007);
@@ -127,5 +144,14 @@ TEST(counting_test, partitions_p_distinct) {
     modx id(1, 1000000007);
     vector<modx> expected = to_modx(1009, { { 1, 1, 1, 2, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 22, 27, 32, 38, 46, 54, 64, 76, 89, 104, 122, 142, 165 } })[0];
     auto actual = partitions_p_distinct(27, id);
+    EXPECT_EQ(expected, actual);
+}
+
+TEST(counting_test, partitions_p_distinct_odd) {
+    typedef moduloX<int> modx;
+    modx id(1, 1000000007);
+    vector<modx> expected = to_modx(1009, { { 1, 1, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 8, 8, 9, 11, 12, 12, 14, 16, 17, 18, 20,
+                                              23, 25, 26, 29, 33, 35, 37, 41, 46, 49, 52, 57, 63, 68, 72, 78, 87, 93, 98, 107, 117, 125, 133 } })[0];
+    auto actual = partitions_p_distinct_odd(55, id);
     EXPECT_EQ(expected, actual);
 }
