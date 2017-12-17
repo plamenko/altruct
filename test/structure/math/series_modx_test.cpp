@@ -207,6 +207,18 @@ TEST(series_modx_test, operators_inplace_self) {
     EXPECT_EQ(4, sr.N());
 }
 
+TEST(series_modx_test, sub_mul) {
+    const auto s = make_serx(1009, { 7, 5, -3, 4 });
+    const auto sm = s.sub_mul(modx(-3, 1009));
+    EXPECT_EQ(make_serx(1009, { 7, -15, -27, -108 }), sm);
+}
+
+TEST(series_modx_test, sub_pow) {
+    const auto s = make_serx(1009, { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 });
+    const auto sp = s.sub_pow(3);
+    EXPECT_EQ(make_serx(1009, { 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), sp);
+}
+
 TEST(series_modx_test, derivative) {
     const auto s = make_serx(1009, { 7, 5, -3, 4 });
     const auto sd = s.derivative();

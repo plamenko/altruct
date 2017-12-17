@@ -170,6 +170,18 @@ TEST(series_test, operators_inplace_self) {
     EXPECT_EQ((series<double, 4>{ 1 }), sr);
 }
 
+TEST(series_test, sub_mul) {
+    const series<int, 4> s{ 7, 5, -3, 4 };
+    const series<int, 4> sm = s.sub_mul(-3);
+    EXPECT_EQ((series<int, 4>{ 7, -15, -27, -108 }), sm);
+}
+
+TEST(series_test, sub_pow) {
+    const series<int, 13> s{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+    const series<int, 13> sp = s.sub_pow(3);
+    EXPECT_EQ((series<int, 13>{ 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), sp);
+}
+
 TEST(series_test, derivative) {
     const series<int, 4> s{ 7, 5, -3, 4 };
     const series<int, 4> sd = s.derivative();

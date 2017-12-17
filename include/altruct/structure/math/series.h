@@ -107,6 +107,28 @@ public:
     series integral() const { return integral(p.ZERO_COEFF); }
     series integral(const T& c0) const { auto pi = p.integral(c0); pi.resize(this->N()); return series(std::move(pi), this->N()); }
 
+    // s(x*a)
+    series sub_mul(const T& a) const {
+        series s = *this;
+        T a_n = id_coeff();
+        for (int i = 1; i < this->N(); i++) {
+            a_n *= a;
+            s[i] *= a_n;
+        }
+        return s;
+    }
+
+    // s(x^a)
+    series sub_pow(int a) const {
+        series s(polynom<T>{ p.ZERO_COEFF }, this->N());
+        if (a > 0) {
+            for (int i = 0, j = 0; i < this->N(); i += a, j++) {
+                s[i] = p[j];
+            }
+        }
+        return s;
+    }
+
     // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
     series inverse() const {
         // ensure that p[0] is 1 before inverting
