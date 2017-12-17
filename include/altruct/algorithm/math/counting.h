@@ -158,23 +158,46 @@ T stirling_s2(I n, int k, T id = T(1)) {
 
 /**
  * Partition numbers up to `n`.
+ *   p[n] = number of partitions of n
  *
  * Complexity: `O(n sqrt n)`
  */
 template<typename T>
 std::vector<T> partitions_p(int n, T id = T(1)) {
+    // See https://en.wikipedia.org/wiki/Pentagonal_number_theorem
     T e0 = zeroT<T>::of(id);
     std::vector<T> p(n, e0);
     p[0] = id;
     for (int i = 1; i < n; i++) {
-        for (int k = 0, m = 1; m <= i; k += 3, m += k + 1) {
+        for (int k = 4, m = 1; m <= i; m += k, k += 3) {
             p[i] += (k % 2 == 0) ? p[i - m] : -p[i - m];
         }
-        for (int k = 0, m = 2; m <= i; k += 3, m += k + 2) {
-            p[i] += (k % 2 == 0) ? p[i - m] : -p[i - m];
+        for (int k = 5, m = 2; m <= i; m += k, k += 3) {
+            p[i] += (k % 2 == 0) ? -p[i - m] : p[i - m];
         }
     }
     return p;
+}
+
+/**
+ * Distinct partition numbers up to `n`.
+ *   q[n] = number of partitions of n into distinct parts
+ *
+ * Complexity: `O(n sqrt n)`
+ */
+template<typename T>
+std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
+    // See https://oeis.org/A000009 Jerome Malenfant, Feb 16 2011
+    auto q = partitions_p(n, id);
+    for (int i = n - 1; i >= 0; i--) {
+        for (int k = 8, m = 2; m <= i; m += k, k += 6) {
+            q[i] += (k % 4 == 0) ? -q[i - m] : q[i - m];
+        }
+        for (int k = 10, m = 4; m <= i; m += k, k += 6) {
+            q[i] += (k % 4 == 0) ? q[i - m] : -q[i - m];
+        }
+    }
+    return q;
 }
 
 } // math

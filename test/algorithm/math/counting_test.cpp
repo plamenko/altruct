@@ -121,3 +121,11 @@ TEST(counting_test, partitions_p) {
     auto actual = partitions_p(21, id);
     EXPECT_EQ(expected, actual);
 }
+
+TEST(counting_test, partitions_p_distinct) {
+    typedef moduloX<int> modx;
+    modx id(1, 1000000007);
+    vector<modx> expected = to_modx(1009, { { 1, 1, 1, 2, 2, 3, 4, 5, 6, 8, 10, 12, 15, 18, 22, 27, 32, 38, 46, 54, 64, 76, 89, 104, 122, 142, 165 } })[0];
+    auto actual = partitions_p_distinct(27, id);
+    EXPECT_EQ(expected, actual);
+}
