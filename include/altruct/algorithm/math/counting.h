@@ -249,7 +249,7 @@ std::vector<T> partitions_p(int n, T id = T(1)) {
 template<typename T>
 std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
     auto e = seriesX<T>(euler_function(n, id));
-    return (e.sub_mul(-id) * e.sub_pow(4) / sqT(e.sub_pow(2))).p.c;
+    return (e.sub_pow(2) / e).p.c;
 }
 
 /**
@@ -262,7 +262,7 @@ std::vector<T> partitions_p_distinct(int n, T id = T(1)) {
 template<typename T>
 std::vector<T> partitions_p_distinct_odd(int n, T id = T(1)) {
     auto e = seriesX<T>(euler_function(n, id));
-    return (sqT(e.sub_pow(2)) / (e * e.sub_pow(4))).p.c;
+    return (e.sub_mul(-id) / e.sub_pow(2)).p.c;
 }
 
 } // math
