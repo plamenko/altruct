@@ -45,12 +45,12 @@ std::vector<std::vector<T>> stirling_s1_all(int n, int k, T id = T(1)) {
 /**
  * Stirling numbers of the first kind; `k`-th column up to `n`.
  *
- * Complexity: `O(n log n log k)`
+ * Complexity: `O(n log n)`
  */
 template<typename T>
 std::vector<T> stirling_s1_all_n_for_k(int n, int k, T id = T(1)) {
     typedef seriesX<T> ser;
-    auto egf_s1_k = powT(ser{ id, id }.resize(n).ln(), k) / factorial(k, id);
+    auto egf_s1_k = (ser{ id, id }.resize(n).ln()).pow(k) / factorial(k, id);
     auto s1_k = egf_s1_k.make_ordinary();
     s1_k.p.resize(n);
     return s1_k.p.c;
@@ -79,14 +79,14 @@ std::vector<T> stirling_s1_all_k_for_n(int n, T id = T(1)) {
 /**
  * Stirling number of the first kind; A single term.
  *
- * Complexity: `O(n log n log k)`; TODO: is there a better way?
+ * Complexity: `O(n log n)`
  */
 template<typename T>
 T stirling_s1(int n, int k, T id = T(1)) {
     T e0 = zeroT<T>::of(id);
     if (k == n) return id;
     if (k <= 0 || k > n) return e0;
-    return stirling_s1_all_k_for_n(n, id)[k];
+    return stirling_s1_all_n_for_k(n + 1, k, id)[n];
 }
 
 /**
@@ -111,12 +111,12 @@ std::vector<std::vector<T>> stirling_s2_all(int n, int k, T id = T(1)) {
 /**
  * Stirling numbers of the second kind; `k`-th column up to `n`.
  *
- * Complexity: `O(n log n log k)`
+ * Complexity: `O(n log n)`
  */
 template<typename T>
 std::vector<T> stirling_s2_all_n_for_k(int n, int k, T id = T(1)) {
     typedef seriesX<T> ser;
-    auto egf_s2_k = powT(ser::exp(id, n) - ser{ id }, k) / factorial(k, id);
+    auto egf_s2_k = (ser::exp(id, n) - ser{ id }).pow(k) / factorial(k, id);
     auto s2_k = egf_s2_k.make_ordinary();
     s2_k.p.resize(n);
     return s2_k.p.c;

@@ -61,7 +61,7 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
     }
 
     // splits coefficients into two 16-bit blocks each to avoid overflow
-    // works for `mod::M < 2^30` and `l1, l2 <= 2^20`; e.g.: `M = 10^9+7, l = 10^6`
+    // works for `mod::M < 2^30` and `l1, l2 <= 2^18`; e.g.: `M = 10^9+7, l = 250.000`
     static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
         int n = next_pow2(l1 + l2 + 1);
         auto root = complex_root_wrapper<double>(n);
@@ -109,7 +109,7 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
             _mul_long(pr, lr, p1, l1, p2, l2);
         } else if (l2 < 300 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
             polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
-        } else if (l1 <= 1000000) {
+        } else if (l1 <= 250000) {
             _mul_fft(pr, lr, p1, l1, p2, l2);
         } else {
             _mul_fft_big(pr, lr, p1, l1, p2, l2);
