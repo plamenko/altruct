@@ -107,6 +107,19 @@ public:
     series integral() const { return integral(p.ZERO_COEFF); }
     series integral(const T& c0) const { auto pi = p.integral(c0); pi.resize(this->N()); return series(std::move(pi), this->N()); }
 
+    // s(x)*x^l - shifts coefficients of s(x) by l places
+    series shift(int l) const {
+        if (l < 0) {
+            polynom<T> t{ p.c.begin() - l, p.c.end() };
+            t.c.insert(t.c.end(), -l, p.ZERO_COEFF);
+            return series(t, this->N());
+        } else {
+            polynom<T> t{ p.c.begin(), p.c.end() - l };
+            t.c.insert(t.c.begin(), l, p.ZERO_COEFF);
+            return series(t, this->N());
+        }
+    }
+
     // s(x*a)
     series sub_mul(const T& a) const {
         series s = *this;
@@ -148,10 +161,39 @@ public:
         return series(std::move(r), this->N());
     }
 
-    // series expansion of natural logarithm of s(x)
+    // exp(s(x)) - series expansion of exponential of s(x)
+    // the following should hold: s(0) == 0
+    series exp() const {
+        // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
+        typedef series<T, 0, series_storage::INSTANCE> serx;
+        polynom<T> r{ id_coeff() }, t;
+        for (int l = 1; l < this->N(); l *= 2) {
+            int m = std::min(this->N(), l * 2);
+            t.c.assign(p.c.begin(), p.c.begin() + m);
+            t -= serx(r, m).ln().p;
+            t[0] += id_coeff();
+            polynom<T>::mul(r, r, t, m - 1);
+        }
+        return series(std::move(r), this->N());
+    }
+
+    // ln(s(x)) - series expansion of natural logarithm of s(x)
+    // the following should hold: s(0) == 1
     series ln() const { return ln(p.ZERO_COEFF); }
     series ln(const T& c0) const {
         return (derivative() / *this).integral(c0);
+    }
+
+    // s(x)^a - a-th power of s(x)
+    series pow(int64_t a) const {
+        if (p[0] == p.ZERO_COEFF) {
+            int l = p.lowest();
+            return shift(-p.lowest()).pow(a).shift(p.lowest() * int(a));
+        } else if (p[0] == id_coeff()) {
+            return (ln() * castOf(p[0], a)).exp();
+        } else {
+            return (*this / p[0]).pow(a) * powT(p[0], a);
+        }
     }
 
     // series expansion of exp(a*x) = Sum[a^n * x^n / n!, n]

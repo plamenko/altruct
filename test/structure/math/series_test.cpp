@@ -170,30 +170,36 @@ TEST(series_test, operators_inplace_self) {
     EXPECT_EQ((series<double, 4>{ 1 }), sr);
 }
 
+TEST(series_test, shift) {
+    const series<int, 7> s{ 7, 5, -3, 4, 2, 1, -8 };
+    EXPECT_EQ((series<int, 7>{ 0, 0, 0, 7, 5, -3, 4 }), s.shift(+3));
+    EXPECT_EQ((series<int, 7>{ 4, 2, 1, -8, 0, 0, 0 }), s.shift(-3));
+}
+
 TEST(series_test, sub_mul) {
     const series<int, 4> s{ 7, 5, -3, 4 };
-    const series<int, 4> sm = s.sub_mul(-3);
-    EXPECT_EQ((series<int, 4>{ 7, -15, -27, -108 }), sm);
+    EXPECT_EQ((series<int, 4>{ 7, -15, -27, -108 }), s.sub_mul(-3));
 }
 
 TEST(series_test, sub_pow) {
     const series<int, 13> s{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-    const series<int, 13> sp = s.sub_pow(3);
-    EXPECT_EQ((series<int, 13>{ 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), sp);
+    EXPECT_EQ((series<int, 13>{ 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), s.sub_pow(3));
 }
 
 TEST(series_test, derivative) {
     const series<int, 4> s{ 7, 5, -3, 4 };
-    const series<int, 4> sd = s.derivative();
-    EXPECT_EQ((series<int, 4>{ 5, -6, 12 }), sd);
+    EXPECT_EQ((series<int, 4>{ 5, -6, 12 }), s.derivative());
 }
 
 TEST(series_test, integral) {
     const series<int, 5> s{ 7, 8, 15, -4, 20 };
-    const series<int, 5> si0 = s.integral();
-    const series<int, 5> si3 = s.integral(3);
-    EXPECT_EQ((series<int, 5>{ 0, 7, 4, 5, -1 }), si0);
-    EXPECT_EQ((series<int, 5>{ 3, 7, 4, 5, -1 }), si3);
+    EXPECT_EQ((series<int, 5>{ 0, 7, 4, 5, -1 }), s.integral());
+    EXPECT_EQ((series<int, 5>{ 3, 7, 4, 5, -1 }), s.integral(3));
+}
+
+TEST(series_test, exp) {
+    const series<double, 5> s{ 0, 2, 3, 5, 7 };
+    EXPECT_EQ((series<double, 5>{ 1, 2, 5, 12 + 1/3., 28 + 1/6.}), s.exp());
 }
 
 TEST(series_test, ln) {
@@ -202,7 +208,17 @@ TEST(series_test, ln) {
     EXPECT_EQ((series<double, 5>{ 5, -36, 6, 156, 399 }), s1.ln(5));
 }
 
-TEST(series_test, exp) {
+TEST(series_test, pow) {
+    const series<double, 10> s1{ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+    EXPECT_EQ((series<double, 10>{1, 6, 21, 59, 144, 321, 663, 1284, 2358, 4133}), s1.pow(3));
+    const series<double, 10> s2{ 4, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+    EXPECT_EQ((series<double, 10>{64, 96, 192, 392, 720, 1338, 2247, 3741, 5958, 9326}), s2.pow(3));
+    const series<double, 10> s3{ 0, 0, 4, 2, 3, 5, 7, 11, 13, 17 };
+    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 64, 96, 192, 392}), s3.pow(3));
+    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), s3.pow(5));
+}
+
+TEST(series_test, static_exp) {
     EXPECT_EQ((series<double, 5>{ 1, 0, 0, 0, 0 }), (series<double, 5>::exp(0)));
     EXPECT_EQ((series<double, 5>{ 1 / 1., 1 / 1., 1 / 2., 1 / 6., 1 / 24. }), (series<double, 5>::exp(1)));
     EXPECT_EQ((series<double, 5>{ 1 / 1., -1 / 1., 1 / 2., -1 / 6., 1 / 24. }), (series<double, 5>::exp(-1)));

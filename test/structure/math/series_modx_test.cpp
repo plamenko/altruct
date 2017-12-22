@@ -207,16 +207,20 @@ TEST(series_modx_test, operators_inplace_self) {
     EXPECT_EQ(4, sr.N());
 }
 
+TEST(series_modx_test, shift) {
+    const auto s = make_serx(1009, { 7, 5, -3, 4, 2, 1, -8 });
+    EXPECT_EQ(make_serx(1009, { 0, 0, 0, 7, 5, -3, 4 }), s.shift(+3));
+    EXPECT_EQ(make_serx(1009, { 4, 2, 1, -8, 0, 0, 0 }), s.shift(-3));
+}
+
 TEST(series_modx_test, sub_mul) {
     const auto s = make_serx(1009, { 7, 5, -3, 4 });
-    const auto sm = s.sub_mul(modx(-3, 1009));
-    EXPECT_EQ(make_serx(1009, { 7, -15, -27, -108 }), sm);
+    EXPECT_EQ(make_serx(1009, { 7, -15, -27, -108 }), s.sub_mul(modx(-3, 1009)));
 }
 
 TEST(series_modx_test, sub_pow) {
     const auto s = make_serx(1009, { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 });
-    const auto sp = s.sub_pow(3);
-    EXPECT_EQ(make_serx(1009, { 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), sp);
+    EXPECT_EQ(make_serx(1009, { 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5 }), s.sub_pow(3));
 }
 
 TEST(series_modx_test, derivative) {
@@ -236,13 +240,28 @@ TEST(series_modx_test, integral) {
     EXPECT_EQ(5, si3.N());
 }
 
+TEST(series_modx_test, exp) {
+    const auto s = make_serx(1009, { 0, 2, 3, 5, 7 });
+    EXPECT_EQ(make_serx(1009, { 1, 2, 5, 685, 869 }), s.exp());
+}
+
 TEST(series_modx_test, ln) {
     const auto s = make_serx(1009, { 1, -36, 654, -7836, +68673 });
     EXPECT_EQ(make_serx(1009, { 0, -36, 6, 156, 399 }), s.ln());
     EXPECT_EQ(make_serx(1009, { 5, -36, 6, 156, 399 }), s.ln(5));
 }
 
-TEST(series_modx_test, exp) {
+TEST(series_modx_test, pow) {
+    const auto s1 = make_serx(1009, { 1, 2, 3, 5, 7, 11, 13, 17, 19, 23 });
+    EXPECT_EQ(make_serx(1009, { 1, 6, 21, 59, 144, 321, 663, 1284, 2358, 4133 }), s1.pow(3));
+    const auto s2 = make_serx(1009, { 4, 2, 3, 5, 7, 11, 13, 17, 19, 23 });
+    EXPECT_EQ(make_serx(1009, { 64, 96, 192, 392, 720, 1338, 2247, 3741, 5958, 9326 }), s2.pow(3));
+    const auto s3 = make_serx(1009, { 0, 0, 4, 2, 3, 5, 7, 11, 13, 17 });
+    EXPECT_EQ(make_serx(1009, { 0, 0, 0, 0, 0, 0, 64, 96, 192, 392 }), s3.pow(3));
+    EXPECT_EQ(make_serx(1009, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }), s3.pow(5));
+}
+
+TEST(series_modx_test, static_exp) {
     EXPECT_EQ(make_serx(1009, { 1, 0, 0, 0, 0 }), serx::exp(modx(0, 1009), 5));
     EXPECT_EQ(make_serx(1009, { 1, 1, 505, 841, 967 }), serx::exp(modx(1, 1009), 5));
     EXPECT_EQ(make_serx(1009, { 1, 1008, 505, 168, 967 }), serx::exp(modx(-1, 1009), 5));
