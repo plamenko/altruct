@@ -83,6 +83,29 @@ template<typename T>
 T zeroOf(const T& x) { return zeroT<T>::of(x); }
 
 /**
+ * Returns true if the value is infinity.
+ */
+template<typename T>
+struct infinityT {
+    static bool is(const T& x) {
+        return false;
+    }
+};
+template<> struct infinityT<float> { bool is(const float& x) { return isinf(x); } };
+template<> struct infinityT<double> { bool is(const double& x) { return isinf(x); } };
+template<> struct infinityT<long double> { bool is(const long double& x) { return isinf(x); } };
+
+/**
+ * Gives the conjugate value of x.
+ */
+template<typename T>
+struct conjugateT {
+    static T of(const T& x) {
+        return x;
+    }
+};
+
+/**
  * Absolute value.
  */
 template <typename T>

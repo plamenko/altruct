@@ -110,6 +110,7 @@ TEST(complex_test, conjugate) {
     const cplx z2(2, 3);
     EXPECT_EQ(cplx(2, 5), z1.conjugate());
     EXPECT_EQ(cplx(2, -3), z2.conjugate());
+    EXPECT_EQ(cplx(2, -3), conjugateT<cplx>::of(z2));
 }
 
 TEST(complex_test, norm) {

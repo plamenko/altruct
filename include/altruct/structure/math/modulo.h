@@ -152,7 +152,8 @@ public:
     // construct from int, but only if T is not integral to avoid constructor clashing
     template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
     modulo(int v) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-    modulo(const T& v = 0) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
+    modulo() : my_modulo_members(1), v(zeroOf(M())) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
+    modulo(const T& v) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
     modulo(const T& v, const T& M) : my_modulo_members(M), v(v) { normalize(); }
     modulo(const modulo& rhs) : my_modulo_members(rhs.M()), v(rhs.v) {}
 

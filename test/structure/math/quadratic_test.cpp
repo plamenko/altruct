@@ -36,15 +36,15 @@ TEST(quadratic_test, constructor_x) {
     quadx q1;
     EXPECT_EQ(0, q1.a);
     EXPECT_EQ(0, q1.b);
-    EXPECT_EQ(0, q1.D());
+    EXPECT_EQ(-1, q1.D());
     quadx q2(10);
     EXPECT_EQ(10, q2.a);
     EXPECT_EQ(0, q2.b);
-    EXPECT_EQ(0, q2.D());
+    EXPECT_EQ(-1, q2.D());
     quadx q3(+2, -5);
     EXPECT_EQ(+2, q3.a);
     EXPECT_EQ(-5, q3.b);
-    EXPECT_EQ(0, q3.D());
+    EXPECT_EQ(-1, q3.D());
     quadx q4(+2, -5, 7); // ignore D if static
     EXPECT_EQ(+2, q4.a);
     EXPECT_EQ(-5, q4.b);
@@ -143,6 +143,7 @@ TEST(quadratic_test, conjugate) {
     const quad q2(2, 3);
     EXPECT_EQ(quad(2, 5), q1.conjugate());
     EXPECT_EQ(quad(2, -3), q2.conjugate());
+    EXPECT_EQ(quad(2, -3), conjugateT<quad>::of(q2));
 }
 
 TEST(quadratic_test, norm) {

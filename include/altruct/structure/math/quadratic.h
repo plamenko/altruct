@@ -52,8 +52,10 @@ public:
 
     // construct from int, but only if T is not integral to avoid constructor clashing
     template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-    quadratic(int a) : my_quadratic_members(0), a(a), b(0) {}
-    quadratic(const T& a = 0, const T& b = 0, const T& D = 0) : my_quadratic_members(D), a(a), b(b) {}
+    quadratic(int a) : my_quadratic_members(0), a(castOf(D(), a)), b(zeroOf(D())) {}
+    quadratic() : my_quadratic_members(-1), a(zeroOf(D())), b(zeroOf(D())) {}
+    quadratic(const T& a) : my_quadratic_members(-1), a(a), b(zeroOf(a)) {}
+    quadratic(const T& a, const T& b, const T& D = -1) : my_quadratic_members(D), a(a), b(b) {}
     quadratic(const quadratic& rhs) : my_quadratic_members(rhs.D()), a(rhs.a), b(rhs.b) {}
 
     bool operator == (const quadratic& rhs) const { return (a == rhs.a && b == rhs.b); }
@@ -118,6 +120,14 @@ struct zeroT<quadratic<T, ID, STORAGE_TYPE>> {
     typedef quadratic<T, ID, STORAGE_TYPE> quad;
     static quad of(const quad& x) {
         return quad(zeroOf(x.a), zeroOf(x.b), x.D());
+    }
+};
+
+template<typename T, int ID, int STORAGE_TYPE>
+struct conjugateT<quadratic<T, ID, STORAGE_TYPE>> {
+    typedef quadratic<T, ID, STORAGE_TYPE> quad;
+    static quad of(const quad& x) {
+        return x.conjugate();
     }
 };
 
