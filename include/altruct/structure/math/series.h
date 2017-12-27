@@ -185,8 +185,10 @@ public:
     }
 
     // s(x)^a - a-th power of s(x)
-    series pow(int64_t a) const {
-        if (p[0] == p.ZERO_COEFF) {
+    series pow(int64_t a, int64_t threshold = 200) const {
+        if (a < threshold) {
+            return powT(*this, a);
+        } else if (p[0] == p.ZERO_COEFF) {
             int l = p.lowest();
             return shift(-p.lowest()).pow(a).shift(p.lowest() * int(a));
         } else if (p[0] == id_coeff()) {

@@ -210,12 +210,12 @@ TEST(series_test, ln) {
 
 TEST(series_test, pow) {
     const series<double, 10> s1{ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
-    EXPECT_EQ((series<double, 10>{1, 6, 21, 59, 144, 321, 663, 1284, 2358, 4133}), s1.pow(3));
+    EXPECT_EQ((series<double, 10>{1, 6, 21, 59, 144, 321, 663, 1284, 2358, 4133}), s1.pow(3, 0));
     const series<double, 10> s2{ 4, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
-    EXPECT_EQ((series<double, 10>{64, 96, 192, 392, 720, 1338, 2247, 3741, 5958, 9326}), s2.pow(3));
+    EXPECT_EQ((series<double, 10>{64, 96, 192, 392, 720, 1338, 2247, 3741, 5958, 9326}), s2.pow(3, 0));
     const series<double, 10> s3{ 0, 0, 4, 2, 3, 5, 7, 11, 13, 17 };
-    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 64, 96, 192, 392}), s3.pow(3));
-    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), s3.pow(5));
+    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 64, 96, 192, 392}), s3.pow(3, 0));
+    EXPECT_EQ((series<double, 10>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}), s3.pow(5, 0));
 }
 
 TEST(series_test, static_exp) {
