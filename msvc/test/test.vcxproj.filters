@@ -217,6 +217,15 @@
     <ClCompile Include="..\..\test\algorithm\math\factorization_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\moebius_tr_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\quadratic_modx_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\with_infinity_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">

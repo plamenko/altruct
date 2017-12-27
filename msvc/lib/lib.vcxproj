@@ -106,6 +106,7 @@
     <ClInclude Include="..\..\include\altruct\structure\math\galois_field_2.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\matrix.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\modulo.h" />
+    <ClInclude Include="..\..\include\altruct\structure\math\moebius_tr.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\nimber.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\permutation.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\polynom.h" />
@@ -116,6 +117,7 @@
     <ClInclude Include="..\..\include\altruct\structure\math\vector2d.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\vectorNd.h" />
+    <ClInclude Include="..\..\include\altruct\structure\math\with_infinity.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D8990B-9719-43A9-AAD4-00DEC6CD3E0C}</ProjectGuid>

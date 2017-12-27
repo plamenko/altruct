@@ -356,5 +356,11 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\factorization.h">
       <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\math\moebius_tr.h">
+      <Filter>include\altruct\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\math\with_infinity.h">
+      <Filter>include\altruct\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

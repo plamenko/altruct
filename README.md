@@ -288,6 +288,7 @@ needs to be brought to a higher quality bar that is required here.
     * `galois_field_2` - [GF(2)](https://en.wikipedia.org/wiki/GF(2)) - A finite field with two elements: 0 and 1
     * `matrix` - A [matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)) over arbitrary ring
     * `modulo` - [Modular arithmetics](https://en.wikipedia.org/wiki/Modular_arithmetic) over arbitrary ring
+    * `moebius_tr` - [Moebius Transformation](https://en.wikipedia.org/wiki/M%C3%B6bius_transformation)
     * `nimber` - Grundy [Nimber](https://en.wikipedia.org/wiki/Nimber) arithmetics
     * `permuation` - A [permutation](https://en.wikipedia.org/wiki/Permutation) in cycle/transposition/array notation
     * `polynom` - A [polynomial](https://en.wikipedia.org/wiki/Polynomial) with coefficients over arbitrary ring
@@ -297,3 +298,4 @@ needs to be brought to a higher quality bar that is required here.
     * `fenwick_tree` - A [Fenwick tree](https://en.wikipedia.org/wiki/Fenwick_tree) structure a.k.a. "logaritamska struktura" in Croatia
     * `prime_holder` - A utility container that keeps a range of primes and related functions
     * `root_wrapper` - A utility class that wraps the root powers used in FFT
+    * `with_infinity` - Extends with a point at infinity. See [Riemann sphere](https://en.wikipedia.org/wiki/Riemann_sphere)
