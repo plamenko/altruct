@@ -141,7 +141,8 @@ TEST(moebius_tr_test, apply) {
     moeb_tr t9(cplx(0), cplx(0), cplx(-1, 4), cplx(8, 6), +1);
     moeb_tr t11(cplx(0), cplx(0), cplx(-1, 4), cplx(8, 6), -1);
     winf w(cplx(11, 23));
-    winf s(-cplx(-8, -9) / cplx(6, -7));
+    winf wi(cplx(0, 0), 1);
+    winf ws(-cplx(-8, -9) / cplx(6, -7));
     
     EXPECT_EQ((vector<int>{ 976, 1009, 639, 1009, 1008, 1009, 0 }), to_vec_w(t2(w)));
     EXPECT_EQ((vector<int>{ 214, 1009, 4, 1009, 1008, 1009, 0 }), to_vec_w(t4(w)));
@@ -151,8 +152,8 @@ TEST(moebius_tr_test, apply) {
     EXPECT_EQ((vector<int>{ 976, 1009, 639, 1009, 1008, 1009, 0 }), to_vec_w(t4(conjugateT<winf>::of(w))));
 
     // singularity point maps to infinity
-    EXPECT_EQ((vector<int>{ 586, 1009, 358, 1009, 1008, 1009, 1}), to_vec_w(t2(s)));
-    EXPECT_EQ((vector<int>{ 586, 1009, 358, 1009, 1008, 1009, 1 }), to_vec_w(t4(conjugateT<winf>::of(s))));
+    EXPECT_EQ((vector<int>{ 586, 1009, 358, 1009, 1008, 1009, 1}), to_vec_w(t2(ws)));
+    EXPECT_EQ((vector<int>{ 586, 1009, 358, 1009, 1008, 1009, 1 }), to_vec_w(t4(conjugateT<winf>::of(ws))));
 
     // product of transformations equals their composition
     EXPECT_EQ((vector<int>{ 163, 1009, 52, 1009, 1008, 1009, 0 }), to_vec_w(t1(t2(w))));
@@ -181,6 +182,10 @@ TEST(moebius_tr_test, apply) {
     EXPECT_EQ((vector<int>{ 0, 1009, 0, 1009, 1008, 1009, 0 }), to_vec_w(t9.normalize()(w)));
     EXPECT_EQ((vector<int>{ 0, 1009, 0, 1009, 1008, 1009, 0 }), to_vec_w(t11(w)));
     EXPECT_EQ((vector<int>{ 0, 1009, 0, 1009, 1008, 1009, 0 }), to_vec_w(t11.normalize()(w)));
+
+    // at infinity
+    EXPECT_EQ((vector<int>{ 973, 1009, 463, 1009, 1008, 1009, 0 }), to_vec_w(t2(wi)));
+    EXPECT_EQ((vector<int>{ 973, 1009, 463, 1009, 1008, 1009, 0 }), to_vec_w(t4(wi)));
 }
 
 TEST(moebius_tr_test, builtin_transformations) {
