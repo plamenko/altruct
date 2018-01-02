@@ -149,7 +149,9 @@ struct bst_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
     typedef bst_node<T>* node_ptr;
     node_ptr ptr;
     bst_iterator(node_ptr ptr = nullptr) : ptr(ptr) { }
+
     int count() const { return ptr->count(); }
+    int size() const { return ptr->size; }
     T& operator * () { return ptr->val; }
     T* operator -> () { return &ptr->val; }
     bool operator == (const bst_iterator& rhs) const { return ptr == rhs.ptr; }
@@ -158,6 +160,14 @@ struct bst_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
     bst_iterator operator--(int) { auto old = *this; --*this; return old; }
     bst_iterator& operator++() { ptr = bst_iterator_util<T>::inorder_next(ptr); return *this; }
     bst_iterator operator++(int) { auto old = *this; ++*this; return old; }
+
+    // `pos` and `add` are not suitable when duplicate mode is set to COUNT
+    int pos() const { return bst_iterator_util<T>::inorder_pos(ptr); }
+    bst_iterator add(difference_type off) { return bst_iterator_util<T>::inorder_add(ptr, int(off)); }
+
+    bst_iterator parent() const { return ptr->parent; }
+    bst_iterator right() const { return ptr->right; }
+    bst_iterator left() const { return ptr->left; }
 };
 
 /**
@@ -169,7 +179,9 @@ struct bst_const_iterator : public std::iterator<std::bidirectional_iterator_tag
     const_node_ptr ptr;
     bst_const_iterator(const_node_ptr ptr = nullptr) : ptr(ptr) { }
     bst_const_iterator(bst_iterator<T> it) : ptr(it.ptr) { }
+
     int count() const { return ptr->count(); }
+    int size() const { return ptr->size; }
     const T& operator * () const { return ptr->val; }
     const T* operator -> () const { return &ptr->val; }
     bool operator == (const bst_const_iterator& rhs) const { return ptr == rhs.ptr; }
@@ -178,6 +190,15 @@ struct bst_const_iterator : public std::iterator<std::bidirectional_iterator_tag
     bst_const_iterator operator--(int) { auto old = *this; --*this; return old; }
     bst_const_iterator& operator++() { ptr = bst_iterator_util<T>::inorder_next(ptr); return *this; }
     bst_const_iterator operator++(int) { auto old = *this; ++*this; return old; }
+    bst_const_iterator& operator+=(difference_type off) { ptr = bst_iterator_util<T>::inorder_add(ptr, int(off)); return *this; }
+
+    // `pos` and `add` are not suitable when duplicate mode is set to COUNT
+    int pos() const { return bst_iterator_util<T>::inorder_pos(ptr); }
+    bst_const_iterator add(difference_type off) { return bst_iterator_util<T>::inorder_add(ptr, int(off)); }
+
+    bst_const_iterator parent() const { return ptr->parent; }
+    bst_const_iterator right() const { return ptr->right; }
+    bst_const_iterator left() const { return ptr->left; }
 };
 
 /**
@@ -215,10 +236,11 @@ class binary_search_tree {
 public: // public types
     typedef K key_type;
     typedef T value_type;
-    typedef typename std::conditional<
-        std::is_same<K, T>::value,
-        bst_const_iterator<T>,
-        bst_iterator<T> >::type iterator;
+    //typedef typename std::conditional<
+    //    std::is_same<K, T>::value,
+    //    bst_const_iterator<T>,
+    //    bst_iterator<T> >::type iterator;
+    typedef bst_iterator<T> iterator;
     typedef bst_const_iterator<T> const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -249,11 +271,11 @@ protected: // member variables
     // *   nil == inorder_next(last)
     node_ptr nil;
 
-    node_ptr root() {
+    node_ptr root_ptr() {
         return nil->left;
     }
 
-    const_node_ptr root() const {
+    const_node_ptr root_ptr() const {
         return nil->left;
     }
 
@@ -285,7 +307,8 @@ public: // constructor & size
     }
 
     binary_search_tree(const binary_search_tree& rhs) :
-        binary_search_tree(rhs.cbegin(), rhs.cend(), rhs.cmp, rhs.alloc) {
+        binary_search_tree(rhs.cmp, rhs.alloc) {
+        make_link(nil, clone_subtree(rhs.root_ptr()), true);
     }
 
     binary_search_tree& operator=(binary_search_tree&& rhs) {
@@ -306,27 +329,34 @@ public: // constructor & size
     }
 
     void clear() {
-        _free(root());
+        _free(root_ptr());
         nil->left = nil;
         nil->right = nil;
     }
 
     bool empty() const {
-        return root()->size == 0;
+        return root_ptr()->size == 0;
     }
 
     int size() const {
-        return root()->size;
+        return root_ptr()->size;
     }
 
 public: // iterators
+    iterator root() { return root_ptr(); }
+    const_iterator root() const { return root_ptr(); }
+    const_iterator croot() const { return root_ptr(); }
     iterator begin() { return ++end(); }
-    iterator end() { return nil; }
+    const_iterator begin() const { return ++end(); }
     const_iterator cbegin() const { return ++cend(); }
+    iterator end() { return nil; }
+    const_iterator end() const { return nil; }
     const_iterator cend() const { return nil; }
     reverse_iterator rbegin() { return reverse_iterator(end()); }
-    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
     const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
     const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public: // relational operators
@@ -349,7 +379,7 @@ public: // relational operators
 public: // query & update
     int count_less_or_equal(const K& key) const {
         int k = 0;
-        for (const_node_ptr ptr = root(); ptr != nil;) {
+        for (const_node_ptr ptr = root_ptr(); !ptr->is_nil();) {
             if (cmp(key, _key(ptr->val))) {
                 ptr = ptr->left;
             } else {
@@ -362,7 +392,7 @@ public: // query & update
 
     int count_less(const K& key) const {
         int k = 0;
-        for (const_node_ptr ptr = root(); ptr != nil;) {
+        for (const_node_ptr ptr = root_ptr(); !ptr->is_nil();) {
             if (cmp(_key(ptr->val), key)) {
                 k += ptr->size - ptr->right->size;
                 ptr = ptr->right;
@@ -382,7 +412,7 @@ public: // query & update
     }
 
     const_iterator find_kth(int k) const {
-        return bst_iterator_util<T>::inorder_kth(root(), k);
+        return bst_iterator_util<T>::inorder_kth(root_ptr(), k);
     }
 
     iterator find_kth(int k) {
@@ -391,7 +421,7 @@ public: // query & update
 
     const_iterator find(const K& key) const {
         const_node_ptr res = nil;
-        for (const_node_ptr ptr = root(); ptr != nil;) {
+        for (const_node_ptr ptr = root_ptr(); !ptr->is_nil();) {
             if (cmp(_key(ptr->val), key)) {
                 ptr = ptr->right;
             } else if (cmp(key, _key(ptr->val))) {
@@ -414,7 +444,7 @@ public: // query & update
 
     const_iterator lower_bound(const K& key) const {
         const_node_ptr res = nil;
-        for (const_node_ptr ptr = root(); ptr != nil;) {
+        for (const_node_ptr ptr = root_ptr(); !ptr->is_nil();) {
             if (cmp(_key(ptr->val), key)) {
                 ptr = ptr->right;
             } else {
@@ -431,7 +461,7 @@ public: // query & update
 
     const_iterator upper_bound(const K& key) const {
         const_node_ptr res = nil;
-        for (const_node_ptr ptr = root(); ptr != nil;) {
+        for (const_node_ptr ptr = root_ptr(); !ptr->is_nil();) {
             if (cmp(key, _key(ptr->val))) {
                 res = ptr;
                 ptr = ptr->left;
@@ -456,7 +486,7 @@ public: // query & update
 
     iterator insert(const T& val, int cnt = 1) {
         node_ptr ptr, par = nil; bool go_left = true;
-        for (ptr = root(); ptr != nil;) {
+        for (ptr = root_ptr(); !ptr->is_nil();) {
             par = ptr;
             if (cmp(_key(val), _key(ptr->val))) {
                 go_left = true;
@@ -482,6 +512,12 @@ public: // query & update
         // ptr needs to be retraced up after insert
     }
 
+    // important: this call is unchecked and the sort order may be violated
+    iterator insert_before(const_iterator it, const T& val, int cnt = 1) {
+        bool go_left = it.ptr->left->is_nil(); if (!go_left) --it;
+        return insert_node(remove_const(it), go_left, val, cnt);
+    }
+
     iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {
         if (DUP == bst_duplicate_handling::STORE) {
             return erase(lower_bound(key), upper_bound(key));
@@ -491,7 +527,7 @@ public: // query & update
     }
 
     iterator erase(const_iterator b, const_iterator e, int cnt = std::numeric_limits<int>::max()) {
-        while (b != e) erase(b++);
+        while (b != e) erase(b++, cnt);
         return remove_const(b);
     }
 
@@ -520,7 +556,7 @@ protected: // const casting logic
 protected: // insert & erase
     node_ptr insert_node(node_ptr par, bool go_left, const T& val, int cnt) {
         node_ptr ptr = go_left ? par->left : par->right;
-        if (ptr == nil) {
+        if (ptr->is_nil()) {
             ptr = _buy(val);
             ptr->parent = par;
             ptr->left = nil;
@@ -536,7 +572,7 @@ protected: // insert & erase
     }
 
     node_ptr erase_node(node_ptr ptr, int cnt) {
-        if (ptr == nil) return nil;
+        if (ptr->is_nil()) return nil;
         if (DUP != bst_duplicate_handling::COUNT) {
             cnt = 1;
         }
@@ -546,15 +582,27 @@ protected: // insert & erase
         }
         cnt = ptr->count();
         // physically erase from the tree
-        if (ptr->left != nil && ptr->right != nil) {
+        if (!ptr->left->is_nil() && !ptr->right->is_nil()) {
             swap_with_descendant(ptr, bst_iterator_util<T>::inorder_next(ptr));
         }
         // there can be at most one child now
-        node_ptr ch = (ptr->left != nil) ? ptr->left : ptr->right;
+        node_ptr ch = (!ptr->left->is_nil()) ? ptr->left : ptr->right;
         node_ptr par = ptr->parent;
         make_link(par, ch, ptr);
         propagate_size(par, nil, -cnt);
         return par;
+    }
+
+    node_ptr clone_subtree(const_node_ptr src) {
+        // note this method gets called from copy-constructor;
+        // this means that src may come from another tree
+        if (src->is_nil()) return nil;
+        auto ptr = _buy(src->val);
+        make_link(ptr, clone_subtree(src->left), true);
+        make_link(ptr, clone_subtree(src->right), false);
+        ptr->balance = src->balance;
+        ptr->size = src->size;
+        return ptr;
     }
 
 protected: // pointer rewiring logic
@@ -629,7 +677,7 @@ private: // allocation logic
     }
 
     void _destroy() {
-        _free_all(root());
+        _free_all(root_ptr());
         alloc.deallocate(nil, 1); // no destruct
     }
 
@@ -645,7 +693,7 @@ private: // allocation logic
     }
 
     void _free_all(node_ptr t) {
-        if (t == nil) return;
+        if (t->is_nil()) return;
         _free_all(t->left);
         _free_all(t->right);
         _free(t);

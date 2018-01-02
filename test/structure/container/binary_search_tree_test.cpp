@@ -62,7 +62,7 @@ namespace {
 
         void debug_check(const_node_ptr ptr = nullptr) const {
             if (ptr == nullptr) {
-                ptr = bst_t::root();
+                ptr = bst_t::root_ptr();
                 ASSERT_TRUE(bst_t::nil->parent == bst_t::nil) << "ERROR: nil not connected back to itself";
                 ASSERT_TRUE(bst_t::nil->left == bst_t::nil->right) << "ERROR: nil left & right roots out of sync";
             }
@@ -213,23 +213,36 @@ TEST(binary_search_tree_test, bst_iterator) {
     r.size = 6;
     t.right = &s;
     s.size = 8;
+    s.parent = &t;
 
-    bst_iterator<ck_entry> it(&t);
+    bst_iterator<ck_entry> it(&t), itr(&r), its(&s);
     EXPECT_EQ(e, *it);
     EXPECT_EQ(e.first, it->first);
     EXPECT_EQ(e.second, it->second);
     EXPECT_TRUE(it == &t);
     EXPECT_FALSE(it == &s);
+    EXPECT_FALSE(it != &t);
+    EXPECT_TRUE(it != &s);
     EXPECT_EQ(11, it.count());
+    EXPECT_EQ(25, it.size());
+    EXPECT_EQ(itr, it.left());
+    EXPECT_EQ(its, it.right());
+    EXPECT_EQ(it, its.parent());
 
-    bst_const_iterator<ck_entry> cit(&t);
+    bst_const_iterator<ck_entry> cit(&t), citr(&r), cits(&s);
     EXPECT_EQ(e, *cit);
     EXPECT_EQ(e.first, cit->first);
     EXPECT_EQ(e.second, cit->second);
     EXPECT_TRUE(cit == &t);
     EXPECT_FALSE(cit == &s);
+    EXPECT_FALSE(cit != &t);
+    EXPECT_TRUE(cit != &s);
     EXPECT_TRUE(cit == it);
     EXPECT_EQ(11, cit.count());
+    EXPECT_EQ(25, cit.size());
+    EXPECT_EQ(citr, cit.left());
+    EXPECT_EQ(cits, cit.right());
+    EXPECT_EQ(cit, cits.parent());
 }
 
 TEST(binary_search_tree_test, constructor) {
@@ -311,10 +324,27 @@ TEST(binary_search_tree_test, duplicate_handling) {
 TEST(binary_search_tree_test, iterators) {
     set<int> s1; for (int i = 0; i < 110; i++) s1.insert(rand() % 1000000000);
     binary_search_tree_dbg<int> t1(s1.begin(), s1.end());
+    const binary_search_tree_dbg<int> ct1(s1.begin(), s1.end());
     EXPECT_EQ((vector<int>(s1.begin(), s1.end())), (vector<int>(t1.begin(), t1.end())));
     EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
     EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
     EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
+    EXPECT_EQ((vector<int>(s1.begin(), s1.end())), (vector<int>(ct1.begin(), ct1.end())));
+    EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(ct1.cbegin(), ct1.cend())));
+    EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(ct1.rbegin(), ct1.rend())));
+    EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(ct1.crbegin(), ct1.crend())));
+}
+
+TEST(binary_search_tree_test, root) {
+    binary_search_tree_dbg<string, string> tc;
+    tc.insert("cc");
+    tc.insert("aaa");
+    tc.insert("b");
+    tc.insert("dddd");
+    EXPECT_EQ(tc.find("cc"), tc.root());
+    EXPECT_EQ(tc.find("aaa"), tc.root().left());
+    EXPECT_EQ(tc.find("dddd"), tc.root().right());
+    EXPECT_EQ(tc.end(), tc.root().parent());
 }
 
 TEST(binary_search_tree_test, relational_operators) {
@@ -455,4 +485,47 @@ TEST(binary_search_tree_test, insert_erase_with_count) {
     tc.insert("b", 1);
     tc.insert("e", 2);
     verify_structure(tc, vector<string>{ "aaa", "aaa", "b", "b", "b", "cc", "cc", "cc", "e", "e" });
+}
+
+TEST(binary_search_tree_test, erase_range) {
+    binary_search_tree_dbg<string, string, bst_duplicate_handling::COUNT> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    auto b = tc.find("b");
+    auto e = tc.find("dddd");
+    tc.erase(b, e, 2);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "b", "cc", "cc", "dddd", "dddd" });
+    tc.erase(tc.begin(), tc.end(), 1);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "cc", "dddd" });
+}
+
+TEST(binary_search_tree_test, insert_before) {
+    binary_search_tree_dbg<string, string, bst_duplicate_handling::COUNT> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    tc.insert_before(tc.find("b"), "zz", 2); // note that this violates the sort order!
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "zz", "zz", "b", "b", "b", "cc", "cc", "cc", "cc", "dddd", "dddd" });
+}
+
+TEST(binary_search_tree_test, iterator_add_pos) {
+    binary_search_tree_dbg<string, string> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    EXPECT_EQ(0, tc.find("aaa").pos());
+    EXPECT_EQ(1, tc.find("b").pos());
+    EXPECT_EQ(2, tc.find("cc").pos());
+    EXPECT_EQ(3, tc.find("dddd").pos());
+    EXPECT_EQ(4, tc.find("c").pos());
+    auto it = tc.find("b");
+    EXPECT_EQ("b", *it.add(0));
+    EXPECT_EQ("aaa", *it.add(-1));
+    EXPECT_EQ("cc", *it.add(+1));
+    EXPECT_EQ("dddd", *it.add(+2));
+    EXPECT_EQ(tc.end(), it.add(+3));
 }
