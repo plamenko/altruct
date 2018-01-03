@@ -23,6 +23,8 @@ namespace {
     class treap_dbg : public treap<K, T, DUP, CMP, RAND, ALLOC> {
     protected:
         typedef treap<K, T, DUP, CMP, RAND, ALLOC> treap_t;
+        CMP cmp;
+        static const K& _key(const T& val) { return bst_key<K, T>::of(val); }
     public:
         typedef K key_type;
         typedef T value_type;
@@ -33,7 +35,7 @@ namespace {
 
     public:
         treap_dbg(const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-            treap_t(cmp, rnd, alloc) {
+            treap_t(cmp, rnd, alloc), cmp(cmp) {
         }
 
         template<typename It>
@@ -66,16 +68,20 @@ namespace {
             ASSERT_TRUE(end().parent() == end()) << "ERROR: nil not connected back to itself";
             ASSERT_TRUE(end().left() == end().right()) << "ERROR: nil left & right roots out of sync";
             debug_check(root());
+            for (auto it = begin(); it != end(); ++it) {
+                auto itn = it; ++itn; if (itn == end()) break;
+                ASSERT_FALSE(cmp(_key(*itn), _key(*it))) << "ERROR: order violation";
+            }
         }
         void debug_check(const_iterator it) const {
             if (it == end()) return;
             if (it.left() != end()) {
-                //ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->val), treap_t::_key(ptr->left->val))) << "ERROR: parent < left";
+                ASSERT_FALSE(cmp(_key(*it), _key(*it.left()))) << "ERROR: parent < left";
                 ASSERT_FALSE(it.left().parent() != it) << "ERROR: left not connected back to parent";
                 debug_check(it.left());
             }
             if (it.right() != end()) {
-                //ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->right->val), treap_t::_key(ptr->val))) << "ERROR: right < parent";
+                ASSERT_FALSE(cmp(_key(*it.right()), _key(*it))) << "ERROR: right < parent";
                 ASSERT_FALSE(it.right().parent() != it) << "ERROR: right not connected back to parent";
                 debug_check(it.right());
             }
@@ -186,6 +192,41 @@ TEST(treap_test, duplicate_handling) {
     verify_structure(t3, s3);
 }
 
+TEST(treap_test, treap_iterator) {
+    typedef pair<const int, string> ck_entry;
+    treap_dbg<int, ck_entry, bst_duplicate_handling::COUNT> tc;
+    ck_entry e{ 42, "abc" };
+    ck_entry e2{ 13, "de" };
+    tc.insert(e, 11);
+    tc.insert(e2, 14);
+
+    auto it = tc.find(42);
+    auto it2 = tc.find(13);
+    EXPECT_EQ(e, *it);
+    EXPECT_EQ(e.first, it->first);
+    EXPECT_EQ(e.second, it->second);
+    EXPECT_TRUE(it == tc.find(42));
+    EXPECT_FALSE(it == it2);
+    EXPECT_FALSE(it != tc.find(42));
+    EXPECT_TRUE(it != it2);
+    EXPECT_EQ(11, it.count());
+    EXPECT_EQ(25, it.size());
+
+    const auto& cc = tc;
+    auto cit = cc.find(42);
+    auto cit2 = cc.find(13);
+    EXPECT_EQ(e, *cit);
+    EXPECT_EQ(e.first, cit->first);
+    EXPECT_EQ(e.second, cit->second);
+    EXPECT_TRUE(cit == it);
+    EXPECT_FALSE(cit == it2);
+    EXPECT_FALSE(cit != it);
+    EXPECT_TRUE(cit != it2);
+    EXPECT_TRUE(cit == it);
+    EXPECT_EQ(11, cit.count());
+    EXPECT_EQ(25, cit.size());
+}
+
 TEST(treap_test, iterators) {
     set<int> s1; for (int i = 0; i < 110; i++) s1.insert(rand() % 1000000000);
     treap_dbg<int> t1(s1.begin(), s1.end());
@@ -198,6 +239,25 @@ TEST(treap_test, iterators) {
     EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(ct1.cbegin(), ct1.cend())));
     EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(ct1.rbegin(), ct1.rend())));
     EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(ct1.crbegin(), ct1.crend())));
+}
+
+template<typename T, typename It>
+void collect_subtree(vector<T>& v, It it) {
+    if (it == it.parent()) return;
+    collect_subtree(v, it.left());
+    v.push_back(*it);
+    collect_subtree(v, it.right());
+}
+
+TEST(treap_test, root) {
+    treap_dbg<string, string> tc;
+    tc.insert("cc");
+    tc.insert("aaa");
+    tc.insert("b");
+    tc.insert("dddd");
+    vector<string> va; collect_subtree(va, tc.root());
+    EXPECT_EQ((vector<string>{"aaa", "b", "cc", "dddd"}), va);
+    EXPECT_EQ(tc.end(), tc.root().parent());
 }
 
 TEST(treap_test, relational_operators) {
@@ -338,6 +398,49 @@ TEST(treap_test, insert_erase_with_count) {
     tc.insert("b", 1);
     tc.insert("e", 2);
     verify_structure(tc, vector<string>{ "aaa", "aaa", "b", "b", "b", "cc", "cc", "cc", "e", "e" });
+}
+
+TEST(treap_test, erase_range) {
+    treap_dbg<string, string, bst_duplicate_handling::COUNT> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    auto b = tc.find("b");
+    auto e = tc.find("dddd");
+    tc.erase(b, e, 2);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "b", "cc", "cc", "dddd", "dddd" });
+    tc.erase(tc.begin(), tc.end(), 1);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "cc", "dddd" });
+}
+
+TEST(treap_test, insert_before) {
+    treap_dbg<string, string, bst_duplicate_handling::COUNT> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    tc.insert_before(tc.find("b"), "abc", 2);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "abc", "abc", "b", "b", "b", "cc", "cc", "cc", "cc", "dddd", "dddd" });
+}
+
+TEST(treap_test, iterator_add_pos) {
+    treap_dbg<string, string> tc;
+    tc.insert("dddd", 2);
+    tc.insert("b", 3);
+    tc.insert("aaa", 5);
+    tc.insert("cc", 4);
+    EXPECT_EQ(0, tc.find("aaa").pos());
+    EXPECT_EQ(1, tc.find("b").pos());
+    EXPECT_EQ(2, tc.find("cc").pos());
+    EXPECT_EQ(3, tc.find("dddd").pos());
+    EXPECT_EQ(4, tc.find("c").pos());
+    auto it = tc.find("b");
+    EXPECT_EQ("b", *it.add(0));
+    EXPECT_EQ("aaa", *it.add(-1));
+    EXPECT_EQ("cc", *it.add(+1));
+    EXPECT_EQ("dddd", *it.add(+2));
+    EXPECT_EQ(tc.end(), it.add(+3));
 }
 
 namespace {

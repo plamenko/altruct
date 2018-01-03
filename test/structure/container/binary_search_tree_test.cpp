@@ -60,15 +60,17 @@ namespace {
             return *this;
         }
 
-        void debug_check(const_node_ptr ptr = nullptr) const {
-            if (ptr == nullptr) {
-                ptr = bst_t::root_ptr();
-                ASSERT_TRUE(bst_t::nil->parent == bst_t::nil) << "ERROR: nil not connected back to itself";
-                ASSERT_TRUE(bst_t::nil->left == bst_t::nil->right) << "ERROR: nil left & right roots out of sync";
+        void debug_check() const {
+            ASSERT_TRUE(bst_t::nil->parent == bst_t::nil) << "ERROR: nil not connected back to itself";
+            ASSERT_TRUE(bst_t::nil->left == bst_t::nil->right) << "ERROR: nil left & right roots out of sync";
+            debug_check(bst_t::root_ptr());
+            for (auto it = begin(); it != end(); ++it) {
+                auto itn = it; ++itn; if (itn == end()) break;
+                ASSERT_FALSE(cmp(_key(*itn), _key(*it))) << "ERROR: order violation";
             }
-            if (ptr->is_nil()) {
-                return;
-            }
+        }
+        void debug_check(const_node_ptr ptr) const {
+            if (ptr->is_nil()) return;
             if (!ptr->left->is_nil()) {
                 ASSERT_FALSE(bst_t::cmp(bst_t::_key(ptr->val), bst_t::_key(ptr->left->val))) << "ERROR: parent < left";
                 ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
@@ -507,8 +509,8 @@ TEST(binary_search_tree_test, insert_before) {
     tc.insert("b", 3);
     tc.insert("aaa", 5);
     tc.insert("cc", 4);
-    tc.insert_before(tc.find("b"), "zz", 2); // note that this violates the sort order!
-    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "zz", "zz", "b", "b", "b", "cc", "cc", "cc", "cc", "dddd", "dddd" });
+    tc.insert_before(tc.find("b"), "abc", 2);
+    verify_structure(tc, vector<string>{ "aaa", "aaa", "aaa", "aaa", "aaa", "abc", "abc", "b", "b", "b", "cc", "cc", "cc", "cc", "dddd", "dddd" });
 }
 
 TEST(binary_search_tree_test, iterator_add_pos) {
