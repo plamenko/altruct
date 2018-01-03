@@ -92,8 +92,8 @@ void test_iterators_without_mutating(const vector<string>& v, It b, It e) {
         for (i2 = 0, it2 = b;; ++i2, ++it2) {
             int d = i2 - i1;
             // iterator arithmetics
-            //EXPECT_EQ(i1, it1.pos());
-            //EXPECT_EQ(i2, it2.pos());
+            //EXPECT_EQ(i1, it1.pos()); // reverse iterators don't have pos
+            //EXPECT_EQ(i2, it2.pos()); // reverse iterators don't have pos
             EXPECT_EQ(i1 - i2, it1 - it2);
             EXPECT_EQ(it2, it1 + d);
             EXPECT_EQ(it2, it1 - (-d));
@@ -153,17 +153,27 @@ void test_iterators_mutations(vector<string>& v, It b, It e) {
 
 TEST(rope_test, iterators) {
     vector<string> v; for (int i = 0; i < 110; i++) v.push_back(to_string(rand() % 1000000000));
+    const auto cvr = reversed(v);
     rope<string> t(v.begin(), v.end());
+    const rope<string> ct(v.begin(), v.end());
     EXPECT_EQ((vector<string>(v.begin(), v.end())), (vector<string>(t.begin(), t.end())));
     EXPECT_EQ((vector<string>(v.cbegin(), v.cend())), (vector<string>(t.cbegin(), t.cend())));
     EXPECT_EQ((vector<string>(v.rbegin(), v.rend())), (vector<string>(t.rbegin(), t.rend())));
     EXPECT_EQ((vector<string>(v.crbegin(), v.crend())), (vector<string>(t.crbegin(), t.crend())));
+    EXPECT_EQ((vector<string>(v.begin(), v.end())), (vector<string>(ct.begin(), ct.end())));
+    EXPECT_EQ((vector<string>(v.cbegin(), v.cend())), (vector<string>(ct.cbegin(), ct.cend())));
+    EXPECT_EQ((vector<string>(v.rbegin(), v.rend())), (vector<string>(ct.rbegin(), ct.rend())));
+    EXPECT_EQ((vector<string>(v.crbegin(), v.crend())), (vector<string>(ct.crbegin(), ct.crend())));
     test_iterators_without_mutating(v, t.cbegin(), t.cend());
     test_iterators_without_mutating(v, t.begin(), t.end());
+    test_iterators_without_mutating(v, ct.cbegin(), ct.cend());
+    test_iterators_without_mutating(v, ct.begin(), ct.end());
     test_iterators_mutations(v, t.begin(), t.end());
     auto vr = reversed(v);
     test_iterators_without_mutating(vr, t.crbegin(), t.crend());
     test_iterators_without_mutating(vr, t.rbegin(), t.rend());
+    test_iterators_without_mutating(cvr, ct.crbegin(), ct.crend());
+    test_iterators_without_mutating(cvr, ct.rbegin(), ct.rend());
     test_iterators_mutations(vr, t.rbegin(), t.rend());
 }
 

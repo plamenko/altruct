@@ -24,6 +24,7 @@ namespace container {
  * param K   - key type
  * param T   - value type (for maps this is going to be bst_entry<K, V>)
  * param DUP - duplicate handling mode
+ * param RAND - random generator type
  * param CMP - comparison functor type
  * param ALLOC - allocator type
  */
@@ -65,7 +66,7 @@ public:
     }
 
     treap(const treap& rhs) :
-        treap(rhs.cbegin(), rhs.cend(), rhs.cmp, rhs.rnd, rhs.alloc) {
+        bst_t(rhs), rnd(rhs.rnd) {
     }
 
     treap& operator=(treap&& rhs) {
@@ -86,6 +87,10 @@ public:
 
     iterator insert(const T& val, int cnt = 1) {
         return retrace_up(bst_t::insert(val, cnt));
+    }
+
+    iterator insert_before(const_iterator it, const T& val, int cnt = 1) {
+        return retrace_up(bst_t::insert_before(it, val, cnt));
     }
 
     iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {

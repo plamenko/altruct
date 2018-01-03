@@ -66,7 +66,7 @@ namespace {
 
         void debug_check(const_node_ptr ptr = nullptr) const {
             if (ptr == nullptr) {
-                ptr = treap_t::root();
+                ptr = treap_t::root_ptr();
                 ASSERT_TRUE(treap_t::nil->parent == treap_t::nil) << "ERROR: nil not connected back to itself";
                 ASSERT_TRUE(treap_t::nil->left == treap_t::nil->right) << "ERROR: nil left & right roots out of sync";
             }
