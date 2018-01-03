@@ -592,6 +592,7 @@ protected: // insert & erase
         node_ptr par = ptr->parent;
         make_link(par, ch, ptr);
         propagate_size(par, nil, -cnt);
+        _free(ptr);
         return par;
     }
 
