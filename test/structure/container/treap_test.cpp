@@ -23,8 +23,6 @@ namespace {
     class treap_dbg : public treap<K, T, DUP, CMP, RAND, ALLOC> {
     protected:
         typedef treap<K, T, DUP, CMP, RAND, ALLOC> treap_t;
-        typedef typename treap_t::node_ptr node_ptr;
-        typedef typename treap_t::const_node_ptr const_node_ptr;
     public:
         typedef K key_type;
         typedef T value_type;
@@ -64,24 +62,22 @@ namespace {
             return *this;
         }
 
-        void debug_check(const_node_ptr ptr = nullptr) const {
-            if (ptr == nullptr) {
-                ptr = treap_t::root_ptr();
-                ASSERT_TRUE(treap_t::nil->parent == treap_t::nil) << "ERROR: nil not connected back to itself";
-                ASSERT_TRUE(treap_t::nil->left == treap_t::nil->right) << "ERROR: nil left & right roots out of sync";
+        void debug_check() const {
+            ASSERT_TRUE(end().parent() == end()) << "ERROR: nil not connected back to itself";
+            ASSERT_TRUE(end().left() == end().right()) << "ERROR: nil left & right roots out of sync";
+            debug_check(root());
+        }
+        void debug_check(const_iterator it) const {
+            if (it == end()) return;
+            if (it.left() != end()) {
+                //ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->val), treap_t::_key(ptr->left->val))) << "ERROR: parent < left";
+                ASSERT_FALSE(it.left().parent() != it) << "ERROR: left not connected back to parent";
+                debug_check(it.left());
             }
-            if (ptr->is_nil()) {
-                return;
-            }
-            if (!ptr->left->is_nil()) {
-                ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->val), treap_t::_key(ptr->left->val))) << "ERROR: parent < left";
-                ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
-                debug_check(ptr->left);
-            }
-            if (!ptr->right->is_nil()) {
-                ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->right->val), treap_t::_key(ptr->val))) << "ERROR: right < parent";
-                ASSERT_FALSE(ptr->right->parent != ptr) << "ERROR: right not connected back to parent";
-                debug_check(ptr->right);
+            if (it.right() != end()) {
+                //ASSERT_FALSE(treap_t::cmp(treap_t::_key(ptr->right->val), treap_t::_key(ptr->val))) << "ERROR: right < parent";
+                ASSERT_FALSE(it.right().parent() != it) << "ERROR: right not connected back to parent";
+                debug_check(it.right());
             }
         }
     };
@@ -193,10 +189,15 @@ TEST(treap_test, duplicate_handling) {
 TEST(treap_test, iterators) {
     set<int> s1; for (int i = 0; i < 110; i++) s1.insert(rand() % 1000000000);
     treap_dbg<int> t1(s1.begin(), s1.end());
+    const treap_dbg<int> ct1(s1.begin(), s1.end());
     EXPECT_EQ((vector<int>(s1.begin(), s1.end())), (vector<int>(t1.begin(), t1.end())));
     EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(t1.cbegin(), t1.cend())));
     EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(t1.rbegin(), t1.rend())));
     EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(t1.crbegin(), t1.crend())));
+    EXPECT_EQ((vector<int>(s1.begin(), s1.end())), (vector<int>(ct1.begin(), ct1.end())));
+    EXPECT_EQ((vector<int>(s1.cbegin(), s1.cend())), (vector<int>(ct1.cbegin(), ct1.cend())));
+    EXPECT_EQ((vector<int>(s1.rbegin(), s1.rend())), (vector<int>(ct1.rbegin(), ct1.rend())));
+    EXPECT_EQ((vector<int>(s1.crbegin(), s1.crend())), (vector<int>(ct1.crbegin(), ct1.crend())));
 }
 
 TEST(treap_test, relational_operators) {

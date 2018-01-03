@@ -152,6 +152,7 @@ struct bst_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 
     int count() const { return ptr->count(); }
     int size() const { return ptr->size; }
+    int& balance() { return ptr->balance; }
     T& operator * () { return ptr->val; }
     T* operator -> () { return &ptr->val; }
     bool operator == (const bst_iterator& rhs) const { return ptr == rhs.ptr; }
@@ -182,6 +183,7 @@ struct bst_const_iterator : public std::iterator<std::bidirectional_iterator_tag
 
     int count() const { return ptr->count(); }
     int size() const { return ptr->size; }
+    int& balance() { return *const_cast<int*>(&ptr->balance); }
     const T& operator * () const { return ptr->val; }
     const T* operator -> () const { return &ptr->val; }
     bool operator == (const bst_const_iterator& rhs) const { return ptr == rhs.ptr; }
@@ -544,7 +546,7 @@ protected: // const casting logic
         return static_cast<const binary_search_tree*>(this);
     }
 
-    node_ptr remove_const(const_iterator it) {
+    static node_ptr remove_const(const_iterator it) {
         // the iterator itself is const, but this method is not
         return const_cast<node_ptr>(it.ptr);
     }
@@ -605,8 +607,9 @@ protected: // insert & erase
         return ptr;
     }
 
-protected: // pointer rewiring logic
-    static node_ptr rotate_left(node_ptr ptr) {
+public: // pointer rewiring logic
+    static node_ptr rotate_left(const_iterator it) {
+        node_ptr ptr = remove_const(it);
         node_ptr ch = ptr->right;
         int sz = ptr->size;
         make_link(ptr->parent, ch, ptr);
@@ -617,7 +620,8 @@ protected: // pointer rewiring logic
         return ch;
     }
 
-    static node_ptr rotate_right(node_ptr ptr) {
+    static node_ptr rotate_right(const_iterator it) {
+        node_ptr ptr = remove_const(it);
         node_ptr ch = ptr->left;
         int sz = ptr->size;
         make_link(ptr->parent, ch, ptr);
@@ -628,6 +632,7 @@ protected: // pointer rewiring logic
         return ch;
     }
 
+protected:
     static void swap_with_descendant(node_ptr ptr, node_ptr des) {
         std::swap(ptr->parent, des->parent);
         if (ptr->parent == ptr) ptr->parent = des;
