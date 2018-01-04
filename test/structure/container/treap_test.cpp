@@ -21,21 +21,11 @@ using namespace altruct::test_util;
 namespace {
     template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename RAND = std::function<int()>, typename ALLOC = allocator<bst_node<T>>>
     class treap_dbg : public treap<K, T, DUP, CMP, RAND, ALLOC> {
-    protected:
+    public:
         typedef treap<K, T, DUP, CMP, RAND, ALLOC> treap_t;
-        CMP cmp;
-        static const K& _key(const T& val) { return bst_key<K, T>::of(val); }
-    public:
-        typedef K key_type;
-        typedef T value_type;
-        typedef typename treap_t::iterator iterator;
-        typedef typename treap_t::const_iterator const_iterator;
-        typedef typename treap_t::reverse_iterator reverse_iterator;
-        typedef typename treap_t::const_reverse_iterator const_reverse_iterator;
 
-    public:
         treap_dbg(const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
-            treap_t(cmp, rnd, alloc), cmp(cmp) {
+            treap_t(cmp, rnd, alloc) {
         }
 
         template<typename It>
@@ -70,18 +60,18 @@ namespace {
             debug_check(root());
             for (auto it = begin(); it != end(); ++it) {
                 auto itn = it; ++itn; if (itn == end()) break;
-                ASSERT_FALSE(cmp(_key(*itn), _key(*it))) << "ERROR: order violation";
+                ASSERT_FALSE(tree.compare(*itn, *it)) << "ERROR: order violation";
             }
         }
         void debug_check(const_iterator it) const {
             if (it == end()) return;
             if (it.left() != end()) {
-                ASSERT_FALSE(cmp(_key(*it), _key(*it.left()))) << "ERROR: parent < left";
+                ASSERT_FALSE(tree.compare(*it, *it.left())) << "ERROR: parent < left";
                 ASSERT_FALSE(it.left().parent() != it) << "ERROR: left not connected back to parent";
                 debug_check(it.left());
             }
             if (it.right() != end()) {
-                ASSERT_FALSE(cmp(_key(*it.right()), _key(*it))) << "ERROR: right < parent";
+                ASSERT_FALSE(tree.compare(*it.right(), *it)) << "ERROR: right < parent";
                 ASSERT_FALSE(it.right().parent() != it) << "ERROR: right not connected back to parent";
                 debug_check(it.right());
             }
@@ -273,7 +263,7 @@ TEST(treap_test, relational_operators) {
     typedef treap_dbg<int, ck_entry, bst_duplicate_handling::STORE> tree;
     tree t2{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } };
     ASSERT_COMPARISON_OPERATORS(0, (tree{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } }), t2);    // equal
-    ASSERT_COMPARISON_OPERATORS(+1, (tree{ { 3, "abc" }, { 3, "dx" }, { 15, "ef" }, { 16, "ghi" } }), t2);  // keys equal, but value larger
+    ASSERT_COMPARISON_OPERATORS(+1, (tree{ { 3, "abc" }, { 4, "d" }, { 15, "ef" }, { 16, "ghi" } }), t2);  // key larger
 }
 
 TEST(treap_test, query) {
