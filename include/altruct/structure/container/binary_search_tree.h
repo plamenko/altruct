@@ -362,16 +362,22 @@ public: // iterators
     const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public: // relational operators
-    template<typename It>
-    bool equal(It b1, It e1, It b2, It e2) const {
-        while (b1 != e1 && b2 != e2 && *b1 == *b2) ++b1, ++b2;
+    bool compare(const T& v1, const T& v2) const { return cmp(_key(v1), _key(v2)); }
+    bool operator == (const binary_search_tree& rhs) const {
+        auto b1 = cbegin(), e1 = cend(), b2 = rhs.cbegin(), e2 = rhs.cend();
+        for (; b1 != e1 && b2 != e2; ++b1, ++b2) {
+            if (compare(*b1, *b2)) return false;
+            if (compare(*b2, *b1)) return false;
+        }
         return b1 == e1 && b2 == e2;
     }
-    bool operator == (const binary_search_tree& rhs) const {
-        return equal(cbegin(), cend(), rhs.cbegin(), rhs.cend());
-    }
     bool operator < (const binary_search_tree& rhs) const {
-        return std::lexicographical_compare(cbegin(), cend(), rhs.cbegin(), rhs.cend());
+        auto b1 = cbegin(), e1 = cend(), b2 = rhs.cbegin(), e2 = rhs.cend();
+        for (; b1 != e1 && b2 != e2; ++b1, ++b2) {
+            if (compare(*b1, *b2)) return true;
+            if (compare(*b2, *b1)) return false;
+        }
+        return b1 == e1 && b2 != e2;
     }
     bool operator != (const binary_search_tree& rhs) const { return !(*this == rhs); }
     bool operator >  (const binary_search_tree& rhs) const { return (rhs < *this); }

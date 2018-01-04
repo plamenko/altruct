@@ -17,19 +17,9 @@ using namespace altruct::test_util;
 namespace {
     template<typename K, typename T = K, int DUP = bst_duplicate_handling::IGNORE, typename CMP = std::less<K>, typename ALLOC = allocator<bst_node<T>>>
     class binary_search_tree_dbg : public binary_search_tree<K, T, DUP, CMP, ALLOC> {
-    protected:
+    public:
         typedef binary_search_tree<K, T, DUP, CMP, ALLOC> bst_t;
-        typedef typename bst_t::node_ptr node_ptr;
-        typedef typename bst_t::const_node_ptr const_node_ptr;
-    public:
-        typedef K key_type;
-        typedef T value_type;
-        typedef typename bst_t::iterator iterator;
-        typedef typename bst_t::const_iterator const_iterator;
-        typedef typename bst_t::reverse_iterator reverse_iterator;
-        typedef typename bst_t::const_reverse_iterator const_reverse_iterator;
 
-    public:
         binary_search_tree_dbg(const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
             bst_t(cmp, alloc) {
         }
@@ -66,18 +56,18 @@ namespace {
             debug_check(bst_t::root_ptr());
             for (auto it = begin(); it != end(); ++it) {
                 auto itn = it; ++itn; if (itn == end()) break;
-                ASSERT_FALSE(cmp(_key(*itn), _key(*it))) << "ERROR: order violation";
+                ASSERT_FALSE(compare(*itn, *it)) << "ERROR: order violation";
             }
         }
         void debug_check(const_node_ptr ptr) const {
             if (ptr->is_nil()) return;
             if (!ptr->left->is_nil()) {
-                ASSERT_FALSE(bst_t::cmp(bst_t::_key(ptr->val), bst_t::_key(ptr->left->val))) << "ERROR: parent < left";
+                ASSERT_FALSE(compare(ptr->val, ptr->left->val)) << "ERROR: parent < left";
                 ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
                 debug_check(ptr->left);
             }
             if (!ptr->right->is_nil()) {
-                ASSERT_FALSE(bst_t::cmp(bst_t::_key(ptr->right->val), bst_t::_key(ptr->val))) << "ERROR: right < parent";
+                ASSERT_FALSE(compare(ptr->right->val, ptr->val)) << "ERROR: right < parent";
                 ASSERT_FALSE(ptr->right->parent != ptr) << "ERROR: right not connected back to parent";
                 debug_check(ptr->right);
             }
@@ -360,9 +350,10 @@ TEST(binary_search_tree_test, relational_operators) {
 
     typedef pair<const int, string> ck_entry;
     typedef binary_search_tree_dbg<int, ck_entry, bst_duplicate_handling::STORE> tree;
+    //typedef multimap<int, string> tree;
     tree t2{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } };
     ASSERT_COMPARISON_OPERATORS(0, (tree{ { 3, "abc" }, { 3, "d" }, { 15, "ef" }, { 16, "ghi" } }), t2);    // equal
-    ASSERT_COMPARISON_OPERATORS(+1, (tree{ { 3, "abc" }, { 3, "dx" }, { 15, "ef" }, { 16, "ghi" } }), t2);  // keys equal, but value larger
+    ASSERT_COMPARISON_OPERATORS(+1, (tree{ { 3, "abc" }, { 4, "d" }, { 15, "ef" }, { 16, "ghi" } }), t2);   // key larger
 }
 
 TEST(binary_search_tree_test, query) {
