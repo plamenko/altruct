@@ -362,5 +362,8 @@
     <ClInclude Include="..\..\include\altruct\structure\math\with_infinity.h">
       <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\container\lazy_treap.h">
+      <Filter>include\altruct\structure\container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
