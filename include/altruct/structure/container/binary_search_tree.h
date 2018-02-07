@@ -146,6 +146,8 @@ private:
  */
 template<typename T>
 struct bst_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+    typedef std::iterator<std::bidirectional_iterator_tag, T> it_t;
+    typedef typename it_t::difference_type difference_type;
     typedef bst_node<T>* node_ptr;
     node_ptr ptr;
     bst_iterator(node_ptr ptr = nullptr) : ptr(ptr) { }
@@ -176,6 +178,8 @@ struct bst_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
  */
 template<typename T>
 struct bst_const_iterator : public std::iterator<std::bidirectional_iterator_tag, const T> {
+    typedef std::iterator<std::bidirectional_iterator_tag, const T> it_t;
+    typedef typename it_t::difference_type difference_type;
     typedef const bst_node<T>* const_node_ptr;
     const_node_ptr ptr;
     bst_const_iterator(const_node_ptr ptr = nullptr) : ptr(ptr) { }
@@ -523,7 +527,7 @@ public: // query & update
     // important: this call is unchecked and the sort order may be violated
     iterator insert_before(const_iterator it, const T& val, int cnt = 1) {
         bool go_left = it.ptr->left->is_nil(); if (!go_left) --it;
-        return insert_node(remove_const(it), go_left, val, cnt);
+        return insert_node(remove_const(it).ptr, go_left, val, cnt);
     }
 
     iterator erase(const K& key, int cnt = std::numeric_limits<int>::max()) {
@@ -540,25 +544,21 @@ public: // query & update
     }
 
     iterator erase(const_iterator it, int cnt = std::numeric_limits<int>::max()) {
-        return erase_node(remove_const(it), cnt);
+        return erase_node(remove_const(it).ptr, cnt);
         // Note for balancing:
         // for avl like trees: `par` needs to be retraced up after erase
         // for treap like trees: `ptr` needs to be retraced down before erase
     }
 
-protected: // const casting logic
-    const binary_search_tree* const_this() const {
-        // it is always safe to cast from non-const to const
-        return static_cast<const binary_search_tree*>(this);
-    }
-
-    static node_ptr remove_const(const_iterator it) {
-        // the iterator itself is const, but this method is not
+public: // const casting logic
+    iterator remove_const(const_iterator it) {
+        // the iterator itself is const, but this method is not so this is safe
         return const_cast<node_ptr>(it.ptr);
     }
 
-    static const K& _key(const T& val) {
-        return bst_key<K, T>::of(val);
+    const binary_search_tree* const_this() const {
+        // it is always safe to cast from non-const to const
+        return static_cast<const binary_search_tree*>(this);
     }
 
 protected: // insert & erase
@@ -607,6 +607,7 @@ protected: // insert & erase
         // this means that src may come from another tree
         if (src->is_nil()) return nil;
         auto ptr = _buy(src->val);
+        ptr->parent = nil;
         make_link(ptr, clone_subtree(src->left), true);
         make_link(ptr, clone_subtree(src->right), false);
         ptr->balance = src->balance;
@@ -615,8 +616,8 @@ protected: // insert & erase
     }
 
 public: // pointer rewiring logic
-    static node_ptr rotate_left(const_iterator it) {
-        node_ptr ptr = remove_const(it);
+    iterator rotate_left(const_iterator it) {
+        node_ptr ptr = remove_const(it).ptr;
         node_ptr ch = ptr->right;
         int sz = ptr->size;
         make_link(ptr->parent, ch, ptr);
@@ -627,8 +628,8 @@ public: // pointer rewiring logic
         return ch;
     }
 
-    static node_ptr rotate_right(const_iterator it) {
-        node_ptr ptr = remove_const(it);
+    iterator rotate_right(const_iterator it) {
+        node_ptr ptr = remove_const(it).ptr;
         node_ptr ch = ptr->left;
         int sz = ptr->size;
         make_link(ptr->parent, ch, ptr);
@@ -679,6 +680,10 @@ protected:
     }
 
 private: // allocation logic
+    static const K& _key(const T& val) {
+        return bst_key<K, T>::of(val);
+    }
+
     void _init() {
         nil = alloc.allocate(1); // no construct
         nil->parent = nil; // self-loop indicates that this is the nil node

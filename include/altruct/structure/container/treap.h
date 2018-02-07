@@ -13,6 +13,8 @@ namespace container {
  */
 template<typename T, typename IT>
 struct treap_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+    typedef std::iterator<std::bidirectional_iterator_tag, T> it_t;
+    typedef typename it_t::difference_type difference_type;
     IT it;
     treap_iterator() { }
     treap_iterator(IT it) : it(it) { }
@@ -41,6 +43,8 @@ struct treap_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
  */
 template<typename T, typename CIT, typename IT>
 struct treap_const_iterator : public std::iterator<std::bidirectional_iterator_tag, const T> {
+    typedef std::iterator<std::bidirectional_iterator_tag, const T> it_t;
+    typedef typename it_t::difference_type difference_type;
     CIT it;
     treap_const_iterator() { }
     treap_const_iterator(CIT it) : it(it) { }

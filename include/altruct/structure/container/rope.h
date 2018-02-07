@@ -13,6 +13,8 @@ namespace container {
  */
 template<typename T, typename IT>
 struct rope_iterator : public std::iterator<std::random_access_iterator_tag, T> {
+    typedef std::iterator<std::random_access_iterator_tag, T> it_t;
+    typedef typename it_t::difference_type difference_type;
     IT it;
     rope_iterator() { }
     rope_iterator(IT it) : it(it) { }
@@ -43,6 +45,8 @@ struct rope_iterator : public std::iterator<std::random_access_iterator_tag, T> 
  */
 template<typename T, typename CIT, typename IT>
 struct rope_const_iterator : public std::iterator<std::random_access_iterator_tag, const T> {
+    typedef std::iterator<std::random_access_iterator_tag, const T> it_t;
+    typedef typename it_t::difference_type difference_type;
     CIT it;
     rope_const_iterator() { }
     rope_const_iterator(CIT it) : it(it) { }
