@@ -372,7 +372,6 @@ void dirichlet_inverse_completely_multiplicative(TBL& f_inv, F1 f, int n, int* p
  * @param g - table to store the result; accessed via [] operator
  * @param f - function to transform; accessed via () operator
  * @param n - bound up to which to calculate `g`; exclusive
- * @param mu - values of Moebius Mu up to `n`
  */
 template<typename TBL, typename F>
 void moebius_transform(TBL& g, F f, int n) {
@@ -381,20 +380,37 @@ void moebius_transform(TBL& g, F f, int n) {
 }
 
 /**
- * Moebius transform of `f` up to `n` in `O(n log n)`.
+ * Moebius transform of `f` up to `n` in `O(n log log n)`.
  *
  * g[n] = Sum[mu(n/d) * f(d), {d|n}].
+ * `g` is a multiplicative function.
  *
  * @param g - table to store the result; accessed via [] operator
- * @param f - a multiplicative function to transform; accessed via () operator
+ * @param f - a function to transform; accessed via () operator
  * @param n - bound up to which to calculate `g`; exclusive
- * @param mu - values of Moebius Mu up to `n`
  * @param pa - table of all `m` prime numbers up to `n`
  */
 template<typename TBL, typename F>
 void moebius_transform_multiplicative(TBL& g, F f, int n, int* pa, int m) {
     auto e1 = identityOf(castOf(g[0], f(1))); // TODO: pass via argument?
     dirichlet_division_multiplicative(g, f, [&](int n){ return e1; }, n, pa, m);
+}
+
+/**
+ * Moebius transform of `f` up to `n` in `O(n)`.
+ *
+ * g[n] = Sum[mu(n/d) * f(d), {d|n}].
+ * `g` is a completely multiplicative function.
+ *
+ * @param g - table to store the result; accessed via [] operator
+ * @param f - a function to transform; accessed via () operator
+ * @param n - bound up to which to calculate `g`; exclusive
+ * @param pf - table of prime factors up to `n`; pf[k] = some_prime_factor_of(k)
+ */
+template<typename TBL, typename F>
+void moebius_transform_completely_multiplicative(TBL& g, F f, int n, int* pf) {
+    auto e1 = identityOf(castOf(g[0], f(1))); // TODO: pass via argument?
+    dirichlet_division_completely_multiplicative(g, f, [&](int n){ return e1; }, n, pf);
 }
 
 /**
@@ -518,8 +534,8 @@ void sieve_m(TBL& M, F1 t, int n) {
  * The most common scenarios are:
  *   Sieving up to `U` | Otpimal value for `U`     | Calculating `M(n)`
  *    O(U)             |  O(n^(2/3))               |  O(n^(2/3))
- *    O(U log log U)   |  O((n / log log n)^(2/3)) |  O(n^2/3 (log log n) ^ 1/3)
- *    O(U log U)       |  O((n / log n)^(2/3))     |  O(n^2/3 (log n) ^ 1/3)
+ *    O(U log log U)   |  O((n / log log n)^(2/3)) |  O(n^(2/3) (log log n)^(1/3))
+ *    O(U log U)       |  O((n / log n)^(2/3))     |  O(n^(2/3) (log n)^(1/3))
  * Sieving can always be done in `O(n log n)` or better; See `sieve_m`.
  *
  * @param t, s - functions as defined above; accessed via () operator
@@ -685,6 +701,29 @@ std::vector<T> sum_phi_D_L(int D, int L, const std::vector<int64_t>& vn, int U, 
 template<typename T>
 T sum_phi_D_L(int D, int L, int64_t n, int U, T id = T(1)) {
     return sum_phi_D_L(D, L, std::vector<int64_t>{ n }, U, id).back();
+}
+/**
+ * Calculates `Sum[euler_phi(k), { k, 1, n }]` in `O(n^(2/3))`.
+ * More efficient than `sum_phi_D_L` for D=1, L=0.
+ *
+ * @param n - argument up to which to perform computation
+ * @param id - multiplicative identity in T
+ * @param phi - table of euler_phi up to `n^(2/3)`
+ */
+template<typename T, typename I>
+altruct::container::sqrt_map<I, T> sum_phi(I n, T id = T(1), int* phi = nullptr) {
+    auto idn = [&](I n) { return castOf(id, n); };
+    auto tri = [&](I n) { auto r = castOf(id, n); return r * (r + 1) / 2; };
+    int U = (int)isq(icbrt(n)); // TODO: cast
+    altruct::container::sqrt_map<I, T> mm(U, n); mm[0] = zeroOf(id);
+    if (phi) {
+        for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + phi[k];
+    } else {
+        moebius_transform(mm, idn, U);
+        for (int k = 1; k < U; k++) mm[k] = mm[k - 1] + mm[k];
+    }
+    sum_m<T>(tri, idn, n, mm, id);
+    return mm;
 }
 
 /**
