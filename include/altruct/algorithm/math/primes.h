@@ -75,6 +75,18 @@ void euler_phi(int *phi, int n, const int *p, int m);
 void moebius_mu(int *mu, int n, const int* p = 0, int m = 0);
 
 /**
+ * Prime Nu up to `n`
+ *
+ * Calculates the number of distinct primes in `i` for each integer `i` less than `n`.
+ *
+ * Complexity: O(n log log n)
+ *
+ * @param nu - array to store the result
+ * @param n - calculate prime nu up to `n` (exclusive)
+ */
+void prime_nu(int *nu, int n, const int* p, int m);
+
+/**
  * Segmented PrimeQ in range `[b, e)`
  *
  * Stores whether `i` is prime for each integer `i` in range `[b, e)`.

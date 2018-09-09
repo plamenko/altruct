@@ -67,6 +67,14 @@ void moebius_mu(int *mu, int n, const int* p, int m) {
     }
 }
 
+void prime_nu(int *nu, int n, const int* p, int m) {
+    for (int i = 0; i < n; i++)
+        nu[i] = 0;
+    for (int i = 0; i < m; i++)
+        for (int j = p[i]; j < n; j += p[i])
+            nu[j]++;
+}
+
 void segmented_q(char* q, int64_t b, int64_t e, const int *p, int m) {
     char* _q = q - b;
     if (b == 0) _q[b++] = 0;
