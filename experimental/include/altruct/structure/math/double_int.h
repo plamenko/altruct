@@ -76,8 +76,8 @@ public:
     }
 
     // INCREMENT / DECREMENT
-    double_int& operator ++ () { int carry = 1; assign_adc(0, carry); return *this; }
-    double_int& operator -- () { int borrow = 1; assign_sbb(0, borrow); return *this; }
+    double_int& operator ++ () { int carry = 1; return assign_adc(0, carry); }
+    double_int& operator -- () { int borrow = 1;return assign_sbb(0, borrow); }
     double_int operator ++ (int) { double_int r(*this); return ++r; }
     double_int operator -- (int) { double_int r(*this); return --r; }
 
