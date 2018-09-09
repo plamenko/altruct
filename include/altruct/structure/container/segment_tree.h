@@ -91,6 +91,13 @@ public:
         }
     }
 
+    void rebuild(size_t index) {
+        index += size();
+        while ((index /= 2) > 0) {
+            update(index);
+        }
+    }
+
     void rebuild(size_t begin, size_t end) {
         size_t b = begin + size(), e = end - 1 + size();
         while (b > 1) {
