@@ -11,12 +11,14 @@ Tests
     add tests for experimental classes and make them be proper.
 
 PRNG
-    range [] both inc
-    range [) inc exc
-    range () both exc
+    make a templated wraper over rng that provides
+        range [] both inc
+        range [) inc exc
+        range () both exc
 
 Collections
     transform_indexed
+    zip
 
 I/O
     Pretty printers for ostream (partially done already)
@@ -25,7 +27,11 @@ I/O
 
 modulo class
     more efficient 64bit multiplication
+        see implementation in libdivide
     see compiler intrinsics
+
+libdivide
+    https://libdivide.com/
 
 double_int class?
     signed, unsigned
@@ -49,6 +55,23 @@ Sparse matrix
 
 Trees
     splay tree
+    link-cut tree: allows aggregation over paths
+      changing root corresponds to rversing preferred path
+      lazy reverse of left/right nodes in splay tree?
+
+    dynamic euler tree: allows aggregation over subtrees
+      https://youtu.be/L7ywsci9ujo?t=1966
+      linearize tree by doing eluer tour (keep pointers to first and last visit)
+      store linearized nodes in a balanced BST (e.g. splay tree)
+      cutting subtree corresponds to
+        splitting the linear segment (easy with splay tree)
+        join before and after
+      inserting subtree corresponds to joining three
+        join before and new
+        join new and after
+      changing root corresponds to a cyclic rotation of all nodes
+        split and join in reverse order
+      be careful about off-by-one when cutting & joining
 
 Graphs
     dominators - move impl to altruct
