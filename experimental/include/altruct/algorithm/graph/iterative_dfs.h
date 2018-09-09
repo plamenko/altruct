@@ -61,5 +61,15 @@ void iterative_dfs(const graph<E>& g, F visitor, int source = -1) {
     }
 }
 
+template<typename E>
+std::vector<int> parents(const graph<E>& g) {
+    std::vector<int> vp(g.size(), -1);
+    iterative_dfs(g, [&](int root, int parent, int node, int depth) {
+        if (node != -1) vp[node] = parent;
+        return true;
+    });
+    return vp;
+}
+
 } // graph
 } // altruct
