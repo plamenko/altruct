@@ -21,9 +21,9 @@ template<typename I, typename T>
 class sqrt_map {
     I max_lo_key, max_key;
 
-    std::vector<int> cnt_lo;
+    std::vector<char> cnt_lo;
     std::vector<T> tbl_lo;
-    std::vector<int> cnt_hi;
+    std::vector<char> cnt_hi;
     std::vector<T> tbl_hi;
 
 
