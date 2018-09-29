@@ -27,7 +27,7 @@ class sqrt_map {
     std::vector<T> tbl_hi;
 
 
-    int get_and_set(int& cnt, int new_cnt) { int prev_cnt = cnt; cnt = new_cnt; return prev_cnt; }
+    int get_and_set(char& cnt, char new_cnt) { int prev_cnt = cnt; cnt = new_cnt; return prev_cnt; }
 
     void throw_oor() const {
         throw std::out_of_range("invalid sqrt_map<I, T> key");
