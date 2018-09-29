@@ -1,5 +1,6 @@
 #pragma once
 
+#include "altruct/algorithm/collections/collections.h"
 #include "altruct/structure/container/treap.h"
 
 #include <cstdlib>
@@ -92,6 +93,7 @@ struct rope_const_iterator : public std::iterator<std::random_access_iterator_ta
 template<typename T, typename RAND = std::function<int()>, typename ALLOC = std::allocator<bst_node<T>>>
 class rope {
 protected:
+    // comparator_t treats all the elements as equal so that the underlying tree doesn't reorder them
     struct comparator_t { bool operator()(const T&, const T&) const { return false; } };
     typedef treap<T, T, bst_duplicate_handling::STORE, comparator_t, RAND, ALLOC> treap_t;
     treap_t tree;
@@ -168,8 +170,8 @@ public: // iterators
     const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public: // relational operators
-    bool operator == (const rope& rhs) const { return tree == rhs.tree; }
-    bool operator < (const rope& rhs) const { return tree < rhs.tree; }
+    bool operator == (const rope& rhs) const { return collections::compare(cbegin(), cend(), rhs.cbegin(), rhs.cend()) == 0; }
+    bool operator < (const rope& rhs) const { return collections::compare(cbegin(), cend(), rhs.cbegin(), rhs.cend()) < 0; }
     bool operator != (const rope& rhs) const { return !(*this == rhs); }
     bool operator >  (const rope& rhs) const { return (rhs < *this); }
     bool operator <= (const rope& rhs) const { return !(rhs < *this); }
