@@ -200,7 +200,7 @@ TEST(treap_test, treap_iterator) {
     EXPECT_FALSE(it != tc.find(42));
     EXPECT_TRUE(it != it2);
     EXPECT_EQ(11, it.count());
-    EXPECT_EQ(25, it.size());
+    //EXPECT_EQ(25, it.size()); // depends on balancing which is random
 
     const auto& cc = tc;
     auto cit = cc.find(42);
@@ -214,7 +214,7 @@ TEST(treap_test, treap_iterator) {
     EXPECT_TRUE(cit != it2);
     EXPECT_TRUE(cit == it);
     EXPECT_EQ(11, cit.count());
-    EXPECT_EQ(25, cit.size());
+    //EXPECT_EQ(25, cit.size()); // depends on balancing which is random
 }
 
 TEST(treap_test, iterators) {
