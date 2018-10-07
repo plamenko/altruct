@@ -67,7 +67,8 @@ inline mpz z_inverse(mpz x, mpz m) { mpz r; mpz_invert(r.get_mpz_t(), x.get_mpz_
 inline int z_testbit(mpz z, int i) { return mpz_tstbit(z.get_mpz_t(), i); }
 inline int f_int(mpf x) { return mpf_get_si(x.get_mpf_t()); }
 inline mpf f_sqrt(int n) { mpf r; mpf_sqrt_ui(r.get_mpf_t(), n); return r; }
-inline mpf f_pow(int n) { mpf r; mpf_sqrt_ui(r.get_mpf_t(), n); return r; }
+inline mpf f_sqrt(mpf f) { mpf r; mpf_sqrt(r.get_mpf_t(), f.get_mpf_t()); return r; }
+inline mpf f_pow(mpf f, int e) { mpf r; mpf_pow_ui(r.get_mpf_t(), f.get_mpf_t(), e); return r; }
 inline mpf f_abs(mpf x) { mpf r; mpf_abs(r.get_mpf_t(), x.get_mpf_t()); return r; }
 inline mpf f_floor(mpf x) { mpf r; mpf_floor(r.get_mpf_t(), x.get_mpf_t()); return r; }
 template<typename T> inline mpf& f_set(mpf &x, const T &val, int prec) { x.set_prec(prec); x = val; return x; }
@@ -79,6 +80,7 @@ inline mpz operator % (const mpz& lhs, const int64_t& rhs) { return lhs % int64_
 inline mpz operator % (const int64_t& lhs, const mpz& rhs) { return int64_to_mpz(lhs) % rhs; }
 template<> inline int64_t altruct::math::modulo_mul(const int64_t& x, const int64_t& y, const int64_t& M) { return z_mulmod(x, y, M); }
 
+template<> inline mpf altruct::math::sqrtT(mpf x, mpf) { return f_sqrt(x); }
 template<> inline mpz altruct::math::sqrtT(mpz x, mpz) { return z_sqrt(x); }
 template<> inline void altruct::math::modulo_normalize(mpz* v, const mpz& M) { altruct::math::modulo_normalize_int<mpz>(v, M); }
 template<> inline mpz altruct::math::modulo_sub(const mpz& x, const mpz&y, const mpz& M) { return modulo_sub_int(x, y, M); }
