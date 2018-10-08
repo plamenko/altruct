@@ -84,6 +84,9 @@
     <Filter Include="include\altruct\chrono">
       <UniqueIdentifier>{14d4de33-4b14-45fd-97e7-44ecc9ac6c40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\altruct\algorithm\parser">
+      <UniqueIdentifier>{4e273d3c-ef2e-4618-a28a-2afd95da1f8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\altruct\algorithm\math\base.h">
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\altruct\structure\container\lazy_treap.h">
       <Filter>include\altruct\structure\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\altruct\algorithm\parser\shunting_yard.h">
+      <Filter>include\altruct\algorithm\parser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

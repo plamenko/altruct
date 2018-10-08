@@ -56,6 +56,7 @@
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\divisor_sums_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\triples_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\parser\shunting_yard_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\random_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\random\xorshift_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\search\binary_search_test.cpp" />

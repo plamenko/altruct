@@ -229,6 +229,9 @@
     <ClCompile Include="..\..\test\structure\container\lazy_treap_test.cpp">
       <Filter>structure\container</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\algorithm\parser\shunting_yard_test.cpp">
+      <Filter>algorithm\parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
@@ -272,6 +275,9 @@
     </Filter>
     <Filter Include="chrono">
       <UniqueIdentifier>{e319d8bc-4518-421f-a412-b99eef8321bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm\parser">
+      <UniqueIdentifier>{8d6e23ad-a78e-40f9-9cb3-290674304c4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

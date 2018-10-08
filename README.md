@@ -245,6 +245,8 @@ needs to be brought to a higher quality bar that is required here.
     * Triples
       * Pythagorean (90 degree) triples
       * Eisenstein (60 & 120 degree) triples
+  * Parser:
+    * Shunting-yard (infix expression parser & evaluator)
   * Random:
     * Mersene Twister
     * XorShift

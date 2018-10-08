@@ -78,6 +78,7 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\sums.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\divisor_sums.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\triples.h" />
+    <ClInclude Include="..\..\include\altruct\algorithm\parser\shunting_yard.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\random\mersenne_twister.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\random\random.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\random\xorshift.h" />
