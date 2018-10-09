@@ -199,7 +199,7 @@ std::vector<std::vector<int>> biconnected_components(const graph<E>& g, const ch
 template<typename E>
 std::pair<graph<E>, std::vector<int>> block_cut_tree(const graph<E>& g, const std::vector<full_edge>& ve, const std::vector<int>& va, const std::vector<std::vector<int>>& vb) {
     graph<E> t;
-    vector<int> idx(g.size(), -1);
+    std::vector<int> idx(g.size(), -1);
     // nodes for blocks (biconnected components)
     for (const auto& b : vb) {
         int i = t.add_node();
@@ -244,11 +244,11 @@ struct biconnectivity {
     vertices_t bc_tree_idx;              // mapping from original nodes to the block-cut tree nodes
 
     biconnectivity(const graph<E>& g) {
-        decomposition = ::chain_decomposition(g);
-        cut_edges = ::cut_edges(g, decomposition);
-        cut_vertices = ::cut_vertices(g, decomposition, cut_edges);
-        components = ::biconnected_components(g, decomposition);
-        auto ti = ::block_cut_tree<>(g, cut_edges, cut_vertices, components);
+        decomposition = altruct::graph::chain_decomposition(g);
+        cut_edges = altruct::graph::cut_edges(g, decomposition);
+        cut_vertices = altruct::graph::cut_vertices(g, decomposition, cut_edges);
+        components = altruct::graph::biconnected_components(g, decomposition);
+        auto ti = altruct::graph::block_cut_tree<>(g, cut_edges, cut_vertices, components);
         block_cut_tree = ti.first;
         bc_tree_idx = ti.second;
     }

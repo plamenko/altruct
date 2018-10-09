@@ -19,6 +19,8 @@ namespace {
     class binary_search_tree_dbg : public binary_search_tree<K, T, DUP, CMP, ALLOC> {
     public:
         typedef binary_search_tree<K, T, DUP, CMP, ALLOC> bst_t;
+        using const_node_ptr = typename bst_t::const_node_ptr;
+        using node_ptr = typename bst_t::node_ptr;
 
         binary_search_tree_dbg(const CMP& cmp = CMP(), const ALLOC& alloc = ALLOC()) :
             bst_t(cmp, alloc) {
@@ -54,20 +56,20 @@ namespace {
             ASSERT_TRUE(bst_t::nil->parent == bst_t::nil) << "ERROR: nil not connected back to itself";
             ASSERT_TRUE(bst_t::nil->left == bst_t::nil->right) << "ERROR: nil left & right roots out of sync";
             debug_check(bst_t::root_ptr());
-            for (auto it = begin(); it != end(); ++it) {
-                auto itn = it; ++itn; if (itn == end()) break;
-                ASSERT_FALSE(compare(*itn, *it)) << "ERROR: order violation";
+            for (auto it = this->begin(); it != this->end(); ++it) {
+                auto itn = it; ++itn; if (itn == this->end()) break;
+                ASSERT_FALSE(this->compare(*itn, *it)) << "ERROR: order violation";
             }
         }
         void debug_check(const_node_ptr ptr) const {
             if (ptr->is_nil()) return;
             if (!ptr->left->is_nil()) {
-                ASSERT_FALSE(compare(ptr->val, ptr->left->val)) << "ERROR: parent < left";
+                ASSERT_FALSE(this->compare(ptr->val, ptr->left->val)) << "ERROR: parent < left";
                 ASSERT_FALSE(ptr->left->parent != ptr) << "ERROR: left not connected back to parent";
                 debug_check(ptr->left);
             }
             if (!ptr->right->is_nil()) {
-                ASSERT_FALSE(compare(ptr->right->val, ptr->val)) << "ERROR: right < parent";
+                ASSERT_FALSE(this->compare(ptr->right->val, ptr->val)) << "ERROR: right < parent";
                 ASSERT_FALSE(ptr->right->parent != ptr) << "ERROR: right not connected back to parent";
                 debug_check(ptr->right);
             }

@@ -52,8 +52,8 @@ public:
 
     // construct from int, but only if T is not integral to avoid constructor clashing
     template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-    quadratic(int a) : my_quadratic_members(0), a(castOf(D(), a)), b(zeroOf(D())) {}
-    quadratic() : my_quadratic_members(-1), a(zeroOf(D())), b(zeroOf(D())) {}
+    quadratic(int a) : my_quadratic_members(0), a(castOf(this->D(), a)), b(zeroOf(this->D())) {}
+    quadratic() : my_quadratic_members(-1), a(zeroOf(this->D())), b(zeroOf(this->D())) {}
     quadratic(const T& a) : my_quadratic_members(-1), a(a), b(zeroOf(a)) {}
     quadratic(const T& a, const T& b, const T& D = -1) : my_quadratic_members(D), a(a), b(b) {}
     quadratic(const quadratic& rhs) : my_quadratic_members(rhs.D()), a(rhs.a), b(rhs.b) {}

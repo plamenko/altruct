@@ -1,5 +1,6 @@
 #pragma once
 
+#include "altruct/algorithm/math/base.h"
 #include <vector>
 #include <functional>
 
@@ -267,8 +268,8 @@ struct integer_math {
             [](T* a){ return !!a[0] ^ !!a[1]; },  // LOG_XOR
             [](T* a){ return a[0] || a[1]; },  // LOG_OR
             // functions
-            [](T* a){ return sqrtT(a[0]); },      // SQRT
-            [](T* a){ return powT(a[0], a[1]); }, // POW
+            [](T* a){ return altruct::math::sqrtT(a[0]); },      // SQRT
+            [](T* a){ return altruct::math::powT(a[0], a[1]); }, // POW
         };
         return evaluators;
     }

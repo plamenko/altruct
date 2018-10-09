@@ -23,6 +23,7 @@ namespace {
     class treap_dbg : public treap<K, T, DUP, CMP, RAND, ALLOC> {
     public:
         typedef treap<K, T, DUP, CMP, RAND, ALLOC> treap_t;
+        using const_iterator = typename treap_t::const_iterator;
 
         treap_dbg(const CMP& cmp = CMP(), const RAND& rnd = rand, const ALLOC& alloc = ALLOC()) :
             treap_t(cmp, rnd, alloc) {
@@ -55,23 +56,23 @@ namespace {
         }
 
         void debug_check() const {
-            ASSERT_TRUE(end().parent() == end()) << "ERROR: nil not connected back to itself";
-            ASSERT_TRUE(end().left() == end().right()) << "ERROR: nil left & right roots out of sync";
-            debug_check(root());
-            for (auto it = begin(); it != end(); ++it) {
-                auto itn = it; ++itn; if (itn == end()) break;
-                ASSERT_FALSE(tree.compare(*itn, *it)) << "ERROR: order violation";
+            ASSERT_TRUE(this->end().parent() == this->end()) << "ERROR: nil not connected back to itself";
+            ASSERT_TRUE(this->end().left() == this->end().right()) << "ERROR: nil left & right roots out of sync";
+            debug_check(this->root());
+            for (auto it = this->begin(); it != this->end(); ++it) {
+                auto itn = it; ++itn; if (itn == this->end()) break;
+                ASSERT_FALSE(this->tree.compare(*itn, *it)) << "ERROR: order violation";
             }
         }
         void debug_check(const_iterator it) const {
-            if (it == end()) return;
-            if (it.left() != end()) {
-                ASSERT_FALSE(tree.compare(*it, *it.left())) << "ERROR: parent < left";
+            if (it == this->end()) return;
+            if (it.left() != this->end()) {
+                ASSERT_FALSE(this->tree.compare(*it, *it.left())) << "ERROR: parent < left";
                 ASSERT_FALSE(it.left().parent() != it) << "ERROR: left not connected back to parent";
                 debug_check(it.left());
             }
-            if (it.right() != end()) {
-                ASSERT_FALSE(tree.compare(*it.right(), *it)) << "ERROR: right < parent";
+            if (it.right() != this->end()) {
+                ASSERT_FALSE(this->tree.compare(*it.right(), *it)) << "ERROR: right < parent";
                 ASSERT_FALSE(it.right().parent() != it) << "ERROR: right not connected back to parent";
                 debug_check(it.right());
             }
