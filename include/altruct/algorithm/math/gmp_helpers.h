@@ -63,6 +63,7 @@ inline mpz z_sq(mpz x) { return x*x; }
 inline mpz z_sqrt(mpz x) { mpz r; mpz_sqrt(r.get_mpz_t(), x.get_mpz_t()); return r; }
 inline mpz z_sqrtc(mpz x) { mpz r = z_sqrt(x); if (r*r < x) r++; return r; }
 inline mpz z_pow(mpz x, int n) { mpz r; mpz_pow_ui(r.get_mpz_t(), x.get_mpz_t(), n); return r; }
+inline mpz z_root(mpz x, int n) { mpz r; mpz_root(r.get_mpz_t(), x.get_mpz_t(), n); return r; }
 inline mpz z_inverse(mpz x, mpz m) { mpz r; mpz_invert(r.get_mpz_t(), x.get_mpz_t(), m.get_mpz_t()); return r; }
 inline int z_testbit(mpz z, int i) { return mpz_tstbit(z.get_mpz_t(), i); }
 inline int f_int(mpf x) { return mpf_get_si(x.get_mpf_t()); }

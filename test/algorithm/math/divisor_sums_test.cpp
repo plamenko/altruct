@@ -178,6 +178,19 @@ TEST(divisor_sums_test, sieve_m) {
     EXPECT_EQ(to_modx(1009, { 0, 673, 449, 1, 973, 77, 264, 938, 540, 840, 205, 992, 170, 509, 61, 809, 482, 934, 112, 116, 490 }), actual2);
 }
 
+TEST(divisor_sums_test, sieve_mertens) {
+    int n = 31;
+    auto pa = primes_table(n);
+    auto expected1 = vector<int>{ 0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3 };
+    vector<int> actual1(n); sieve_mertens(actual1, n, pa.data(), (int)pa.size(), int(1));
+    EXPECT_EQ(expected1, actual1);
+
+    typedef moduloX<int> modx;
+    auto expected2 = to_modx(1009, expected1);
+    vector<modx> actual2(n); sieve_mertens(actual2, n, pa.data(), (int)pa.size(), modx(1, 1009));
+    EXPECT_EQ(expected2, actual2);
+}
+
 TEST(divisor_sums_test, mertens) {
     int n = 30;
     auto v_M = to_modx(1009, { 0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3 });
@@ -194,6 +207,37 @@ TEST(divisor_sums_test, mertens) {
         va.push_back(mertens(k, mm, modx(1, 1009)));
     }
     EXPECT_EQ(v_M, va);
+}
+
+TEST(divisor_sums_test, sieve_sqfree_count) {
+    int n = 31;
+    auto pa = primes_table(isqrt(n) + 1);
+    auto expected1 = vector<int>{0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 12, 13, 13, 14, 15, 16, 16, 16, 17, 17, 17, 18, 19};
+    vector<int> actual1(n); sieve_sqfree_count(actual1, n, pa.data(), (int)pa.size(), int(1));
+    EXPECT_EQ(expected1, actual1);
+
+    typedef moduloX<int> modx;
+    auto expected2 = to_modx(1009, expected1);
+    vector<modx> actual2(n); sieve_sqfree_count(actual2, n, pa.data(), (int)pa.size(), modx(1, 1009));
+    EXPECT_EQ(expected2, actual2);
+}
+
+TEST(divisor_sums_test, sqfree_count) {
+    int n = 30;
+    auto v_S = to_modx(1009, { 0, 1, 2, 3, 3, 4, 5, 6, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 12, 13, 13, 14, 15, 16, 16, 16, 17, 17, 17, 18, 19 });
+    // preprocess `U = n^(3/5)` values
+    int U = (int)pow(n, 0.6);
+    sqrt_map<int, modx> ms(U, n);
+    for (int k = 0; k < U; k++) {
+        ms[k] = v_S[k];
+    }
+    // calc sqfree_count
+    vector<modx> va;
+    for (int k = 0; k <= n; k++) {
+        ms.reset_max(k);
+        va.push_back(sqfree_count(k, ms, modx(1, 1009)));
+    }
+    EXPECT_EQ(v_S, va);
 }
 
 TEST(divisor_sums_test, sum_phi_D_L) {

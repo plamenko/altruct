@@ -588,6 +588,19 @@ T sum_m(F t, I n, TBL& tbl, T id) {
 }
 
 /**
+* Sieves Mertens up to `n` in `O(n log log n)`.
+*
+* @param M - table to store the calculated values; accessed via [] operator
+* @param n - bound up to which to sieve (exclusive)
+* @param pa - table of all `m` prime numbers up to `n`
+*/
+template<typename T, typename TBL>
+void sieve_mertens(TBL& M, int n, int* pa, int m, T id = T(1)) {
+    auto one = [&](int k){ return id; };
+    sieve_m_multiplicative(M, one, one, n, pa, m);
+}
+
+/**
  * Mertens function: `Sum[moebius_mu(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
  *
  * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
@@ -599,7 +612,62 @@ T sum_m(F t, I n, TBL& tbl, T id) {
 template<typename T, typename I, typename TBL>
 T mertens(I n, TBL& tbl, T id = T(1)) {
     // p = 1, f = mu, g = delta, t = 1
-    return sum_m<T>([&](I k){ return id; }, n, tbl, id);
+    auto one = [&](I k){ return id; };
+    return sum_m<T>(one, n, tbl, id);
+}
+
+/**
+ * Sieves the count of square-free numbers up to n.
+ *
+ * Complexity: O(n log log n)
+ *
+ * @param sqfc - table to store the calculated values; accessed via [] operator
+ * @param n - count is calculated up to `n` (exclusive)
+ * @param pa - table of all `m` prime numbers up to `sqrt(n)`
+ */
+template<typename T, typename TBL>
+void sieve_sqfree_count(TBL& sqfc, int n, const int* pa, int m, T id = T(1)) {
+    auto e0 = zeroOf(id);
+    sqfc[0] = 0;
+    for (int i = 1; i < n; i++) {
+        sqfc[i] = id;
+    }
+    for (int i = 0; i < m; i++) {
+        int64_t p2 = isq(pa[i]);
+        for (int64_t j = p2; j < n; j += p2) {
+            sqfc[j] = e0;
+        }
+    }
+    for (int i = 1; i < n; i++) {
+        sqfc[i] += sqfc[i - 1];
+    }
+}
+
+/**
+ * Computes the count of square-free numbers up to n.
+ *
+ * Complexity:
+ *   O(n^1/2) - if only sqfree_count(n) is needed, no preprocessing required
+ *   O(n^3/5) - if sqfree_count(n/i) for all i are needed, assuming tbl preprocessed up to O(n^3/5)
+ *   O(n^2/3) - if sqfree_count(n/i) for all i are needed, if no preprocessing is done
+ *
+ * @param n - argument at which to evaluate quare_free_count
+ * @param tbl - table to store the calculated values; accessed via [] operator
+ */
+template<typename T, typename I, typename TBL>
+T sqfree_count(I n, TBL& tbl, T id) {
+    T e0 = zeroOf(id);
+    if (n < 1) return e0;
+    if (tbl.count(n)) return tbl[n];
+    auto r = castOf(e0, n);
+    I q = cbrtT(n);
+    for (I m = 1; m < q; m++) {
+        r -= castOf(e0, isqrt(n / m) - isqrt(n / (m + 1))) * sqfree_count(m, tbl, id);
+    }
+    for (I k = sqrtT(n / q); k > 1; k--) {
+        r -= sqfree_count(n / sqT(k), tbl, id);
+    }
+    return tbl[n] = r;
 }
 
 /**

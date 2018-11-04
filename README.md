@@ -236,6 +236,7 @@ needs to be brought to a higher quality bar that is required here.
       * Sum of multiplicative functions in O(n^(2/3)):
         * Divisor-Sigma in O(n log log n)
         * Mertens function (sum of Moebius-Mu)
+        * Square-free-count function (sum of |Moebius-Mu|)
         * Totient summatory function (sum of Euler-Phi)
         * Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
     * Sequences
