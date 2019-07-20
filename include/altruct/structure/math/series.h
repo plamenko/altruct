@@ -95,13 +95,13 @@ public:
     series  operator *  (const T &val) const { series t(*this); t *= val; return t; }
     series  operator /  (const T &val) const { series t(*this); t /= val; return t; }
 
-    series& operator += (const series &rhs) { p += rhs.p; return *this; }
-    series& operator -= (const series &rhs) { p -= rhs.p; return *this; }
+    series& operator += (const series &rhs) { p += rhs.p; p.reserve(this->N()); return *this; }
+    series& operator -= (const series &rhs) { p -= rhs.p; p.reserve(this->N()); return *this; }
     series& operator *= (const series& rhs) { polynom<T>::mul(p, p, rhs.p, this->N() - 1); return *this; }
     series& operator /= (const series& rhs) { return *this *= rhs.inverse(); }
 
-    series& operator *= (const T &val) { p *= val; return *this; }
-    series& operator /= (const T &val) { p /= val; return *this; }
+    series& operator *= (const T &val) { p *= val; p.reserve(this->N()); return *this; }
+    series& operator /= (const T &val) { p /= val; p.reserve(this->N()); return *this; }
 
     series derivative() const { return series(p.derivative(), this->N()); }
     series integral() const { return integral(p.ZERO_COEFF); }
