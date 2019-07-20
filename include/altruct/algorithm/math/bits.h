@@ -45,6 +45,10 @@ int ilog2(uint8_t x);
 int ilog2(uint16_t x);
 int ilog2(uint32_t x);
 int ilog2(uint64_t x);
+int ilog2(int8_t x);
+int ilog2(int16_t x);
+int ilog2(int32_t x);
+int ilog2(int64_t x);
 
 /**
  * Number of bits set to 1.

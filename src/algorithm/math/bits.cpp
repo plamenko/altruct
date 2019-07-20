@@ -28,6 +28,11 @@ int ilog2(uint16_t x) { return _tbl_ilog2_16_full[x]; }
 int ilog2(uint32_t x) { return _tbl_ilog2_32[uint32_t(or_down(x) * (uint32_t)0x07C4ACDD) >> 27]; }
 int ilog2(uint64_t x) { return _tbl_ilog2_64[uint64_t(or_down(x) * (uint64_t)0x03f6eaf2cd271461) >> 58]; }
 
+int ilog2(int8_t x) { return ilog2(uint8_t(x)); }
+int ilog2(int16_t x) { return ilog2(uint16_t(x)); }
+int ilog2(int32_t x) { return ilog2(uint32_t(x)); }
+int ilog2(int64_t x) { return ilog2(uint64_t(x)); }
+
 /**
  * Number of bits set to 1.
  */
