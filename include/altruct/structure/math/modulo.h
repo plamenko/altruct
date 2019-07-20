@@ -74,7 +74,7 @@ I modulo_div_int(I x, I y, I M) {
     if (y != 0 && x % y == 0) return x / y; // fast path if y divides x
     I yi; I g = gcd_ex(y, M, &yi);
     if (g != 1) { // uh oh, y and M are not coprime, try common gcd
-        g = gcd(x, g);
+        g = altruct::math::gcd(x, g);
         x /= g; y /= g;
         gcd_ex(y, I(M / g), &yi); // == k
         // if (k != 1), there is no result, or more precisely,
