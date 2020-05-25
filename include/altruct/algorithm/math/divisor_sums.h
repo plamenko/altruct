@@ -884,5 +884,16 @@ T multiplicative_sum(const altruct::container::sqrt_map<int64_t, T>& s1, const F
     return ret;
 }
 
+template<typename T, typename S1, typename F1>
+T multiplicative_sum(const S1& s1, const F1& f, int64_t n, const int* pa, int m, T id = T(1)) {
+    int q = isqrt(n);
+    altruct::container::sqrt_map<int64_t, T> s1_tbl(q, n);
+    for (int i = 1; i <= q; i++) {
+        s1_tbl[i] = s1(i);
+        s1_tbl[n / i] = s1(n / i);
+    }
+    return multiplicative_sum<T, F1>(s1_tbl, f, n, pa, m, id, 1, 0);
+}
+
 } // math
 } // altruct

@@ -8,6 +8,7 @@ void linear_recurrence_sample2();
 void series_simple_counting_sample();
 void series_combinatoric_sample();
 void dirichlet_sample();
+void multiplicative_sum_sample();
 
 void test_sample();
 
@@ -21,5 +22,6 @@ int main() {
     series_simple_counting_sample();
     series_combinatoric_sample();
     dirichlet_sample();
+    multiplicative_sum_sample();
     return 0;
 }

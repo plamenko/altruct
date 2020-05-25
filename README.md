@@ -233,12 +233,14 @@ needs to be brought to a higher quality bar that is required here.
       * Moebius transform:
         * arbitrary arithmetic functions in O(n log n)
         * multiplicative functions in O(n log log n)
-      * Sum of multiplicative functions in O(n^(2/3)):
+        * completely multiplicative functions in O(n)
+      * Multiplicative functions:
         * Divisor-Sigma in O(n log log n)
-        * Mertens function (sum of Moebius-Mu)
-        * Square-free-count function (sum of |Moebius-Mu|)
-        * Totient summatory function (sum of Euler-Phi)
-        * Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]`
+        * Mertens function (sum of Moebius-Mu) in O(n^(2/3))
+        * Square-free-count function (sum of |Moebius-Mu|) in O(n^(1/2))
+        * Totient summatory function (sum of Euler-Phi) in O(n^(2/3))
+        * Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]` in O(n^(2/3))
+        * Partial sum of arbitrary multiplicative function in O(n^(3/4))
     * Sequences
       * Delta, Dirichlet, Zero, One, Identity, Square, Cube
       * Triangular, Tetrahedral, Pyramidal, Octahedral, Dodecahedral, Icosahedral
