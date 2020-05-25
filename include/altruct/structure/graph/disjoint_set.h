@@ -64,6 +64,10 @@ public:
         return y;
     }
 
+    void add_count(size_t x, size_t c) {
+        va[find(x)].count += c;
+    }
+
     size_t count(size_t x) {
         return va[find(x)].count;
     }
