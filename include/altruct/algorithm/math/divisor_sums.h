@@ -825,5 +825,64 @@ void divisor_sigma(TBL& ds, int k, int n, int* pa, int m, T id = T(1)) {
     }
 }
 
+/**
+ * Calculates `S(n)` in `O(n^(3/4))`.
+ *
+ * Where:
+ *   `S` is a partial sum of `f`:
+ *       S(n) = Sum[f(k), {k, 1, n}]
+ *   `f` is a multiplicative function such that:
+ *       f(p^e) = f(f_pe1, p, e)
+ *       `f_pe1 = f(p^(e-1))` is provided for convenience
+ *   `s1` is a partial sum of `f` over primes:
+ *       s1(n) = Sum[f(p), {prime p <= n}]
+ *   `bpf` is the biggest_prime_factor function
+ *
+ * Each `k` is represented as `k = t * bpf(k)` where `t = k / bpf(k)`.
+ * The function performs DFS traversal over all values of `t` (classes of k).
+ * For each `t`, aggregated contribution of `bpf(k)` over `primes >= bpf(t)` is added.
+ *
+ * Recursion parameters:
+ *   bpf_t_val = bpf(t)
+ *   bpf_t_exp = exponent of bpf(t) in t
+ *   tb = bpf_t_val ^ bpf_t_exp
+ *   f_tb = f(tb)
+ *
+ * @param s1 - map of values of `s1` as defined above at points `floor(n / k)` for `1 <= k <= n`.
+ * @param f - function as defined above; accessed via () operator at values e >= 1
+ * @param n - computes the sum up to `n` (inclusive)
+ * @param pa - table of all `m` prime numbers up to `sqrt(n)`
+ */
+template<typename T, typename F1>
+T multiplicative_sum(const altruct::container::sqrt_map<int64_t, T>& s1, const F1& f, int64_t n, const int* pa, int m, T f_tb = T(1), int bpf_t_val = 1, int bpf_t_exp = 0) {
+    T id = identityOf(f_tb);
+
+    // add contribution of `k = tb * bpf(t)`
+    T ret = bpf_t_exp ? f(f_tb, bpf_t_val, bpf_t_exp + 1) : id;
+
+    // add contribution of `k = tb * p` for all `p > bpf(t)`, meaning `p` doesn't appear in `t`
+    ret += bpf_t_exp ? f_tb * (s1[n] - s1[bpf_t_val]) : s1[n];
+
+    // recurse over values of `t`
+    for (int i = 0; i < m; ++i) {
+        int p = pa[i];
+        int e = 0;
+        T f_pe = id;
+        int64_t n_next = n / p;
+        int bpf_t_val_next = bpf_t_exp ? bpf_t_val : p;
+        if (n_next < bpf_t_val_next) break;
+        while (n_next >= bpf_t_val_next) {
+            e += 1;
+            f_pe = f(f_pe, p, e);
+            T f_tb_next = bpf_t_exp ? f_tb : f_pe;
+            int bpf_t_exp_next = bpf_t_exp ? bpf_t_exp : e;
+            T f_rec = multiplicative_sum(s1, f, n_next, pa, i, f_tb_next, bpf_t_val_next, bpf_t_exp_next);
+            ret += bpf_t_exp ? f_pe * f_rec : f_rec;
+            n_next /= p;
+        }
+    }
+    return ret;
+}
+
 } // math
 } // altruct
