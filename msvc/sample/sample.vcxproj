@@ -31,7 +31,7 @@
     <ClCompile Include="..\..\sample\algorithm\random\xorshift_sample.cpp" />
     <ClCompile Include="..\..\sample\main.cpp" />
     <ClCompile Include="..\..\sample\test_sample.cpp" />
-    <ClCompile Include="multiplicative_sum.cpp" />
+    <ClCompile Include="sum_multiplicative.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0139E4C6-D4A6-4AE9-BF37-77CFE7D5BC2E}</ProjectGuid>

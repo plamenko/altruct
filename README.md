@@ -240,7 +240,7 @@ needs to be brought to a higher quality bar that is required here.
         * Square-free-count function (sum of |Moebius-Mu|) in O(n^(1/2))
         * Totient summatory function (sum of Euler-Phi) in O(n^(2/3))
         * Arbitrary function M such that `T(n) = Sum[M(floor(n/k))]` in O(n^(2/3))
-        * Partial sum of arbitrary multiplicative function in O(n^(3/4))
+        * Partial sum of arbitrary multiplicative function in O(n^(2/3))
     * Sequences
       * Delta, Dirichlet, Zero, One, Identity, Square, Cube
       * Triangular, Tetrahedral, Pyramidal, Octahedral, Dodecahedral, Icosahedral

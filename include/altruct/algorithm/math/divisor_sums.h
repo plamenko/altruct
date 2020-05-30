@@ -6,6 +6,7 @@
 #include "altruct/algorithm/math/base.h"
 #include "altruct/algorithm/math/polynoms.h"
 #include "altruct/structure/container/sqrt_map.h"
+#include "altruct/structure/math/fenwick_tree.h"
 
 namespace altruct {
 namespace math {
@@ -826,7 +827,7 @@ void divisor_sigma(TBL& ds, int k, int n, int* pa, int m, T id = T(1)) {
 }
 
 /**
- * Calculates `S(n)` in `O(n^(3/4))`.
+ * Calculates `S(n)` in `O(n^(3/4) / log(n))`.
  *
  * Where:
  *   `S` is a partial sum of `f`:
@@ -854,7 +855,7 @@ void divisor_sigma(TBL& ds, int k, int n, int* pa, int m, T id = T(1)) {
  * @param pa - table of all `m` prime numbers up to `sqrt(n)`
  */
 template<typename T, typename F1>
-T multiplicative_sum(const altruct::container::sqrt_map<int64_t, T>& s1, const F1& f, int64_t n, const int* pa, int m, T f_tb = T(1), int bpf_t_val = 1, int bpf_t_exp = 0) {
+T sum_multiplicative_34(const altruct::container::sqrt_map<int64_t, T>& s1, const F1& f, int64_t n, const int* pa, int m, T f_tb = T(1), int bpf_t_val = 1, int bpf_t_exp = 0) {
     T id = identityOf(f_tb);
 
     // add contribution of `k = tb * bpf(t)`
@@ -876,7 +877,7 @@ T multiplicative_sum(const altruct::container::sqrt_map<int64_t, T>& s1, const F
             f_pe = f(f_pe, p, e);
             T f_tb_next = bpf_t_exp ? f_tb : f_pe;
             int bpf_t_exp_next = bpf_t_exp ? bpf_t_exp : e;
-            T f_rec = multiplicative_sum(s1, f, n_next, pa, i, f_tb_next, bpf_t_val_next, bpf_t_exp_next);
+            T f_rec = sum_multiplicative_34(s1, f, n_next, pa, i, f_tb_next, bpf_t_val_next, bpf_t_exp_next);
             ret += bpf_t_exp ? f_pe * f_rec : f_rec;
             n_next /= p;
         }
@@ -885,14 +886,199 @@ T multiplicative_sum(const altruct::container::sqrt_map<int64_t, T>& s1, const F
 }
 
 template<typename T, typename S1, typename F1>
-T multiplicative_sum(const S1& s1, const F1& f, int64_t n, const int* pa, int m, T id = T(1)) {
+T sum_multiplicative_34(const S1& s1, const F1& f, int64_t n, const int* pa, int m, T id = T(1)) {
     int q = isqrt(n);
     altruct::container::sqrt_map<int64_t, T> s1_tbl(q, n);
     for (int i = 1; i <= q; i++) {
         s1_tbl[i] = s1(i);
         s1_tbl[n / i] = s1(n / i);
     }
-    return multiplicative_sum<T, F1>(s1_tbl, f, n, pa, m, id, 1, 0);
+    return sum_multiplicative_34<T, F1>(s1_tbl, f, n, pa, m, id, 1, 0);
+}
+
+/**
+ * Traverses all the numbers up to n whose smallest prime factor is at least p_k.
+ *
+ * Complexity: There are O(u * n / log(n)) such numbers when `p_k ^ u > n`.
+ * See: https://en.wikipedia.org/wiki/Buchstab_function.
+ *
+ * @param f - multiplicative function as defined in `sum_multiplicative`
+ * @param n - traverses numbers up to `n` (inclusive)
+ * @param k - index of the prime p_k
+ * @param pa - table of all `psz` prime numbers up to `n / p_k`
+ * @param visitor - `void visitor(int64_t m, T f_m)`, where `f_m = f(m)`
+ */
+template<typename T, typename F, typename V>
+void traverse_rough_numbers(const F& f, int64_t n, int k, const int* pa, int psz, const V& visitor, int64_t m = 1, T f_m = T(1)) {
+    auto pa1 = pa - 1;
+    int p = pa1[k];
+    int e = 0;
+    T f_pe = identityOf(f_m);
+    int64_t npe = n;
+    int64_t mpe = m;
+    while (npe >= p) {
+        e += 1;
+        f_pe = f(f_pe, p, e);
+        npe /= p;
+        mpe *= p;
+        T f_mpe = f_m * f_pe;
+        visitor(mpe, f_mpe);
+        for (int j = k + 1; j <= psz && pa1[j] <= npe; j++) {
+            traverse_rough_numbers(f, npe, j, pa, psz, visitor, mpe, f_mpe);
+        }
+    }
+}
+
+/**
+ * Calculates `F_k(m)` defined as:
+ *   F_k(m) = Sum[f(p_k^e) * F_k+1(m / p_k^e), {e >= 0}]
+ *
+ * Complexity: O(log(m) / log(p_k))
+ */
+template<typename T, typename F, typename FK>
+T calc_F_k(int p_k, int64_t m, T id, const F& f, const FK& F_k1) {
+    T s = F_k1(m);
+    T f_pe = id;
+    int64_t mpe = m;
+    for (int e = 1; (mpe /= p_k) > 0; e++) {
+        f_pe = f(f_pe, p_k, e);
+        s += f_pe * F_k1(mpe);
+    }
+    return s;
+}
+
+/**
+ * Calculates `S(m)` for each `m` in `[1, n]` in `O(n^(2/3))`.
+ * More efficient than `sum_multiplicative_34`.
+ *
+ * Where:
+ *   `S` is a partial sum of `f`:
+ *       S(n) = Sum[f(k), {k, 1, n}]
+ *   `f` is a multiplicative function such that:
+ *       f(p^e) = f(f_pe1, p, e)
+ *       `f_pe1 = f(p^(e-1))` is provided for convenience
+ *   `s1` is a partial sum of `f` over primes:
+ *       s1(n) = Sum[f(p), {prime p <= n}]
+ *   `lpf` is the lowest_prime_factor function
+ *
+ * @param s1 - map of values of `s1` as defined above at points `floor(n / k)` for `1 <= k <= n`.
+ * @param f - function as defined above; accessed via () operator at values e >= 1
+ * @param n - computes the sum up to `n` (inclusive)
+ * @param pa - table of all `psz` prime numbers up to `sqrt(n)`, or `sqrt(n log n)` (it's faster)
+ */
+template<typename T, typename S1, typename F>
+altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const F& f, int64_t n, const int* pa, int psz, T id = T(1)) {
+    // p_k - k-th prime number (p_1 = 2, p_2 = 3, p_3 = 5, p_4 = 7, ...)
+    // pi(n) - number of primes up to n (inclusive); pi(p_k) == k
+    // lpf(i) - lowest prime factor of i
+    // F_prime(n) = Sum[f(p), {2 <= p <= n, prime p}]
+    // F_k(n) = Sum[f(i), {1 <= i <= n, lpf(i) >= p_k}]
+
+    auto pa1 = pa - 1; // 1-based indexing, pa1[k] = p_k
+
+    int q = isqrt(n);   // n^(1/2)
+    int c = icbrt(n);   // n^(1/3)
+    int d = c;          // ~ n^(1/3)
+    int64_t nd = n / d; // ~ n^(2/3)
+    int h = int(nd / pa1[psz]) + 1; // h <= n^(1/6)
+    int nq = int(n / (q + 1));      // ~ n^(1/2)
+    int tsz = q + 1 + nq;           // ~ n^(1/2) * 2
+
+    altruct::container::sqrt_map<int64_t, T> F_prime(q, n);
+    altruct::container::sqrt_map<int64_t, T> F_k1(q, n); // F_(k+1)
+    altruct::container::sqrt_map<int64_t, T> F_k(q, n);
+    altruct::math::fenwick_tree<T, std::plus<T>> Ft(tsz - d + 1, std::plus<T>(), zeroOf(id));
+
+    if (n == 1) { F_k[1] = id; return F_k; }
+
+    // step 1: build F_prime table by evaluating s1
+    for (int i = 1; i <= q; i++) {
+        F_prime[i] = s1(i);
+        F_prime[n / i] = s1(n / i);
+    }
+    int last_k;
+
+    // step 2: calculate F_k for k = pi(n^(1/3)) + 1; O(n^(2/3) / log(n))
+    {
+        int k; for (k = 1; k < psz && pa1[k] <= c; k++);
+        int p_k = pa1[k];
+        int64_t p_k2 = isq(p_k);
+        // m < p_k; only 1 is included in the sum
+        for (int m = 1; m < p_k; m++) {
+            F_k[m] = id;
+        }
+        // p_k <= m < p_k^2; also includes primes >= p_k in the sum
+        T b = id - F_prime[p_k - 1];
+        for (int64_t m = pa1[k]; m <= q; m++) {
+            F_k[m] = b + F_prime[m];
+        }
+        for (int i = nq; i >= 1; i--) {
+            int64_t m = n / i; if (m >= p_k2) break;
+            F_k[m] = b + F_prime[m];
+        }
+        // p_k^2 <= m < n <= p_k^3; also includes semiprimes with factors >= p_k in the sum
+        for (int i = c; i >= 1; i--) {
+            int64_t m = n / i; if (m < p_k2) continue;
+            T s2 = zeroOf(id);
+            for (int j = k; j <= psz && isq(pa1[j]) <= m; j++) {
+                int p_j = pa1[j];
+                T f_p = f(id, p_j, 1);
+                T f_p2 = f(f_p, p_j, 2);
+                s2 += f_p2 + f_p * (F_prime[m / p_j] - F_prime[p_j]);
+            }
+            F_k[m] = b + F_prime[m] + s2;
+        }
+        last_k = k;
+    }
+
+    // step 3: calculate F_k for k = {pi(n^(1/3)), ..., pi(h) + 1}; O(n^(2/3))
+    {
+        auto get_Ft_k1 = [&](int64_t m) {
+            if (m >= nd) return F_k1[m];
+            return Ft.get_sum((m <= q) ? m : tsz - n / m);
+        };
+        auto update_Ft_k = [&](int64_t m, T f_m) {
+            Ft.add((m <= q) ? m : tsz - n / m, f_m);
+        };
+        // store sums to the fenwick tree
+        for (int64_t m = 1; m <= q; m++) Ft.add(m, F_k[m]), Ft.add(m + 1, -F_k[m]);
+        for (int i = nq; i > d; i--) Ft.add(tsz - i, F_k[n / i]), Ft.add(tsz - i + 1, -F_k[n / i]);
+        // main loop
+        for (int k = last_k - 1; pa1[k] > h; k--) {
+            int p_k = pa1[k];
+            // m >= nd; compute directly
+            F_k1.swap(F_k);
+            for (int i = d; i >= 1; i--) {
+                int64_t m = n / i;
+                F_k[m] = calc_F_k(p_k, m, id, f, get_Ft_k1);
+            }
+            // m < nd; iterate over rough numbers and maintain sums in the fenwick tree
+            traverse_rough_numbers(f, nd - 1, k, pa, psz, update_Ft_k, 1, id);
+            last_k = k;
+        }
+        // read sums from the fenwick tree
+        for (int64_t m = 1; m <= q; m++) F_k[m] = get_Ft_k1(m);
+        for (int i = nq; i > d; i--) F_k[n / i] = get_Ft_k1(n / i);
+    }
+
+    // step 4: calculate F_k for k = {pi(h), ..., 1}; O(n^(2/3) / log(n))
+    {
+        auto get_F_k1 = [&](int64_t m) { return F_k1[m]; };
+        for (int k = last_k - 1; k >= 1; k--) {
+            int p_k = pa1[k];
+            F_k1.swap(F_k);
+            for (int64_t m = 1; m <= q; m++) {
+                F_k[m] = calc_F_k(p_k, m, id, f, get_F_k1);
+            }
+            for (int i = nq; i >= 1; i--) {
+                int64_t m = n / i;
+                F_k[m] = calc_F_k(p_k, m, id, f, get_F_k1);
+            }
+            last_k = k;
+        }
+    }
+
+    return F_k;
 }
 
 } // math
