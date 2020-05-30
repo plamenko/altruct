@@ -48,6 +48,34 @@ public:
         cnt_lo(max_lo_key + 1, 0),
         tbl_lo(max_lo_key + 1) {}
 
+    sqrt_map(sqrt_map&& rhs) {
+        max_lo_key = rhs.max_lo_key;
+        max_key = rhs.max_key;
+        cnt_lo = std::move(rhs.cnt_lo);
+        tbl_lo = std::move(rhs.tbl_lo);
+        cnt_hi = std::move(rhs.cnt_hi);
+        tbl_hi = std::move(rhs.tbl_hi);
+    }
+
+    sqrt_map& operator=(sqrt_map&& rhs) {
+        max_lo_key = rhs.max_lo_key;
+        max_key = rhs.max_key;
+        cnt_lo = std::move(rhs.cnt_lo);
+        tbl_lo = std::move(rhs.tbl_lo);
+        cnt_hi = std::move(rhs.cnt_hi);
+        tbl_hi = std::move(rhs.tbl_hi);
+        return *this;
+    }
+
+    void swap(sqrt_map& rhs) {
+        std::swap(max_lo_key, rhs.max_lo_key);
+        std::swap(max_key, rhs.max_key);
+        cnt_lo.swap(rhs.cnt_lo);
+        tbl_lo.swap(rhs.tbl_lo);
+        cnt_hi.swap(rhs.cnt_hi);
+        tbl_hi.swap(rhs.tbl_hi);
+    }
+
     void reset_max(I max_key = 0) {
         this->max_key = max_key;
         cnt_hi.assign(max_key / max_lo_key + 1, 0);
