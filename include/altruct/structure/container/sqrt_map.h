@@ -48,6 +48,15 @@ public:
         cnt_lo(max_lo_key + 1, 0),
         tbl_lo(max_lo_key + 1) {}
 
+    sqrt_map(const sqrt_map& rhs) {
+        max_lo_key = rhs.max_lo_key;
+        max_key = rhs.max_key;
+        cnt_lo = rhs.cnt_lo;
+        tbl_lo = rhs.tbl_lo;
+        cnt_hi = rhs.cnt_hi;
+        tbl_hi = rhs.tbl_hi;
+    }
+
     sqrt_map(sqrt_map&& rhs) {
         max_lo_key = rhs.max_lo_key;
         max_key = rhs.max_key;
