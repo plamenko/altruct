@@ -145,7 +145,7 @@ TEST(matrix_test, operators_inverse) {
     const matrix<mod> m3({ { 2, 3, 5 }, { 7, 11, 13 }, { 17, 19, 23 } });
 
     EXPECT_EQ(mod(0), m2.det());
-    EXPECT_EQ((matrix<mod>{ { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0} }), m2.inverse());
+    EXPECT_EQ((matrix<mod>{ { 1, 0, 0 }, { 333333337, 666666671, 0 }, { 1, 1000000005, 1} }), m2.inverse());
     EXPECT_EQ(mod(-78), m3.det());
     EXPECT_EQ((matrix<mod>{ { 6, 26, -16 }, { 60, -39, 9 }, { -54, 13, 1 }}) / mod(-78), m3.inverse());
 
