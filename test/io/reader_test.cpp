@@ -14,7 +14,7 @@ using namespace std;
 using namespace altruct::io;
 
 namespace {
-const char* data = "The quick brown fox jumps over the lazy dog. The End.";
+const char* test_data1 = "The quick brown fox jumps over the lazy dog. The End.";
 }
 
 void test_reader(reader& rin) {
@@ -70,7 +70,7 @@ TEST(reader_test, file_reader) {
     const char* name = "reader_test_temp_file";
 
     FILE* file = fopen(name, "w");
-    fwrite(data, 1, strlen(data), file);
+    fwrite(test_data1, 1, strlen(test_data1), file);
     fclose(file);
 
     test_all([&](std::function<void(reader& rin)> test_func) {
@@ -87,7 +87,7 @@ TEST(reader_test, fstream_reader) {
     const char* name = "reader_test_temp_file";
 
     ofstream os(name);
-    os << data;
+    os << test_data1;
     os.close();
 
     test_all([&](std::function<void(reader& rin)> test_func) {
@@ -102,7 +102,7 @@ TEST(reader_test, fstream_reader) {
 
 TEST(reader_test, sstream_reader) {
     test_all([&](std::function<void(reader& rin)> test_func) {
-        istringstream is(data);
+        istringstream is(test_data1);
         stream_reader rin(is);
         test_func(rin);
     });
@@ -110,19 +110,19 @@ TEST(reader_test, sstream_reader) {
 
 TEST(reader_test, string_reader) {
     test_all([&](std::function<void(reader& rin)> test_func) {
-        string_reader rin(data);
+        string_reader rin(test_data1);
         test_func(rin);
     });
 }
 
 TEST(reader_test, buffered_reader) {
     test_all([&](std::function<void(reader& rin)> test_func) {
-        string_reader sin(data);
+        string_reader sin(test_data1);
         buffered_reader rin(sin, 1000);
         test_func(rin);
     });
 
-    string_reader sin(data);
+    string_reader sin(test_data1);
     buffered_reader rin(sin, 10);
 
     // read_char + unread_char

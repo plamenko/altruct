@@ -42,7 +42,7 @@ string do_write(function<void(simple_writer&, simple_writer_stream&)> writer) {
     return os.str();
 }
 
-const char* data = "The quick brown fox jumps over the lazy dog. The End.";
+const char* test_data1 = "The quick brown fox jumps over the lazy dog. The End.";
 }
 
 void do_write(writer& wout) {
@@ -64,7 +64,7 @@ TEST(writer_test, file_writer) {
     }
     fclose(file);
 
-    EXPECT_EQ(data, read_file(name));
+    EXPECT_EQ(test_data1, read_file(name));
 
     remove(name);
 }
@@ -79,7 +79,7 @@ TEST(writer_test, fstream_writer) {
     }
     os.close();
 
-    EXPECT_EQ(data, read_file(name));
+    EXPECT_EQ(test_data1, read_file(name));
 
     remove(name);
 }
@@ -89,7 +89,7 @@ TEST(writer_test, sstream_writer) {
     stream_writer wout(os);
     do_write(wout);
 
-    EXPECT_EQ(data, os.str());
+    EXPECT_EQ(test_data1, os.str());
 }
 
 TEST(writer_test, string_writer) {
@@ -97,7 +97,7 @@ TEST(writer_test, string_writer) {
     string_writer wout(buff.data(), buff.size());
     do_write(wout);
 
-    EXPECT_STREQ(data, buff.data());
+    EXPECT_STREQ(test_data1, buff.data());
 }
 
 TEST(writer_test, buffered_writer) {
