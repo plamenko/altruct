@@ -6,6 +6,7 @@ syntax: glob
 *.user
 *.aps
 *.pch
+*.ipch
 *.vspscc
 *_i.c
 *_p.c
@@ -22,6 +23,8 @@ syntax: glob
 *.lib
 *.sbr
 *.scc
+*.VC.db*
+*.VC.opendb
 [Oo]bj/
 [Bb]in
 [Dd]ebug*/
