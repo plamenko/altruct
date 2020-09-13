@@ -82,6 +82,34 @@ public:
     bit_vector& operator |= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_or); }
     bit_vector& operator ^= (const bit_vector& that) { reserve(that.sz); return apply(*this, 0, that, 0, that.sz, op_xor); }
 
+    bit_vector operator >> (int cnt) const { return clone() >>= cnt; }
+    bit_vector operator << (int cnt) const { return clone() <<= cnt; }
+
+    bit_vector& operator >>= (int cnt) {
+        size_t wsz = words.size() - 1; // there is always one extra 0-word at the end
+        size_t q = cnt / L; int r = cnt % L;
+        for (size_t i = 0; i < wsz - q; i++) {
+            words[i] = word_at(i + q, r);
+        }
+        for (size_t i = wsz - q; i < wsz; i++) {
+            words[i] = W0;
+        }
+        return *this;
+    }
+
+    bit_vector& operator <<= (int cnt) {
+        size_t wsz = words.size() - 1; // there is always one extra 0-word at the end
+        size_t q = cnt / L; int r = cnt % L;
+        for (size_t i = q + 1; i < wsz; i++) {
+            words[i] = (r == 0) ? words[i - q] : ((words[i - q - 1] >> (L - r)) | (words[i - q] << r));
+        }
+        words[q] = (words[0] << r); // words[-1] is considered to be 0
+        for (size_t i = 0; i < q; i++) {
+            words[i] = W0;
+        }
+        return *this;
+    }
+
     // scans the range from left to right
     // i.e.: `visitor(this[begin:end])`
     // `bool visitor(W w, size_t pos, int l)` operates on words;
