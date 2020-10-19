@@ -13,7 +13,7 @@ namespace math {
  * @param k_func - grouping function, e.g. `k = i ^ j`
  */
 template<typename T, typename F>
-void slow_k_convolution(T* r, T* f, T* g, int n, F k_func) {
+void slow_k_convolution(T* r, const T* f, const T* g, int n, F k_func) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             int k = k_func(i, j);
@@ -23,23 +23,23 @@ void slow_k_convolution(T* r, T* f, T* g, int n, F k_func) {
 }
 
 template<typename T>
-void slow_and_convolution(T* r, T* f, T* g, int log_n) {
+void slow_and_convolution(T* r, const T* f, const T* g, int log_n) {
     slow_k_convolution(r, f, g, 1 << log_n, [](int i, int j){ return i & j; });
 }
 template<typename T>
-void slow_or_convolution(T* r, T* f, T* g, int log_n) {
+void slow_or_convolution(T* r, const T* f, const T* g, int log_n) {
     slow_k_convolution(r, f, g, 1 << log_n, [](int i, int j){ return i | j; });
 }
 template<typename T>
-void slow_xor_convolution(T* r, T* f, T* g, int log_n) {
+void slow_xor_convolution(T* r, const T* f, const T* g, int log_n) {
     slow_k_convolution(r, f, g, 1 << log_n, [](int i, int j){ return i ^ j; });
 }
 template<typename T>
-void slow_max_convolution(T* r, T* f, T* g, int n) {
+void slow_max_convolution(T* r, const T* f, const T* g, int n) {
     slow_k_convolution(r, f, g, n, [](int i, int j){ return std::max(i, j); });
 }
 template<typename T>
-void slow_cyclic_convolution(T* r, T* f, T* g, int n) {
+void slow_cyclic_convolution(T* r, const T* f, const T* g, int n) {
     slow_k_convolution(r, f, g, n, [&](int i, int j){ return (i + j) % n; });
 }
 
