@@ -99,25 +99,26 @@ int jacobi(I n, I m) {
 }
 
 /**
- * Square root of `y.v` modulo odd prime `y.M`
+ * Square root of `y.v` modulo prime `y.M`
  *
  * @param M - the modulo<I, ...> type
  * @param y - integer such that: y = x^2 (mod p), (y, p) = 1
  */
 template <typename M>
 M sqrt_cipolla(const M& y) {
-    M e0 = zeroT<M>::of(y), e1 = identityT<M>::of(y);
+    if (y.M() == 2) return y;
+    M e0 = zeroOf(y), e1 = identityOf(y);
     // find a quadratic nonresidue `d` modulo `p`
     M a = e0, d = e0;
     do {
-        a += 1, d = a * a - y;
+        a += e1, d = a * a - y;
     } while (powT(d, (y.M() - 1) / 2) == 1); // jacobi(d, p) == 1
     // r = (a + sqrt(d)) ^ ((p + 1) / 2)
     return powT(quadraticX<M>(a, e1, d), (y.M() + 1) / 2).a;
 }
 
 /**
- * Square root of `y` modulo odd prime `p`
+ * Square root of `y` modulo prime `p`
  *
  * @param y - integer such that: y = x^2 (mod p), (y, p) = 1
  */
