@@ -8,7 +8,7 @@ namespace altruct {
 namespace math {
 
 /**
- * Casts value from T to I.
+ * Casts value from T to R.
  *
  * Reference value is useful when additional information is required.
  * E.g. like when casting to moduloX.
