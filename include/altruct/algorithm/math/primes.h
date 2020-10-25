@@ -338,6 +338,22 @@ std::vector<B> integer_digits(const I& n, const B& b, int len = 0) {
 }
 
 /**
+ * Gives the integer from its digits in base `b`.
+ *
+ * @param vd - digits
+ * @param b - base
+ */
+template<typename I, typename B>
+I from_digits(const std::vector<B>& vd, const B& b) {
+    I n = 0;
+    for (auto it = vd.rbegin(); it != vd.rend(); ++it) {
+        n *= b;
+        n += *it;
+    }
+    return n;
+}
+
+/**
  * Converts the vector of digits to a lowercase string.
  * Only bases up to 36 are supported.
  */

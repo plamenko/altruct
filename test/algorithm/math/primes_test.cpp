@@ -219,6 +219,12 @@ TEST(primes_test, integer_digits) {
     EXPECT_EQ(123, (polynom<int>{ 3, 2, 1, 0, 0 }(10)));
 }
 
+TEST(primes_test, from_digits) {
+    EXPECT_EQ(123, from_digits<int>({ 11, 7 }, 16));
+    EXPECT_EQ(123, from_digits<int>({ 3, 2, 1 }, 10));
+    EXPECT_EQ(123, from_digits<int>({ 3, 2, 1, 0, 0 }, 10));
+}
+
 TEST(primes_test, integer_string) {
     EXPECT_EQ("", integer_string(0, 10));
     EXPECT_EQ("0", integer_string(0, 10, 1));
