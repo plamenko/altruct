@@ -33,6 +33,112 @@ struct triple {
 };
 
 /**
+ * Minimum element of the triple.
+ */
+template<typename I>
+I min_element(const triple<I>& t) {
+    return std::min(std::min(t.a, t.b), t.c);
+}
+
+/**
+ * Maximum element of the triple.
+ */
+template<typename I>
+I max_element(const triple<I>& t) {
+    return std::max(std::max(t.a, t.b), t.c);
+}
+
+/**
+ * Returns whether the triple is primitive.
+ */
+template<typename I>
+bool is_primitive(const triple<I>& t) {
+    return gcd(gcd(t.a, t.b), t.c) == 1;
+}
+
+/**
+ * Returns the next Pythagorean triple given the transformation matrix and the current triple.
+ */
+template<typename I>
+triple<I> next_pythagorean_triple(const I(&m)[3][3], const triple<I>& t) {
+    return triple<I>{
+        m[0][0] * t.a + m[0][1] * t.b + m[0][2] * t.c,
+            m[1][0] * t.a + m[1][1] * t.b + m[1][2] * t.c,
+            m[2][0] * t.a + m[2][1] * t.b + m[2][2] * t.c,
+    };
+}
+
+/**
+ * Returns whether the triple is a generator with invariant a^2 + b^2 + k = c^2.
+ */
+template<typename I>
+bool is_pythagorean_triple_generator(const triple<I>& t) {
+    static const I mi[3][3][3] = {
+        { {-2, -1, 2}, {1, 2, -2}, {-2, -2, 3} },
+        { {1, 2, -2}, {-2, -1, 2}, {-2, -2, 3} },
+        { {2, 1, -2}, {1, 2, -2}, {-2, -2, 3} },
+    };
+    return is_primitive(t) &&
+        min_element(next_pythagorean_triple(mi[0], t)) < 0 &&
+        min_element(next_pythagorean_triple(mi[1], t)) < 0 &&
+        min_element(next_pythagorean_triple(mi[2], t)) < 0;
+}
+
+/**
+ * Generators of the Pythagorean triples with invariant a^2 + b^2 + k = c^2.
+ *
+ * @param k - some fixed non-negative k used in the invariant above.
+ */
+template<typename I>
+std::vector<triple<I>> pythagorean_triples_generators(I k) {
+    vector<triple<int>> vg;
+    if (k == 0) {
+        vg.push_back({ 3, 4, 5 });
+    }
+    else if (k == 1) {
+        vg.push_back({ 2, 2, 3 });
+    }
+    else if (k >= 2) {
+        int a_max = isqrt(k) * 2;
+        for (int a = 0; a <= a_max; a++) {
+            int b_max = k / max(a, 1) + a;
+            for (int b = a; b <= b_max; b++) {
+                int64_t c2 = isq(a) + isq(b) + k; // TODO: isq, isqrt
+                int c = isqrt(c2);
+                triple<int> t{ a, b, c };
+                if (isq(c) == c2 && is_pythagorean_triple_generator(t)) vg.push_back(t);
+            }
+        }
+    }
+    return vg;
+}
+
+/**
+ * Generates all the primitive Pythagorean triples with invariant a^2 + b^2 + k = c^2.
+ *
+ * @param c_max - generates triples up to c_max
+ * @param generators - generators for the fixed k
+ */
+template<typename I>
+std::vector<triple<I>> generate_pythagorean_triples(I n, const std::vector<triple<I>>& generators) {
+    static const I m[3][3][3] = {
+        { {-2, 1, 2}, {-1, 2, 2}, {-2, 2, 3} },
+        { {1, -2, 2}, {2, -1, 2}, {2, -2, 3} },
+        { {2, 1, 2}, {1, 2, 2}, {2, 2, 3} },
+    };
+    std::vector<triple<I>> vt = generators;
+    for (size_t i = 0; i < vt.size(); i++) {
+        for (int j = 0; j < 3; j++) {
+            if (j == 1 && vt[i].a == vt[i].b) continue; // same triple as for j = 0
+            if (j == 2 && vt[i].a == 0) continue; // same triple as for j = 0
+            auto t = next_pythagorean_triple(m[j], vt[i]);
+            if (max_element(t) <= n && is_primitive(t)) vt.push_back(t);
+        }
+    }
+    return vt;
+}
+
+/**
  * Generates all the Pythagorean triples up to the specified limit.
  * (Sides of a triangle where one of the angles is 90 degrees.)
  *
