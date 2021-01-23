@@ -148,6 +148,24 @@ void divisor_sigma1(int64_t *ds1, int n) {
             ds1[j] += i;
 }
 
+void smallest_factor(int* spf, size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        spf[i] = 0;
+    }
+    for (size_t i = 2; i < n; i++) {
+        if (spf[i] || i > n / i) continue;
+        for (size_t j = i * i; j < n; j += i) {
+            spf[j] = 1;
+        }
+    }
+    for (size_t i = n - 1; i >= 2; i--) {
+        if (spf[i] || i > n / i) continue;
+        for (size_t j = i * i; j < n; j += i) {
+            spf[j] = i;
+        }
+    }
+}
+
 void factor(int *bpf, int n, const int *p, int m) {
     bpf[0] = 0, bpf[1] = 1;
     for (int i = 0; i < m; i++)

@@ -157,14 +157,29 @@ void divisor_sigma0(int *ds0, int n);
 void divisor_sigma1(int64_t *ds1, int n);
 
 /**
+  * Smallest prime factor for composite integers up to `n`, 0 for primes.
+  *
+  * Computes the smallest prime factor for composite integers up to n.
+  * For primes, 0 is stored instead. This allows factoring 64-bit integers
+  * as the smallest prime factor can only be greater than sqrt(n) for primes.
+  * 
+  * Output array `spf` needs to be of size `n`.
+  *
+  * Complexity: O(n log log n)
+  *
+  * @param spf - array of size `n` to store the result
+  * @param n - factors numbers up to `n` (exclusive)
+  */
+void smallest_factor(int* spf, size_t n);
+
+/**
  * Biggest prime factor for integers up to `n`
  *
- * Sotres the biggest prime factor for integers up to n to the array `bpf`.
- * Output array `bpf` needs to be of size `n`.
+ * Computes the biggest prime factor for integers up to n.
  *
  * Complexity: O(n log log n)
  *
- * @param bpf - array to store the biggest prime factors for integers up to `n`
+ * @param bpf - array of size `n` to store the result
  * @param n - factors numbers up to `n` (exclusive)
  * @param p - array of prime numbers up to `n`
  * @param m - number of prime numbers up to `n`
