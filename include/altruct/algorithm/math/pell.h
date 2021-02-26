@@ -149,21 +149,58 @@ void pellS(I D, I N, std::vector<I>& xc0, std::vector<I>& yc0) {
 }
 
 /**
- * Solves the generalized Pell's equation.
+ * Computes a solution `(xc0, yc0)` that satisfies `x^2 - D y^2 = m`,
+ * for the equivalence class z.
+ * @param D - integer such that: D > 0, D not a square;
+ * @param m - integer such that: m != 0
+ * @param z - integer such that: z^2 = D (mod |m|).
+ * @param x0, y0 - either the fundamental or the minimal positive solution for the class
+ * @return the length of the period if the solution exists, 0 otherwise;
+ */
+template<typename I>
+int pell_mz(I D, I m, I z, I& x0, I& y0) {
+    I mm = absT<I>(m);
+    int ms = (m < 0) ? -1 : +1;
+    I mh = mm / 2;
+    I zh = (z <= mh) ? z : z - mm;
+    std::vector<I> P{ zh }, Q{ mm }, a, A, B, G;
+    int l = pell_PQa<I>(D, P, Q, a, A, B, G);
+    int i = 1; while (i < (int)Q.size() && Q[i] != +1 && Q[i] != -1) i++;
+    if (i >= (int)Q.size()) return 0;
+    // check for solution by testing Q[i] == (-1)^i sign(m)
+    if (Q[i] != ((i % 2 == 1) ? -ms : +ms)) {
+        // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = -m;
+        // do another period to get +m
+        pell_PQa<I>(D, P, Q, a, A, B, G);
+        i += l;
+    }
+    if (Q[i] != ((i % 2 == 1) ? -ms : +ms)) {
+        // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = -m;
+        // -m again, +m will never happen
+        return 0;
+    }
+    else {
+        // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = +m;
+        x0 = G[i - 1], y0 = B[i - 1];
+        return l;
+    }
+}
+
+/**
+ * Solves the generalized Pell's equation `x^2 - D y^2 = N`.
  *
- * Computes the minimal positive solutions `(xc0, yc0)` that satisfy `x^2 - D y^2 = N`,
- * for each equivalence class.
- * For each equivalence class, all solutions to the `x^2 - D y^2 = N` equation
- * are given as `(xc0 + yc0 sqrt(D)) * (x0 + y0 sqrt(d))^n`,
- * where `(x0, y0)` is the minimal solution to the `x^2 - D y^2 = 1` equation.
+ * Computes one solution of each equivalence class. For each equivalence class,
+ * all solutions are then given as `(xc0 + yc0 sqrt(D)) * (x1 + y1 sqrt(d))^n`,
+ * where `(x1, y1)` is the minimal positive solution to the `x^2 - D y^2 = 1`.
  *
  * @param D - integer such that: D > 0, D not a square;
  * @param N - integer such that: N != 0
  * @param fN - prime factorization of N
- * @param x0, y0 - the minimal positive solutions for each equivalence class
+ * @return - the solutions for each equivalence class
  */
 template<typename I, typename PF>
-void pell(I D, I N, const std::vector<std::pair<PF, int>>& fN, std::vector<I>& xc0, std::vector<I>& yc0) {
+std::vector<quadraticX<I>> pell(I D, I N, const std::vector<std::pair<PF, int>>& fN) {
+    std::vector<quadraticX<I>> vs0;
     std::vector<std::pair<PF, int>> fN2;
     for (const auto& f : fN) {
         if (f.second >= 2) fN2.push_back({ f.first, f.second / 2 });
@@ -172,38 +209,21 @@ void pell(I D, I N, const std::vector<std::pair<PF, int>>& fN, std::vector<I>& x
     for (const auto& f : vf) {
         I m = N / sqT<I>(f);
         I mm = absT<I>(m);
-        int ms = (m < 0) ? -1 : +1;
-        I mh = mm / 2;
         // find all z such that z^2 = D (mod |m|)
         // TODO: this is fine for small N, but for larger N
-        // we should use modular square root algorithms.
+        // modular square root algorithms should be used.
         std::vector<I> vz;
         for (I z = 0; z < mm; z += 1) {
             if ((z * z - D) % mm == 0) vz.push_back(z);
         }
         for (const auto& z : vz) {
-            I zh = (z <= mh) ? z : z - mm;
-            std::vector<I> P{ zh }, Q{ mm }, a, A, B, G;
-            int l = pell_PQa<I>(D, P, Q, a, A, B, G);
-            int i = 1; while (i < (int)Q.size() && Q[i] != +1 && Q[i] != -1) i++;
-            if (i >= (int)Q.size()) continue;
-            // check for solution by testing Q[i] == (-1)^i sign(m)
-            if (Q[i] != ((i % 2 == 1) ? -ms : +ms)) {
-                // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = -m;
-                // do another period to get +m
-                pell_PQa<I>(D, P, Q, a, A, B, G);
-                i += l;
-            }
-            if (Q[i] != ((i % 2 == 1) ? -ms : +ms)) {
-                // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = -m;
-                // -m again, +m will never happen
-            } else {
-                // G[i-1]^2 - D B[i-1]^2 = (-1)^i Q[i] |m| = +m;
-                xc0.push_back(f * G[i - 1]);
-                yc0.push_back(f * B[i - 1]);
+            I x0, y0;
+            if (pell_mz(D, m, z, x0, y0)) {
+                vs0.push_back(quadraticX<I>(x0, y0, D) * f);
             }
         }
     }
+    return vs0;
 }
 
 /**
@@ -219,14 +239,12 @@ void pell(I D, I N, const std::vector<std::pair<PF, int>>& fN, std::vector<I>& x
 template<typename I>
 std::vector<quadraticX<I>> pell1(I D, I N, I x_max, I y_max, int count) {
     std::vector<quadraticX<I>> vs;
-    quadraticX<I> s0(0, 0, D);
-    if (pell1<I>(D, N, s0.a, s0.b)) {
-        auto s = s0;
-        if (N == -1) s0 *= s0;
+    quadraticX<I> s1(0, 0, D);
+    if (pell1<I>(D, N, s1.a, s1.b)) {
+        auto s = s1;
+        if (N == -1) s1 *= s1;
         while (true) {
-            auto t = s; s *= s0;
-            if (t.a < 0) t.a = -t.a;
-            if (t.b < 0) t.b = -t.b;
+            auto t = s; s *= s1;
             if (x_max > 0 && t.a > x_max) break;
             if (y_max > 0 && t.b > y_max) break;
             if (count > 0 && (int)vs.size() >= count) break;
@@ -249,20 +267,15 @@ std::vector<quadraticX<I>> pell1(I D, I N, I x_max, I y_max, int count) {
 template<typename I, typename P, typename F>
 void pell(I D, I N, const std::vector<std::pair<P, int>>& fN, I x_max, I y_max, int count, F visitor) {
     int size = 0;
-    quadraticX<I> s0(0, 0, D);
-    if (pell1<I>(D, 1, s0.a, s0.b)) {
-        std::vector<I> vxc0, vyc0;
-        pell<I>(D, N, fN, vxc0, vyc0);
-        std::vector<quadraticX<I>> vsc(vxc0.size());
-        for (int c = 0; c < (int)vsc.size(); c++) {
-            vsc[c] = { vxc0[c], vyc0[c], D };
-        }
+    quadraticX<I> s1(0, 0, D);
+    if (pell1<I>(D, 1, s1.a, s1.b)) {
+        auto vs = pell<I>(D, N, fN);
         while (true) {
             auto size0 = size;
-            for (auto& s : vsc) {
-                auto t = s; s *= s0;
-                if (t.a < 0) t.a = -t.a;
-                if (t.b < 0) t.b = -t.b;
+            for (auto& s : vs) {
+                auto t = s; s *= s1;
+                if (s.a <= 0 && s.b <= 0) s = -s;
+                if (t.a < 0 || t.b < 0) continue;
                 if (x_max > 0 && t.a > x_max) continue;
                 if (y_max > 0 && t.b > y_max) continue;
                 if (count > 0 && size >= count) continue;
