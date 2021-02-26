@@ -88,6 +88,41 @@ TEST(modulos_test, sqrt_cipolla) {
     EXPECT_EQ(mod(16), sqT(sqrt_cipolla(mod(16))));
 }
 
+TEST(modulos_test, sqrt_hensel_lift_p2) {
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(0, 0));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(0, 1));
+    EXPECT_EQ(make_pair(1, 1), sqrt_hensel_lift_p2(1, 1));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(0, 2));
+    EXPECT_EQ(make_pair(1, 1), sqrt_hensel_lift_p2(1, 2));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(2, 2));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(3, 2));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(0, 3));
+    EXPECT_EQ(make_pair(1, 3), sqrt_hensel_lift_p2(1, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(2, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(3, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(4, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(5, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(6, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(7, 3));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(0, 4));
+    EXPECT_EQ(make_pair(1, 7), sqrt_hensel_lift_p2(1, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(2, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(3, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(4, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(5, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(6, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(7, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(8, 4));
+    EXPECT_EQ(make_pair(5, 3), sqrt_hensel_lift_p2(9, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(10, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(11, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(12, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(13, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(14, 4));
+    EXPECT_EQ(make_pair(0, 0), sqrt_hensel_lift_p2(15, 4));
+    EXPECT_EQ(make_pair(273, 1775), sqrt_hensel_lift_p2(801, 12));
+}
+
 TEST(modulos_test, sqrt_hensel_lift) {
     EXPECT_EQ(0, sqrt_hensel_lift(0, 17, 5));
     EXPECT_EQ(1, sqrt_hensel_lift(1, 17, 5));

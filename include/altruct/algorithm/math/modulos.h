@@ -128,7 +128,40 @@ I sqrt_cipolla(const I& y, const I& p) {
 }
 
 /**
+ * Square roots of `y` modulo `2^k`.
+ * All solutions are given by {x1, x2, -x2, -x1}.
+ *
+ * @param y - integer such that: y = x^2 (mod 2^k), (y, 2) = 1
+ * @return {x1, x2}, or {0, 0} if there is no solution
+ */
+template <typename I>
+std::pair<I, I> sqrt_hensel_lift_p2(const I& y, I k) {
+    typedef moduloX<I> modx;
+    if (y % 2 != 1) return { 0, 0 };
+    if (k == 1) return { 1, 1 };
+    if (y % 4 != 1) return { 0, 0 };
+    if (k == 2) return { 1, 1 };
+    if (y % 8 != 1) return { 0, 0 };
+    I s[2] = { 1, 3 };
+    I w2 = 4;
+    for (int i = 4; i <= k; i++) {
+        for (int j = 0; j < 2; j++) {
+            I l = (modx(s[j], w2 * 4) * s[j] - y).v;
+            if (l != 0) {
+                s[j] += w2;
+            }
+            else if (s[j] >= w2) {
+                s[j] += w2 * 2;
+            }
+        }
+        w2 *= 2;
+    }
+    return { s[0], s[1] };
+}
+
+/**
  * Square root of `y` modulo odd prime power `p^k`
+ * All solutions are given by {x, -x}.
  *
  * @param y - integer such that: y = x^2 (mod p^k), (y, p) = 1
  */
