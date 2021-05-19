@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
@@ -134,6 +135,24 @@ TEST(modulos_test, sqrt_hensel_lift) {
     EXPECT_EQ(1318629, sqrt_hensel_lift(15, 17, 5));
     EXPECT_EQ(1419853, sqrt_hensel_lift(16, 17, 5));
     EXPECT_EQ(883131, sqrt_hensel_lift(12346, 17, 5));
+}
+
+TEST(modulos_test, sqrt_mod) {
+    prime_holder prim(100 + 1);
+    for (int m = 1; m < prim.size(); m++) {
+        unordered_map<int, vector<int>> mr;
+        for (int x = 0; x < m; x++) {
+            int y = (x * x) % m;
+            mr[y].push_back(x);
+        }
+        for (int y = 1; y < m; y++) {
+            if (gcd(m, y) != 1) continue;
+            const auto& vr_expected = mr[y];
+            auto vr_actual = sqrt_mod(y, prim.factor_integer(m));
+            sort(vr_actual.begin(), vr_actual.end());
+            EXPECT_EQ(vr_expected, vr_actual) << "ERROR: sqrt_mod(" << y << ", " << m << ")";
+        }
+    }
 }
 
 TEST(modulos_test, primitive_root) {

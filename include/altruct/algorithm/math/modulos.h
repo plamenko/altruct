@@ -5,6 +5,7 @@
 #include "altruct/structure/math/prime_holder.h"
 
 #include <set>
+#include <unordered_set>
 #include <vector>
 #include <algorithm>
 
@@ -178,6 +179,42 @@ I sqrt_hensel_lift(const I& y, const I& p, I k) {
         r -= v * u;
     }
     return r.v;
+}
+
+/**
+ * Square roots of `y` modulo `m`
+ *
+ * @param y - integer such that: y = x^2 (mod m), (y, m) = 1
+ * @param vf - factorization of m
+ * @return - all square roots
+ */
+template <typename I, typename P>
+std::vector<I> sqrt_mod(I y, const std::vector<std::pair<P, int>>& vf) {
+    I m = 1;
+    std::unordered_set<I> sr{ 0 };
+    auto add = [&](std::unordered_set<I>& sr0, I x, I q) {
+        if ((x * x - y) % q != 0) return;
+        for (I r0 : sr0) {
+            sr.insert(chinese_remainder(r0, m, x, q));
+            sr.insert(chinese_remainder(r0, m, -x, q));
+        }
+    };
+    for (const auto& f : vf) {
+        std::unordered_set<I> sr0;
+        sr0.swap(sr);
+        I q = powT<I>(f.first, f.second);
+        if (f.first == 2) {
+            auto x = sqrt_hensel_lift_p2(y, f.second);
+            add(sr0, x.first, q);
+            add(sr0, x.second, q);
+        }
+        else {
+            auto x = sqrt_hensel_lift(y, f.first, f.second);
+            add(sr0, x, q);
+        }
+        m *= q;
+    }
+    return std::vector<I>(sr.begin(), sr.end());
 }
 
 /**
