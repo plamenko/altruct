@@ -103,9 +103,9 @@ public:
         int carry = 0;
         r.lo.hi.assign_adc(m1.lo, carry);
         r.hi.lo.assign_adc(m1.hi, carry);
-        r.hi.hi += (lhs_cy & rhs_cy) + carry - borrow0 - borrow2;
-        if (rhs_cy) r.hi += double_int(0, lhs_su);
-        if (lhs_cy) r.hi += double_int(0, rhs_su);
+        int carry1 = 0; if (rhs_cy) r.hi.lo.assign_adc(lhs_su, carry1);
+        int carry2 = 0; if (lhs_cy) r.hi.lo.assign_adc(rhs_su, carry2);
+        r.hi.hi += (lhs_cy & rhs_cy) - borrow0 - borrow2 + carry + carry1 + carry2;
         return r;
     }
 
