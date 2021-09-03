@@ -61,9 +61,11 @@ public:
     rotor  operator *  (const T& t) const { return rotor(s * t, yz * t, zx * t, xy * t); }
     rotor  operator /  (const T& t) const { return rotor(s / t, yz / t, zx / t, xy / t); }
 
+    rotor unit() const { return *this / abs1(); }
     rotor inv()  const { return conj() / abs2(); }
     rotor conj() const { return rotor(s, -yz, -zx, -xy); }
     T     abs2() const { return s * s + xy * xy + yz * yz + zx * zx; }
+    T     abs1() const { return sqrtT(abs2()); }
 };
 
 template<typename T>
@@ -164,9 +166,14 @@ public:
     vector   operator *  (const T& t) const { return vector(x * t, y * t, z * t, w * t); }
     vector   operator /  (const T& t) const { return vector(x / t, y / t, z / t, w / t); }
 
+    vector unit() const { return *this / abs1(); }
     vector inv()  const { return conj() / abs2(); }
     vector conj() const { return vector(x, y, z, -w); }
     T      abs2() const { return x * x + y * y + z * z + w * w; }
+    T      abs1() const { return sqrtT(abs2()); }
+
+    vector reflect(const vector<T>& v) const { return -v * (*this) * v.conj(); } // v must be normalized
+    vector rotate(const rotor<T>& r)  const { return  r * (*this) * r.conj(); } // r must be normalized
 };
 
 template<typename T>
@@ -183,6 +190,15 @@ vector<T> operator * (const rotor<T> r, const vector<T>& v) {
 }
 template<typename T>
 vector<T> operator / (const rotor<T> r, const vector<T>& v) { return r * v.inv(); }
+
+template<typename T>
+vector<T> make_reflector(const vector<T>& over) { return over.unit(); }
+
+template<typename T>
+rotor<T> make_rotor(const vector<T>& from, const vector<T>& to) {
+    T id = identityOf(from.w);
+    return (to.unit() * from.unit() + id).unit();
+}
 
 template<typename T, typename I>
 struct castT<vector<T>, I> {

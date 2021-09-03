@@ -129,6 +129,9 @@ TEST(clifford3_test, rotor_functions) {
     ROT_EXPECT_NEAR(rot3(3, -4, -5, -10), r.conj());
     EXPECT_NEAR(150., r.abs2(), 1e-10);
     ROT_EXPECT_NEAR(rot3(3, -4, -5, -10) / 150., r.inv());
+    EXPECT_NEAR(sqrt(150.), r.abs1(), 1e-10);
+    ROT_EXPECT_NEAR(r / sqrt(150.), r.unit(), 1e-10);
+    EXPECT_NEAR(1., r.unit().abs2(), 1e-10);
 }
 
 TEST(clifford3_test, rotor_specializations) {
@@ -228,6 +231,9 @@ TEST(clifford3_test, vector_functions) {
     VEC_EXPECT_NEAR(vec3(3, 4, 5, -10), v.conj());
     EXPECT_NEAR(150., v.abs2(), 1e-10);
     VEC_EXPECT_NEAR(vec3(3, 4, 5, -10) / 150., v.inv());
+    EXPECT_NEAR(sqrt(150.), v.abs1(), 1e-10);
+    VEC_EXPECT_NEAR(v / sqrt(150.), v.unit(), 1e-10);
+    EXPECT_NEAR(1., v.unit().abs2(), 1e-10);
 }
 
 TEST(clifford3_test, vector_specializations) {
@@ -385,4 +391,24 @@ TEST(clifford3_test, multivector_specializations) {
     MVEC_EXPECT_NEAR(mvec3(0), zeroOf(m));
     MVEC_EXPECT_NEAR(mvec3(1), identityOf(m));
     MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(4, 1, 9, -3)), conjugateT<mvec3>::of(m));
+}
+
+//------------------------------------------------------------------------------------------------/
+TEST(clifford3_test, reflections) {
+    vec3 u(1, 2, 3);
+    vec3 v(5, 2, 2);
+    vec3 p(0.5, 1.0, 3.5);
+    double q = sqrt(462.);
+
+    vec3 af = cl3::make_reflector(u);
+    VEC_EXPECT_NEAR(vec3(1, 2, 3) / sqrt(14.), af);
+
+    rot3 ar = cl3::make_rotor(u, v);
+    ROT_EXPECT_NEAR(rot3(15 + q, 2, -13, 8) / sqrt(924 + 30 * q), ar);
+    
+    vec3 pf = p.reflect(af);
+    VEC_EXPECT_NEAR(vec3(-19, -38, -29) / 14., pf);
+
+    vec3 pr = p.rotate(ar);
+    VEC_EXPECT_NEAR(vec3(4928 + 4659 * q, -32032 + 2462 * q, 19712 + 2836 * q) / 36498., pr);
 }
