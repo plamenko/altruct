@@ -41,7 +41,7 @@
       <Filter>algorithm\math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\sample\test_sample.cpp" />
-    <ClCompile Include="sum_multiplicative.cpp">
+    <ClCompile Include="..\..\sample\algorithm\math\sum_multiplicative.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
   </ItemGroup>
