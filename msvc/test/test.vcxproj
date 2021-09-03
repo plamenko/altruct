@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\test\structure\container\treap_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp" />
     <ClCompile Include="..\..\test\structure\graph\graph_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\clifford3_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\double_int_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fenwick_tree_test.cpp" />

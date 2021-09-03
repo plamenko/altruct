@@ -11,6 +11,7 @@
 #include "altruct/structure/math/modulo.h"
 #include "altruct/structure/math/polynom.h"
 #include "altruct/structure/math/matrix.h"
+#include "altruct/structure/math/clifford3.h"
 
 /** Forward declarations */
 template<typename T1, typename T2>
@@ -141,4 +142,18 @@ std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rh
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs) {
     return os << rhs.a;
+}
+
+/** std::ostream specialization for altruct::math::cl3 */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::rotor<T>& r) {
+    return os << "{" << r.s << ", " << r.yz << ", " << r.zx << ", " << r.xy << "}";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::vector<T>& v) {
+    return os << "{" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << "}";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::multivector<T>& m) {
+    return os << "{" << m.r << ", " << m.v << "}";
 }

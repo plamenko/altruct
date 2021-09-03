@@ -287,6 +287,7 @@ needs to be brought to a higher quality bar that is required here.
   * Graph:
     * `disjoint_set` - A [disjoint-set a.k.a. union-find](https://en.wikipedia.org/wiki/Disjoint-set_data_structure) structure
   * Math:
+    * `clifford3` - [Clifford Algebra Cl(3, 0)](https://en.wikipedia.org/wiki/Clifford_algebra) a.k.a [Geometric Algebra G(3, 0)](https://en.wikipedia.org/wiki/Geometric_algebra) in 3D
     * `complex` - A [Complex number](https://en.wikipedia.org/wiki/Complex_number) over arbitrary ring
     * `double_int` - Work-in-progress, division not implemented
     * `fraction` - A [fraction](https://en.wikipedia.org/wiki/Fraction_(mathematics)) over arbitrary ring
