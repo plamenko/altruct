@@ -62,7 +62,8 @@ public:
     rotor  operator /  (const T& t) const { return rotor(s / t, yz / t, zx / t, xy / t); }
 
     rotor unit() const { return *this / abs1(); }
-    rotor inv()  const { return conj() / abs2(); }
+    rotor inv()  const { return rev() / abs2(); }
+    rotor rev() const { return rotor(s, -yz, -zx, -xy); }
     rotor conj() const { return rotor(s, -yz, -zx, -xy); }
     T     abs2() const { return s * s + xy * xy + yz * yz + zx * zx; }
     T     abs1() const { return sqrtT(abs2()); }
@@ -167,13 +168,14 @@ public:
     vector   operator /  (const T& t) const { return vector(x / t, y / t, z / t, w / t); }
 
     vector unit() const { return *this / abs1(); }
-    vector inv()  const { return conj() / abs2(); }
-    vector conj() const { return vector(x, y, z, -w); }
+    vector inv()  const { return rev() / abs2(); }
+    vector rev() const { return vector(x, y, z, -w); }
+    vector conj() const { return vector(-x, -y, -z, w); }
     T      abs2() const { return x * x + y * y + z * z + w * w; }
     T      abs1() const { return sqrtT(abs2()); }
 
-    vector reflect(const vector<T>& v) const { return -v * (*this) * v.conj(); } // v must be normalized
-    vector rotate(const rotor<T>& r)  const { return  r * (*this) * r.conj(); } // r must be normalized
+    vector reflect(const vector<T>& v) const { return -v * (*this) * v.rev(); } // v must be normalized
+    vector rotate(const rotor<T>& r)  const { return  r * (*this) * r.rev(); } // r must be normalized
 };
 
 template<typename T>
@@ -312,6 +314,10 @@ public:
         auto vi = ri * t;
         return multivector(ri, vi);
     }
+    multivector rev() const {
+        return multivector(r.rev(), v.rev());
+    }
+    
     multivector conj() const {
         return multivector(r.conj(), v.conj());
     }

@@ -127,6 +127,7 @@ TEST(clifford3_test, rotor_operators_inplace_self) {
 TEST(clifford3_test, rotor_functions) {
     const rot3 r = rot3(3, 4, 5, 10);
     ROT_EXPECT_NEAR(rot3(3, -4, -5, -10), r.conj());
+    ROT_EXPECT_NEAR(rot3(3, -4, -5, -10), r.rev());
     EXPECT_NEAR(150., r.abs2(), 1e-10);
     ROT_EXPECT_NEAR(rot3(3, -4, -5, -10) / 150., r.inv());
     EXPECT_NEAR(sqrt(150.), r.abs1(), 1e-10);
@@ -228,7 +229,8 @@ TEST(clifford3_test, vector_operators_inplace_self) {
 
 TEST(clifford3_test, vector_functions) {
     const vec3 v = vec3(3, 4, 5, 10);
-    VEC_EXPECT_NEAR(vec3(3, 4, 5, -10), v.conj());
+    VEC_EXPECT_NEAR(vec3(-3, -4, -5, 10), v.conj());
+    VEC_EXPECT_NEAR(vec3(3, 4, 5, -10), v.rev());
     EXPECT_NEAR(150., v.abs2(), 1e-10);
     VEC_EXPECT_NEAR(vec3(3, 4, 5, -10) / 150., v.inv());
     EXPECT_NEAR(sqrt(150.), v.abs1(), 1e-10);
@@ -242,7 +244,7 @@ TEST(clifford3_test, vector_specializations) {
     VEC_EXPECT_NEAR(vec3(0, 0, 0, 12), castOf<vec3>(v, 12));
     VEC_EXPECT_NEAR(vec3(0, 0, 0, 0), zeroOf(v));
     VEC_EXPECT_NEAR(vec3(0, 0, 0, 0), identityOf(v)); // there is no identity of type vector
-    VEC_EXPECT_NEAR(vec3(3, 4, 5, -10), conjugateT<vec3>::of(v));
+    VEC_EXPECT_NEAR(vec3(-3, -4, -5, 10), conjugateT<vec3>::of(v));
 }
 
 //------------------------------------------------------------------------------------------------/
@@ -380,7 +382,8 @@ TEST(clifford3_test, multivector_operators_inplace_self) {
 
 TEST(clifford3_test, multivector_functions) {
     const mvec3 m(rot3(7, 5, 3, 2), vec3(4, 1, 9, 3));
-    MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(4, 1, 9, -3)), m.conj());
+    MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(-4, -1, -9, 3)), m.conj());
+    MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(4, 1, 9, -3)), m.rev());
     MVEC_EXPECT_NEAR(mvec3(rot3(-13, -3, 1, -16), vec3(14, 7, 13, 11)) / 100., m.inv());
 }
 
@@ -390,7 +393,7 @@ TEST(clifford3_test, multivector_specializations) {
     MVEC_EXPECT_NEAR(mvec3(12), castOf<mvec3>(m, 12));
     MVEC_EXPECT_NEAR(mvec3(0), zeroOf(m));
     MVEC_EXPECT_NEAR(mvec3(1), identityOf(m));
-    MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(4, 1, 9, -3)), conjugateT<mvec3>::of(m));
+    MVEC_EXPECT_NEAR(mvec3(rot3(7, -5, -3, -2), vec3(-4, -1, -9, 3)), conjugateT<mvec3>::of(m));
 }
 
 //------------------------------------------------------------------------------------------------/
