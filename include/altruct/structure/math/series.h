@@ -197,7 +197,7 @@ public:
         const polynom<T>& Q = this->p;
         const polynom<T>& P = rhs.p;
         int N = this->N();
-        int M = int(sqrt(N / log2(N)) + 1);
+        int M = int(sqrt(N / log2(N)));
         int L = div_ceil(N, M);
 
         // P = Pm + Pr
@@ -209,18 +209,21 @@ public:
         int sz = 1; while (sz < N) sz *= 2;
         polynom<T> QPm; _composition_rec(Q.c.data(), Q.c.data() + Q.c.size(), sz, N, &QPm, Pm);
 
+        // Pmi = 1/Pm'
         series Pmi = series(Pm, N).derivative().inverse();
+        // DQPm = Q(Pm), Q'(Pm), Q"(Pm), ...
         series DQPm = series(QPm, N);
 
         // slow part:
         T fact = id_coeff();
         series s = DQPm;
-        series Pri(Pr, N);
+        series Pr1(Pr, N);
+        series Pri = Pr1;
         for (int i = 1; i <= L; i++) {
             fact *= i;
             DQPm = DQPm.derivative() * Pmi;
             s += DQPm * Pri / fact;
-            if (i < L) Pri *= Pr;
+            if (i < L) Pri *= Pr1;
         }
         return s;
     }
