@@ -152,7 +152,7 @@ public:
     }
 
     // s(rhs(x)); O(N^2)
-    series composition0(const series& rhs) const {
+    series composition(const series& rhs) const {
         // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
         int N = this->N();
         int K = isqrtc(N + 1);
@@ -190,6 +190,7 @@ public:
         return s;
     }
 
+    /* Slower in practice than the above implementation for N < 3.000.000
     // s(rhs(x)); O((N log N)^0.5 M(N))
     // rhs[0] must be 0
     series composition(const series& rhs) const {
@@ -255,6 +256,7 @@ public:
             if (pk) polynom<T>::mul(*pk, pk1, pk1, std::min(pk1.deg() * 2, N));
         }
     }
+    */
 
     // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
     series inverse() const {
