@@ -174,8 +174,8 @@ public:
     T      abs2() const { return x * x + y * y + z * z + w * w; }
     T      abs1() const { return sqrtT(abs2()); }
 
-    vector reflect(const vector<T>& v) const { return -v * (*this) * v.rev(); } // v must be normalized
-    vector rotate(const rotor<T>& r)  const { return  r * (*this) * r.rev(); } // r must be normalized
+    vector reflect(const vector<T>& v) const { return -v * (*this) * v.rev(); } // reflector v must be normalized
+    vector rotate(const rotor<T>& r)  const { return  r * (*this) * r.rev(); } // rotor r must be normalized
 };
 
 template<typename T>
@@ -194,7 +194,7 @@ template<typename T>
 vector<T> operator / (const rotor<T> r, const vector<T>& v) { return r * v.inv(); }
 
 template<typename T>
-vector<T> make_reflector(const vector<T>& over) { return over.unit(); }
+vector<T> make_reflector(const vector<T>& along) { return along.unit(); }
 
 template<typename T>
 rotor<T> make_rotor(const vector<T>& from, const vector<T>& to) {
