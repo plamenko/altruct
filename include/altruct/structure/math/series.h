@@ -54,20 +54,20 @@ public:
     // s(x) = p(x) + O(x^N)
     polynom<T> p;
 
-    series(const T& c0 = T(0)) : my_series_members(1), p(c0) { p.reserve(this->N()); }
+    series(const T& c0 = T(0)) : my_series_members(1), p(c0) { p.resize(this->N()); }
     // construct from int, but only if T is not integral to avoid constructor clashing
     template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-    series(int c0) : my_series_members(1) , p(c0) { p.reserve(this->N()); } // to allow constructing from 0 and 1
-    series(series&& rhs) : my_series_members(rhs.N()), p(std::move(rhs.p)) { p.reserve(this->N()); }
-    series(const series& rhs) : my_series_members(rhs.N()), p(rhs.p) { p.reserve(this->N()); }
-    series(polynom<T>&& rhs, int _N) : my_series_members(_N), p(std::move(rhs)) { p.reserve(this->N()); }
-    series(const polynom<T>& rhs, int _N) : my_series_members(_N), p(rhs) { p.reserve(this->N()); }
-    series(polynom<T>&& rhs) : my_series_members(rhs.size()), p(std::move(rhs)) { p.reserve(this->N()); }
-    series(const polynom<T>& rhs) : my_series_members(rhs.size()), p(rhs) { p.reserve(this->N()); }
-    series(std::vector<T>&& c) : my_series_members((int)c.size()), p(std::move(c)) { p.reserve(this->N()); }
-    series(const std::vector<T>& c) : my_series_members((int)c.size()), p(c) { p.reserve(this->N()); }
-    template<typename It> series(It begin, It end) : my_series_members((int)std::distance(begin, end)), p(begin, end) { p.reserve(this->N()); }
-    series(std::initializer_list<T> list) : my_series_members((int)list.size()), p(list) { p.reserve(this->N()); }
+    series(int c0) : my_series_members(1) , p(c0) { p.resize(this->N()); } // to allow constructing from 0 and 1
+    series(series&& rhs) : my_series_members(rhs.N()), p(std::move(rhs.p)) { p.resize(this->N()); }
+    series(const series& rhs) : my_series_members(rhs.N()), p(rhs.p) { p.resize(this->N()); }
+    series(polynom<T>&& rhs, int _N) : my_series_members(_N), p(std::move(rhs)) { p.resize(this->N()); }
+    series(const polynom<T>& rhs, int _N) : my_series_members(_N), p(rhs) { p.resize(this->N()); }
+    series(polynom<T>&& rhs) : my_series_members(rhs.size()), p(std::move(rhs)) { p.resize(this->N()); }
+    series(const polynom<T>& rhs) : my_series_members(rhs.size()), p(rhs) { p.resize(this->N()); }
+    series(std::vector<T>&& c) : my_series_members((int)c.size()), p(std::move(c)) { p.resize(this->N()); }
+    series(const std::vector<T>& c) : my_series_members((int)c.size()), p(c) { p.resize(this->N()); }
+    template<typename It> series(It begin, It end) : my_series_members((int)std::distance(begin, end)), p(begin, end) { p.resize(this->N()); }
+    series(std::initializer_list<T> list) : my_series_members((int)list.size()), p(list) { p.resize(this->N()); }
     series& operator = (series&& rhs) { this->refN() = rhs.N(), this->p = std::move(rhs.p); return *this; }
     series& operator = (const series& rhs) { this->refN() = rhs.N(), this->p = rhs.p; return *this; }
 
@@ -95,13 +95,13 @@ public:
     series  operator *  (const T &val) const { series t(*this); t *= val; return t; }
     series  operator /  (const T &val) const { series t(*this); t /= val; return t; }
 
-    series& operator += (const series &rhs) { p += rhs.p; p.reserve(this->N()); return *this; }
-    series& operator -= (const series &rhs) { p -= rhs.p; p.reserve(this->N()); return *this; }
+    series& operator += (const series &rhs) { p += rhs.p; p.resize(this->N()); return *this; }
+    series& operator -= (const series &rhs) { p -= rhs.p; p.resize(this->N()); return *this; }
     series& operator *= (const series& rhs) { polynom<T>::mul(p, p, rhs.p, this->N() - 1); return *this; }
     series& operator /= (const series& rhs) { return *this *= rhs.inverse(); }
 
-    series& operator *= (const T &val) { p *= val; p.reserve(this->N()); return *this; }
-    series& operator /= (const T &val) { p /= val; p.reserve(this->N()); return *this; }
+    series& operator *= (const T &val) { p *= val; p.resize(this->N()); return *this; }
+    series& operator /= (const T &val) { p /= val; p.resize(this->N()); return *this; }
 
     series derivative() const { return series(p.derivative(), this->N()); }
     series integral() const { return integral(p.ZERO_COEFF); }
