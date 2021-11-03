@@ -107,6 +107,15 @@ public:
     series integral() const { return integral(p.ZERO_COEFF); }
     series integral(const T& c0) const { auto pi = p.integral(c0); pi.resize(this->N()); return series(std::move(pi), this->N()); }
 
+    // pointwise multiplication of the coefficients
+    series pointwise_mul(const series& rhs) const {
+        series s = *this;
+        for (int i = 0; i < this->N(); i++) {
+            s[i] *= rhs[i];
+        }
+        return s;
+    }
+
     // s(x)*x^l - shifts coefficients of s(x) by l places
     series shift(int l) const {
         if (l < 0) {
@@ -140,6 +149,101 @@ public:
             }
         }
         return s;
+    }
+
+    // s(rhs(x)); O(N^2)
+    series composition0(const series& rhs) const {
+        // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
+        int K = isqrtc(this->N() + 1);
+        std::vector<series> pm(K + 1); // O(sqrt(N) * M(N))
+        pm[0][0] = 1;
+        pm[1] = rhs;
+        for (int i = 2; i <= K; i++) {
+            pm[i] = pm[i - 1] * pm[1];
+        }
+        std::vector<series> tm(K); // O(sqrt(N) * M(N))
+        tm[0][0] = 1;
+        tm[1] = pm[K];
+        for (int i = 2; i < K; i++) {
+            tm[i] = tm[i - 1] * tm[1];
+        }
+        std::vector<series> qm(K); // O(N^2)
+        for (int i = 0; i < K; i++) {
+            int iK = i * K;
+            auto& qi = qm[i];
+            for (int j = 0; j < K; j++) {
+                auto& pj = pm[j];
+                auto ck = this->p[iK + j];
+                for (int k = 0; k < this->N(); k++) {
+                    qi[k] += pj[k] * ck;
+                }
+            }
+        }
+        series s = qm[0]; // O(sqrt(N) * M(N))
+        for (int i = 1; i < K; i++) {
+            s += qm[i] * tm[i];
+        }
+        return s;
+    }
+
+    // s(rhs(x)); O((N log N)^0.5 M(N))
+    // rhs[0] must be 0
+    series composition(const series& rhs) const {
+        // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
+        int N = this->N();
+        int M = int(sqrt(N / log2(N)) + 1);
+        int L = div_ceil(N, M);
+
+        series pm; pm.p.c.assign(rhs.p.c.begin(), rhs.p.c.begin() + M + 1); //pm.p.reserve(N);
+        series pr; pr.p.c.assign(rhs.p.c.begin() + M + 1, rhs.p.c.end()); pr.p.reserve(N);
+        pr = pr.shift(M + 1);
+
+        //series qpm = composition0(pm);
+        int sz = 1; while (sz < N) sz *= 2;
+        series qpm; _composition_rec(p.c.data(), p.c.data() + p.c.size(), sz, N, &qpm.p, pm.p); qpm.p.reserve(N);
+        pm.p.reserve(N);
+        
+        series pmi = pm.derivative().inverse();
+
+        // slow part:
+        T fact = id_coeff();
+        series s = qpm;
+        series pri = pr;
+        for (int i = 1; i <= L; i++) {
+            fact *= i;
+            qpm = qpm.derivative() * pmi;
+            s += qpm * pri / fact;
+            if (i < L) pri *= pr;
+        }
+        return s;
+    }
+
+    // sz >= D; sz must be a power of 2
+    static void _composition_rec(const T* qb, const T* qe, int sz, int N, polynom<T>* res, const polynom<T>& p, polynom<T>* pk = nullptr) {
+        size_t D = qe - qb;
+        if (D <= sz / 2 && sz > 0) {
+            _composition_rec(qb, qe, sz / 2, N, res, p, pk);
+            if (pk) polynom<T>::mul(*pk, *pk, *pk, std::min(pk->deg() * 2, N));
+        }
+        else if (D == 0) {
+            return;
+        }
+        else if (D == 1) {
+            res->c.assign(qb, qe);
+            if (pk) *pk = p;
+        }
+        else if (D == 2) {
+            *res = p * qb[1];
+            (*res)[0] += qb[0];
+            if (pk) polynom<T>::mul(*pk, p, p, std::min(p.deg() * 2, N));
+        }
+        else {
+            polynom<T> r0, r1, pk1;
+            _composition_rec(qb, qb + sz / 2, sz / 2, N, &r0, p);
+            _composition_rec(qb + sz / 2, qe, sz / 2, N, &r1, p, &pk1);
+            polynom<T>::mul(*res, r1, pk1, std::min(r1.deg() + pk1.deg(), N)); *res += r0;
+            if (pk) polynom<T>::mul(*pk, pk1, pk1, std::min(pk1.deg() * 2, N));
+        }
     }
 
     // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
