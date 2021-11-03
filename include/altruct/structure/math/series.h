@@ -154,14 +154,17 @@ public:
     // s(rhs(x)); O(N^2)
     series composition0(const series& rhs) const {
         // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
-        int K = isqrtc(this->N() + 1);
+        int N = this->N();
+        int K = isqrtc(N + 1);
         std::vector<series> pm(K + 1); // O(sqrt(N) * M(N))
+        pm[0].resize(N);
         pm[0][0] = 1;
         pm[1] = rhs;
         for (int i = 2; i <= K; i++) {
             pm[i] = pm[i - 1] * pm[1];
         }
         std::vector<series> tm(K); // O(sqrt(N) * M(N))
+        tm[0].resize(N);
         tm[0][0] = 1;
         tm[1] = pm[K];
         for (int i = 2; i < K; i++) {
@@ -171,10 +174,11 @@ public:
         for (int i = 0; i < K; i++) {
             int iK = i * K;
             auto& qi = qm[i];
+            qi.resize(N);
             for (int j = 0; j < K; j++) {
                 auto& pj = pm[j];
                 auto ck = this->p[iK + j];
-                for (int k = 0; k < this->N(); k++) {
+                for (int k = 0; k < N; k++) {
                     qi[k] += pj[k] * ck;
                 }
             }
@@ -190,30 +194,33 @@ public:
     // rhs[0] must be 0
     series composition(const series& rhs) const {
         // See R.P.Brent & H.T.Kung - Fast Algorithms for Manipulating Formal Power Series
+        const polynom<T>& Q = this->p;
+        const polynom<T>& P = rhs.p;
         int N = this->N();
         int M = int(sqrt(N / log2(N)) + 1);
         int L = div_ceil(N, M);
 
-        series pm; pm.p.c.assign(rhs.p.c.begin(), rhs.p.c.begin() + M + 1); //pm.p.reserve(N);
-        series pr; pr.p.c.assign(rhs.p.c.begin() + M + 1, rhs.p.c.end()); pr.p.reserve(N);
-        pr = pr.shift(M + 1);
+        // P = Pm + Pr
+        polynom<T> Pm(std::vector<T>(P.c.begin(), P.c.begin() + M + 1));
+        polynom<T> Pr(std::vector<T>(P.c.begin() + M + 1, P.c.end()));
+        Pr.c.insert(Pr.c.begin(), M + 1, P.ZERO_COEFF);
 
-        //series qpm = composition0(pm);
+        // QPm = Q(Pm)
         int sz = 1; while (sz < N) sz *= 2;
-        series qpm; _composition_rec(p.c.data(), p.c.data() + p.c.size(), sz, N, &qpm.p, pm.p); qpm.p.reserve(N);
-        pm.p.reserve(N);
-        
-        series pmi = pm.derivative().inverse();
+        polynom<T> QPm; _composition_rec(Q.c.data(), Q.c.data() + Q.c.size(), sz, N, &QPm, Pm);
+
+        series Pmi = series(Pm, N).derivative().inverse();
+        series DQPm = series(QPm, N);
 
         // slow part:
         T fact = id_coeff();
-        series s = qpm;
-        series pri = pr;
+        series s = DQPm;
+        series Pri(Pr, N);
         for (int i = 1; i <= L; i++) {
             fact *= i;
-            qpm = qpm.derivative() * pmi;
-            s += qpm * pri / fact;
-            if (i < L) pri *= pr;
+            DQPm = DQPm.derivative() * Pmi;
+            s += DQPm * Pri / fact;
+            if (i < L) Pri *= Pr;
         }
         return s;
     }
