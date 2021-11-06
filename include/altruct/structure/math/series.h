@@ -261,8 +261,8 @@ public:
     // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
     series inverse() const {
         // ensure that p[0] is 1 before inverting
-        if (p[0] == zeroT<T>::of(p[0])) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
-        if (p[0] != identityT<T>::of(p[0])) return (*this / p[0]).inverse() / p[0];
+        if (p[0] == p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
+        if (p[0] != id_coeff()) return (*this / p[0]).inverse() / p[0];
         polynom<T> r{id_coeff()}, t;
         for (int l = 1; l < this->N() * 2; l *= 2) {
             int m = std::min(this->N() - 1, l), k = l / 2 + 1;
@@ -316,7 +316,7 @@ public:
 
     // series expansion of exp(a*x) = Sum[a^n * x^n / n!, n]
     static series exp(const T& a, int _N = 0) {
-        auto id = identityT<T>::of(a);
+        auto id = identityOf(a);
         series s(polynom<T>{ id }, _N);
         for (int i = 1; i < s.size(); i++) {
             s[i] = s[i - 1] * a;
@@ -364,7 +364,7 @@ public:
 
     // identity coefficient
     T id_coeff() const {
-        return identityT<T>::of(p.ZERO_COEFF);
+        return identityOf(p.ZERO_COEFF);
     }
 };
 
