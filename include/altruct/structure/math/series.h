@@ -260,6 +260,22 @@ public:
     }
     */
 
+    // r(x) so that s(r(x)) == x + O(x^N); O(N^2)
+    series reversion() const {
+        if (p[0] != p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
+        if (p[1] == p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
+        seriesX<T> r(std::vector<T>{ p.ZERO_COEFF, id_coeff() / p[1] }, 2);
+        for (int k = 2; k < this->N(); k *= 2) {
+            int m = std::min(this->N(), k * 2);
+            auto rk = seriesX<T>(r.p, m);
+            auto pk = seriesX<T>(std::vector<T>(p.c.begin(), p.c.begin() + m), m);
+            auto prk = pk.composition(rk);
+            auto prk1 = prk; prk1[1] -= id_coeff();
+            r = rk - prk1 * rk.derivative() / prk.derivative();
+        }
+        return series(std::move(r.p), this->N());
+    }
+
     // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
     series inverse() const {
         // ensure that p[0] is 1 before inverting
