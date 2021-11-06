@@ -197,6 +197,42 @@ TEST(series_test, integral) {
     EXPECT_EQ((series<int, 5>{ 3, 7, 4, 5, -1 }), s.integral(3));
 }
 
+TEST(series_test, composition) {
+    typedef modulo<int, 1009> mod;
+    const auto s = series<mod, 6>{ 0, -3, 5, 2, 33, 7 };
+    const auto sr = series<mod, 6>{ 0, 336, 486, 606, 681, 280 };
+    const auto st = series<mod, 6>{ 0, 238, 12, 45, 997, 53 };
+
+    const auto ssr = s.composition(sr);
+    EXPECT_EQ((series<mod, 6>{ 0, 1, 0, 0, 0, 0 }), ssr);
+    EXPECT_EQ(6, ssr.N());
+
+    const auto srs = sr.composition(s);
+    EXPECT_EQ((series<mod, 6>{ 0, 1, 0, 0, 0, 0 }), srs);
+    EXPECT_EQ(6, srs.N());
+
+    const auto sst = s.composition(st);
+    EXPECT_EQ((series<mod, 6>{ 0, 295, 664, 219, 923, 601 }), sst);
+    EXPECT_EQ(6, sst.N());
+
+    const auto sts = st.composition(s);
+    EXPECT_EQ((series<mod, 6>{ 0, 295, 289, 919, 1005, 571 }), sts);
+    EXPECT_EQ(6, sts.N());
+}
+
+TEST(series_test, reversion) {
+    typedef modulo<int, 1009> mod;
+    const auto s = series<mod, 6>{ 0, -3, 5, 2, 33, 7 };
+    const auto sr = s.reversion();
+    EXPECT_EQ((series<mod, 6>{ 0, 336, 486, 606, 681, 280 }), sr);
+    EXPECT_EQ(6, sr.N());
+
+    const auto x = series<mod, 4>{ 0, 1, 0, 0 };
+    const auto xr = x.reversion();
+    EXPECT_EQ((series<mod, 4>{ 0, 1, 0, 0 }), xr);
+    EXPECT_EQ(4, xr.N());
+}
+
 TEST(series_test, exp) {
     const series<double, 5> s{ 0, 2, 3, 5, 7 };
     EXPECT_EQ((series<double, 5>{ 1, 2, 5, 12 + 1/3., 28 + 1/6.}), s.exp());

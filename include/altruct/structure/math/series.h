@@ -159,15 +159,13 @@ public:
         int N = this->N();
         int K = isqrtc(N + 1);
         std::vector<series> pm(K + 1); // O(sqrt(N) * M(N))
-        pm[0].resize(N);
-        pm[0][0] = 1;
+        pm[0] = series(polynom<T>(id_coeff()), N);
         pm[1] = rhs;
         for (int i = 2; i <= K; i++) {
             pm[i] = pm[i - 1] * pm[1];
         }
         std::vector<series> tm(K); // O(sqrt(N) * M(N))
-        tm[0].resize(N);
-        tm[0][0] = 1;
+        tm[0] = series(polynom<T>(id_coeff()), N);
         tm[1] = pm[K];
         for (int i = 2; i < K; i++) {
             tm[i] = tm[i - 1] * tm[1];
@@ -176,7 +174,7 @@ public:
         for (int i = 0; i < K; i++) {
             int iK = i * K;
             auto& qi = qm[i];
-            qi.resize(N);
+            qi = series(polynom<T>(p.ZERO_COEFF), N);
             for (int j = 0; j < K; j++) {
                 auto& pj = pm[j];
                 auto ck = this->p[iK + j];

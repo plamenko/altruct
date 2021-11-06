@@ -240,6 +240,40 @@ TEST(series_modx_test, integral) {
     EXPECT_EQ(5, si3.N());
 }
 
+TEST(series_modx_test, composition) {
+    const auto s = make_serx(1009, { 0, -3, 5, 2, 33, 7 });
+    const auto sr = make_serx(1009, { 0, 336, 486, 606, 681, 280 });
+    const auto st = make_serx(1009, { 0, 238, 12, 45, 997, 53});
+
+    const auto ssr = s.composition(sr);
+    EXPECT_EQ(make_polyx(1009, { 0, 1, 0, 0, 0, 0 }), ssr.p);
+    EXPECT_EQ(6, ssr.N());
+
+    const auto srs = sr.composition(s);
+    EXPECT_EQ(make_polyx(1009, { 0, 1, 0, 0, 0, 0 }), srs.p);
+    EXPECT_EQ(6, srs.N());
+
+    const auto sst = s.composition(st);
+    EXPECT_EQ(make_polyx(1009, { 0, 295, 664, 219, 923, 601 }), sst.p);
+    EXPECT_EQ(6, sst.N());
+
+    const auto sts = st.composition(s);
+    EXPECT_EQ(make_polyx(1009, { 0, 295, 289, 919, 1005, 571 }), sts.p);
+    EXPECT_EQ(6, sts.N());
+}
+
+TEST(series_modx_test, reversion) {
+    const auto s = make_serx(1009, { 0, -3, 5, 2, 33, 7 });
+    const auto sr = s.reversion();
+    EXPECT_EQ(make_polyx(1009, { 0, 336, 486, 606, 681, 280 }), sr.p);
+    EXPECT_EQ(6, sr.N());
+    
+    const auto x = make_serx(1009, { 0, 1, 0, 0 });
+    const auto xr = x.reversion();
+    EXPECT_EQ(make_polyx(1009, { 0, 1, 0, 0}), xr.p);
+    EXPECT_EQ(4, xr.N());
+}
+
 TEST(series_modx_test, exp) {
     const auto s = make_serx(1009, { 0, 2, 3, 5, 7 });
     EXPECT_EQ(make_serx(1009, { 1, 2, 5, 685, 869 }), s.exp());
