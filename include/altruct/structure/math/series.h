@@ -103,6 +103,8 @@ public:
     series& operator *= (const T &val) { p *= val; p.resize(this->N()); return *this; }
     series& operator /= (const T &val) { p /= val; p.resize(this->N()); return *this; }
 
+    series operator () (const series& rhs) const { return composition(rhs); }
+
     series derivative() const { return series(p.derivative(), this->N()); }
     series integral() const { return integral(p.ZERO_COEFF); }
     series integral(const T& c0) const { auto pi = p.integral(c0); pi.resize(this->N()); return series(std::move(pi), this->N()); }
