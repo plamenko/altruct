@@ -79,12 +79,14 @@ TEST(vector3d_test, operators_arithmetic) {
     const pntd p1{ 1, 2, 4 };
     const pntd p2{ -3, 5, 2 };
     const pntd p3{ 8, -3, 1 };
+    EXPECT_EQ((pntd{ 1, 2, 4 }), +p1);
+    EXPECT_EQ((pntd{ -1, -2, -4 }), -p1);
     EXPECT_EQ((pntd{ -2, 7, 6 }), p1 + p2);
     EXPECT_EQ((pntd{ 4, -3, 2 }), p1 - p2);
-    EXPECT_EQ((pntd{ -1, -2, -4 }), -p1);
     EXPECT_EQ((pntd{ -3, 10, 8 }), p1 * p2);
     EXPECT_EQ((pntd{ -3, 2.5, 0.5 }), p2 / p1);
     EXPECT_EQ((pntd{ -3, -6, -12 }), p1 * -3);
+    EXPECT_EQ((pntd{ -3, -6, -12 }), -3.0 * p1);
     EXPECT_EQ((pntd{ 0.5, 1, 2 }), p1 / 2);
     EXPECT_EQ(-37, p2 & p3);
     EXPECT_EQ((pntd{ 11, 19, -31 }), p2 ^ p3);
