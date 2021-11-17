@@ -338,6 +338,24 @@ TEST(pga_test, operators_inplace_multivector) {
 		to_string(r));
 }
 
+TEST(pga_test, operators_dual) {
+	auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto am = pga::multivector<symbolic>(a1, a02, a24, a3);
+	EXPECT_EQ("ae0 e123 + avx e032 + avy e013 + avz e021", to_string(!a1));
+	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!a02));
+	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12", to_string(!a24));
+	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3", to_string(!a3));
+	EXPECT_EQ(
+		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
+		"ae0 e123 + avx e032 + avy e013 + avz e021 + "
+		"ae0123 id + abiex e23 + abiey e31 + abiez e12 + "
+		"abiEx e01 + abiEy e02 + abiEz e03 + as e0123",
+		to_string(!am));
+}
+
 TEST(pga_test, operators_multiply) {
 	auto as = symbolic("as");
     auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
