@@ -78,7 +78,20 @@ public:
     T s; vector3d<T> biE;
 
     blade02() {}
+    blade02(T s) : s(s), biE({ zeroOf(s), zeroOf(s) , zeroOf(s) }) {}
     blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
+
+    blade02& operator += (const blade02& b) { s += b.s; biE += b.biE; return *this; }
+    blade02& operator -= (const blade02& b) { s -= b.s; biE -= b.biE; return *this; }
+    blade02& operator *= (const T& s) { this->s *= s; biE *= s; return *this; }
+    blade02& operator /= (const T& s) { this->s /= s; biE /= s; return *this; }
+
+    blade02  operator +  ()                 const { return blade02(+s, +biE); }
+    blade02  operator -  ()                 const { return blade02(-s, -biE); }
+    blade02  operator +  (const blade02& b) const { auto r = *this; r += b; return r; }
+    blade02  operator -  (const blade02& b) const { auto r = *this; r -= b; return r; }
+    blade02  operator *  (const T& s)       const { auto r = *this; r *= s; return r; }
+    blade02  operator /  (const T& s)       const { auto r = *this; r /= s; return r; }
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -89,7 +102,20 @@ public:
     vector3d<T> bie; T e0123;
 
     blade24() {}
+    blade24(T e0123) : bie({ zeroOf(e0123), zeroOf(e0123) , zeroOf(e0123) }), e0123(e0123) {}
     blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
+
+    blade24& operator += (const blade24& b) { bie += b.bie; e0123 += b.e0123; return *this; }
+    blade24& operator -= (const blade24& b) { bie -= b.bie; e0123 -= b.e0123; return *this; }
+    blade24& operator *= (const T& s) { bie *= s; e0123 *= s; return *this; }
+    blade24& operator /= (const T& s) { bie /= s; e0123 /= s; return *this; }
+
+    blade24  operator +  ()                 const { return blade24(+bie, +e0123); }
+    blade24  operator -  ()                 const { return blade24(-bie, -e0123); }
+    blade24  operator +  (const blade24& b) const { auto r = *this; r += b; return r; }
+    blade24  operator -  (const blade24& b) const { auto r = *this; r -= b; return r; }
+    blade24  operator *  (const T& s)       const { auto r = *this; r *= s; return r; }
+    blade24  operator /  (const T& s)       const { auto r = *this; r /= s; return r; }
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -100,7 +126,20 @@ public:
     T e123; vector3d<T> triP;
 
     blade3() {}
+    blade3(T e123) : e123(e123), triP({ zeroOf(e123), zeroOf(e123) , zeroOf(e123) }) {}
     blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
+
+    blade3& operator += (const blade3& b) { e123 += b.e123; triP += b.triP; return *this; }
+    blade3& operator -= (const blade3& b) { e123 -= b.e123; triP -= b.triP; return *this; }
+    blade3& operator *= (const T& s) { e123 *= s; triP *= s; return *this; }
+    blade3& operator /= (const T& s) { e123 /= s; triP /= s; return *this; }
+
+    blade3  operator +  ()                const { return blade3(+e123, +triP); }
+    blade3  operator -  ()                const { return blade3(-e123, -triP); }
+    blade3  operator +  (const blade3& b) const { auto r = *this; r += b; return r; }
+    blade3  operator -  (const blade3& b) const { auto r = *this; r -= b; return r; }
+    blade3  operator *  (const T& s)      const { auto r = *this; r *= s; return r; }
+    blade3  operator /  (const T& s)      const { auto r = *this; r /= s; return r; }
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
 };
@@ -155,6 +194,19 @@ template<typename T> blade024<T> operator ! (const blade024<T>& b) { return blad
 template<typename T> multivector<T> operator ! (const multivector<T>& m) { return multivector<T>(!m.b13, !m.b024); }
 
 // multiply
+template<typename T> blade1<T> operator * (const T& s, const blade1<T>& b) {
+    return blade1<T>(s * b.e0, s * b.v);
+}
+template<typename T> blade02<T> operator * (const T& s, const blade02<T>& b) {
+    return blade02<T>(s * b.s, s * b.biE);
+}
+template<typename T> blade24<T> operator * (const T& s, const blade24<T>& b) {
+    return blade24<T>(s * b.bie, s * b.e0123);
+}
+template<typename T> blade3<T> operator * (const T& s, const blade3<T>& b) {
+    return blade3<T>(s * b.e123, s * b.triP);
+}
+
 template<typename T> blade024<T> operator * (const blade1<T>& a, const blade1<T>& b) {
     return blade024<T>(blade02<T>(a.v & b.v, a.v ^ b.v), blade24<T>(a.e0 * b.v - b.e0 * a.v, zeroOf(a.e0)));
 }
