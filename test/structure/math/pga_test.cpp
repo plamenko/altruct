@@ -205,6 +205,139 @@ TEST(pga_test, operators_inplace_blade3) {
 	EXPECT_EQ("(ae123-ae123) e123 + (atriPx-atriPx) e032 + (atriPy-atriPy) e013 + (atriPz-atriPz) e021", to_string(r));
 }
 
+TEST(pga_test, constructor_multivector) {
+	auto dm = pga::multivector<symbolic>();
+	EXPECT_EQ("? e0 + 0 e1 + 0 e2 + 0 e3 + ? e123 + 0 e032 + 0 e013 + 0 e021 + ? id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ? e0123", to_string(dm));
+	auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto am = pga::multivector<symbolic>({ a1, a3 }, { a02, a24 });
+	EXPECT_EQ(
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
+		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		to_string(am));
+	auto an = pga::multivector<symbolic>(a1, a02, a24, a3);
+	EXPECT_EQ(
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
+		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		to_string(an));
+}
+
+TEST(pga_test, operators_arithmetic_multivector) {
+	auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto am = pga::multivector<symbolic>(a1, a02, a24, a3);
+	auto b1 = pga::blade1<symbolic>({ "be0" }, { {"bvx"}, {"bvy"}, {"bvz"} });
+	auto b02 = pga::blade02<symbolic>({ "bs" }, { {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	auto b24 = pga::blade24<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }, { "be0123" });
+	auto b3 = pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} });
+	auto bm = pga::multivector<symbolic>(b1, b02, b24, b3);
+	EXPECT_EQ(
+		"(+ae0) e0 + (+avx) e1 + (+avy) e2 + (+avz) e3 + "
+		"(+ae123) e123 + (+atriPx) e032 + (+atriPy) e013 + (+atriPz) e021 + "
+		"(+as) id + (+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12 + "
+		"(+abiex) e01 + (+abiey) e02 + (+abiez) e03 + (+ae0123) e0123",
+		to_string(+am));
+	EXPECT_EQ(
+		"(-ae0) e0 + (-avx) e1 + (-avy) e2 + (-avz) e3 + "
+		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021 + "
+		"(-as) id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + "
+		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + (-ae0123) e0123",
+		to_string(-am));
+	EXPECT_EQ(
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
+		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
+		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123",
+		to_string(am + bm));
+	EXPECT_EQ(
+		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
+		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021 + "
+		"(as-bs) id + (abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + "
+		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123",
+		to_string(am - bm));
+	EXPECT_EQ(
+		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
+		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021 + "
+		"(as*bs) id + (abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + "
+		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123",
+		to_string(am * symbolic("bs")));
+	EXPECT_EQ(
+		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
+		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021 + "
+		"(as/bs) id + (abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + "
+		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123",
+		to_string(am / symbolic("bs")));
+	EXPECT_EQ(
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021 + "
+		"as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + "
+		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123",
+		to_string(am.rev()));
+}
+
+TEST(pga_test, operators_inplace_multivector) {
+	auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto am = pga::multivector<symbolic>(a1, a02, a24, a3);
+	auto b1 = pga::blade1<symbolic>({ "be0" }, { {"bvx"}, {"bvy"}, {"bvz"} });
+	auto b02 = pga::blade02<symbolic>({ "bs" }, { {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	auto b24 = pga::blade24<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }, { "be0123" });
+	auto b3 = pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} });
+	auto bm = pga::multivector<symbolic>(b1, b02, b24, b3);
+	auto r = am; r += bm;
+	EXPECT_EQ(
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
+		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
+		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123",
+		to_string(r));
+	r = am; r -= bm;
+	EXPECT_EQ(
+		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
+		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021 + "
+		"(as-bs) id + (abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + "
+		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123",
+		to_string(r));
+	r = am; r *= symbolic("bs");
+	EXPECT_EQ(
+		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
+		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021 + "
+		"(as*bs) id + (abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + "
+		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123",
+		to_string(r));
+	r = am; r /= symbolic("bs");
+	EXPECT_EQ(
+		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
+		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021 + "
+		"(as/bs) id + (abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + "
+		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123",
+		to_string(r));
+	r = am; r += am;
+	EXPECT_EQ(
+		"(ae0+ae0) e0 + (avx+avx) e1 + (avy+avy) e2 + (avz+avz) e3 + "
+		"(ae123+ae123) e123 + (atriPx+atriPx) e032 + (atriPy+atriPy) e013 + (atriPz+atriPz) e021 + "
+		"(as+as) id + (abiEx+abiEx) e23 + (abiEy+abiEy) e31 + (abiEz+abiEz) e12 + "
+		"(abiex+abiex) e01 + (abiey+abiey) e02 + (abiez+abiez) e03 + (ae0123+ae0123) e0123",
+		to_string(r));
+	r = am; r -= am;
+	EXPECT_EQ(
+		"(ae0-ae0) e0 + (avx-avx) e1 + (avy-avy) e2 + (avz-avz) e3 + "
+		"(ae123-ae123) e123 + (atriPx-atriPx) e032 + (atriPy-atriPy) e013 + (atriPz-atriPz) e021 + "
+		"(as-as) id + (abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12 + "
+		"(abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03 + (ae0123-ae0123) e0123",
+		to_string(r));
+}
+
 TEST(pga_test, operators_multiply) {
 	auto as = symbolic("as");
     auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
