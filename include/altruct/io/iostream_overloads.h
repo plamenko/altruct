@@ -7,11 +7,14 @@
 #include <map>
 #include <algorithm>
 
+#include "altruct/algorithm/math/triples.h"
 #include "altruct/structure/math/fraction.h"
 #include "altruct/structure/math/modulo.h"
 #include "altruct/structure/math/polynom.h"
 #include "altruct/structure/math/matrix.h"
 #include "altruct/structure/math/clifford3.h"
+#include "altruct/structure/math/pga.h"
+#include "altruct/structure/math/symbolic.h"
 
 /** Forward declarations */
 template<typename T1, typename T2>
@@ -22,6 +25,9 @@ template<typename T, typename P, typename A>
 std::ostream& operator << (std::ostream& os, const std::set<T, P, A>& container);
 template<typename K, typename V, typename P, typename A>
 std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& container);
+
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::triple<T>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& rhs);
 template<typename T, int ID, int STORAGE_TYPE>
@@ -30,6 +36,30 @@ template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs);
+template<typename T=std::string>
+std::ostream& operator << (std::ostream& os, const altruct::math::symbolic& s);
+
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::rotor<T>& r);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::vector<T>& v);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::cl3::multivector<T>& m);
+
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade1<T>& b1);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade3<T>& b3);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade024<T>& b);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::multivector<T>& m);
 
 /** std::ostream manipulator base */
 struct altruct_io_manipulator_base {};
@@ -76,6 +106,11 @@ std::ostream& operator << (std::ostream& os, const std::set<T, P, A>& container)
 template<typename K, typename V, typename P, typename A>
 std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& container) { return output_container(os, container); }
 
+/** std::ostream specialization for altruct::math::triple */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::triple<T>& t) {
+    return os << "{" << t.a << ", " << t.b << ", " << t.c << "}";
+}
 
 /** std::ostream specialization for altruct::math::fraction */
 struct iostream_fraction_state_t {
@@ -144,6 +179,12 @@ std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs
     return os << rhs.a;
 }
 
+/** std::ostream specialization for altruct::math::symbolic */
+template<typename T = std::string>
+std::ostream& operator << (std::ostream& os, const altruct::math::symbolic& s) {
+    return os << s.v;
+}
+
 /** std::ostream specialization for altruct::math::cl3 */
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::cl3::rotor<T>& r) {
@@ -156,4 +197,34 @@ std::ostream& operator << (std::ostream& os, const altruct::math::cl3::vector<T>
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::cl3::multivector<T>& m) {
     return os << "{" << m.r << ", " << m.v << "}";
+}
+
+/** std::ostream specializations for altruct::math::pga */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade1<T>& b1) {
+    return os << b1.e0 << " e0" << " + " << b1.v.x << " e1" << " + " << b1.v.y << " e2" << " + " << b1.v.z << " e3";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02) {
+    return os << b02.s << " id" << " + " << b02.biE.x << " e23" << " + " << b02.biE.y << " e31" << " + " << b02.biE.z << " e12";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24) {
+    return os << b24.bie.x << " e01" << " + " << b24.bie.y << " e02" << " + " << b24.bie.z << " e03" << " + " << b24.e0123 << " e0123";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade3<T>& b3) {
+    return os << b3.e123 << " e123" << " + " << b3.triP.x << " e032" << " + " << b3.triP.y << " e013" << " + " << b3.triP.z << " e021";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b) {
+    return os << b.b1 << " + " << b.b3;
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade024<T>& b) {
+    return os << b.b02 << " + " << b.b24;
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::multivector<T>& m) {
+    return os << m.b13 << " + " << m.b024;
 }

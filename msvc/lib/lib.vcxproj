@@ -112,11 +112,13 @@
     <ClInclude Include="..\..\include\altruct\structure\math\moebius_tr.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\nimber.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\permutation.h" />
+    <ClInclude Include="..\..\include\altruct\structure\math\pga.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\polynom.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\prime_holder.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\quadratic.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\root_wrapper.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\series.h" />
+    <ClInclude Include="..\..\include\altruct\structure\math\symbolic.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\vector2d.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\vector3d.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\vectorNd.h" />

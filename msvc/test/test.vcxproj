@@ -92,6 +92,7 @@
     <ClCompile Include="..\..\test\structure\math\moebius_tr_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\nimber_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\permutation_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\pga_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polymod_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_modx_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="..\..\test\structure\math\root_wrapper_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\series_modx_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\series_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\symbolic_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\vector2d_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\vector3d_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\vectorNd_test.cpp" />

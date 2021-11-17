@@ -374,5 +374,11 @@
     <ClInclude Include="..\..\include\altruct\structure\math\clifford3.h">
       <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\math\symbolic.h">
+      <Filter>include\altruct\structure\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\math\pga.h">
+      <Filter>include\altruct\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
