@@ -12,6 +12,7 @@ class symbolic {
 public:
     std::string v;
 
+    symbolic(int val) : v(std::to_string(val)) {}
     symbolic(std::string name = "?") : v(std::move(name)) {}
 
     symbolic& operator += (const symbolic& s) { return *this = *this + s; }

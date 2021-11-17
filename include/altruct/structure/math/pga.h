@@ -1,6 +1,7 @@
 #pragma once
 
 #include "altruct/algorithm/math/base.h"
+#include "altruct/structure/math/vector3d.h"
 
 namespace altruct {
 namespace math {
@@ -48,34 +49,13 @@ namespace math {
  */
 namespace pga {
 template<typename T>
-struct vec3 {
-    T x, y, z;
-};
-
-template<typename T> vec3<T> operator + (const vec3<T>& lhs) { return { +lhs.x, +lhs.y, +lhs.z }; }
-template<typename T> vec3<T> operator - (const vec3<T>& lhs) { return { -lhs.x, -lhs.y, -lhs.z }; }
-template<typename T> vec3<T> operator + (const vec3<T>& lhs, const vec3<T>& rhs) { return { lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z }; }
-template<typename T> vec3<T> operator - (const vec3<T>& lhs, const vec3<T>& rhs) { return { lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z }; }
-template<typename T> vec3<T> operator * (const T& lhs, const vec3<T>& rhs) { return { lhs * rhs.x, lhs * rhs.y, lhs * rhs.z }; }
-template<typename T> vec3<T> operator * (const vec3<T>& lhs, const T& rhs) { return { lhs.x * rhs, lhs.y * rhs, lhs.z * rhs }; }
-template<typename T> vec3<T> operator / (const vec3<T>& lhs, const T& rhs) { return { lhs.x / rhs, lhs.y / rhs, lhs.z / rhs }; }
-template<typename T> vec3<T>& operator += (vec3<T>& lhs, const vec3<T>& rhs) { lhs.x += rhs.x; lhs.y += rhs.y; lhs.z += rhs.z; return lhs; }
-template<typename T> vec3<T>& operator -= (vec3<T>& lhs, const vec3<T>& rhs) { lhs.x -= rhs.x; lhs.y -= rhs.y; lhs.z -= rhs.z; return lhs; }
-template<typename T> vec3<T>& operator *= (vec3<T>& lhs, const T& rhs) { lhs.x *= rhs; lhs.y *= rhs; lhs.z *= rhs; return lhs; }
-template<typename T> vec3<T>& operator /= (vec3<T>& lhs, const T& rhs) { lhs.x /= rhs; lhs.y /= rhs; lhs.z /= rhs; return lhs; }
-template<typename T> T operator & (const vec3<T>& lhs, const vec3<T>& rhs) { return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z; }
-template<typename T> vec3<T> operator ^ (const vec3<T>& lhs, const vec3<T>& rhs) {
-    return { lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x, };
-}
-
-template<typename T>
 class blade1 {
 public:
-    T e0; vec3<T> v;
+    T e0; vector3d<T> v;
 
     blade1() {}
     blade1(T e0) : e0(e0), v({ zeroOf(e0), zeroOf(e0) , zeroOf(e0) }) {}
-    blade1(T e0, vec3<T> v) : e0(std::move(e0)), v(std::move(v)) {}
+    blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
 
     blade1& operator += (const blade1& b) { e0 += b.e0; v += b.v; return *this; }
     blade1& operator -= (const blade1& b) { e0 -= b.e0; v -= b.v; return *this; }
@@ -95,10 +75,10 @@ public:
 template<typename T>
 class blade02 {
 public:
-    T s; vec3<T> biE;
+    T s; vector3d<T> biE;
 
     blade02() {}
-    blade02(T s, vec3<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
+    blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -106,10 +86,10 @@ public:
 template<typename T>
 class blade24 {
 public:
-    vec3<T> bie; T e0123;
+    vector3d<T> bie; T e0123;
 
     blade24() {}
-    blade24(vec3<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
+    blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -117,10 +97,10 @@ public:
 template<typename T>
 class blade3 {
 public:
-    T e123; vec3<T> triP;
+    T e123; vector3d<T> triP;
 
     blade3() {}
-    blade3(T e123, vec3<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
+    blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
 };
@@ -197,20 +177,20 @@ template<typename T> blade024<T> operator * (const blade1<T>& a, const blade3<T>
 
 // plane with normal `n` and distance `d / norm(n)` from the origin
 template<typename T>
-blade1<T> plane(vec3<T> n, T d) {
+blade1<T> plane(vector3d<T> n, T d) {
     return blade1<T>(std::move(d), std::move(n));
 }
 
 // line with direction `l` through point `P`
 template<typename T>
-blade024<T> line(const vec3<T>& l, const vec3<T>& P) {
+blade024<T> line(const vector3d<T>& l, const vector3d<T>& P) {
     auto zero = zeroOf(l.z);
     return blade024<T>(blade02<T>(zero, l), blade24<T>(cross(l, P), zero));
 }
 
 // point with homogenous coordinate `h` at position `{x, y, z} / h`
 template<typename T>
-blade3<T> point(const vec3<T>& P, T h) {
+blade3<T> point(const vector3d<T>& P, T h) {
     return blade3<T>(std::move(h), -P);
 }
 

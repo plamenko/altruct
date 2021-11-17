@@ -20,9 +20,9 @@ std::string to_string(const T& v) { std::stringstream ss; ss << v; return ss.str
 TEST(pga_test, constructor_blade1) {
 	auto d1 = pga::blade1<symbolic>();
 	EXPECT_EQ("?", d1.e0.v);
-	EXPECT_EQ("?", d1.v.x.v);
-	EXPECT_EQ("?", d1.v.y.v);
-	EXPECT_EQ("?", d1.v.z.v);
+	EXPECT_EQ("0", d1.v.x.v);
+	EXPECT_EQ("0", d1.v.y.v);
+	EXPECT_EQ("0", d1.v.z.v);
 	auto s1 = pga::blade1<symbolic>({ "se0" });
 	EXPECT_EQ("se0", s1.e0.v);
 	EXPECT_EQ("0", s1.v.x.v);
@@ -66,8 +66,14 @@ TEST(pga_test, operators_inplace_blade1) {
 
 TEST(pga_test, operators_multiply) {
     auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
-    auto b1 = pga::blade1<symbolic>({ "be0" }, { {"bvx"}, {"bvy"}, {"bvz"} });
-    EXPECT_EQ(
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto b1 = pga::blade1<symbolic>({ "be0" }, { {"bvx"}, {"bvy"}, {"bvz"} });
+	auto b02 = pga::blade02<symbolic>({ "bs" }, { {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	auto b24 = pga::blade24<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }, { "be0123" });
+	auto b3 = pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} });
+	EXPECT_EQ(
         "(((avx*bvx)+(avy*bvy))+(avz*bvz)) id + "
         "((avy*bvz)-(avz*bvy)) e23 + "
         "((avz*bvx)-(avx*bvz)) e31 + "
@@ -77,6 +83,36 @@ TEST(pga_test, operators_multiply) {
         "((ae0*bvz)-(be0*avz)) e03 + "
         "0 e0123",
         to_string(a1 * b1));
+	EXPECT_EQ(
+		"(ae0*bs) e0 + "
+		"((avx*bs)-((avy*bbiEz)-(avz*bbiEy))) e1 + "
+		"((avy*bs)-((avz*bbiEx)-(avx*bbiEz))) e2 + "
+		"((avz*bs)-((avx*bbiEy)-(avy*bbiEx))) e3 + "
+		"(((avx*bbiEx)+(avy*bbiEy))+(avz*bbiEz)) e123 + "
+		"((-ae0)*bbiEx) e032 + "
+		"((-ae0)*bbiEy) e013 + "
+		"((-ae0)*bbiEz) e021",
+		to_string(a1 * b02));
+	EXPECT_EQ(
+		"((((-avx)*bbiex)+((-avy)*bbiey))+((-avz)*bbiez)) e0 + "
+		"0 e1 + "
+		"0 e2 + "
+		"0 e3 + "
+		"0 e123 + "
+		"((avx*be0123)+((avy*bbiez)-(avz*bbiey))) e032 + "
+		"((avy*be0123)+((avz*bbiex)-(avx*bbiez))) e013 + "
+		"((avz*be0123)+((avx*bbiey)-(avy*bbiex))) e021",
+		to_string(a1 * b24));
+	EXPECT_EQ(
+		"0 id + "
+		"(avx*be123) e23 + "
+		"(avy*be123) e31 + "
+		"(avz*be123) e12 + "
+		"(((-avy)*btriPz)-((-avz)*btriPy)) e01 + "
+		"(((-avz)*btriPx)-((-avx)*btriPz)) e02 + "
+		"(((-avx)*btriPy)-((-avy)*btriPx)) e03 + "
+		"((ae0*be123)+(((avx*btriPx)+(avy*btriPy))+(avz*btriPz))) e0123",
+		to_string(a1 * b3));
 }
 
 //TEST(symbolic_test, casts) {
