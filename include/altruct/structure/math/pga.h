@@ -240,6 +240,15 @@ public:
 
 //-------------------------------------------------------------------------------
 
+template<typename B, typename T> struct is_primitive_blade_type { static const bool value = false; };
+template<typename T> struct is_primitive_blade_type<blade1<T>, T> { static const bool value = true; };
+template<typename T> struct is_primitive_blade_type<blade02<T>, T> { static const bool value = true; };
+template<typename T> struct is_primitive_blade_type<blade24<T>, T> { static const bool value = true; };
+template<typename T> struct is_primitive_blade_type<blade3<T>, T> { static const bool value = true; };
+#define IS_PRIMITIVE_BLADE_TYPE(B, T) std::enable_if_t<is_primitive_blade_type<B, T>::value, bool> = true
+
+//-------------------------------------------------------------------------------
+
 // dual
 template<typename T> blade3<T> operator ! (const blade1<T>& b1) { return blade3<T>(b1.e0, b1.v); }
 template<typename T> blade24<T> operator ! (const blade02<T>& b02) { return blade24<T>(b02.biE, b02.s); }
@@ -302,8 +311,8 @@ template<typename T> blade13<T> operator * (const blade24<T>& a, const blade1<T>
 template<typename T> blade24<T> operator * (const blade24<T>& a, const blade02<T>& b) {
     return blade24<T>(a.bie * b.s - a.e0123 * b.biE - (a.bie ^ b.biE), a.e0123 * b.s + (a.bie & b.biE));
 }
-template<typename T> T operator * (const blade24<T>& a, const blade24<T>& b) {
-    return zeroOf(a.e0123);
+template<typename T> blade02<T> operator * (const blade24<T>& a, const blade24<T>& b) {
+    return blade02<T>(zeroOf(a.e0123));
 }
 template<typename T> blade13<T> operator * (const blade24<T>& a, const blade3<T>& b) {
     return blade1<T>(-a.e0123 * b.e123) + blade3<T>(-a.bie * b.e123);
@@ -321,7 +330,19 @@ template<typename T> blade024<T> operator * (const blade3<T>& a, const blade3<T>
     return blade02<T>(-a.e123 * b.e123) + blade24<T>(a.triP * b.e123 - a.e123 * b.triP);
 }
 
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b);
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b);
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b);
+template<typename B, typename T> auto operator * (const B& a, const blade13<T>& b);
+template<typename B, typename T> auto operator * (const B& a, const blade024<T>& b);
+template<typename B, typename T> auto operator * (const B& a, const multivector<T>& b);
 
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b) { return a.b1 * b + a.b3 * b; }
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b) { return a.b02 * b + a.b24 * b; }
+template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b) { return a.b13 * b + a.b024 * b; }
+template<typename B, typename T> auto operator * (const B& a, const blade13<T>& b) { return a * b.b1 + a * b.b3; }
+template<typename B, typename T> auto operator * (const B& a, const blade024<T>& b) { return a * b.b02 + a * b.b24; }
+template<typename B, typename T> auto operator * (const B& a, const multivector<T>& b) { return a * b.b13 + a * b.b024; }
 
 // TODO: wedge product overloads
 // TODO: dot product overloads
