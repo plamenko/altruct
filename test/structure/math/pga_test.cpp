@@ -505,7 +505,7 @@ TEST(pga_test, operators_multiply) {
 		"((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz))) e0123",
 		to_string(a24 * b02));
 	EXPECT_EQ(
-		"0 id + 0 e23 + 0 e31 + 0 e12",
+		"0",
 		to_string(a24 * b24));
 	EXPECT_EQ(
 		"((-ae0123)*be123) e0 + "

@@ -48,6 +48,8 @@ namespace math {
  *
  */
 namespace pga {
+class zero {};
+
 template<typename T>
 class blade1 {
 public:
@@ -56,7 +58,7 @@ public:
     blade1() {}
     explicit blade1(T e0) : e0(e0), v({ zeroOf(e0), zeroOf(e0) , zeroOf(e0) }) {}
     explicit blade1(vector3d<T> v) : e0(zeroOf(v.z)), v(v) {}
-    explicit blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
+    blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
 
     blade1& operator += (const blade1& b) { e0 += b.e0; v += b.v; return *this; }
     blade1& operator -= (const blade1& b) { e0 -= b.e0; v -= b.v; return *this; }
@@ -83,7 +85,7 @@ public:
     blade02() {}
     explicit blade02(T s) : s(s), biE({ zeroOf(s), zeroOf(s) , zeroOf(s) }) {}
     explicit blade02(vector3d<T> biE) : s(zeroOf(biE.z)), biE(biE) {}
-    explicit blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
+    blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
 
     blade02& operator += (const blade02& b) { s += b.s; biE += b.biE; return *this; }
     blade02& operator -= (const blade02& b) { s -= b.s; biE -= b.biE; return *this; }
@@ -110,7 +112,7 @@ public:
     blade24() {}
     explicit blade24(T e0123) : bie({ zeroOf(e0123), zeroOf(e0123) , zeroOf(e0123) }), e0123(e0123) {}
     explicit blade24(vector3d<T> bie) : bie(bie), e0123(zeroOf(bie.z)) {}
-    explicit blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
+    blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
 
     blade24& operator += (const blade24& b) { bie += b.bie; e0123 += b.e0123; return *this; }
     blade24& operator -= (const blade24& b) { bie -= b.bie; e0123 -= b.e0123; return *this; }
@@ -137,7 +139,7 @@ public:
     blade3() {}
     explicit blade3(T e123) : e123(e123), triP({ zeroOf(e123), zeroOf(e123) , zeroOf(e123) }) {}
     explicit blade3(vector3d<T> triP) : e123(zeroOf(triP.z)), triP(triP) {}
-    explicit blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
+    blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
 
     blade3& operator += (const blade3& b) { e123 += b.e123; triP += b.triP; return *this; }
     blade3& operator -= (const blade3& b) { e123 -= b.e123; triP -= b.triP; return *this; }
@@ -165,6 +167,8 @@ public:
     blade3<T> b3;
 
     blade13() {}
+    explicit blade13(blade1<T> b1) : b1(b1), b3(zeroOf(b1.e0)) {}
+    explicit blade13(blade3<T> b3) : b1(zeroOf(b3.e123)), b3(b3) {}
     blade13(blade1<T> b1, blade3<T> b3) : b1(std::move(b1)), b3(std::move(b3)) {}
 
     blade13& operator += (const blade13& b) { b1 += b.b1; b3 += b.b3; return *this; }
@@ -191,6 +195,8 @@ public:
     blade24<T> b24;
 
     blade024() {}
+    explicit blade024(blade02<T> b02) : b02(b02), b24(zeroOf(b02.s)) {}
+    explicit blade024(blade24<T> b24) : b02(zeroOf(b24.e0123)), b24(b24) {}
     blade024(blade02<T> b02, blade24<T> b24) : b02(std::move(b02)), b24(std::move(b24)) {}
 
     blade024& operator += (const blade024& b) { b02 += b.b02; b24 += b.b24; return *this; }
@@ -240,6 +246,10 @@ public:
 
 //-------------------------------------------------------------------------------
 
+template<typename T> struct is_not_zero { static const bool value = true; };
+template<> struct is_not_zero<zero> { static const bool value = false; };
+#define IS_NOT_ZERO_BLADE_TYPE(T) std::enable_if_t<is_not_zero<T>::value, bool> = true
+
 template<typename B, typename T> struct is_primitive_blade_type { static const bool value = false; };
 template<typename T> struct is_primitive_blade_type<blade1<T>, T> { static const bool value = true; };
 template<typename T> struct is_primitive_blade_type<blade02<T>, T> { static const bool value = true; };
@@ -266,6 +276,13 @@ template<typename T> blade024<T> operator + (const blade02<T>& b02, const blade2
 template<typename T> blade024<T> operator + (const blade24<T>& b24, const blade02<T>& b02) { return blade024<T>(b02, b24); }
 template<typename T> multivector<T> operator + (const blade024<T>& b024, const blade13<T>& b13) { return multivector<T>(b13, b024); }
 template<typename T> multivector<T> operator + (const blade13<T>& b13, const blade024<T>& b024) { return multivector<T>(b13, b024); }
+// TODO: other add overloads
+template<typename T> multivector<T> operator + (const blade13<T>& b13, const blade24<T>& b24) { return multivector<T>(b13, blade024<T>(b24)); }
+
+template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> T& operator + (T& v, zero z);
+template<typename T> T& operator + (zero z, T& v);
+template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> T& operator + (T& v, zero z) { return v; }
+template<typename T> T& operator + (zero z, T& v) { return v; }
 
 // multiply
 template<typename T> blade1<T> operator * (const T& s, const blade1<T>& b) {
@@ -311,8 +328,8 @@ template<typename T> blade13<T> operator * (const blade24<T>& a, const blade1<T>
 template<typename T> blade24<T> operator * (const blade24<T>& a, const blade02<T>& b) {
     return blade24<T>(a.bie * b.s - a.e0123 * b.biE - (a.bie ^ b.biE), a.e0123 * b.s + (a.bie & b.biE));
 }
-template<typename T> blade02<T> operator * (const blade24<T>& a, const blade24<T>& b) {
-    return blade02<T>(zeroOf(a.e0123));
+template<typename T> zero operator * (const blade24<T>& a, const blade24<T>& b) {
+    return zero();
 }
 template<typename T> blade13<T> operator * (const blade24<T>& a, const blade3<T>& b) {
     return blade1<T>(-a.e0123 * b.e123) + blade3<T>(-a.bie * b.e123);
@@ -330,6 +347,11 @@ template<typename T> blade024<T> operator * (const blade3<T>& a, const blade3<T>
     return blade02<T>(-a.e123 * b.e123) + blade24<T>(a.triP * b.e123 - a.e123 * b.triP);
 }
 
+template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> zero operator * (T& v, zero z);
+template<typename T> zero operator * (zero z, T& v);
+template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> zero operator * (T& v, zero z) { return z; }
+template<typename T> zero operator * (zero z, T& v) { return z; }
+
 template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b);
 template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b);
 template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b);
@@ -343,6 +365,59 @@ template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * 
 template<typename B, typename T> auto operator * (const B& a, const blade13<T>& b) { return a * b.b1 + a * b.b3; }
 template<typename B, typename T> auto operator * (const B& a, const blade024<T>& b) { return a * b.b02 + a * b.b24; }
 template<typename B, typename T> auto operator * (const B& a, const multivector<T>& b) { return a * b.b13 + a * b.b024; }
+
+// wedge
+//template<typename T> zero operator ^ (T& v, zero z) { return z; }
+//template<typename T> zero operator ^ (zero z, T& v) { return z; }
+//
+//template<typename T> auto operator ^ (const blade1<T>& a, const blade1<T>& b) {
+//    return blade02<T>(a.v ^ b.v) + blade24<T>(-a.v * b.e0 + a.e0 * b.v);
+//}
+//template<typename T> auto operator ^ (const blade1<T>& a, const blade02<T>& b) {
+//    return blade1<T>(a.e0 * b.s, a.v * b.s) + blade3<T>(a.v & b.biE, -a.e0 * b.biE);
+//}
+//template<typename T> auto operator ^ (const blade1<T>& a, const blade24<T>& b) {
+//    return blade3<T>(a.v ^ b.bie);
+//}
+//template<typename T> auto operator ^ (const blade1<T>& a, const blade3<T>& b) {
+//    return blade24<T>(a.e0 * b.e123 + (a.v & b.triP));
+//}
+//template<typename T> auto operator ^ (const blade02<T>& a, const blade1<T>& b) {
+//    return blade1<T>(a.s * b.e0, a.s * b.v) + blade3<T>(a.biE & b.v, -a.biE * b.e0);
+//}
+//template<typename T> auto operator ^ (const blade02<T>& a, const blade02<T>& b) {
+//    return blade02<T>(a.s * b.s, a.biE * b.s + a.s * b.biE);
+//}
+//template<typename T> auto operator ^ (const blade02<T>& a, const blade24<T>& b) {
+//    return blade24<T>(a.s * b.bie, a.s * b.e0123 + (a.biE & b.bie));
+//}
+//template<typename T> auto operator ^ (const blade02<T>& a, const blade3<T>& b) {
+//    return blade3<T>(a.s * b.e123, a.s * b.triP);
+//}
+//template<typename T> auto operator ^ (const blade24<T>& a, const blade1<T>& b) {
+//    return blade3<T>(-(a.bie ^ b.v));
+//}
+//template<typename T> auto operator ^ (const blade24<T>& a, const blade02<T>& b) {
+//    return blade24<T>(a.bie * b.s, a.e0123 * b.s + (a.bie & b.biE));
+//}
+//template<typename T> auto operator ^ (const blade24<T>& a, const blade24<T>& b) {
+//    return zero();
+//}
+//template<typename T> auto operator ^ (const blade24<T>& a, const blade3<T>& b) {
+//    return zero();
+//}
+//template<typename T> auto operator ^ (const blade3<T>& a, const blade1<T>& b) {
+//    return blade24<T>(-a.e123 * b.e0 - (a.triP & b.v));
+//}
+//template<typename T> auto operator ^ (const blade3<T>& a, const blade02<T>& b) {
+//    return blade3<T>(a.e123 * b.s, a.triP * b.s);
+//}
+//template<typename T> auto operator ^ (const blade3<T>& a, const blade24<T>& b) {
+//    return zero();
+//}
+//template<typename T> auto operator ^ (const blade3<T>& a, const blade3<T>& b) {
+//    return zero();
+//}
 
 // TODO: wedge product overloads
 // TODO: dot product overloads
