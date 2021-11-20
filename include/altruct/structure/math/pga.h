@@ -174,6 +174,8 @@ public:
     blade024<T> b024;
 
     multivector() {}
+    explicit multivector(const blade13<T>& b13) : b13(b13), b024(blade02<T>(zeroOf(b13.b1.e0))) {}
+    explicit multivector(const blade024<T>& b024) : b13(blade1<T>(zeroOf(b024.b02.s))), b024(b024) {}
     multivector(blade13<T> b13, blade024<T> b024) : b13(std::move(b13)), b024(std::move(b024)) {}
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}

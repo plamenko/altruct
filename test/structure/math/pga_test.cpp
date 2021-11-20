@@ -240,6 +240,20 @@ TEST(pga_test, constructor_multivector) {
 	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
 	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
 	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto am13 = pga::multivector<symbolic>(pga::blade13<symbolic>(a1, a3));
+	EXPECT_EQ(
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
+		"0 id + 0 e23 + 0 e31 + 0 e12 + "
+		"0 e01 + 0 e02 + 0 e03 + 0 e0123",
+		to_string(am13));
+	auto am024 = pga::multivector<symbolic>(pga::blade024<symbolic>(a02, a24));
+	EXPECT_EQ(
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + "
+		"0 e123 + 0 e032 + 0 e013 + 0 e021 + "
+		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		to_string(am024));
 	auto am = pga::multivector<symbolic>({ a1, a3 }, { a02, a24 });
 	EXPECT_EQ(
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
