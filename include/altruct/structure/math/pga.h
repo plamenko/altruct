@@ -48,8 +48,10 @@ namespace math {
  *
  */
 namespace pga {
+template<typename T>
+vector3d<T> make_zero_vec(const T& v) { return vector3d<T>(zeroOf(v), zeroOf(v), zeroOf(v)); }
 
-#define CLOSED_OPERATORS(B, T, pl, pr)                                            \
+#define PGA_CLOSED_OPERATORS(B, T, pl, pr)                                        \
     B& operator += (const B& rhs) { pl += rhs.pl; pr += rhs.pr; return *this; }   \
     B& operator -= (const B& rhs) { pl -= rhs.pl; pr -= rhs.pr; return *this; }   \
     B& operator *= (const T& rhs) { pl *= rhs; pr *= rhs; return *this; }         \
@@ -64,7 +66,7 @@ namespace pga {
                                                                                   \
     B  operator ~  () const { return rev(); }
 
-#define COMPOSITE_GETTERS(B, pl, pr)                                              \
+#define PGA_COMPOSITE_GETTERS(B, pl, pr)                                          \
     const auto& first() const { return pl; }                                      \
     const auto& second() const { return pr; }                                     \
                                                                                   \
@@ -79,11 +81,11 @@ public:
     T e0; vector3d<T> v;
 
     blade1() {}
-    explicit blade1(T e0) : e0(e0), v({ zeroOf(e0), zeroOf(e0) , zeroOf(e0) }) {}
+    explicit blade1(T e0) : e0(e0), v(make_zero_vec(e0)) {}
     explicit blade1(vector3d<T> v) : e0(zeroOf(v.z)), v(v) {}
     blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
 
-    CLOSED_OPERATORS(blade1, T, e0, v);
+    PGA_CLOSED_OPERATORS(blade1, T, e0, v);
 
     blade1 rev() const { return blade1(e0, v); } // same
 };
@@ -94,11 +96,11 @@ public:
     T s; vector3d<T> biE;
 
     blade02() {}
-    explicit blade02(T s) : s(s), biE({ zeroOf(s), zeroOf(s) , zeroOf(s) }) {}
+    explicit blade02(T s) : s(s), biE(make_zero_vec(s)) {}
     explicit blade02(vector3d<T> biE) : s(zeroOf(biE.z)), biE(biE) {}
     blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
 
-    CLOSED_OPERATORS(blade02, T, s, biE);
+    PGA_CLOSED_OPERATORS(blade02, T, s, biE);
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -109,11 +111,11 @@ public:
     vector3d<T> bie; T e0123;
 
     blade24() {}
-    explicit blade24(T e0123) : bie({ zeroOf(e0123), zeroOf(e0123) , zeroOf(e0123) }), e0123(e0123) {}
+    explicit blade24(T e0123) : bie(make_zero_vec(e0123)), e0123(e0123) {}
     explicit blade24(vector3d<T> bie) : bie(bie), e0123(zeroOf(bie.z)) {}
     blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
 
-    CLOSED_OPERATORS(blade24, T, bie, e0123);
+    PGA_CLOSED_OPERATORS(blade24, T, bie, e0123);
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -124,11 +126,11 @@ public:
     T e123; vector3d<T> triP;
 
     blade3() {}
-    explicit blade3(T e123) : e123(e123), triP({ zeroOf(e123), zeroOf(e123) , zeroOf(e123) }) {}
+    explicit blade3(T e123) : e123(e123), triP(make_zero_vec(e123)) {}
     explicit blade3(vector3d<T> triP) : e123(zeroOf(triP.z)), triP(triP) {}
     blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
 
-    CLOSED_OPERATORS(blade3, T, e123, triP);
+    PGA_CLOSED_OPERATORS(blade3, T, e123, triP);
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
 };
@@ -146,8 +148,8 @@ public:
     explicit blade13(blade3<T> b3) : b1(zeroOf(b3.e123)), b3(b3) {}
     blade13(blade1<T> b1, blade3<T> b3) : b1(std::move(b1)), b3(std::move(b3)) {}
 
-    CLOSED_OPERATORS(blade13, T, b1, b3);
-    COMPOSITE_GETTERS(blade13, b1, b3);
+    PGA_CLOSED_OPERATORS(blade13, T, b1, b3);
+    PGA_COMPOSITE_GETTERS(blade13, b1, b3);
 };
 
 template<typename T>
@@ -161,8 +163,8 @@ public:
     explicit blade024(blade24<T> b24) : b02(zeroOf(b24.e0123)), b24(b24) {}
     blade024(blade02<T> b02, blade24<T> b24) : b02(std::move(b02)), b24(std::move(b24)) {}
 
-    CLOSED_OPERATORS(blade024, T, b02, b24);
-    COMPOSITE_GETTERS(blade024, b02, b24);
+    PGA_CLOSED_OPERATORS(blade024, T, b02, b24);
+    PGA_COMPOSITE_GETTERS(blade024, b02, b24);
 };
 
 template<typename T>
@@ -176,8 +178,8 @@ public:
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
 
-    CLOSED_OPERATORS(multivector, T, b13, b024);
-    COMPOSITE_GETTERS(multivector, b13, b024);
+    PGA_CLOSED_OPERATORS(multivector, T, b13, b024);
+    PGA_COMPOSITE_GETTERS(multivector, b13, b024);
 };
 
 //-------------------------------------------------------------------------------
