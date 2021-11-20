@@ -17,6 +17,44 @@ template<typename T>
 std::string to_string(const T& v) { std::stringstream ss; ss << v; return ss.str(); }
 } // namespace
 
+TEST(pga_test, constructor_blade0) {
+	auto d0 = pga::blade0<symbolic>();
+	EXPECT_EQ("?", d0.s.v);
+	auto s0 = pga::blade0<symbolic>({ "ss" });
+	EXPECT_EQ("ss", s0.s.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade0) {
+	auto a0 = pga::blade0<symbolic>({ "as" });
+	auto b0 = pga::blade0<symbolic>({ "bs" });
+	EXPECT_EQ("(+as) id", to_string(+a0));
+	EXPECT_EQ("(-as) id", to_string(-a0));
+	EXPECT_EQ("(as+bs) id", to_string(a0 + b0));
+	EXPECT_EQ("(as-bs) id", to_string(a0 - b0));
+	EXPECT_EQ("(as*bs) id", to_string(a0 * symbolic("bs")));
+	EXPECT_EQ("(as/bs) id", to_string(a0 / symbolic("bs")));
+	EXPECT_EQ("as id", to_string(~a0));
+	EXPECT_EQ("as id", to_string(a0.rev()));
+	EXPECT_EQ("as e0123", to_string(!a0));
+}
+
+TEST(pga_test, operators_inplace_blade0) {
+	auto a0 = pga::blade0<symbolic>({ "as" });
+	auto b0 = pga::blade0<symbolic>({ "bs" });
+	auto r = a0; r += b0;
+	EXPECT_EQ("(as+bs) id", to_string(r));
+	r = a0; r -= b0;
+	EXPECT_EQ("(as-bs) id", to_string(r));
+	r = a0; r *= symbolic("bs");
+	EXPECT_EQ("(as*bs) id", to_string(r));
+	r = a0; r /= symbolic("bs");
+	EXPECT_EQ("(as/bs) id", to_string(r));
+	r = a0; r += a0;
+	EXPECT_EQ("(as+as) id", to_string(r));
+	r = a0; r -= a0;
+	EXPECT_EQ("(as-as) id", to_string(r));
+}
+
 TEST(pga_test, constructor_blade1) {
 	auto d1 = pga::blade1<symbolic>();
 	EXPECT_EQ("?", d1.e0.v);
@@ -69,6 +107,90 @@ TEST(pga_test, operators_inplace_blade1) {
 	EXPECT_EQ("(ae0+ae0) e0 + (avx+avx) e1 + (avy+avy) e2 + (avz+avz) e3", to_string(r));
 	r = a1; r -= a1;
 	EXPECT_EQ("(ae0-ae0) e0 + (avx-avx) e1 + (avy-avy) e2 + (avz-avz) e3", to_string(r));
+}
+
+TEST(pga_test, constructor_blade2E) {
+	auto d2E = pga::blade2E<symbolic>();
+	EXPECT_EQ("0", d2E.biE.x.v);
+	EXPECT_EQ("0", d2E.biE.y.v);
+	EXPECT_EQ("0", d2E.biE.z.v);
+	auto a2E = pga::blade2E<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	EXPECT_EQ("abiEx", a2E.biE.x.v);
+	EXPECT_EQ("abiEy", a2E.biE.y.v);
+	EXPECT_EQ("abiEz", a2E.biE.z.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade2E) {
+	auto a2E = pga::blade2E<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto b2E = pga::blade2E<symbolic>({ {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	EXPECT_EQ("(+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12", to_string(+a2E));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(-a2E));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a2E + b2E));
+	EXPECT_EQ("(abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12", to_string(a2E - b2E));
+	EXPECT_EQ("(abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12", to_string(a2E * symbolic("bs")));
+	EXPECT_EQ("(abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12", to_string(a2E / symbolic("bs")));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(~a2E));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(a2E.rev()));
+	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03", to_string(!a2E));
+}
+
+TEST(pga_test, operators_inplace_blade2E) {
+	auto a2E = pga::blade2E<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto b2E = pga::blade2E<symbolic>({ {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	auto r = a2E; r += b2E;
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(r));
+	r = a2E; r -= b2E;
+	EXPECT_EQ("(abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12", to_string(r));
+	r = a2E; r *= symbolic("bs");
+	EXPECT_EQ("(abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12", to_string(r));
+	r = a2E; r /= symbolic("bs");
+	EXPECT_EQ("(abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12", to_string(r));
+	r = a2E; r += a2E;
+	EXPECT_EQ("(abiEx+abiEx) e23 + (abiEy+abiEy) e31 + (abiEz+abiEz) e12", to_string(r));
+	r = a2E; r -= a2E;
+	EXPECT_EQ("(abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12", to_string(r));
+}
+
+TEST(pga_test, constructor_blade2e) {
+	auto d2e = pga::blade2e<symbolic>();
+	EXPECT_EQ("0", d2e.bie.x.v);
+	EXPECT_EQ("0", d2e.bie.y.v);
+	EXPECT_EQ("0", d2e.bie.z.v);
+	auto a2e = pga::blade2e<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	EXPECT_EQ("abiEx", a2e.bie.x.v);
+	EXPECT_EQ("abiEy", a2e.bie.y.v);
+	EXPECT_EQ("abiEz", a2e.bie.z.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade2e) {
+	auto a2e = pga::blade2e<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} });
+	auto b2e = pga::blade2e<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} });
+	EXPECT_EQ("(+abiex) e01 + (+abiey) e02 + (+abiez) e03", to_string(+a2e));
+	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(-a2e));
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a2e + b2e));
+	EXPECT_EQ("(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03", to_string(a2e - b2e));
+	EXPECT_EQ("(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03", to_string(a2e * symbolic("bs")));
+	EXPECT_EQ("(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03", to_string(a2e / symbolic("bs")));
+	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(~a2e));
+	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(a2e.rev()));
+	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12", to_string(!a2e));
+}
+
+TEST(pga_test, operators_inplace_blade2e) {
+	auto a2e = pga::blade2e<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} });
+	auto b2e = pga::blade2e<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} });
+	auto r = a2e; r += b2e;
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(r));
+	r = a2e; r -= b2e;
+	EXPECT_EQ("(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03", to_string(r));
+	r = a2e; r *= symbolic("bs");
+	EXPECT_EQ("(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03", to_string(r));
+	r = a2e; r /= symbolic("bs");
+	EXPECT_EQ("(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03", to_string(r));
+	r = a2e; r += a2e;
+	EXPECT_EQ("(abiex+abiex) e01 + (abiey+abiey) e02 + (abiez+abiez) e03", to_string(r));
+	r = a2e; r -= a2e;
+	EXPECT_EQ("(abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03", to_string(r));
 }
 
 TEST(pga_test, constructor_blade02) {
@@ -231,6 +353,44 @@ TEST(pga_test, operators_inplace_blade3) {
 	EXPECT_EQ("(ae123+ae123) e123 + (atriPx+atriPx) e032 + (atriPy+atriPy) e013 + (atriPz+atriPz) e021", to_string(r));
 	r = a3; r -= a3;
 	EXPECT_EQ("(ae123-ae123) e123 + (atriPx-atriPx) e032 + (atriPy-atriPy) e013 + (atriPz-atriPz) e021", to_string(r));
+}
+
+TEST(pga_test, constructor_blade4) {
+	auto d4 = pga::blade4<symbolic>();
+	EXPECT_EQ("?", d4.e0123.v);
+	auto a4 = pga::blade4<symbolic>({ "ae0123" });
+	EXPECT_EQ("ae0123", a4.e0123.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade4) {
+	auto a4 = pga::blade4<symbolic>({ "ae0123" });
+	auto b4 = pga::blade4<symbolic>({ "be0123" });
+	EXPECT_EQ("(+ae0123) e0123", to_string(+a4));
+	EXPECT_EQ("(-ae0123) e0123", to_string(-a4));
+	EXPECT_EQ("(ae0123+be0123) e0123", to_string(a4 + b4));
+	EXPECT_EQ("(ae0123-be0123) e0123", to_string(a4 - b4));
+	EXPECT_EQ("(ae0123*bs) e0123", to_string(a4 * symbolic("bs")));
+	EXPECT_EQ("(ae0123/bs) e0123", to_string(a4 / symbolic("bs")));
+	EXPECT_EQ("ae0123 e0123", to_string(~a4));
+	EXPECT_EQ("ae0123 e0123", to_string(a4.rev()));
+	EXPECT_EQ("ae0123 id", to_string(!a4));
+}
+
+TEST(pga_test, operators_inplace_blade4) {
+	auto a4 = pga::blade4<symbolic>({ "ae0123" });
+	auto b4 = pga::blade4<symbolic>({ "be0123" });
+	auto r = a4; r += b4;
+	EXPECT_EQ("(ae0123+be0123) e0123", to_string(r));
+	r = a4; r -= b4;
+	EXPECT_EQ("(ae0123-be0123) e0123", to_string(r));
+	r = a4; r *= symbolic("bs");
+	EXPECT_EQ("(ae0123*bs) e0123", to_string(r));
+	r = a4; r /= symbolic("bs");
+	EXPECT_EQ("(ae0123/bs) e0123", to_string(r));
+	r = a4; r += a4;
+	EXPECT_EQ("(ae0123+ae0123) e0123", to_string(r));
+	r = a4; r -= a4;
+	EXPECT_EQ("(ae0123-ae0123) e0123", to_string(r));
 }
 
 TEST(pga_test, constructor_multivector) {

@@ -51,13 +51,32 @@ namespace pga {
 template<typename T>
 vector3d<T> make_zero_vec(const T& v) { return vector3d<T>(zeroOf(v), zeroOf(v), zeroOf(v)); }
 
-#define PGA_CONSTRUCTORS(B, TL, pl, zl, TR, pr, zr)                               \
+#define PGA_CONSTRUCTORS_1(B, T, p)                                               \
+    B() {}                                                                        \
+    explicit B(T p) : p(std::move(p)) {}
+
+#define PGA_CONSTRUCTORS_2(B, TL, pl, zl, TR, pr, zr)                             \
     B() {}                                                                        \
     explicit B(const TL& pl) : pl(pl), pr(zr) {}                                  \
     explicit B(const TR& pr) : pl(zl), pr(pr) {}                                  \
     B(TL pl, TR pr) : pl(std::move(pl)), pr(std::move(pr)) {}
 
-#define PGA_CLOSED_OPERATORS(B, T, pl, pr)                                        \
+#define PGA_CLOSED_OPERATORS_1(B, T, p)                                           \
+    B& operator += (const B& rhs) { p += rhs.p; return *this; }                   \
+    B& operator -= (const B& rhs) { p -= rhs.p; return *this; }                   \
+    B& operator *= (const T& rhs) { p *= rhs; return *this; }                     \
+    B& operator /= (const T& rhs) { p /= rhs; return *this; }                     \
+                                                                                  \
+    B  operator +  ()             const { return B(+p); }                         \
+    B  operator -  ()             const { return B(-p); }                         \
+    B  operator +  (const B& rhs) const { auto r = *this; r += rhs; return r; }   \
+    B  operator -  (const B& rhs) const { auto r = *this; r -= rhs; return r; }   \
+    B  operator *  (const T& rhs) const { auto r = *this; r *= rhs; return r; }   \
+    B  operator /  (const T& rhs) const { auto r = *this; r /= rhs; return r; }   \
+                                                                                  \
+    B  operator ~  () const { return rev(); }
+
+#define PGA_CLOSED_OPERATORS_2(B, T, pl, pr)                                      \
     B& operator += (const B& rhs) { pl += rhs.pl; pr += rhs.pr; return *this; }   \
     B& operator -= (const B& rhs) { pl -= rhs.pl; pr -= rhs.pr; return *this; }   \
     B& operator *= (const T& rhs) { pl *= rhs; pr *= rhs; return *this; }         \
@@ -82,14 +101,47 @@ template<typename T>
 class zero {};
 
 template<typename T>
+class blade0 {
+public:
+    T s;
+
+    PGA_CONSTRUCTORS_1(blade0, T, s);
+    PGA_CLOSED_OPERATORS_1(blade0, T, s);
+
+    blade0 rev() const { return blade0(s); } // same
+};
+
+template<typename T>
 class blade1 {
 public:
     T e0; vector3d<T> v;
 
-    PGA_CONSTRUCTORS(blade1, T, e0, zeroOf(v.z), vector3d<T>, v, make_zero_vec(e0));
-    PGA_CLOSED_OPERATORS(blade1, T, e0, v);
+    PGA_CONSTRUCTORS_2(blade1, T, e0, zeroOf(v.z), vector3d<T>, v, make_zero_vec(e0));
+    PGA_CLOSED_OPERATORS_2(blade1, T, e0, v);
 
     blade1 rev() const { return blade1(e0, v); } // same
+};
+
+template<typename T>
+class blade2E {
+public:
+    vector3d<T> biE;
+
+    PGA_CONSTRUCTORS_1(blade2E, vector3d<T>, biE);
+    PGA_CLOSED_OPERATORS_1(blade2E, T, biE);
+
+    blade2E rev() const { return blade2E(-biE); } // negate blade2 part
+};
+
+template<typename T>
+class blade2e {
+public:
+    vector3d<T> bie;
+
+    PGA_CONSTRUCTORS_1(blade2e, vector3d<T>, bie);
+    PGA_CLOSED_OPERATORS_1(blade2e, T, bie);
+
+    blade2e rev() const { return blade2e(-bie); } // negate blade2 part
 };
 
 template<typename T>
@@ -97,8 +149,8 @@ class blade02 {
 public:
     T s; vector3d<T> biE;
 
-    PGA_CONSTRUCTORS(blade02, T, s, zeroOf(biE.z), vector3d<T>, biE, make_zero_vec(s));
-    PGA_CLOSED_OPERATORS(blade02, T, s, biE);
+    PGA_CONSTRUCTORS_2(blade02, T, s, zeroOf(biE.z), vector3d<T>, biE, make_zero_vec(s));
+    PGA_CLOSED_OPERATORS_2(blade02, T, s, biE);
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -108,8 +160,8 @@ class blade24 {
 public:
     vector3d<T> bie; T e0123;
 
-    PGA_CONSTRUCTORS(blade24, vector3d<T>, bie, make_zero_vec(e0123), T, e0123, zeroOf(bie.z));
-    PGA_CLOSED_OPERATORS(blade24, T, bie, e0123);
+    PGA_CONSTRUCTORS_2(blade24, vector3d<T>, bie, make_zero_vec(e0123), T, e0123, zeroOf(bie.z));
+    PGA_CLOSED_OPERATORS_2(blade24, T, bie, e0123);
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -119,10 +171,21 @@ class blade3 {
 public:
     T e123; vector3d<T> triP;
 
-    PGA_CONSTRUCTORS(blade3, T, e123, zeroOf(triP.z), vector3d<T>, triP, make_zero_vec(e123));
-    PGA_CLOSED_OPERATORS(blade3, T, e123, triP);
+    PGA_CONSTRUCTORS_2(blade3, T, e123, zeroOf(triP.z), vector3d<T>, triP, make_zero_vec(e123));
+    PGA_CLOSED_OPERATORS_2(blade3, T, e123, triP);
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
+};
+
+template<typename T>
+class blade4 {
+public:
+    T e0123;
+
+    PGA_CONSTRUCTORS_1(blade4, T, e0123);
+    PGA_CLOSED_OPERATORS_1(blade4, T, e0123);
+
+    blade4 rev() const { return blade4(e0123); } // same
 };
 
 //-------------------------------------------------------------------------------
@@ -133,8 +196,8 @@ public:
     blade1<T> b1;
     blade3<T> b3;
 
-    PGA_CONSTRUCTORS(blade13, blade1<T>, b1, zeroOf(b3.e123), blade3<T>, b3, zeroOf(b1.e0))
-    PGA_CLOSED_OPERATORS(blade13, T, b1, b3);
+    PGA_CONSTRUCTORS_2(blade13, blade1<T>, b1, zeroOf(b3.e123), blade3<T>, b3, zeroOf(b1.e0));
+    PGA_CLOSED_OPERATORS_2(blade13, T, b1, b3);
     PGA_COMPOSITE_GETTERS(blade13, b1, b3);
 };
 
@@ -144,8 +207,8 @@ public:
     blade02<T> b02;
     blade24<T> b24;
 
-    PGA_CONSTRUCTORS(blade024, blade02<T>, b02, zeroOf(b24.e0123), blade24<T>, b24, zeroOf(b02.s))
-    PGA_CLOSED_OPERATORS(blade024, T, b02, b24);
+    PGA_CONSTRUCTORS_2(blade024, blade02<T>, b02, zeroOf(b24.e0123), blade24<T>, b24, zeroOf(b02.s));
+    PGA_CLOSED_OPERATORS_2(blade024, T, b02, b24);
     PGA_COMPOSITE_GETTERS(blade024, b02, b24);
 };
 
@@ -157,8 +220,8 @@ public:
 
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
-    PGA_CONSTRUCTORS(multivector, blade13<T>, b13, blade1<T>(zeroOf(b024.b02.s)), blade024<T>, b024, blade02<T>(zeroOf(b13.b1.e0)))
-    PGA_CLOSED_OPERATORS(multivector, T, b13, b024);
+    PGA_CONSTRUCTORS_2(multivector, blade13<T>, b13, blade1<T>(zeroOf(b024.b02.s)), blade024<T>, b024, blade02<T>(zeroOf(b13.b1.e0)));
+    PGA_CLOSED_OPERATORS_2(multivector, T, b13, b024);
     PGA_COMPOSITE_GETTERS(multivector, b13, b024);
 };
 
@@ -186,10 +249,14 @@ template<typename T> struct is_composite_blade_type <multivector<T>, T> { static
 //-------------------------------------------------------------------------------
 
 // dual
+template<typename T> blade4<T> operator ! (const blade0<T>& b0) { return blade4<T>(b0.s); }
 template<typename T> blade3<T> operator ! (const blade1<T>& b1) { return blade3<T>(b1.e0, b1.v); }
+template<typename T> blade2e<T> operator ! (const blade2E<T>& b2E) { return blade2e<T>(b2E.biE); }
+template<typename T> blade2E<T> operator ! (const blade2e<T>& b2e) { return blade2E<T>(b2e.bie); }
 template<typename T> blade24<T> operator ! (const blade02<T>& b02) { return blade24<T>(b02.biE, b02.s); }
 template<typename T> blade02<T> operator ! (const blade24<T>& b24) { return blade02<T>(b24.e0123, b24.bie); }
 template<typename T> blade1<T> operator ! (const blade3<T>& b3) { return blade1<T>(b3.e123, b3.triP); }
+template<typename T> blade0<T> operator ! (const blade4<T>& b4) { return blade0<T>(b4.e0123); }
 template<typename T> blade13<T> operator ! (const blade13<T>& b) { return blade13<T>(!b.b3, !b.b1); }
 template<typename T> blade024<T> operator ! (const blade024<T>& b) { return blade024<T>(!b.b24, !b.b02); }
 template<typename T> multivector<T> operator ! (const multivector<T>& m) { return multivector<T>(!m.b13, !m.b024); }
