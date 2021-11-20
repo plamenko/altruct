@@ -48,6 +48,22 @@ namespace math {
  *
  */
 namespace pga {
+
+#define CLOSED_OPERATORS(B, T, pl, pr)                                            \
+    B& operator += (const B& rhs) { pl += rhs.pl; pr += rhs.pr; return *this; }   \
+    B& operator -= (const B& rhs) { pl -= rhs.pl; pr -= rhs.pr; return *this; }   \
+    B& operator *= (const T& rhs) { pl *= rhs; pr *= rhs; return *this; }         \
+    B& operator /= (const T& rhs) { pl /= rhs; pr /= rhs; return *this; }         \
+                                                                                  \
+    B  operator +  ()             const { return B(+pl, +pr); }                   \
+    B  operator -  ()             const { return B(-pl, -pr); }                   \
+    B  operator +  (const B& rhs) const { auto r = *this; r += rhs; return r; }   \
+    B  operator -  (const B& rhs) const { auto r = *this; r -= rhs; return r; }   \
+    B  operator *  (const T& rhs) const { auto r = *this; r *= rhs; return r; }   \
+    B  operator /  (const T& rhs) const { auto r = *this; r /= rhs; return r; }   \
+                                                                                  \
+    B  operator ~  () const { return rev(); }
+
 template<typename T>
 class zero {};
 
@@ -61,19 +77,7 @@ public:
     explicit blade1(vector3d<T> v) : e0(zeroOf(v.z)), v(v) {}
     blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
 
-    blade1& operator += (const blade1& b) { e0 += b.e0; v += b.v; return *this; }
-    blade1& operator -= (const blade1& b) { e0 -= b.e0; v -= b.v; return *this; }
-    blade1& operator *= (const T& s) { e0 *= s; v *= s; return *this; }
-    blade1& operator /= (const T& s) { e0 /= s; v /= s; return *this; }
-
-    blade1  operator +  ()                const { return blade1(+e0, +v); }
-    blade1  operator -  ()                const { return blade1(-e0, -v); }
-    blade1  operator +  (const blade1& b) const { auto r = *this; r += b; return r; }
-    blade1  operator -  (const blade1& b) const { auto r = *this; r -= b; return r; }
-    blade1  operator *  (const T& s)      const { auto r = *this; r *= s; return r; }
-    blade1  operator /  (const T& s)      const { auto r = *this; r /= s; return r; }
-
-    blade1  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade1, T, e0, v)
 
     blade1 rev() const { return blade1(e0, v); } // same
 };
@@ -88,19 +92,7 @@ public:
     explicit blade02(vector3d<T> biE) : s(zeroOf(biE.z)), biE(biE) {}
     blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
 
-    blade02& operator += (const blade02& b) { s += b.s; biE += b.biE; return *this; }
-    blade02& operator -= (const blade02& b) { s -= b.s; biE -= b.biE; return *this; }
-    blade02& operator *= (const T& s) { this->s *= s; biE *= s; return *this; }
-    blade02& operator /= (const T& s) { this->s /= s; biE /= s; return *this; }
-
-    blade02  operator +  ()                 const { return blade02(+s, +biE); }
-    blade02  operator -  ()                 const { return blade02(-s, -biE); }
-    blade02  operator +  (const blade02& b) const { auto r = *this; r += b; return r; }
-    blade02  operator -  (const blade02& b) const { auto r = *this; r -= b; return r; }
-    blade02  operator *  (const T& s)       const { auto r = *this; r *= s; return r; }
-    blade02  operator /  (const T& s)       const { auto r = *this; r /= s; return r; }
-
-    blade02  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade02, T, s, biE)
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -115,19 +107,7 @@ public:
     explicit blade24(vector3d<T> bie) : bie(bie), e0123(zeroOf(bie.z)) {}
     blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
 
-    blade24& operator += (const blade24& b) { bie += b.bie; e0123 += b.e0123; return *this; }
-    blade24& operator -= (const blade24& b) { bie -= b.bie; e0123 -= b.e0123; return *this; }
-    blade24& operator *= (const T& s) { bie *= s; e0123 *= s; return *this; }
-    blade24& operator /= (const T& s) { bie /= s; e0123 /= s; return *this; }
-
-    blade24  operator +  ()                 const { return blade24(+bie, +e0123); }
-    blade24  operator -  ()                 const { return blade24(-bie, -e0123); }
-    blade24  operator +  (const blade24& b) const { auto r = *this; r += b; return r; }
-    blade24  operator -  (const blade24& b) const { auto r = *this; r -= b; return r; }
-    blade24  operator *  (const T& s)       const { auto r = *this; r *= s; return r; }
-    blade24  operator /  (const T& s)       const { auto r = *this; r /= s; return r; }
-
-    blade24  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade24, T, bie, e0123)
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -142,19 +122,7 @@ public:
     explicit blade3(vector3d<T> triP) : e123(zeroOf(triP.z)), triP(triP) {}
     blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
 
-    blade3& operator += (const blade3& b) { e123 += b.e123; triP += b.triP; return *this; }
-    blade3& operator -= (const blade3& b) { e123 -= b.e123; triP -= b.triP; return *this; }
-    blade3& operator *= (const T& s) { e123 *= s; triP *= s; return *this; }
-    blade3& operator /= (const T& s) { e123 /= s; triP /= s; return *this; }
-
-    blade3  operator +  ()                const { return blade3(+e123, +triP); }
-    blade3  operator -  ()                const { return blade3(-e123, -triP); }
-    blade3  operator +  (const blade3& b) const { auto r = *this; r += b; return r; }
-    blade3  operator -  (const blade3& b) const { auto r = *this; r -= b; return r; }
-    blade3  operator *  (const T& s)      const { auto r = *this; r *= s; return r; }
-    blade3  operator /  (const T& s)      const { auto r = *this; r /= s; return r; }
-
-    blade3  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade3, T, e123, triP)
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
 };
@@ -172,19 +140,7 @@ public:
     explicit blade13(blade3<T> b3) : b1(zeroOf(b3.e123)), b3(b3) {}
     blade13(blade1<T> b1, blade3<T> b3) : b1(std::move(b1)), b3(std::move(b3)) {}
 
-    blade13& operator += (const blade13& b) { b1 += b.b1; b3 += b.b3; return *this; }
-    blade13& operator -= (const blade13& b) { b1 -= b.b1; b3 -= b.b3; return *this; }
-    blade13& operator *= (const T& s) { b1 *= s; b3 *= s; return *this; }
-    blade13& operator /= (const T& s) { b1 /= s; b3 /= s; return *this; }
-
-    blade13  operator +  ()                 const { return blade13(+b1, +b3); }
-    blade13  operator -  ()                 const { return blade13(-b1, -b3); }
-    blade13  operator +  (const blade13& b) const { auto r = *this; r += b; return r; }
-    blade13  operator -  (const blade13& b) const { auto r = *this; r -= b; return r; }
-    blade13  operator *  (const T& s)       const { auto r = *this; r *= s; return r; }
-    blade13  operator /  (const T& s)       const { auto r = *this; r /= s; return r; }
-
-    blade13  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade13, T, b1, b3)
 
     blade13 rev() const { return blade13(b1.rev(), b3.rev()); }
 };
@@ -200,19 +156,7 @@ public:
     explicit blade024(blade24<T> b24) : b02(zeroOf(b24.e0123)), b24(b24) {}
     blade024(blade02<T> b02, blade24<T> b24) : b02(std::move(b02)), b24(std::move(b24)) {}
 
-    blade024& operator += (const blade024& b) { b02 += b.b02; b24 += b.b24; return *this; }
-    blade024& operator -= (const blade024& b) { b02 -= b.b02; b24 -= b.b24; return *this; }
-    blade024& operator *= (const T& s) { b02 *= s; b24 *= s; return *this; }
-    blade024& operator /= (const T& s) { b02 /= s; b24 /= s; return *this; }
-
-    blade024  operator +  ()                  const { return blade024(+b02, +b24); }
-    blade024  operator -  ()                  const { return blade024(-b02, -b24); }
-    blade024  operator +  (const blade024& b) const { auto r = *this; r += b; return r; }
-    blade024  operator -  (const blade024& b) const { auto r = *this; r -= b; return r; }
-    blade024  operator *  (const T& s)        const { auto r = *this; r *= s; return r; }
-    blade024  operator /  (const T& s)        const { auto r = *this; r /= s; return r; }
-
-    blade024  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(blade024, T, b02, b24)
 
     blade024 rev() const { return blade024(b02.rev(), b24.rev()); }
 };
@@ -228,19 +172,7 @@ public:
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
 
-    multivector& operator += (const multivector& b) { b13 += b.b13; b024 += b.b024; return *this; }
-    multivector& operator -= (const multivector& b) { b13 -= b.b13; b024 -= b.b024; return *this; }
-    multivector& operator *= (const T& s) { b13 *= s; b024 *= s; return *this; }
-    multivector& operator /= (const T& s) { b13 /= s; b024 /= s; return *this; }
-
-    multivector  operator +  ()                     const { return multivector(+b13, +b024); }
-    multivector  operator -  ()                     const { return multivector(-b13, -b024); }
-    multivector  operator +  (const multivector& b) const { auto r = *this; r += b; return r; }
-    multivector  operator -  (const multivector& b) const { auto r = *this; r -= b; return r; }
-    multivector  operator *  (const T& s)           const { auto r = *this; r *= s; return r; }
-    multivector  operator /  (const T& s)           const { auto r = *this; r /= s; return r; }
-
-    multivector  operator ~  () const { return rev(); }
+    CLOSED_OPERATORS(multivector, T, b13, b024)
 
     multivector rev() const { return multivector(b13.rev(), b024.rev()); }
 };
