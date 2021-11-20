@@ -48,6 +48,7 @@ namespace math {
  *
  */
 namespace pga {
+template<typename T>
 class zero {};
 
 template<typename T>
@@ -246,16 +247,24 @@ public:
 
 //-------------------------------------------------------------------------------
 
-template<typename T> struct is_not_zero { static const bool value = true; };
-template<> struct is_not_zero<zero> { static const bool value = false; };
-#define IS_NOT_ZERO_BLADE_TYPE(T) std::enable_if_t<is_not_zero<T>::value, bool> = true
+template<typename B, typename T> struct is_zero_blade_type { static const bool value = false; };
+template<typename T> struct is_zero_blade_type<zero<T>, T> { static const bool value = true; };
 
 template<typename B, typename T> struct is_primitive_blade_type { static const bool value = false; };
 template<typename T> struct is_primitive_blade_type<blade1<T>, T> { static const bool value = true; };
 template<typename T> struct is_primitive_blade_type<blade02<T>, T> { static const bool value = true; };
 template<typename T> struct is_primitive_blade_type<blade24<T>, T> { static const bool value = true; };
 template<typename T> struct is_primitive_blade_type<blade3<T>, T> { static const bool value = true; };
-#define IS_PRIMITIVE_BLADE_TYPE(B, T) std::enable_if_t<is_primitive_blade_type<B, T>::value, bool> = true
+#define IF_PRIMITIVE_BLADE_TYPE(B, T) std::enable_if_t<is_primitive_blade_type<B, T>::value, bool> = true
+
+template<typename B, typename T> struct is_composite_blade_type { static const bool value = false; };
+template<typename T> struct is_composite_blade_type <blade13<T>, T> { static const bool value = true; };
+template<typename T> struct is_composite_blade_type <blade024<T>, T> { static const bool value = true; };
+template<typename T> struct is_composite_blade_type <multivector<T>, T> { static const bool value = true; };
+#define IF_COMPOSITE_BLADE_TYPE(B, T) std::enable_if_t<is_composite_blade_type<B, T>::value, bool> = true
+
+#define IF_NONZERO_BLADE_TYPE(B, T) std::enable_if_t<is_primitive_blade_type<B, T>::value || is_composite_blade_type<B, T>::value, bool> = true
+#define IF_BLADE_TYPE(B, T) std::enable_if_t<is_zero_blade_type<B, T>::value || is_primitive_blade_type<B, T>::value || is_composite_blade_type<B, T>::value, bool> = true
 
 //-------------------------------------------------------------------------------
 
@@ -268,21 +277,90 @@ template<typename T> blade13<T> operator ! (const blade13<T>& b) { return blade1
 template<typename T> blade024<T> operator ! (const blade024<T>& b) { return blade024<T>(!b.b24, !b.b02); }
 template<typename T> multivector<T> operator ! (const multivector<T>& m) { return multivector<T>(!m.b13, !m.b024); }
 
-// add
-// TODO: test the following
-template<typename T> blade13<T> operator + (const blade1<T>& b1, const blade3<T>& b3) { return blade13<T>(b1, b3); }
-template<typename T> blade13<T> operator + (const blade3<T>& b3, const blade1<T>& b1) { return blade13<T>(b1, b3); }
-template<typename T> blade024<T> operator + (const blade02<T>& b02, const blade24<T>& b24) { return blade024<T>(b02, b24); }
-template<typename T> blade024<T> operator + (const blade24<T>& b24, const blade02<T>& b02) { return blade024<T>(b02, b24); }
-template<typename T> multivector<T> operator + (const blade024<T>& b024, const blade13<T>& b13) { return multivector<T>(b13, b024); }
-template<typename T> multivector<T> operator + (const blade13<T>& b13, const blade024<T>& b024) { return multivector<T>(b13, b024); }
-// TODO: other add overloads
-template<typename T> multivector<T> operator + (const blade13<T>& b13, const blade24<T>& b24) { return multivector<T>(b13, blade024<T>(b24)); }
+// get
+template<typename B> struct get {};
+template<typename T> struct get<zero<T>> {
+    using type = T;
+    static zero<T> b1(zero<T>) { return zero<T>(); }
+    static zero<T> b02(zero<T>) { return zero<T>(); }
+    static zero<T> b24(zero<T>) { return zero<T>(); }
+    static zero<T> b3(zero<T>) { return zero<T>(); }
+};
+template<typename T> struct get<blade1<T>> {
+    using type = T;
+    static const blade1<T>& b1(const blade1<T>& b1) { return b1; }
+    static zero<T> b02(const blade1<T>& b1) { return zero<T>(); }
+    static zero<T> b24(const blade1<T>& b1) { return zero<T>(); }
+    static zero<T> b3(const blade1<T>& b1) { return zero<T>(); }
+};
+template<typename T> struct get<blade3<T>> {
+    using type = T;
+    static zero<T> b1(const blade3<T>& b3) { return zero<T>(); }
+    static zero<T> b02(const blade3<T>& b3) { return zero<T>(); }
+    static zero<T> b24(const blade3<T>& b3) { return zero<T>(); }
+    static const blade3<T>& b3(const blade3<T>& b3) { return b3; }
+};
+template<typename T> struct get<blade13<T>> {
+    using type = T;
+    static const blade1<T>& b1(const blade13<T>& b) { return b.b1; }
+    static zero<T> b02(const blade13<T>& b) { return zero<T>(); }
+    static zero<T> b24(const blade13<T>& b) { return zero<T>(); }
+    static const blade3<T>& b3(const blade13<T>& b) { return b.b3; }
+};
+template<typename T> struct get<blade02<T>> {
+    using type = T;
+    static zero<T> b1(const blade02<T>& b02) { return zero<T>(); }
+    static const blade02<T>& b02(const blade02<T>& b02) { return b02; }
+    static zero<T> b24(const blade02<T>& b02) { return zero<T>(); }
+    static zero<T> b3(const blade02<T>& b02) { return zero<T>(); }
+};
+template<typename T> struct get<blade24<T>> {
+    using type = T;
+    static zero<T> b1(const blade24<T>& b24) { return zero<T>(); }
+    static zero<T> b02(const blade24<T>& b24) { return zero<T>(); }
+    static const blade24<T>& b24(const blade24<T>& b24) { return b24; }
+    static zero<T> b3(const blade24<T>& b24) { return zero<T>(); }
+};
+template<typename T> struct get<blade024<T>> {
+    using type = T;
+    static zero<T> b1(const blade024<T>& b) { return zero<T>(); }
+    static const blade02<T>& b02(const blade024<T>& b) { return b.b02; }
+    static const blade24<T>& b24(const blade024<T>& b) { return b.b24; }
+    static zero<T> b3(const blade024<T>& b) { return zero<T>(); }
+};
+template<typename T> struct get<multivector<T>> {
+    using type = T;
+    static const blade1<T>& b1(const multivector<T>& m) { return m.b13.b1; }
+    static const blade02<T>& b02(const multivector<T>& m) { return m.b024.b02; }
+    static const blade24<T>& b24(const multivector<T>& m) { return m.b024.b24; }
+    static const blade3<T>& b3(const multivector<T>& m) { return m.b13.b3; }
+};
 
-template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> T& operator + (T& v, zero z);
-template<typename T> T& operator + (zero z, T& v);
-template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> T& operator + (T& v, zero z) { return v; }
-template<typename T> T& operator + (zero z, T& v) { return v; }
+// combine
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& combine_primitive(zero<T>, const B& b) { return b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& combine_primitive(const B& b, zero<T>) { return b; }
+template<typename T> const blade13<T> combine_primitive(blade1<T> b1, blade3<T> b3) { return blade13<T>(std::move(b1), std::move(b3)); }
+template<typename T> const blade024<T> combine_primitive(blade02<T> b02, blade24<T> b24) { return blade024<T>(std::move(b02), std::move(b24)); }
+
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& combine_multivector(zero<T>, const B& b) { return b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& combine_multivector(const B& b, zero<T>) { return b; }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+const multivector<T> combine_multivector(BL bl, BR br) { return multivector<T>(blade13<T>(std::move(bl)), blade024<T>(std::move(br))); }
+
+// add
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator + (zero<T>, const B& b) { return b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator + (const B& b, zero<T>) { return b; }
+
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+auto operator + (const BL& bl, const BR& br) {
+    return combine_multivector(
+        combine_primitive(
+            get<BL>::b1(bl) + get<BR>::b1(br),
+            get<BL>::b3(bl) + get<BR>::b3(br)),
+        combine_primitive(
+            get<BL>::b02(bl) + get<BR>::b02(br),
+            get<BL>::b24(bl) + get<BR>::b24(br)));
+}
 
 // multiply
 template<typename T> blade1<T> operator * (const T& s, const blade1<T>& b) {
@@ -328,8 +406,8 @@ template<typename T> blade13<T> operator * (const blade24<T>& a, const blade1<T>
 template<typename T> blade24<T> operator * (const blade24<T>& a, const blade02<T>& b) {
     return blade24<T>(a.bie * b.s - a.e0123 * b.biE - (a.bie ^ b.biE), a.e0123 * b.s + (a.bie & b.biE));
 }
-template<typename T> zero operator * (const blade24<T>& a, const blade24<T>& b) {
-    return zero();
+template<typename T> zero<T> operator * (const blade24<T>& a, const blade24<T>& b) {
+    return zero<T>();
 }
 template<typename T> blade13<T> operator * (const blade24<T>& a, const blade3<T>& b) {
     return blade1<T>(-a.e0123 * b.e123) + blade3<T>(-a.bie * b.e123);
@@ -347,24 +425,14 @@ template<typename T> blade024<T> operator * (const blade3<T>& a, const blade3<T>
     return blade02<T>(-a.e123 * b.e123) + blade24<T>(a.triP * b.e123 - a.e123 * b.triP);
 }
 
-template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> zero operator * (T& v, zero z);
-template<typename T> zero operator * (zero z, T& v);
-template<typename T, IS_NOT_ZERO_BLADE_TYPE(T)> zero operator * (T& v, zero z) { return z; }
-template<typename T> zero operator * (zero z, T& v) { return z; }
-
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b);
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b);
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b);
-template<typename B, typename T> auto operator * (const B& a, const blade13<T>& b);
-template<typename B, typename T> auto operator * (const B& a, const blade024<T>& b);
-template<typename B, typename T> auto operator * (const B& a, const multivector<T>& b);
-
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b) { return a.b1 * b + a.b3 * b; }
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b) { return a.b02 * b + a.b24 * b; }
-template<typename T, typename B, IS_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b) { return a.b13 * b + a.b024 * b; }
-template<typename B, typename T> auto operator * (const B& a, const blade13<T>& b) { return a * b.b1 + a * b.b3; }
-template<typename B, typename T> auto operator * (const B& a, const blade024<T>& b) { return a * b.b02 + a * b.b24; }
-template<typename B, typename T> auto operator * (const B& a, const multivector<T>& b) { return a * b.b13 + a * b.b024; }
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator * (zero<T> z, const B& b) { return z; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator * (const B& b, zero<T> z) { return z; }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b) { return a.b1 * b + a.b3 * b; }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b) { return a.b02 * b + a.b24 * b; }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b) { return a.b13 * b + a.b024 * b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const blade13<T>& b) { return a * b.b1 + a * b.b3; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const blade024<T>& b) { return a * b.b02 + a * b.b24; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const multivector<T>& b) { return a * b.b13 + a * b.b024; }
 
 // wedge
 //template<typename T> zero operator ^ (T& v, zero z) { return z; }

@@ -46,8 +46,8 @@ std::ostream& operator << (std::ostream& os, const altruct::math::cl3::vector<T>
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::cl3::multivector<T>& m);
 
-template<typename T = void>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::zero& z);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::zero<T>& z);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade1<T>& b1);
 template<typename T>
@@ -202,8 +202,8 @@ std::ostream& operator << (std::ostream& os, const altruct::math::cl3::multivect
 }
 
 /** std::ostream specializations for altruct::math::pga */
-template<typename T = void>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::zero& z) {
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::zero<T>& z) {
     return os << "0";
 }
 template<typename T>
