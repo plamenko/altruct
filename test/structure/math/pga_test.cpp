@@ -853,7 +853,7 @@ TEST(pga_test, operators_wedge) {
 	EXPECT_EQ("0", to_string(a3 ^ z));
 	EXPECT_EQ("0", to_string(am ^ z));
 
-	EXPECT_EQ("0 id + ((avy*bvz)-(avz*bvy)) e23 + ((avz*bvx)-(avx*bvz)) e31 + ((avx*bvy)-(avy*bvx)) e12 + (((-avx)*be0)+(ae0*bvx)) e01 + (((-avy)*be0)+(ae0*bvy)) e02 + (((-avz)*be0)+(ae0*bvz)) e03 + 0 e0123", to_string(a1 ^ b1));
+	EXPECT_EQ("0 id + ((avy*bvz)-(avz*bvy)) e23 + ((avz*bvx)-(avx*bvz)) e31 + ((avx*bvy)-(avy*bvx)) e12 + ((ae0*bvx)-(avx*be0)) e01 + ((ae0*bvy)-(avy*be0)) e02 + ((ae0*bvz)-(avz*be0)) e03 + 0 e0123", to_string(a1 ^ b1));
 	EXPECT_EQ("(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + (((avx*bbiEx)+(avy*bbiEy))+(avz*bbiEz)) e123 + ((-ae0)*bbiEx) e032 + ((-ae0)*bbiEy) e013 + ((-ae0)*bbiEz) e021", to_string(a1 ^ b02));
 	EXPECT_EQ("0 e123 + ((avy*bbiez)-(avz*bbiey)) e032 + ((avz*bbiex)-(avx*bbiez)) e013 + ((avx*bbiey)-(avy*bbiex)) e021", to_string(a1 ^ b24));
 	EXPECT_EQ("0 e01 + 0 e02 + 0 e03 + ((ae0*be123)+(((avx*btriPx)+(avy*btriPy))+(avz*btriPz))) e0123", to_string(a1 ^ b3));
@@ -886,9 +886,9 @@ TEST(pga_test, operators_wedge) {
 		"((((avy*bvz)-(avz*bvy))+0)+(((abiEx*bs)+(as*bbiEx))+0)) e23 + "
 		"((((avz*bvx)-(avx*bvz))+0)+(((abiEy*bs)+(as*bbiEy))+0)) e31 + "
 		"((((avx*bvy)-(avy*bvx))+0)+(((abiEz*bs)+(as*bbiEz))+0)) e12 + "
-		"((((((-avx)*be0)+(ae0*bvx))+0)+0)+((abiex*bs)+(as*bbiex))) e01 + "
-		"((((((-avy)*be0)+(ae0*bvy))+0)+0)+((abiey*bs)+(as*bbiey))) e02 + "
-		"((((((-avz)*be0)+(ae0*bvz))+0)+0)+((abiez*bs)+(as*bbiez))) e03 + "
+		"(((((ae0*bvx)-(avx*be0))+0)+0)+((abiex*bs)+(as*bbiex))) e01 + "
+		"(((((ae0*bvy)-(avy*be0))+0)+0)+((abiey*bs)+(as*bbiey))) e02 + "
+		"(((((ae0*bvz)-(avz*be0))+0)+0)+((abiez*bs)+(as*bbiez))) e03 + "
 		"(((0+(((-ae123)*be0)-(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz))))+((ae0*be123)+(((avx*btriPx)+(avy*btriPy))+(avz*btriPz))))+(((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz)))+((as*be0123)+(((abiEx*bbiex)+(abiEy*bbiey))+(abiEz*bbiez))))) e0123",
 		to_string(am ^ bm));
 }
@@ -960,6 +960,75 @@ TEST(pga_test, operators_dot) {
 		"((((atriPx*bvy)-(atriPy*bvx))+(-((avx*btriPy)-(avy*btriPx))))+(((abiez*bs)-(ae0123*bbiEz))+((as*bbiez)-(abiEz*be0123)))) e03 + "
 		"((0+0)+((ae0123*bs)+(as*be0123))) e0123",
 		to_string(am & bm));
+}
+
+TEST(pga_test, operators_join) {
+	auto z = pga::zero<symbolic>();
+	auto a1 = pga::blade1<symbolic>({ "ae0" }, { {"avx"}, {"avy"}, {"avz"} });
+	auto a02 = pga::blade02<symbolic>({ "as" }, { {"abiEx"}, {"abiEy"}, {"abiEz"} });
+	auto a24 = pga::blade24<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }, { "ae0123" });
+	auto a3 = pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} });
+	auto a13 = pga::blade13<symbolic>(a1, a3);
+	auto a024 = pga::blade024<symbolic>(a02, a24);
+	auto am = pga::multivector<symbolic>(a1, a02, a24, a3);
+	auto b1 = pga::blade1<symbolic>({ "be0" }, { {"bvx"}, {"bvy"}, {"bvz"} });
+	auto b02 = pga::blade02<symbolic>({ "bs" }, { {"bbiEx"}, {"bbiEy"}, {"bbiEz"} });
+	auto b24 = pga::blade24<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }, { "be0123" });
+	auto b3 = pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} });
+	auto b13 = pga::blade13<symbolic>(b1, b3);
+	auto b024 = pga::blade024<symbolic>(b02, b24);
+	auto bm = pga::multivector<symbolic>(b1, b02, b24, b3);
+
+	EXPECT_EQ("0", to_string(z | z));
+	EXPECT_EQ("0", to_string(z | b1));
+	EXPECT_EQ("0", to_string(z | b02));
+	EXPECT_EQ("0", to_string(z | b24));
+	EXPECT_EQ("0", to_string(z | b3));
+	EXPECT_EQ("0", to_string(z | bm));
+	EXPECT_EQ("0", to_string(a1 | z));
+	EXPECT_EQ("0", to_string(a02 | z));
+	EXPECT_EQ("0", to_string(a24 | z));
+	EXPECT_EQ("0", to_string(a3 | z));
+	EXPECT_EQ("0", to_string(am | z));
+
+	EXPECT_EQ("0", to_string(a1 | b1));
+	EXPECT_EQ("0", to_string(a1 | b02));
+	EXPECT_EQ("(ae0*be0123) e0 + (avx*be0123) e1 + (avy*be0123) e2 + (avz*be0123) e3", to_string(a1 | b24));
+	EXPECT_EQ("(((-ae0)*be123)-(((avx*btriPx)+(avy*btriPy))+(avz*btriPz))) id + 0 e23 + 0 e31 + 0 e12", to_string(a1 | b3));
+
+	EXPECT_EQ("0", to_string(a02 | b1));
+	EXPECT_EQ("0", to_string(a02 | b02));
+	EXPECT_EQ("((as*be0123)+(((abiEx*bbiex)+(abiEy*bbiey))+(abiEz*bbiez))) id + (abiEx*be0123) e23 + (abiEy*be0123) e31 + (abiEz*be0123) e12", to_string(a02 | b24));
+	EXPECT_EQ("0 e0 + (-((abiEy*btriPz)-(abiEz*btriPy))) e1 + (-((abiEz*btriPx)-(abiEx*btriPz))) e2 + (-((abiEx*btriPy)-(abiEy*btriPx))) e3", to_string(a02 | b3));
+
+	EXPECT_EQ("(ae0123*be0) e0 + (ae0123*bvx) e1 + (ae0123*bvy) e2 + (ae0123*bvz) e3", to_string(a24 | b1));
+	EXPECT_EQ("((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz))) id + (ae0123*bbiEx) e23 + (ae0123*bbiEy) e31 + (ae0123*bbiEz) e12", to_string(a24 | b02));
+	EXPECT_EQ("((abiex*be0123)+(ae0123*bbiex)) e01 + ((abiey*be0123)+(ae0123*bbiey)) e02 + ((abiez*be0123)+(ae0123*bbiez)) e03 + (ae0123*be0123) e0123", to_string(a24 | b24));
+	EXPECT_EQ("(((abiex*btriPx)+(abiey*btriPy))+(abiez*btriPz)) e0 + ((-abiex)*be123) e1 + ((-abiey)*be123) e2 + ((-abiez)*be123) e3 + (ae0123*be123) e123 + (ae0123*btriPx) e032 + (ae0123*btriPy) e013 + (ae0123*btriPz) e021", to_string(a24 | b3));
+
+	EXPECT_EQ("((ae123*be0)+(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz))) id + 0 e23 + 0 e31 + 0 e12", to_string(a3 | b1));
+	EXPECT_EQ("0 e0 + ((atriPy*bbiEz)-(atriPz*bbiEy)) e1 + ((atriPz*bbiEx)-(atriPx*bbiEz)) e2 + ((atriPx*bbiEy)-(atriPy*bbiEx)) e3", to_string(a3 | b02));
+	EXPECT_EQ("(((atriPx*bbiex)+(atriPy*bbiey))+(atriPz*bbiez)) e0 + ((-ae123)*bbiex) e1 + ((-ae123)*bbiey) e2 + ((-ae123)*bbiez) e3 + (ae123*be0123) e123 + (atriPx*be0123) e032 + (atriPy*be0123) e013 + (atriPz*be0123) e021", to_string(a3 | b24));
+	EXPECT_EQ("0 id + ((ae123*btriPx)-(atriPx*be123)) e23 + ((ae123*btriPy)-(atriPy*be123)) e31 + ((ae123*btriPz)-(atriPz*be123)) e12 + ((atriPy*btriPz)-(atriPz*btriPy)) e01 + ((atriPz*btriPx)-(atriPx*btriPz)) e02 + ((atriPx*btriPy)-(atriPy*btriPx)) e03 + 0 e0123", to_string(a3 | b3));
+
+	EXPECT_EQ(
+		"(((ae0123*be0)+(0+(((abiex*btriPx)+(abiey*btriPy))+(abiez*btriPz))))+(0+((ae0*be0123)+(((atriPx*bbiex)+(atriPy*bbiey))+(atriPz*bbiez))))) e0 + "
+		"(((ae0123*bvx)+((-((abiEy*btriPz)-(abiEz*btriPy)))+((-abiex)*be123)))+(((atriPy*bbiEz)-(atriPz*bbiEy))+((avx*be0123)+((-ae123)*bbiex)))) e1 + "
+		"(((ae0123*bvy)+((-((abiEz*btriPx)-(abiEx*btriPz)))+((-abiey)*be123)))+(((atriPz*bbiEx)-(atriPx*bbiEz))+((avy*be0123)+((-ae123)*bbiey)))) e2 + "
+		"(((ae0123*bvz)+((-((abiEx*btriPy)-(abiEy*btriPx)))+((-abiez)*be123)))+(((atriPx*bbiEy)-(atriPy*bbiEx))+((avz*be0123)+((-ae123)*bbiez)))) e3 + "
+		"((0+(ae0123*be123))+(0+(ae123*be0123))) e123 + "
+		"((0+(ae0123*btriPx))+(0+(atriPx*be0123))) e032 + "
+		"((0+(ae0123*btriPy))+(0+(atriPy*be0123))) e013 + "
+		"((0+(ae0123*btriPz))+(0+(atriPz*be0123))) e021 + "
+		"((((ae123*be0)+(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz)))+((((-ae0)*be123)-(((avx*btriPx)+(avy*btriPy))+(avz*btriPz)))+0))+(((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz)))+((as*be0123)+(((abiEx*bbiex)+(abiEy*bbiey))+(abiEz*bbiez))))) id + "
+		"((0+(0+((ae123*btriPx)-(atriPx*be123))))+((ae0123*bbiEx)+(abiEx*be0123))) e23 + "
+		"((0+(0+((ae123*btriPy)-(atriPy*be123))))+((ae0123*bbiEy)+(abiEy*be0123))) e31 + "
+		"((0+(0+((ae123*btriPz)-(atriPz*be123))))+((ae0123*bbiEz)+(abiEz*be0123))) e12 + "
+		"((0+((atriPy*btriPz)-(atriPz*btriPy)))+(0+((abiex*be0123)+(ae0123*bbiex)))) e01 + "
+		"((0+((atriPz*btriPx)-(atriPx*btriPz)))+(0+((abiey*be0123)+(ae0123*bbiey)))) e02 + "
+		"((0+((atriPx*btriPy)-(atriPy*btriPx)))+(0+((abiez*be0123)+(ae0123*bbiez)))) e03 + "
+		"((0+0)+(0+(ae0123*be0123))) e0123",
+		to_string(am | bm));
 }
 
 //TEST(symbolic_test, casts) {
