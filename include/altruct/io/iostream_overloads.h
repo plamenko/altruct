@@ -57,17 +57,17 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade2E<T
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade2e<T>& b2e);
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02);
-template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24);
-template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade3<T>& b3);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade4<T>& b4);
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b);
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade024<T>& b);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::multivector<T>& m);
 
@@ -231,14 +231,6 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade2e<T
     return os << b2e.bie.x << " e01" << " + " << b2e.bie.y << " e02" << " + " << b2e.bie.z << " e03";
 }
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02) {
-    return os << b02.s << " id" << " + " << b02.biE.x << " e23" << " + " << b02.biE.y << " e31" << " + " << b02.biE.z << " e12";
-}
-template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24) {
-    return os << b24.bie.x << " e01" << " + " << b24.bie.y << " e02" << " + " << b24.bie.z << " e03" << " + " << b24.e0123 << " e0123";
-}
-template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade3<T>& b3) {
     return os << b3.e123 << " e123" << " + " << b3.triP.x << " e032" << " + " << b3.triP.y << " e013" << " + " << b3.triP.z << " e021";
 }
@@ -247,12 +239,20 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade4<T>
     return os << b4.e0123 << " e0123";
 }
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b) {
-    return os << b.b1 << " + " << b.b3;
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& b02) {
+    return os << b02.s << " id" << " + " << b02.biE.x << " e23" << " + " << b02.biE.y << " e31" << " + " << b02.biE.z << " e12";
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& b24) {
+    return os << b24.bie.x << " e01" << " + " << b24.bie.y << " e02" << " + " << b24.bie.z << " e03" << " + " << b24.e0123 << " e0123";
 }
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade024<T>& b) {
     return os << b.b02 << " + " << b.b24;
+}
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T>& b) {
+    return os << b.b1 << " + " << b.b3;
 }
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::multivector<T>& m) {
