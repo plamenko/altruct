@@ -64,6 +64,12 @@ namespace pga {
                                                                                   \
     B  operator ~  () const { return rev(); }
 
+#define COMPOSITE_GETTERS(B, pl, pr)                                              \
+    const auto& first() const { return pl; }                                      \
+    const auto& second() const { return pr; }                                     \
+                                                                                  \
+    auto rev() const { return B(pl.rev(), pr.rev()); }                            \
+
 template<typename T>
 class zero {};
 
@@ -77,7 +83,7 @@ public:
     explicit blade1(vector3d<T> v) : e0(zeroOf(v.z)), v(v) {}
     blade1(T e0, vector3d<T> v) : e0(std::move(e0)), v(std::move(v)) {}
 
-    CLOSED_OPERATORS(blade1, T, e0, v)
+    CLOSED_OPERATORS(blade1, T, e0, v);
 
     blade1 rev() const { return blade1(e0, v); } // same
 };
@@ -92,7 +98,7 @@ public:
     explicit blade02(vector3d<T> biE) : s(zeroOf(biE.z)), biE(biE) {}
     blade02(T s, vector3d<T> biE) : s(std::move(s)), biE(std::move(biE)) {}
 
-    CLOSED_OPERATORS(blade02, T, s, biE)
+    CLOSED_OPERATORS(blade02, T, s, biE);
 
     blade02 rev() const { return blade02(s, -biE); } // negate blade2 part
 };
@@ -107,7 +113,7 @@ public:
     explicit blade24(vector3d<T> bie) : bie(bie), e0123(zeroOf(bie.z)) {}
     blade24(vector3d<T> bie, T e0123) : bie(std::move(bie)), e0123(std::move(e0123)) {}
 
-    CLOSED_OPERATORS(blade24, T, bie, e0123)
+    CLOSED_OPERATORS(blade24, T, bie, e0123);
 
     blade24 rev() const { return blade24(-bie, e0123); } // negate blade2 part
 };
@@ -122,7 +128,7 @@ public:
     explicit blade3(vector3d<T> triP) : e123(zeroOf(triP.z)), triP(triP) {}
     blade3(T e123, vector3d<T> triP) : e123(std::move(e123)), triP(std::move(triP)) {}
 
-    CLOSED_OPERATORS(blade3, T, e123, triP)
+    CLOSED_OPERATORS(blade3, T, e123, triP);
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
 };
@@ -140,9 +146,8 @@ public:
     explicit blade13(blade3<T> b3) : b1(zeroOf(b3.e123)), b3(b3) {}
     blade13(blade1<T> b1, blade3<T> b3) : b1(std::move(b1)), b3(std::move(b3)) {}
 
-    CLOSED_OPERATORS(blade13, T, b1, b3)
-
-    blade13 rev() const { return blade13(b1.rev(), b3.rev()); }
+    CLOSED_OPERATORS(blade13, T, b1, b3);
+    COMPOSITE_GETTERS(blade13, b1, b3);
 };
 
 template<typename T>
@@ -156,9 +161,8 @@ public:
     explicit blade024(blade24<T> b24) : b02(zeroOf(b24.e0123)), b24(b24) {}
     blade024(blade02<T> b02, blade24<T> b24) : b02(std::move(b02)), b24(std::move(b24)) {}
 
-    CLOSED_OPERATORS(blade024, T, b02, b24)
-
-    blade024 rev() const { return blade024(b02.rev(), b24.rev()); }
+    CLOSED_OPERATORS(blade024, T, b02, b24);
+    COMPOSITE_GETTERS(blade024, b02, b24);
 };
 
 template<typename T>
@@ -172,9 +176,8 @@ public:
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
 
-    CLOSED_OPERATORS(multivector, T, b13, b024)
-
-    multivector rev() const { return multivector(b13.rev(), b024.rev()); }
+    CLOSED_OPERATORS(multivector, T, b13, b024);
+    COMPOSITE_GETTERS(multivector, b13, b024);
 };
 
 //-------------------------------------------------------------------------------
@@ -359,12 +362,10 @@ template<typename T> blade024<T> operator * (const blade3<T>& a, const blade3<T>
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator * (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator * (const B& b, zero<T> z) { return z; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade13<T>& a, const B& b) { return a.b1 * b + a.b3 * b; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const blade024<T>& a, const B& b) { return a.b02 * b + a.b24 * b; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator * (const multivector<T>& a, const B& b) { return a.b13 * b + a.b024 * b; }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const blade13<T>& b) { return a * b.b1 + a * b.b3; }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const blade024<T>& b) { return a * b.b02 + a * b.b24; }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator * (const B& a, const multivector<T>& b) { return a * b.b13 + a * b.b024; }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+auto operator * (const BL& lhs, const BR& rhs) { return (lhs.first() * rhs) + (lhs.second() * rhs); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+auto operator * (const BL& lhs, const BR& rhs) { return (lhs * rhs.first()) + (lhs * rhs.second()); }
 
 // wedge
 template<typename T> auto operator ^ (const blade1<T>& a, const blade1<T>& b) {
@@ -418,12 +419,10 @@ template<typename T> auto operator ^ (const blade3<T>& a, const blade3<T>& b) {
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator ^ (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator ^ (const B& b, zero<T> z) { return z; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator ^ (const blade13<T>& a, const B& b) { return (a.b1 ^ b) + (a.b3 ^ b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator ^ (const blade024<T>& a, const B& b) { return (a.b02 ^ b) + (a.b24 ^ b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator ^ (const multivector<T>& a, const B& b) { return (a.b13 ^ b) + (a.b024 ^ b); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (const B& a, const blade13<T>& b) { return (a ^ b.b1) + (a ^ b.b3); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (const B& a, const blade024<T>& b) { return (a ^ b.b02) + (a ^ b.b24); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (const B& a, const multivector<T>& b) { return (a ^ b.b13) + (a ^ b.b024); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs.first() ^ rhs) + (lhs.second() ^ rhs); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs ^ rhs.first()) + (lhs ^ rhs.second()); }
 
 // dot
 template<typename T> auto operator & (const blade1<T>& a, const blade1<T>& b) {
@@ -477,12 +476,10 @@ template<typename T> auto operator & (const blade3<T>& a, const blade3<T>& b) {
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator & (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator & (const B& b, zero<T> z) { return z; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const blade13<T>& a, const B& b) { return (a.b1 & b) + (a.b3 & b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const blade024<T>& a, const B& b) { return (a.b02 & b) + (a.b24 & b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const multivector<T>& a, const B& b) { return (a.b13 & b) + (a.b024 & b); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const blade13<T>& b) { return (a & b.b1) + (a & b.b3); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const blade024<T>& b) { return (a & b.b02) + (a & b.b24); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const multivector<T>& b) { return (a & b.b13) + (a & b.b024); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+auto operator & (const BL& lhs, const BR& rhs) { return (lhs.first() & rhs) + (lhs.second() & rhs); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+auto operator & (const BL& lhs, const BR& rhs) { return (lhs & rhs.first()) + (lhs & rhs.second()); }
 
 // join
 template<typename T> auto operator | (const blade1<T>& a, const blade1<T>& b) {
@@ -536,12 +533,10 @@ template<typename T> auto operator | (const blade3<T>& a, const blade3<T>& b) {
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator | (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator | (const B& b, zero<T> z) { return z; }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator | (const blade13<T>& a, const B& b) { return (a.b1 | b) + (a.b3 | b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator | (const blade024<T>& a, const B& b) { return (a.b02 | b) + (a.b24 | b); }
-template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator | (const multivector<T>& a, const B& b) { return (a.b13 | b) + (a.b024 | b); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator | (const B& a, const blade13<T>& b) { return (a | b.b1) + (a | b.b3); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator | (const B& a, const blade024<T>& b) { return (a | b.b02) + (a | b.b24); }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator | (const B& a, const multivector<T>& b) { return (a | b.b13) + (a | b.b024); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+auto operator | (const BL& lhs, const BR& rhs) { return (lhs.first() | rhs) + (lhs.second() | rhs); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+auto operator | (const BL& lhs, const BR& rhs) { return (lhs | rhs.first()) + (lhs | rhs.second()); }
 
 
 // TODO: inverse
