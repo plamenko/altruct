@@ -493,7 +493,66 @@ template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (c
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (const B& a, const blade024<T>& b) { return (a ^ b.b02) + (a ^ b.b24); }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator ^ (const B& a, const multivector<T>& b) { return (a ^ b.b13) + (a ^ b.b024); }
 
-// TODO: dot product overloads
+// dot
+template<typename T> auto operator & (const blade1<T>& a, const blade1<T>& b) {
+    return blade02<T>(a.v & b.v);
+}
+template<typename T> auto operator & (const blade1<T>& a, const blade02<T>& b) {
+    return blade1<T>(a.e0 * b.s, a.v * b.s - (a.v ^ b.biE));
+}
+template<typename T> auto operator & (const blade1<T>& a, const blade24<T>& b) {
+    return blade1<T>(-(a.v & b.bie)) + blade3<T>(a.v * b.e0123);
+}
+template<typename T> auto operator & (const blade1<T>& a, const blade3<T>& b) {
+    return blade02<T>(a.v * b.e123) + blade24<T>(-(a.v ^ b.triP));
+}
+template<typename T> auto operator & (const blade02<T>& a, const blade1<T>& b) {
+    return blade1<T>(a.s * b.e0, a.s * b.v - (a.biE ^ b.v));
+}
+template<typename T> auto operator & (const blade02<T>& a, const blade02<T>& b) {
+    return blade02<T>(a.s * b.s - (a.biE & b.biE), a.biE * b.s + a.s * b.biE);
+}
+template<typename T> auto operator & (const blade02<T>& a, const blade24<T>& b) {
+    return blade24<T>(a.s * b.bie - a.biE * b.e0123, a.s * b.e0123);
+}
+template<typename T> auto operator & (const blade02<T>& a, const blade3<T>& b) {
+    return blade1<T>(a.biE & b.triP, -a.biE * b.e123) + blade3<T>(a.s * b.e123, a.s * b.triP);
+}
+template<typename T> auto operator & (const blade24<T>& a, const blade1<T>& b) {
+    return blade1<T>(a.bie & b.v) + blade3<T>(-a.e0123 * b.v);
+}
+template<typename T> auto operator & (const blade24<T>& a, const blade02<T>& b) {
+    return blade24<T>(a.bie * b.s - a.e0123 * b.biE, a.e0123 * b.s);
+}
+template<typename T> auto operator & (const blade24<T>& a, const blade24<T>& b) {
+    return zero<T>();
+}
+template<typename T> auto operator & (const blade24<T>& a, const blade3<T>& b) {
+    return blade1<T>(-a.e0123 * b.e123);
+}
+template<typename T> auto operator & (const blade3<T>& a, const blade1<T>& b) {
+    return blade02<T>(a.e123 * b.v) + blade24<T>(a.triP ^ b.v);
+}
+template<typename T> auto operator & (const blade3<T>& a, const blade02<T>& b) {
+    return blade1<T>(a.triP & b.biE, -a.e123 * b.biE) + blade3<T>(a.e123 * b.s, a.triP * b.s);
+}
+template<typename T> auto operator & (const blade3<T>& a, const blade24<T>& b) {
+    return blade1<T>(a.e123 * b.e0123);
+}
+template<typename T> auto operator & (const blade3<T>& a, const blade3<T>& b) {
+    return blade02<T>(-a.e123 * b.e123);
+}
+
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator & (zero<T> z, const B& b) { return z; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator & (const B& b, zero<T> z) { return z; }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const blade13<T>& a, const B& b) { return (a.b1 & b) + (a.b3 & b); }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const blade024<T>& a, const B& b) { return (a.b02 & b) + (a.b24 & b); }
+template<typename B, typename T, IF_PRIMITIVE_BLADE_TYPE(B, T)> auto operator & (const multivector<T>& a, const B& b) { return (a.b13 & b) + (a.b024 & b); }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const blade13<T>& b) { return (a & b.b1) + (a & b.b3); }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const blade024<T>& b) { return (a & b.b02) + (a & b.b24); }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> auto operator & (const B& a, const multivector<T>& b) { return (a & b.b13) + (a & b.b024); }
+
+
 // TODO: join overloads
 // TODO: inverse
 // TODO: conjugate product overloads (a b ~a)
