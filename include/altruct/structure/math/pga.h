@@ -502,63 +502,51 @@ auto operator * (const BL& lhs, const BR& rhs) { return (lhs.first() * rhs) + (l
 template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator * (const BL& lhs, const BR& rhs) { return (lhs * rhs.first()) + (lhs * rhs.second()); }
 
-//// wedge
-//template<typename T> auto operator ^ (const blade1<T>& a, const blade1<T>& b) {
-//    return blade02<T>(a.v ^ b.v) + blade24<T>(a.e0 * b.v - a.v * b.e0);
-//}
-//template<typename T> auto operator ^ (const blade1<T>& a, const blade02<T>& b) {
-//    return blade1<T>(a.e0 * b.s, a.v * b.s) + blade3<T>(a.v & b.biE, -a.e0 * b.biE);
-//}
-//template<typename T> auto operator ^ (const blade1<T>& a, const blade24<T>& b) {
-//    return blade3<T>(a.v ^ b.bie);
-//}
-//template<typename T> auto operator ^ (const blade1<T>& a, const blade3<T>& b) {
-//    return blade24<T>(a.e0 * b.e123 + (a.v & b.triP));
-//}
-//template<typename T> auto operator ^ (const blade02<T>& a, const blade1<T>& b) {
-//    return blade1<T>(a.s * b.e0, a.s * b.v) + blade3<T>(a.biE & b.v, -a.biE * b.e0);
-//}
-//template<typename T> auto operator ^ (const blade02<T>& a, const blade02<T>& b) {
-//    return blade02<T>(a.s * b.s, a.biE * b.s + a.s * b.biE);
-//}
-//template<typename T> auto operator ^ (const blade02<T>& a, const blade24<T>& b) {
-//    return blade24<T>(a.s * b.bie, a.s * b.e0123 + (a.biE & b.bie));
-//}
-//template<typename T> auto operator ^ (const blade02<T>& a, const blade3<T>& b) {
-//    return blade3<T>(a.s * b.e123, a.s * b.triP);
-//}
-//template<typename T> auto operator ^ (const blade24<T>& a, const blade1<T>& b) {
-//    return blade3<T>(-(a.bie ^ b.v));
-//}
-//template<typename T> auto operator ^ (const blade24<T>& a, const blade02<T>& b) {
-//    return blade24<T>(a.bie * b.s, a.e0123 * b.s + (a.bie & b.biE));
-//}
-//template<typename T> auto operator ^ (const blade24<T>& a, const blade24<T>& b) {
-//    return zero<T>();
-//}
-//template<typename T> auto operator ^ (const blade24<T>& a, const blade3<T>& b) {
-//    return zero<T>();
-//}
-//template<typename T> auto operator ^ (const blade3<T>& a, const blade1<T>& b) {
-//    return blade24<T>(-a.e123 * b.e0 - (a.triP & b.v));
-//}
-//template<typename T> auto operator ^ (const blade3<T>& a, const blade02<T>& b) {
-//    return blade3<T>(a.e123 * b.s, a.triP * b.s);
-//}
-//template<typename T> auto operator ^ (const blade3<T>& a, const blade24<T>& b) {
-//    return zero<T>();
-//}
-//template<typename T> auto operator ^ (const blade3<T>& a, const blade3<T>& b) {
-//    return zero<T>();
-//}
-//
-//template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator ^ (zero<T> z, const B& b) { return z; }
-//template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator ^ (const B& b, zero<T> z) { return z; }
-//template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
-//auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs.first() ^ rhs) + (lhs.second() ^ rhs); }
-//template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
-//auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs ^ rhs.first()) + (lhs ^ rhs.second()); }
-//
+// wedge
+template<typename T> auto operator ^ (const blade0<T>& a, const blade0<T>& b) { return blade0<T>((a.s * b.s)); }
+template<typename T> auto operator ^ (const blade0<T>& a, const blade1<T>& b) { return blade1<T>((a.s * b.e0), a.s * b.v); }
+template<typename T> auto operator ^ (const blade0<T>& a, const blade2E<T>& b) { return blade2E<T>(a.s * b.biE); }
+template<typename T> auto operator ^ (const blade0<T>& a, const blade2e<T>& b) { return blade2e<T>(a.s * b.bie); }
+template<typename T> auto operator ^ (const blade0<T>& a, const blade3<T>& b) { return blade3<T>((a.s * b.e123), a.s * b.triP); }
+template<typename T> auto operator ^ (const blade0<T>& a, const blade4<T>& b) { return blade4<T>((a.s * b.e0123)); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade0<T>& b) { return blade1<T>((a.e0 * b.s), a.v * b.s); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade1<T>& b) { return blade2E<T>((a.v ^ b.v)) + blade2e<T>(-a.v * b.e0 + a.e0 * b.v); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade2E<T>& b) { return blade3<T>(((a.v & b.biE)), -a.e0 * b.biE); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade2e<T>& b) { return blade3<T>((a.v ^ b.bie)); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade3<T>& b) { return blade4<T>((a.e0 * b.e123 + (a.v & b.triP))); }
+template<typename T> auto operator ^ (const blade1<T>& a, const blade4<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade0<T>& b) { return blade2E<T>(a.biE * b.s); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade1<T>& b) { return blade3<T>(((a.biE & b.v)), -a.biE * b.e0); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade2E<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade2e<T>& b) { return blade4<T>(((a.biE & b.bie))); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade3<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2E<T>& a, const blade4<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade0<T>& b) { return blade2e<T>(a.bie * b.s); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade1<T>& b) { return blade3<T>(-(a.bie ^ b.v)); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade2E<T>& b) { return blade4<T>(((a.bie & b.biE))); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade2e<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade3<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade2e<T>& a, const blade4<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade0<T>& b) { return blade3<T>((a.e123 * b.s), a.triP * b.s); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade1<T>& b) { return blade4<T>((-a.e123 * b.e0 - (a.triP & b.v))); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade2E<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade2e<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade3<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade3<T>& a, const blade4<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade0<T>& b) { return blade4<T>((a.e0123 * b.s)); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade1<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade2E<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade2e<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade3<T>& b) { return zero<T>(); }
+template<typename T> auto operator ^ (const blade4<T>& a, const blade4<T>& b) { return zero<T>(); }
+
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator ^ (zero<T> z, const B& b) { return z; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator ^ (const B& b, zero<T> z) { return z; }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs.first() ^ rhs) + (lhs.second() ^ rhs); }
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs ^ rhs.first()) + (lhs ^ rhs.second()); }
+
 //// dot
 //template<typename T> auto operator & (const blade1<T>& a, const blade1<T>& b) {
 //    return blade02<T>(a.v & b.v);
