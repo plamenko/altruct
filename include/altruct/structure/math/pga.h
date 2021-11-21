@@ -234,8 +234,8 @@ public:
 template<typename T>
 class multivector {
 public:
-    blade13<T> b13;
     blade024<T> b024;
+    blade13<T> b13;
 
     multivector(blade0<T> b0, blade1<T> b1, blade2E<T> b2E, blade2e<T> b2e, blade3<T> b3, blade4<T> b4) :
         b13(std::move(b1), std::move(b3)), b024(blade02<T>(std::move(b0), std::move(b2E)), blade24<T>(std::move(b2e), std::move(b4))) {}
@@ -243,9 +243,9 @@ public:
         b13(std::move(b1), std::move(b3)), b024(blade02<T>(std::move(b0), std::move(b2E)), blade24<T>(std::move(b2e), std::move(b4))) {}
     multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
-    PGA_CONSTRUCTORS_2(multivector, blade13<T>, b13, blade1<T>(zeroOf(b024.b02.b0.s)), blade024<T>, b024, blade02<T>(blade0<T>(zeroOf(b13.b1.e0))));
-    PGA_CLOSED_OPERATORS_2(multivector, T, b13, b024);
-    PGA_COMPOSITE_GETTERS(multivector, b13, b024);
+    PGA_CONSTRUCTORS_2(multivector, blade024<T>, b024, blade02<T>(blade0<T>(zeroOf(b13.b1.e0))), blade13<T>, b13, blade1<T>(zeroOf(b024.b02.b0.s)));
+    PGA_CLOSED_OPERATORS_2(multivector, T, b024, b13);
+    PGA_COMPOSITE_GETTERS(multivector, b024, b13);
 };
 
 //-------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ template<typename T> blade22<T> operator ! (const blade22<T>& c) { return blade2
 template<typename T> blade02<T> operator ! (const blade24<T>& c) { return blade02<T>(!c.b4, !c.b2e); }
 template<typename T> blade024<T> operator ! (const blade024<T>& c) { return blade024<T>(!c.b24, !c.b02); }
 template<typename T> blade13<T> operator ! (const blade13<T>& c) { return blade13<T>(!c.b3, !c.b1); }
-template<typename T> multivector<T> operator ! (const multivector<T>& c) { return multivector<T>(!c.b13, !c.b024); }
+template<typename T> multivector<T> operator ! (const multivector<T>& c) { return multivector<T>(!c.b024, !c.b13); }
 
 // get
 template<typename B> struct get {};
@@ -436,7 +436,7 @@ template<typename T> blade13<T> combine13(blade1<T> b1, blade3<T> b3) { return b
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& combine_multivector(zero<T>, const B& b) { return b; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& combine_multivector(const B& b, zero<T>) { return b; }
 template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
-multivector<T> combine_multivector(BL bl, BR br) { return multivector<T>(blade13<T>(std::move(bl)), blade024<T>(std::move(br))); }
+multivector<T> combine_multivector(BL bl, BR br) { return multivector<T>(blade024<T>(std::move(bl)), blade13<T>(std::move(br))); }
 
 // add
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator + (zero<T>, const B& b) { return b; }
@@ -445,14 +445,14 @@ template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator 
 template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 auto operator + (const BL& bl, const BR& br) {
     return combine_multivector(
-        combine13(
-            get<BL>::b1(bl) + get<BR>::b1(br),
-            get<BL>::b3(bl) + get<BR>::b3(br)),
         combine024(
             get<BL>::b0(bl) + get<BR>::b0(br),
             get<BL>::b2E(bl) + get<BR>::b2E(br),
             get<BL>::b2e(bl) + get<BR>::b2e(br),
-            get<BL>::b4(bl) + get<BR>::b4(br)));
+            get<BL>::b4(bl) + get<BR>::b4(br)),
+        combine13(
+            get<BL>::b1(bl) + get<BR>::b1(br),
+            get<BL>::b3(bl) + get<BR>::b3(br)));
 }
 
 // multiply

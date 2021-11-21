@@ -41,7 +41,7 @@ auto make_a22() { return pga::blade22<symbolic>(make_a2E(), make_a2e()); }
 auto make_a24() { return pga::blade24<symbolic>(make_a2e(), make_a4()); }
 auto make_a024() { return pga::blade024<symbolic>(make_a02(), make_a24()); }
 auto make_a13() { return pga::blade13<symbolic>(make_a1(), make_a3()); }
-auto make_am() { return pga::multivector<symbolic>(make_a13(), make_a024()); }
+auto make_am() { return pga::multivector<symbolic>(make_a024(), make_a13()); }
 
 auto make_bs() { return symbolic("bs"); }
 auto make_b0() { return pga::blade0<symbolic>({ "bs" }); }
@@ -55,7 +55,7 @@ auto make_b22() { return pga::blade22<symbolic>(make_b2E(), make_b2e()); }
 auto make_b24() { return pga::blade24<symbolic>(make_b2e(), make_b4()); }
 auto make_b024() { return pga::blade024<symbolic>(make_b02(), make_b24()); }
 auto make_b13() { return pga::blade13<symbolic>(make_b1(), make_b3()); }
-auto make_bm() { return pga::multivector<symbolic>(make_b13(), make_b024()); }
+auto make_bm() { return pga::multivector<symbolic>(make_b024(), make_b13()); }
 
 } // namespace
 
@@ -699,7 +699,7 @@ TEST(pga_test, constructor_multivector) {
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
 		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
 		to_string(am024));
-	pga::multivector<symbolic> am(make_a13(), make_a024());
+	pga::multivector<symbolic> am(make_a024(), make_a13());
 	EXPECT_EQ(
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
 		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
@@ -995,44 +995,44 @@ TEST(pga_test, combine) {
 	EXPECT_EQ(vec_to_string({ sa1, sa3 }), to_string(pga::combine13(a1, a3)));
 
 	EXPECT_EQ(vec_to_string({ sz }), to_string(pga::combine_multivector(z, z)));
-	EXPECT_EQ(vec_to_string({ sa0 }), to_string(pga::combine_multivector(z, a0)));
-	EXPECT_EQ(vec_to_string({ sa2E }), to_string(pga::combine_multivector(z, a2E)));
-	EXPECT_EQ(vec_to_string({ sa2e }), to_string(pga::combine_multivector(z, a2e)));
-	EXPECT_EQ(vec_to_string({ sa4 }), to_string(pga::combine_multivector(z, a4)));
-	EXPECT_EQ(vec_to_string({ sa0, sa2E }), to_string(pga::combine_multivector(z, a02)));
-	EXPECT_EQ(vec_to_string({ sa2E, sa2e }), to_string(pga::combine_multivector(z, a22)));
-	EXPECT_EQ(vec_to_string({ sa2e, sa4 }), to_string(pga::combine_multivector(z, a24)));
-	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(z, a024)));
+	EXPECT_EQ(vec_to_string({ sa0 }), to_string(pga::combine_multivector(a0, z)));
+	EXPECT_EQ(vec_to_string({ sa2E }), to_string(pga::combine_multivector(a2E, z)));
+	EXPECT_EQ(vec_to_string({ sa2e }), to_string(pga::combine_multivector(a2e, z)));
+	EXPECT_EQ(vec_to_string({ sa4 }), to_string(pga::combine_multivector(a4, z)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E }), to_string(pga::combine_multivector(a02, z)));
+	EXPECT_EQ(vec_to_string({ sa2E, sa2e }), to_string(pga::combine_multivector(a22, z)));
+	EXPECT_EQ(vec_to_string({ sa2e, sa4 }), to_string(pga::combine_multivector(a24, z)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, z)));
 
-	EXPECT_EQ(vec_to_string({ sa1 }), to_string(pga::combine_multivector(a1, z)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a1, a0)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a1, a2E)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a1, a2e)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a1, a4)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a1, a02)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a1, a22)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a1, a24)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a1, a024)));
+	EXPECT_EQ(vec_to_string({ sa1 }), to_string(pga::combine_multivector(z, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a1)));
+	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a1)));
 
-	EXPECT_EQ(vec_to_string({ sa3 }), to_string(pga::combine_multivector(a3, z)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a3, a0)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a3, a2E)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a3, a2e)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a3, a4)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a3, a02)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a3, a22)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a3, a24)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a3, a024)));
+	EXPECT_EQ(vec_to_string({ sa3 }), to_string(pga::combine_multivector(z, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a3)));
+	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a3)));
 
-	EXPECT_EQ(vec_to_string({ sa1, sa3 }), to_string(pga::combine_multivector(a13, z)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a13, a0)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a13, a2E)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a13, a2e)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a13, a4)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a13, a02)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a13, a22)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a13, a24)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a13, a024)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3 }), to_string(pga::combine_multivector(z, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a13)));
+	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a13)));
 }
 
 TEST(pga_test, operators_add) {
