@@ -1043,110 +1043,262 @@ TEST(pga_test, operators_add) {
 	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 	
 	EXPECT_EQ("0", to_string(z + z));
+	EXPECT_EQ("bs id", to_string(z + b0));
 	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3", to_string(z + b1));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(z + b02));
-	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(z + b24));
+	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(z + b2E));
+	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03", to_string(z + b2e));
 	EXPECT_EQ("be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + b3));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + b13));
+	EXPECT_EQ("be0123 e0123", to_string(z + b4));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(z + b02));
+	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03", to_string(z + b22));
+	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(z + b24));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(z + b024));
+	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + bm));
 
+	EXPECT_EQ("as id", to_string(a0 + z));
+	EXPECT_EQ("(as+bs) id", to_string(a0 + b0));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a0 + b1));
+	EXPECT_EQ("as id + bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(a0 + b2E));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123", to_string(a0 + b2e));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a0 + b3));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123", to_string(a0 + b4));
+	EXPECT_EQ("(as+bs) id + bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(a0 + b02));
+	EXPECT_EQ("as id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123", to_string(a0 + b22));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a0 + b24));
+	EXPECT_EQ("(as+bs) id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a0 + b024));
+	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a0 + b13));
+	EXPECT_EQ("(as+bs) id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a0 + bm));
+
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3", to_string(a1 + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b0));
 	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3", to_string(a1 + b1));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b2E));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b2e));
+	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b3));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b4));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b02));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b22));
 	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b24));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b3));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b024));
+	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + bm));
 
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12", to_string(a02 + z));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a02 + b1));
-	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a02 + b02));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b24));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
-		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b3));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b13));
-	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b024));
-	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + bm));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12", to_string(a2E + z));
+	EXPECT_EQ("bs id + abiEx e23 + abiEy e31 + abiEz e12", to_string(a2E + b0));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a2E + b1));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a2E + b2E));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03", to_string(a2E + b2e));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2E + b3));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123", to_string(a2E + b4));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a2E + b02));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03", to_string(a2E + b22));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a2E + b24));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a2E + b024));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2E + b13));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2E + bm));
 
-	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + z));
-	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a24 + b1));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b02));
-	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b24));
-	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b3));
-	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b13));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b024));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + bm));
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03", to_string(a2e + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123", to_string(a2e + b0));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a2e + b1));
+	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03", to_string(a2e + b2E));
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a2e + b2e));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2e + b3));
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03 + be0123 e0123", to_string(a2e + b4));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123", to_string(a2e + b02));
+	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a2e + b22));
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123", to_string(a2e + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123", to_string(a2e + b024));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2e + b13));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2e + bm));
 
 	EXPECT_EQ("ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b0));
 	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b1));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b2E));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b2e));
+	EXPECT_EQ("(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b3));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b4));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b02));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b22));
 	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b24));
-	EXPECT_EQ("(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b3));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b024));
+	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + bm));
 
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + z));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b1));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b02));
-	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b24));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b3));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b13));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b024));
-	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
-		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + bm));
+	EXPECT_EQ("ae0123 e0123", to_string(a4 + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123", to_string(a4 + b0));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a4 + b1));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123", to_string(a4 + b2E));
+	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03 + ae0123 e0123", to_string(a4 + b2e));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a4 + b3));
+	EXPECT_EQ("(ae0123+be0123) e0123", to_string(a4 + b4));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123", to_string(a4 + b02));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + ae0123 e0123", to_string(a4 + b22));
+	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03 + (ae0123+be0123) e0123", to_string(a4 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + (ae0123+be0123) e0123", to_string(a4 + b024));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a4 + b13));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + (ae0123+be0123) e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a4 + bm));
+
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12", to_string(a02 + z));
+	EXPECT_EQ("(as+bs) id + abiEx e23 + abiEy e31 + abiEz e12", to_string(a02 + b0));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a02 + b1));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a02 + b2E));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123", to_string(a02 + b2e));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b3));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123", to_string(a02 + b4));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a02 + b02));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123", to_string(a02 + b22));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b24));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b024));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b13));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + bm));
+
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03", to_string(a22 + z));
+	EXPECT_EQ("bs id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123", to_string(a22 + b0));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a22 + b1));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03", to_string(a22 + b2E));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a22 + b2e));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a22 + b3));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + be0123 e0123", to_string(a22 + b4));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123", to_string(a22 + b02));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a22 + b22));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123", to_string(a22 + b24));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123", to_string(a22 + b024));
+	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a22 + b13));
+	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a22 + bm));
+
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b0));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a24 + b1));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b2E));
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123", to_string(a24 + b2e));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b3));
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03 + (ae0123+be0123) e0123", to_string(a24 + b4));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b02));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123", to_string(a24 + b22));
+	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b024));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b13));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + bm));
 
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + z));
+	EXPECT_EQ("(as+bs) id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b0));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a024 + b1));
-	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b02));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + b24));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b2E));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123", to_string(a024 + b2e));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + b3));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + b13));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + (ae0123+be0123) e0123", to_string(a024 + b4));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b02));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123", to_string(a024 + b22));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + b24));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
 		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + b024));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + b13));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
 		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + bm));
 
+	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + z));
+	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b0));
+	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b1));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b2E));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b2e));
+	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b3));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b4));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b02));
+	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b22));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b024));
+	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b13));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + bm));
+
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + z));
+	EXPECT_EQ("(as+bs) id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b0));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
 		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b1));
-	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b02));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b24));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b2E));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b2e));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + b3));
-	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
-		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + b13));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + (ae0123+be0123) e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b4));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b02));
+	EXPECT_EQ("as id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b22));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b24));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
 		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b024));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + b13));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
 		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
 		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
