@@ -684,48 +684,48 @@ TEST(pga_test, operators_inplace_blade13) {
 
 TEST(pga_test, constructor_multivector) {
 	pga::multivector<symbolic> dm;
-	EXPECT_EQ("? e0 + 0 e1 + 0 e2 + 0 e3 + ? e123 + 0 e032 + 0 e013 + 0 e021 + ? id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ? e0123", to_string(dm));
+	EXPECT_EQ("? id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ? e0123 + ? e0 + 0 e1 + 0 e2 + 0 e3 + ? e123 + 0 e032 + 0 e013 + 0 e021", to_string(dm));
 	pga::multivector<symbolic> am13(make_a13());
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
 		"0 id + 0 e23 + 0 e31 + 0 e12 + "
-		"0 e01 + 0 e02 + 0 e03 + 0 e0123",
+		"0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(am13));
 	pga::multivector<symbolic> am024(make_a024());
 	EXPECT_EQ(
-		"0 e0 + 0 e1 + 0 e2 + 0 e3 + "
-		"0 e123 + 0 e032 + 0 e013 + 0 e021 + "
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
-		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + "
+		"0 e123 + 0 e032 + 0 e013 + 0 e021",
 		to_string(am024));
 	pga::multivector<symbolic> am(make_a024(), make_a13());
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
-		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(am));
 	pga::multivector<symbolic> an(make_a1(), make_a02(), make_a24(), make_a3());
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
-		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(an));
 	pga::multivector<symbolic> ao(make_a1(), make_a0(), make_a2E(), make_a2e(), make_a4(), make_a3());
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
-		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(ao));
 	pga::multivector<symbolic> ap(make_a0(), make_a1(), make_a2E(), make_a2e(), make_a3(), make_a4());
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
-		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123",
+		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(ap));
 }
 
@@ -733,58 +733,58 @@ TEST(pga_test, operators_arithmetic_multivector) {
 	auto am = make_am();
 	auto bm = make_bm();
 	EXPECT_EQ(
-		"(+ae0) e0 + (+avx) e1 + (+avy) e2 + (+avz) e3 + "
-		"(+ae123) e123 + (+atriPx) e032 + (+atriPy) e013 + (+atriPz) e021 + "
 		"(+as) id + (+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12 + "
-		"(+abiex) e01 + (+abiey) e02 + (+abiez) e03 + (+ae0123) e0123",
+		"(+abiex) e01 + (+abiey) e02 + (+abiez) e03 + (+ae0123) e0123 + "
+		"(+ae0) e0 + (+avx) e1 + (+avy) e2 + (+avz) e3 + "
+		"(+ae123) e123 + (+atriPx) e032 + (+atriPy) e013 + (+atriPz) e021",
 		to_string(+am));
 	EXPECT_EQ(
-		"(-ae0) e0 + (-avx) e1 + (-avy) e2 + (-avz) e3 + "
-		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021 + "
 		"(-as) id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + "
-		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + (-ae0123) e0123",
+		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + (-ae0123) e0123 + "
+		"(-ae0) e0 + (-avx) e1 + (-avy) e2 + (-avz) e3 + "
+		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021",
 		to_string(-am));
 	EXPECT_EQ(
-		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
-		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
 		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
-		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123",
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
+		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021",
 		to_string(am + bm));
 	EXPECT_EQ(
-		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
-		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021 + "
 		"(as-bs) id + (abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + "
-		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123",
+		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123 + "
+		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
+		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021",
 		to_string(am - bm));
 	EXPECT_EQ(
-		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
-		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021 + "
 		"(as*bs) id + (abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + "
-		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123",
+		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123 + "
+		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
+		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021",
 		to_string(am * make_bs()));
 	EXPECT_EQ(
-		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
-		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021 + "
 		"(as/bs) id + (abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + "
-		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123",
+		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123 + "
+		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
+		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021",
 		to_string(am / make_bs()));
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021 + "
 		"as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + "
-		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123",
+		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021",
 		to_string(~am));
 	EXPECT_EQ(
-		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
-		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021 + "
 		"as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + "
-		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123",
+		"(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
+		"(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021",
 		to_string(am.rev()));
 	EXPECT_EQ(
-		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
-		"ae0 e123 + avx e032 + avy e013 + avz e021 + "
 		"ae0123 id + abiex e23 + abiey e31 + abiez e12 + "
-		"abiEx e01 + abiEy e02 + abiEz e03 + as e0123",
+		"abiEx e01 + abiEy e02 + abiEz e03 + as e0123 + "
+		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
+		"ae0 e123 + avx e032 + avy e013 + avz e021",
 		to_string(!am));
 }
 
@@ -793,45 +793,45 @@ TEST(pga_test, operators_inplace_multivector) {
 	auto bm = make_bm();
 	auto r = am; r += bm;
 	EXPECT_EQ(
-		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
-		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
 		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
-		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123",
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
+		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021",
 		to_string(r));
 	r = am; r -= bm;
 	EXPECT_EQ(
-		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
-		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021 + "
 		"(as-bs) id + (abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + "
-		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123",
+		"(abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03 + (ae0123-be0123) e0123 + "
+		"(ae0-be0) e0 + (avx-bvx) e1 + (avy-bvy) e2 + (avz-bvz) e3 + "
+		"(ae123-be123) e123 + (atriPx-btriPx) e032 + (atriPy-btriPy) e013 + (atriPz-btriPz) e021",
 		to_string(r));
 	r = am; r *= make_bs();
 	EXPECT_EQ(
-		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
-		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021 + "
 		"(as*bs) id + (abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + "
-		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123",
+		"(abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03 + (ae0123*bs) e0123 + "
+		"(ae0*bs) e0 + (avx*bs) e1 + (avy*bs) e2 + (avz*bs) e3 + "
+		"(ae123*bs) e123 + (atriPx*bs) e032 + (atriPy*bs) e013 + (atriPz*bs) e021",
 		to_string(r));
 	r = am; r /= make_bs();
 	EXPECT_EQ(
-		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
-		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021 + "
 		"(as/bs) id + (abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + "
-		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123",
+		"(abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03 + (ae0123/bs) e0123 + "
+		"(ae0/bs) e0 + (avx/bs) e1 + (avy/bs) e2 + (avz/bs) e3 + "
+		"(ae123/bs) e123 + (atriPx/bs) e032 + (atriPy/bs) e013 + (atriPz/bs) e021",
 		to_string(r));
 	r = am; r += am;
 	EXPECT_EQ(
-		"(ae0+ae0) e0 + (avx+avx) e1 + (avy+avy) e2 + (avz+avz) e3 + "
-		"(ae123+ae123) e123 + (atriPx+atriPx) e032 + (atriPy+atriPy) e013 + (atriPz+atriPz) e021 + "
 		"(as+as) id + (abiEx+abiEx) e23 + (abiEy+abiEy) e31 + (abiEz+abiEz) e12 + "
-		"(abiex+abiex) e01 + (abiey+abiey) e02 + (abiez+abiez) e03 + (ae0123+ae0123) e0123",
+		"(abiex+abiex) e01 + (abiey+abiey) e02 + (abiez+abiez) e03 + (ae0123+ae0123) e0123 + "
+		"(ae0+ae0) e0 + (avx+avx) e1 + (avy+avy) e2 + (avz+avz) e3 + "
+		"(ae123+ae123) e123 + (atriPx+atriPx) e032 + (atriPy+atriPy) e013 + (atriPz+atriPz) e021",
 		to_string(r));
 	r = am; r -= am;
 	EXPECT_EQ(
-		"(ae0-ae0) e0 + (avx-avx) e1 + (avy-avy) e2 + (avz-avz) e3 + "
-		"(ae123-ae123) e123 + (atriPx-atriPx) e032 + (atriPy-atriPy) e013 + (atriPz-atriPz) e021 + "
 		"(as-as) id + (abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12 + "
-		"(abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03 + (ae0123-ae0123) e0123",
+		"(abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03 + (ae0123-ae0123) e0123 + "
+		"(ae0-ae0) e0 + (avx-avx) e1 + (avy-avy) e2 + (avz-avz) e3 + "
+		"(ae123-ae123) e123 + (atriPx-atriPx) e032 + (atriPy-atriPy) e013 + (atriPz-atriPz) e021",
 		to_string(r));
 }
 
@@ -848,10 +848,10 @@ TEST(pga_test, operators_dual) {
 	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12 + abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!make_a024()));
 	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + ae0 e123 + avx e032 + avy e013 + avz e021", to_string(!make_a13()));
 	EXPECT_EQ(
-		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
-		"ae0 e123 + avx e032 + avy e013 + avz e021 + "
 		"ae0123 id + abiex e23 + abiey e31 + abiez e12 + "
-		"abiEx e01 + abiEy e02 + abiEz e03 + as e0123",
+		"abiEx e01 + abiEy e02 + abiEz e03 + as e0123 + "
+		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
+		"ae0 e123 + avx e032 + avy e013 + avz e021",
 		to_string(!make_am()));
 }
 
@@ -1005,34 +1005,34 @@ TEST(pga_test, combine) {
 	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, z)));
 
 	EXPECT_EQ(vec_to_string({ sa1 }), to_string(pga::combine_multivector(z, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a1)));
-	EXPECT_EQ(vec_to_string({ sa1, sz3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a1)));
+	EXPECT_EQ(vec_to_string({ sa0, sz2E, sz2e, sz4, sa1, sz3 }), to_string(pga::combine_multivector(a0, a1)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sz2e, sz4, sa1, sz3 }), to_string(pga::combine_multivector(a2E, a1)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sz4, sa1, sz3 }), to_string(pga::combine_multivector(a2e, a1)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sz2e, sa4, sa1, sz3 }), to_string(pga::combine_multivector(a4, a1)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sz2e, sz4, sa1, sz3 }), to_string(pga::combine_multivector(a02, a1)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sa2e, sz4, sa1, sz3 }), to_string(pga::combine_multivector(a22, a1)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sa4, sa1, sz3 }), to_string(pga::combine_multivector(a24, a1)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4, sa1, sz3 }), to_string(pga::combine_multivector(a024, a1)));
 
 	EXPECT_EQ(vec_to_string({ sa3 }), to_string(pga::combine_multivector(z, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a3)));
-	EXPECT_EQ(vec_to_string({ sz1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a3)));
+	EXPECT_EQ(vec_to_string({ sa0, sz2E, sz2e, sz4, sz1, sa3 }), to_string(pga::combine_multivector(a0, a3)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sz2e, sz4, sz1, sa3 }), to_string(pga::combine_multivector(a2E, a3)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sz4, sz1, sa3 }), to_string(pga::combine_multivector(a2e, a3)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sz2e, sa4, sz1, sa3 }), to_string(pga::combine_multivector(a4, a3)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sz2e, sz4, sz1, sa3 }), to_string(pga::combine_multivector(a02, a3)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sa2e, sz4, sz1, sa3 }), to_string(pga::combine_multivector(a22, a3)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sa4, sz1, sa3 }), to_string(pga::combine_multivector(a24, a3)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4, sz1, sa3 }), to_string(pga::combine_multivector(a024, a3)));
 
 	EXPECT_EQ(vec_to_string({ sa1, sa3 }), to_string(pga::combine_multivector(z, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sz2E, sz2e, sz4 }), to_string(pga::combine_multivector(a0, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a2E, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sz4 }), to_string(pga::combine_multivector(a2e, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sz2e, sa4 }), to_string(pga::combine_multivector(a4, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sz2e, sz4 }), to_string(pga::combine_multivector(a02, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sa2E, sa2e, sz4 }), to_string(pga::combine_multivector(a22, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sz0, sz2E, sa2e, sa4 }), to_string(pga::combine_multivector(a24, a13)));
-	EXPECT_EQ(vec_to_string({ sa1, sa3, sa0, sa2E, sa2e, sa4 }), to_string(pga::combine_multivector(a024, a13)));
+	EXPECT_EQ(vec_to_string({ sa0, sz2E, sz2e, sz4, sa1, sa3 }), to_string(pga::combine_multivector(a0, a13)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sz2e, sz4, sa1, sa3 }), to_string(pga::combine_multivector(a2E, a13)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sz4, sa1, sa3 }), to_string(pga::combine_multivector(a2e, a13)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sz2e, sa4, sa1, sa3 }), to_string(pga::combine_multivector(a4, a13)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sz2e, sz4, sa1, sa3 }), to_string(pga::combine_multivector(a02, a13)));
+	EXPECT_EQ(vec_to_string({ sz0, sa2E, sa2e, sz4, sa1, sa3 }), to_string(pga::combine_multivector(a22, a13)));
+	EXPECT_EQ(vec_to_string({ sz0, sz2E, sa2e, sa4, sa1, sa3 }), to_string(pga::combine_multivector(a24, a13)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2E, sa2e, sa4, sa1, sa3 }), to_string(pga::combine_multivector(a024, a13)));
 }
 
 TEST(pga_test, operators_add) {
@@ -1049,109 +1049,108 @@ TEST(pga_test, operators_add) {
 	EXPECT_EQ("be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + b3));
 	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(z + b024));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(z + bm));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(z + bm));
 
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3", to_string(a1 + z));
 	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3", to_string(a1 + b1));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a1 + b02));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + 0 "
-		"id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a1 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b02));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b24));
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b3));
 	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + b13));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a1 + b024));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a1 + bm));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a1 + b024));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a1 + bm));
 
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12", to_string(a02 + z));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a02 + b1));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a02 + b1));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a02 + b02));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b24));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a02 + b3));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a02 + b13));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b3));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + b13));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + b024));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a02 + bm));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a02 + bm));
 
 	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + z));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + "
-		"0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b1));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a24 + b1));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b02));
 	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b24));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b3));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a24 + b13));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b3));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + b13));
 	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b024));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + bm));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a24 + bm));
 
 	EXPECT_EQ("ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + z));
 	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b1));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a3 + b02));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a3 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b02));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b24));
 	EXPECT_EQ("(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b3));
 	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + b13));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a3 + b024));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a3 + bm));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a3 + b024));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a3 + bm));
 
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + z));
 	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b1));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123", to_string(a13 + b02));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a13 + b24));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b02));
+	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b24));
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b3));
 	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + b13));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a13 + b024));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
-		"bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a13 + bm));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(a13 + b024));
+	EXPECT_EQ("bs id + bbiEx e23 + bbiEy e31 + bbiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(a13 + bm));
 
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + z));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b1));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a024 + b1));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b02));
 	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + b24));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b3));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(a024 + b13));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + b3));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + b13));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
 		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + b024));
-	EXPECT_EQ("be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021 + "
-		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
-		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a024 + bm));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a024 + bm));
 
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(am + z));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(am + b1));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(am + b02));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(am + b24));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(am + b3));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
-		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
-		"as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123", to_string(am + b13));
-	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021 + "
-		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
-		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(am + b024));
-	EXPECT_EQ("(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
-		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021 + "
-		"(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
-		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(am + bm));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + z));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b1));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b02));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b24));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + b3));
+	EXPECT_EQ("as id + abiEx e23 + abiEy e31 + abiEz e12 + abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + (ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + b13));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"ae0 e0 + avx e1 + avy e2 + avz e3 + ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021", to_string(am + b024));
+	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + "
+		"(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123 + "
+		"(ae0+be0) e0 + (avx+bvx) e1 + (avy+bvy) e2 + (avz+bvz) e3 + "
+		"(ae123+be123) e123 + (atriPx+btriPx) e032 + (atriPy+btriPy) e013 + (atriPz+btriPz) e021", to_string(am + bm));
 }
 
 //TEST(pga_test, operators_multiply) {

@@ -262,5 +262,5 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade13<T
 }
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::multivector<T>& c) {
-    return os << c.b13 << " + " << c.b024;
+    return os << c.b024 << " + " << c.b13;
 }
