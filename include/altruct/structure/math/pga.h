@@ -458,163 +458,42 @@ auto operator + (const BL& bl, const BR& br) {
 // multiply
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> B operator * (const T& s, const B& b) { return b * s; }
 
-template<typename T> auto operator * (const blade0<T>& a, const blade0<T>& b) {
-    return blade0<T>(a.s * b.s);
-}
-template<typename T> auto operator * (const blade0<T>& a, const blade1<T>& b) {
-    return blade1<T>(a.s * b.e0, a.s * b.v);
-}
-template<typename T> auto operator * (const blade0<T>& a, const blade2E<T>& b) {
-    return blade2E<T>(a.s * b.biE);
-}
-template<typename T> auto operator * (const blade0<T>& a, const blade2e<T>& b) {
-    return blade2e<T>(a.s * b.bie);
-}
-template<typename T> auto operator * (const blade0<T>& a, const blade3<T>& b) {
-    return blade3<T>(a.s * b.e123, a.s * b.triP);
-}
-template<typename T> auto operator * (const blade0<T>& a, const blade4<T>& b) {
-    return blade4<T>(a.s * b.e0123);
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade0<T>& b) {
-    return blade1<T>(a.e0 * b.s, a.v * b.s);
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade1<T>& b) {
-    return blade0<T>(a.v & b.v) + blade2E<T>(a.v ^ b.v) + blade2e<T>(a.e0 * b.v - a.v * b.e0);
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade2E<T>& b) {
-    return blade1<T>(-(a.v ^ b.biE)) + blade3<T>(((a.v & b.biE)), -a.e0 * b.biE);
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade2e<T>& b) {
-    return blade1<T>((-(a.v & b.bie))) + blade3<T>((a.v ^ b.bie));
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade3<T>& b) {
-    return blade2E<T>(a.v * b.e123) + blade2e<T>(-(a.v ^ b.triP)) + blade4<T>((a.e0 * b.e123 + (a.v & b.triP)));
-}
-template<typename T> auto operator * (const blade1<T>& a, const blade4<T>& b) {
-    return blade3<T>(a.v * b.e0123);
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade0<T>& b) {
-    return blade2E<T>(a.biE * b.s);
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade1<T>& b) {
-    return blade1<T>(-(a.biE ^ b.v)) + blade3<T>(((a.biE & b.v)), -a.biE * b.e0);
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade2E<T>& b) {
-    return blade0<T>((-(a.biE & b.biE))) + blade2E<T>(-(a.biE ^ b.biE));
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade2e<T>& b) {
-    return blade2e<T>(-(a.biE ^ b.bie)) + blade4<T>(((a.biE & b.bie)));
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade3<T>& b) {
-    return blade1<T>(((a.biE & b.triP)), -a.biE * b.e123) + blade3<T>(-(a.biE ^ b.triP));
-}
-template<typename T> auto operator * (const blade2E<T>& a, const blade4<T>& b) {
-    return blade2e<T>(-a.biE * b.e0123);
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade0<T>& b) {
-    return blade2e<T>(a.bie * b.s);
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade1<T>& b) {
-    return blade1<T>(((a.bie & b.v))) + blade3<T>(-(a.bie ^ b.v));
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade2E<T>& b) {
-    return blade2e<T>(-(a.bie ^ b.biE)) + blade4<T>(((a.bie & b.biE)));
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade2e<T>& b) {
-    return zero<T>();
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade3<T>& b) {
-    return blade3<T>(-a.bie * b.e123);
-}
-template<typename T> auto operator * (const blade2e<T>& a, const blade4<T>& b) {
-    return zero<T>();
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade0<T>& b) {
-    return blade3<T>((a.e123 * b.s), a.triP * b.s);
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade1<T>& b) {
-    return blade2E<T>(a.e123 * b.v) + blade2e<T>((a.triP ^ b.v)) + blade4<T>((-a.e123 * b.e0 - (a.triP & b.v)));
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade2E<T>& b) {
-    return blade1<T>(((a.triP & b.biE)), -a.e123 * b.biE) + blade3<T>(-(a.triP ^ b.biE));
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade2e<T>& b) {
-    return blade3<T>(a.e123 * b.bie);
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade3<T>& b) {
-    return blade0<T>((-a.e123 * b.e123)) + blade2e<T>(a.triP * b.e123 + -a.e123 * b.triP);
-}
-template<typename T> auto operator * (const blade3<T>& a, const blade4<T>& b) {
-    return blade1<T>((a.e123 * b.e0123));
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade0<T>& b) {
-    return blade4<T>((a.e0123 * b.s));
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade1<T>& b) {
-    return blade3<T>(-a.e0123 * b.v);
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade2E<T>& b) {
-    return blade2e<T>(-a.e0123 * b.biE);
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade2e<T>& b) {
-    return zero<T>();
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade3<T>& b) {
-    return blade1<T>((-a.e0123 * b.e123));
-}
-template<typename T> auto operator * (const blade4<T>& a, const blade4<T>& b) {
-    return zero<T>();
-}
-
-//template<typename T> blade024<T> operator * (const blade1<T>& a, const blade1<T>& b) {
-//    return blade02<T>(a.v & b.v, a.v ^ b.v) + blade24<T>(a.e0 * b.v - a.v * b.e0);
-//}
-//template<typename T> blade13<T> operator * (const blade1<T>& a, const blade02<T>& b) {
-//    return blade1<T>(a.e0 * b.s, a.v * b.s - (a.v ^ b.biE)) + blade3<T>(a.v & b.biE, -a.e0 * b.biE);
-//}
-//template<typename T> blade13<T> operator * (const blade1<T>& a, const blade24<T>& b) {
-//    return blade1<T>(-(a.v & b.bie)) + blade3<T>(a.v * b.e0123 + (a.v ^ b.bie));
-//}
-//template<typename T> blade024<T> operator * (const blade1<T>& a, const blade3<T>& b) {
-//    return blade02<T>(a.v * b.e123) + blade24<T>(-a.v ^ b.triP, a.e0 * b.e123 + (a.v & b.triP));
-//}
-//template<typename T> blade13<T> operator * (const blade02<T>& a, const blade1<T>& b) {
-//    return blade1<T>(a.s * b.e0, a.s * b.v - (a.biE ^ b.v)) + blade3<T>(a.biE & b.v, -a.biE * b.e0);
-//}
-//template<typename T> blade02<T> operator * (const blade02<T>& a, const blade02<T>& b) {
-//    return blade02<T>(a.s * b.s - (a.biE & b.biE), a.biE * b.s + a.s * b.biE - (a.biE ^ b.biE));
-//}
-//template<typename T> blade24<T> operator * (const blade02<T>& a, const blade24<T>& b) {
-//    return blade24<T>(a.s * b.bie - a.biE * b.e0123 - (a.biE ^ b.bie), a.s * b.e0123 + (a.biE & b.bie));
-//}
-//template<typename T> blade13<T> operator * (const blade02<T>& a, const blade3<T>& b) {
-//    return blade1<T>(a.biE & b.triP, -a.biE * b.e123) + blade3<T>(a.s * b.e123, a.s * b.triP - (a.biE ^ b.triP));
-//}
-//template<typename T> blade13<T> operator * (const blade24<T>& a, const blade1<T>& b) {
-//    return blade1<T>(a.bie & b.v) + blade3<T>(-a.e0123 * b.v - (a.bie ^ b.v));
-//}
-//template<typename T> blade24<T> operator * (const blade24<T>& a, const blade02<T>& b) {
-//    return blade24<T>(a.bie * b.s - a.e0123 * b.biE - (a.bie ^ b.biE), a.e0123 * b.s + (a.bie & b.biE));
-//}
-//template<typename T> zero<T> operator * (const blade24<T>& a, const blade24<T>& b) {
-//    return zero<T>();
-//}
-//template<typename T> blade13<T> operator * (const blade24<T>& a, const blade3<T>& b) {
-//    return blade1<T>(-a.e0123 * b.e123) + blade3<T>(-a.bie * b.e123);
-//}
-//template<typename T> blade024<T> operator * (const blade3<T>& a, const blade1<T>& b) {
-//    return blade02<T>(a.e123 * b.v) + blade24<T>(a.triP ^ b.v, -a.e123 * b.e0 - (a.triP & b.v));
-//}
-//template<typename T> blade13<T> operator * (const blade3<T>& a, const blade02<T>& b) {
-//    return blade1<T>(a.triP & b.biE, -a.e123 * b.biE) + blade3<T>(a.e123 * b.s, a.triP * b.s - (a.triP ^ b.biE));
-//}
-//template<typename T> blade13<T> operator * (const blade3<T>& a, const blade24<T>& b) {
-//    return blade1<T>(a.e123 * b.e0123) + blade3<T>(a.e123 * b.bie);
-//}
-//template<typename T> blade024<T> operator * (const blade3<T>& a, const blade3<T>& b) {
-//    return blade02<T>(-a.e123 * b.e123) + blade24<T>(a.triP * b.e123 - a.e123 * b.triP);
-//}
+template<typename T> auto operator * (const blade0<T>& a, const blade0<T>& b) { return blade0<T>(a.s * b.s); }
+template<typename T> auto operator * (const blade0<T>& a, const blade1<T>& b) { return blade1<T>(a.s * b.e0, a.s * b.v); }
+template<typename T> auto operator * (const blade0<T>& a, const blade2E<T>& b) { return blade2E<T>(a.s * b.biE); }
+template<typename T> auto operator * (const blade0<T>& a, const blade2e<T>& b) { return blade2e<T>(a.s * b.bie); }
+template<typename T> auto operator * (const blade0<T>& a, const blade3<T>& b) { return blade3<T>(a.s * b.e123, a.s * b.triP); }
+template<typename T> auto operator * (const blade0<T>& a, const blade4<T>& b) { return blade4<T>(a.s * b.e0123); }
+template<typename T> auto operator * (const blade1<T>& a, const blade0<T>& b) { return blade1<T>(a.e0 * b.s, a.v * b.s); }
+template<typename T> auto operator * (const blade1<T>& a, const blade1<T>& b) { return blade0<T>(a.v & b.v) + blade2E<T>(a.v ^ b.v) + blade2e<T>(a.e0 * b.v - a.v * b.e0); }
+template<typename T> auto operator * (const blade1<T>& a, const blade2E<T>& b) { return blade1<T>(-(a.v ^ b.biE)) + blade3<T>(a.v & b.biE, -a.e0 * b.biE); }
+template<typename T> auto operator * (const blade1<T>& a, const blade2e<T>& b) { return blade1<T>(-(a.v & b.bie)) + blade3<T>(a.v ^ b.bie); }
+template<typename T> auto operator * (const blade1<T>& a, const blade3<T>& b) { return blade2E<T>(a.v * b.e123) + blade2e<T>(-(a.v ^ b.triP)) + blade4<T>(a.e0 * b.e123 + (a.v & b.triP)); }
+template<typename T> auto operator * (const blade1<T>& a, const blade4<T>& b) { return blade3<T>(a.v * b.e0123); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade0<T>& b) { return blade2E<T>(a.biE * b.s); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade1<T>& b) { return blade1<T>(-(a.biE ^ b.v)) + blade3<T>(a.biE & b.v, a.biE * -b.e0); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade2E<T>& b) { return blade0<T>(-(a.biE & b.biE)) + blade2E<T>(-(a.biE ^ b.biE)); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade2e<T>& b) { return blade2e<T>(-(a.biE ^ b.bie)) + blade4<T>(a.biE & b.bie); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade3<T>& b) { return blade1<T>(a.biE & b.triP, a.biE * -b.e123) + blade3<T>(-(a.biE ^ b.triP)); }
+template<typename T> auto operator * (const blade2E<T>& a, const blade4<T>& b) { return blade2e<T>(a.biE * -b.e0123); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade0<T>& b) { return blade2e<T>(a.bie * b.s); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade1<T>& b) { return blade1<T>(a.bie & b.v) + blade3<T>(-(a.bie ^ b.v)); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade2E<T>& b) { return blade2e<T>(-(a.bie ^ b.biE)) + blade4<T>(a.bie & b.biE); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade2e<T>& b) { return zero<T>(); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade3<T>& b) { return blade3<T>(a.bie * -b.e123); }
+template<typename T> auto operator * (const blade2e<T>& a, const blade4<T>& b) { return zero<T>(); }
+template<typename T> auto operator * (const blade3<T>& a, const blade0<T>& b) { return blade3<T>(a.e123 * b.s, a.triP * b.s); }
+template<typename T> auto operator * (const blade3<T>& a, const blade1<T>& b) { return blade2E<T>(a.e123 * b.v) + blade2e<T>(a.triP ^ b.v) + blade4<T>(-a.e123 * b.e0 - (a.triP & b.v)); }
+template<typename T> auto operator * (const blade3<T>& a, const blade2E<T>& b) { return blade1<T>(a.triP & b.biE, -a.e123 * b.biE) + blade3<T>(-(a.triP ^ b.biE)); }
+template<typename T> auto operator * (const blade3<T>& a, const blade2e<T>& b) { return blade3<T>(a.e123 * b.bie); }
+template<typename T> auto operator * (const blade3<T>& a, const blade3<T>& b) { return blade0<T>(-a.e123 * b.e123) + blade2e<T>(a.triP * b.e123 - a.e123 * b.triP); }
+template<typename T> auto operator * (const blade3<T>& a, const blade4<T>& b) { return blade1<T>(a.e123 * b.e0123); }
+template<typename T> auto operator * (const blade4<T>& a, const blade0<T>& b) { return blade4<T>(a.e0123 * b.s); }
+template<typename T> auto operator * (const blade4<T>& a, const blade1<T>& b) { return blade3<T>(-a.e0123 * b.v); }
+template<typename T> auto operator * (const blade4<T>& a, const blade2E<T>& b) { return blade2e<T>(-a.e0123 * b.biE); }
+template<typename T> auto operator * (const blade4<T>& a, const blade2e<T>& b) { return zero<T>(); }
+template<typename T> auto operator * (const blade4<T>& a, const blade3<T>& b) { return blade1<T>(-a.e0123 * b.e123); }
+template<typename T> auto operator * (const blade4<T>& a, const blade4<T>& b) { return zero<T>(); }
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator * (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator * (const B& b, zero<T> z) { return z; }
