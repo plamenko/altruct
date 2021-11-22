@@ -651,14 +651,19 @@ blade1<T> plane(vector3d<T> n, T d) {
 
 // line with direction `l` through point `P / norm(l)`
 template<typename T>
-blade024<T> line(const vector3d<T>& l, const vector3d<T>& P) {
-    return blade024<T>(blade02<T>(l), blade24<T>(l ^ P));
+blade22<T> line(const vector3d<T>& l, const vector3d<T>& P) {
+    return blade22<T>(blade2E<T>(l), blade2e<T>(l ^ P));
 }
 
 // point with homogenous coordinate `h` at position `{x, y, z} / h`
 template<typename T>
 blade3<T> point(const vector3d<T>& P, T h) {
     return blade3<T>(std::move(h), -P);
+}
+// point with at position `{x, y, z}`
+template<typename T>
+blade3<T> point(const vector3d<T>& P) {
+    return blade3<T>(identityOf(P.z), -P);
 }
 
 //-------------------------------------------------------------------------------

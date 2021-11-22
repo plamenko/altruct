@@ -1692,6 +1692,35 @@ TEST(pga_test, operators_join) {
 		to_string(am | bm));
 }
 
+TEST(pga_test, primitives) {
+	auto pa = pga::plane<double>({ 2, 5, 14 }, 4);
+	auto pb = pga::plane<double>({ -2, 6, 9 }, 3);
+	auto pc = pga::plane<double>({ -3, 4, 12 }, 2);
+	auto Pa = pga::point<double>({ 4, 1, 8 });
+	auto Pb = pga::point<double>({ 2, -6, 3 });
+	auto Pc = pga::point<double>({ -10, 11, 2 });
+	auto le = pga::line<double>({ 2, -5, 5 }, { 2, 6, 3 });
+
+	EXPECT_EQ("4 e0 + 2 e1 + 5 e2 + 14 e3", to_string(pa));
+	EXPECT_EQ("1 e123 + -4 e032 + -1 e013 + -8 e021", to_string(Pa));
+	EXPECT_EQ("2 e23 + -5 e31 + 5 e12 + -45 e01 + 4 e02 + 22 e03", to_string(le));
+	
+	auto lab = pa ^ pb;
+	EXPECT_EQ("-39 e23 + -46 e31 + 22 e12 + -14 e01 + 9 e02 + -6 e03", to_string(lab));
+	
+	auto Pabc = pa ^ pb ^ pc;
+	EXPECT_EQ("197 e123 + -54 e032 + -94 e013 + -15 e021", to_string(Pabc));
+
+	auto pabc = Pa | Pb | Pc;
+	EXPECT_EQ("518 e0 + -92 e1 + -58 e2 + 118 e3", to_string(pabc));
+
+	auto l = pa ^ pabc;
+	EXPECT_EQ("1402 e23 + -1524 e31 + 344 e12 + -1404 e01 + -2822 e02 + -6780 e03", to_string(l));
+	
+	auto pabc2 = l | Pa / 121;
+	EXPECT_EQ("518 e0 + -92 e1 + -58 e2 + 118 e3", to_string(pabc2));
+}
+
 //TEST(symbolic_test, casts) {
 //    symbolic s("s");
 //    symbolic e0 = zeroOf(s);
