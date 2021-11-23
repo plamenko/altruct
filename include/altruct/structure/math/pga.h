@@ -23,17 +23,26 @@ namespace math {
  *     e3  -e03  e31 -e23   1
  *
  *   elements:   |e0, {e1, e2, e3}|   1   | {e23, e31, e12}| {e01, e02, e03}| e0123  |  e123, {e032, e013, e021}|
- *    square:    | 0   +1  +1  +1 |  +1   |  -1   -1   -1  |   0    0    0  |  0     |   -1     0     0     0   |
+ *    square:    | 0   +1  +1  +1 |  +1   |  -1   -1   -1  |   0    0    0  |   0    |   -1     0     0     0   |
  *   ------------+----------------+-------+----------------+----------------+--------+--------------------------+
  *   blades:     |    vector      | salar |   E-bivector   |   e-bivector   | pseudo |        trivector         |
- *    c++ class: |    blade1      | blade0|     blade2E    |     blade2e    | blade4 |          blade3          |
+ *   c++ class:  |    blade1      | blade0|     blade2E    |     blade2e    | blade4 |          blade3          |
  *   ------------+----------------+-------+----------------+----------------+--------+--------------------------+
- *   primitives: |    plane       |       |          line or screw          |        |          point           |
- *    c++ class: |    blade1      |       |             blade22             |        |          blade3          |
+ *   plane       | #---#---#---#  |       |                |                |        |                          |
+ *   line        |                |       |   #----#----#  |   #----#----#  |        |                          |
+ *   point       |                |       |                |                |        |    #-----#-----#-----#   |
  *   ------------+----------------+-------+----------------+----------------+--------+--------------------------+
- *   operators:  |                |     rotor              |           translator    |                          |
- *    c++ class: |                |    blade02             |             blade24     |                          |
- *   ------------+----------------+-------+----------------+----------------+--------+--------------------------+
+ *   rotor       |                |   #   |   #----#----#  |                |        |                          |
+ *   translator  |                |   #   |                |   #----#----#  |        |                          |
+ *   motor       |                |   #   |   #----#----#  |   #----#----#  |   #    |                          |
+ *
+ *   plane:      blade1
+ *   line:       blade22 = blade2E + blade2e
+ *   point:      blade3
+ *
+ *   rotor:      blade02E = blade0 + blade2E
+ *   translator: blade02e = blade0 + balde2e
+ *   motor:      blade024 = blade0 + blade2E + blade2e + blade4
  *
  *
  *   dual:                     !a = {e123, triP, e0123, bie, biE, s,     e0,   v   }
@@ -172,14 +181,14 @@ public:
 //-------------------------------------------------------------------------------
 
 template<typename T>
-class blade02 {
+class blade02E {
 public:
     blade0<T> b0;
     blade2E<T> b2E;
 
-    PGA_CONSTRUCTORS_2(blade02, blade0<T>, b0, zeroOf(b2E.biE.z), blade2E<T>, b2E, zeroOf(b0.s));
-    PGA_CLOSED_OPERATORS_2(blade02, T, b0, b2E);
-    PGA_COMPOSITE_GETTERS(blade02, b0, b2E);
+    PGA_CONSTRUCTORS_2(blade02E, blade0<T>, b0, zeroOf(b2E.biE.z), blade2E<T>, b2E, zeroOf(b0.s));
+    PGA_CLOSED_OPERATORS_2(blade02E, T, b0, b2E);
+    PGA_COMPOSITE_GETTERS(blade02E, b0, b2E);
 };
 
 template<typename T>
@@ -194,28 +203,28 @@ public:
 };
 
 template<typename T>
-class blade24 {
+class blade2e4 {
 public:
     blade2e<T> b2e;
     blade4<T> b4;
 
-    PGA_CONSTRUCTORS_2(blade24, blade2e<T>, b2e, zeroOf(b4.e0123), blade4<T>, b4, zeroOf(b2e.bie.z));
-    PGA_CLOSED_OPERATORS_2(blade24, T, b2e, b4);
-    PGA_COMPOSITE_GETTERS(blade24, b2e, b4);
+    PGA_CONSTRUCTORS_2(blade2e4, blade2e<T>, b2e, zeroOf(b4.e0123), blade4<T>, b4, zeroOf(b2e.bie.z));
+    PGA_CLOSED_OPERATORS_2(blade2e4, T, b2e, b4);
+    PGA_COMPOSITE_GETTERS(blade2e4, b2e, b4);
 };
 
 template<typename T>
 class blade024 {
 public:
-    blade02<T> b02;
-    blade24<T> b24;
+    blade02E<T> b02;
+    blade2e4<T> b24;
 
     explicit blade024(const blade0<T>& b0) : b02(b0), b24(blade4<T>(zeroOf(b0.s))) {}
     explicit blade024(const blade2E<T>& b2E) : b02(b2E), b24(blade4<T>(zeroOf(b2E.biE.z))) {}
     explicit blade024(const blade2e<T>& b2e) : b02(blade0<T>(zeroOf(b2e.bie.z))), b24(b2e) {}
     explicit blade024(const blade4<T>& b4) : b02(blade0<T>(zeroOf(b4.e0123))), b24(b4) {}
     explicit blade024(const blade22<T>& c) : b02(c.b2E), b24(c.b2e) {}
-    PGA_CONSTRUCTORS_2(blade024, blade02<T>, b02, blade0<T>(zeroOf(b24.b4.e0123)), blade24<T>, b24, blade4<T>(zeroOf(b02.b0.s)));
+    PGA_CONSTRUCTORS_2(blade024, blade02E<T>, b02, blade0<T>(zeroOf(b24.b4.e0123)), blade2e4<T>, b24, blade4<T>(zeroOf(b02.b0.s)));
     PGA_CLOSED_OPERATORS_2(blade024, T, b02, b24);
     PGA_COMPOSITE_GETTERS(blade024, b02, b24);
 };
@@ -238,12 +247,12 @@ public:
     blade13<T> b13;
 
     multivector(blade0<T> b0, blade1<T> b1, blade2E<T> b2E, blade2e<T> b2e, blade3<T> b3, blade4<T> b4) :
-        b13(std::move(b1), std::move(b3)), b024(blade02<T>(std::move(b0), std::move(b2E)), blade24<T>(std::move(b2e), std::move(b4))) {}
+        b13(std::move(b1), std::move(b3)), b024(blade02E<T>(std::move(b0), std::move(b2E)), blade2e4<T>(std::move(b2e), std::move(b4))) {}
     multivector(blade1<T> b1, blade0<T> b0, blade2E<T> b2E, blade2e<T> b2e, blade4<T> b4, blade3<T> b3) :
-        b13(std::move(b1), std::move(b3)), b024(blade02<T>(std::move(b0), std::move(b2E)), blade24<T>(std::move(b2e), std::move(b4))) {}
-    multivector(blade1<T> b1, blade02<T> b02, blade24<T> b24, blade3<T> b3) :
+        b13(std::move(b1), std::move(b3)), b024(blade02E<T>(std::move(b0), std::move(b2E)), blade2e4<T>(std::move(b2e), std::move(b4))) {}
+    multivector(blade1<T> b1, blade02E<T> b02, blade2e4<T> b24, blade3<T> b3) :
         b13(std::move(b1), std::move(b3)), b024(std::move(b02), std::move(b24)) {}
-    PGA_CONSTRUCTORS_2(multivector, blade024<T>, b024, blade02<T>(blade0<T>(zeroOf(b13.b1.e0))), blade13<T>, b13, blade1<T>(zeroOf(b024.b02.b0.s)));
+    PGA_CONSTRUCTORS_2(multivector, blade024<T>, b024, blade02E<T>(blade0<T>(zeroOf(b13.b1.e0))), blade13<T>, b13, blade1<T>(zeroOf(b024.b02.b0.s)));
     PGA_CLOSED_OPERATORS_2(multivector, T, b024, b13);
     PGA_COMPOSITE_GETTERS(multivector, b024, b13);
 };
@@ -263,9 +272,9 @@ template<typename T> struct is_primitive_blade_type<blade4<T>, T> { static const
 #define IF_PRIMITIVE_BLADE_TYPE(B, T) std::enable_if_t<is_primitive_blade_type<B, T>::value, bool> = true
 
 template<typename B, typename T> struct is_composite_blade_type { static const bool value = false; };
-template<typename T> struct is_composite_blade_type <blade02<T>, T> { static const bool value = true; };
+template<typename T> struct is_composite_blade_type <blade02E<T>, T> { static const bool value = true; };
 template<typename T> struct is_composite_blade_type <blade22<T>, T> { static const bool value = true; };
-template<typename T> struct is_composite_blade_type <blade24<T>, T> { static const bool value = true; };
+template<typename T> struct is_composite_blade_type <blade2e4<T>, T> { static const bool value = true; };
 template<typename T> struct is_composite_blade_type <blade024<T>, T> { static const bool value = true; };
 template<typename T> struct is_composite_blade_type <blade13<T>, T> { static const bool value = true; };
 template<typename T> struct is_composite_blade_type <multivector<T>, T> { static const bool value = true; };
@@ -283,9 +292,9 @@ template<typename T> blade2e<T> operator ! (const blade2E<T>& b2E) { return blad
 template<typename T> blade2E<T> operator ! (const blade2e<T>& b2e) { return blade2E<T>(b2e.bie); }
 template<typename T> blade1<T> operator ! (const blade3<T>& b3) { return blade1<T>(b3.e123, b3.triP); }
 template<typename T> blade0<T> operator ! (const blade4<T>& b4) { return blade0<T>(b4.e0123); }
-template<typename T> blade24<T> operator ! (const blade02<T>& c) { return blade24<T>(!c.b2E, !c.b0); }
+template<typename T> blade2e4<T> operator ! (const blade02E<T>& c) { return blade2e4<T>(!c.b2E, !c.b0); }
 template<typename T> blade22<T> operator ! (const blade22<T>& c) { return blade22<T>(!c.b2e, !c.b2E); }
-template<typename T> blade02<T> operator ! (const blade24<T>& c) { return blade02<T>(!c.b4, !c.b2e); }
+template<typename T> blade02E<T> operator ! (const blade2e4<T>& c) { return blade02E<T>(!c.b4, !c.b2e); }
 template<typename T> blade024<T> operator ! (const blade024<T>& c) { return blade024<T>(!c.b24, !c.b02); }
 template<typename T> blade13<T> operator ! (const blade13<T>& c) { return blade13<T>(!c.b3, !c.b1); }
 template<typename T> multivector<T> operator ! (const multivector<T>& c) { return multivector<T>(!c.b024, !c.b13); }
@@ -355,14 +364,14 @@ template<typename T> struct get<blade4<T>> {
     static zero<T> b3(const blade4<T>& b4) { return zero<T>(); }
     static const blade4<T>& b4(const blade4<T>& b4) { return b4; }
 };
-template<typename T> struct get<blade02<T>> {
+template<typename T> struct get<blade02E<T>> {
     using type = T;
-    static const blade0<T>& b0(const blade02<T>& c) { return c.b0; }
-    static zero<T> b1(const blade02<T>& c) { return zero<T>(); }
-    static const blade2E<T>& b2E(const blade02<T>& c) { return c.b2E; }
-    static zero<T> b2e(const blade02<T>& c) { return zero<T>(); }
-    static zero<T> b3(const blade02<T>& c) { return zero<T>(); }
-    static zero<T> b4(const blade02<T>& c) { return zero<T>(); }
+    static const blade0<T>& b0(const blade02E<T>& c) { return c.b0; }
+    static zero<T> b1(const blade02E<T>& c) { return zero<T>(); }
+    static const blade2E<T>& b2E(const blade02E<T>& c) { return c.b2E; }
+    static zero<T> b2e(const blade02E<T>& c) { return zero<T>(); }
+    static zero<T> b3(const blade02E<T>& c) { return zero<T>(); }
+    static zero<T> b4(const blade02E<T>& c) { return zero<T>(); }
 };
 template<typename T> struct get<blade22<T>> {
     using type = T;
@@ -373,14 +382,14 @@ template<typename T> struct get<blade22<T>> {
     static zero<T> b3(const blade22<T>& c) { return zero<T>(); }
     static zero<T> b4(const blade22<T>& c) { return zero<T>(); }
 }; 
-template<typename T> struct get<blade24<T>> {
+template<typename T> struct get<blade2e4<T>> {
     using type = T;
-    static zero<T> b0(const blade24<T>& c) { return zero<T>(); }
-    static zero<T> b1(const blade24<T>& c) { return zero<T>(); }
-    static zero<T> b2E(const blade24<T>& c) { return zero<T>(); }
-    static const blade2e<T>& b2e(const blade24<T>& c) { return c.b2e; }
-    static zero<T> b3(const blade24<T>& c) { return zero<T>(); }
-    static const blade4<T>& b4(const blade24<T>& c) { return c.b4; }
+    static zero<T> b0(const blade2e4<T>& c) { return zero<T>(); }
+    static zero<T> b1(const blade2e4<T>& c) { return zero<T>(); }
+    static zero<T> b2E(const blade2e4<T>& c) { return zero<T>(); }
+    static const blade2e<T>& b2e(const blade2e4<T>& c) { return c.b2e; }
+    static zero<T> b3(const blade2e4<T>& c) { return zero<T>(); }
+    static const blade4<T>& b4(const blade2e4<T>& c) { return c.b4; }
 };
 template<typename T> struct get<blade024<T>> {
     using type = T;
@@ -416,17 +425,17 @@ template<typename T> const blade0<T>& combine024(const blade0<T>& b0, zero<T>, z
 template<typename T> const blade2E<T>& combine024(zero<T>, const blade2E<T>& b2E, zero<T>, zero<T>) { return b2E; }
 template<typename T> const blade2e<T>& combine024(zero<T>, zero<T>, const blade2e<T>& b2e, zero<T>) { return b2e; }
 template<typename T> const blade4<T>& combine024(zero<T>, zero<T>, zero<T>, const blade4<T>& b4) { return b4; }
-template<typename T> blade02<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, zero<T>, zero<T>) { return blade02<T>(b0, b2E); }
+template<typename T> blade02E<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, zero<T>, zero<T>) { return blade02E<T>(b0, b2E); }
 template<typename T> blade22<T> combine024(zero<T>, const blade2E<T>& b2E, const blade2e<T>& b2e, zero<T>) { return blade22<T>(b2E, b2e); }
-template<typename T> blade24<T> combine024(zero<T>, zero<T>, const blade2e<T>& b2e, const blade4<T>& b4) { return blade24<T>(b2e, b4); }
-template<typename T> blade024<T> combine024(zero<T>, const blade2E<T>& b2E, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02<T>(b2E), blade24<T>(b4)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02<T>(b0), blade24<T>(b4)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, const blade2e<T>& b2e, zero<T>) { return blade024<T>(blade02<T>(b0), blade24<T>(b2e)); }
-template<typename T> blade024<T> combine024(zero<T>, const blade2E<T>& b2E, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02<T>(b2E), blade24<T>(b2e, b4)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02<T>(b0), blade24<T>(b2e, b4)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02<T>(b0, b2E), blade24<T>(b4)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, const blade2e<T>& b2e, zero<T>) { return blade024<T>(blade02<T>(b0, b2E), blade24<T>(b2e)); }
-template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02<T>(b0, b2E), blade24<T>(b2e, b4)); }
+template<typename T> blade2e4<T> combine024(zero<T>, zero<T>, const blade2e<T>& b2e, const blade4<T>& b4) { return blade2e4<T>(b2e, b4); }
+template<typename T> blade024<T> combine024(zero<T>, const blade2E<T>& b2E, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b2E), blade2e4<T>(b4)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b0), blade2e4<T>(b4)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, const blade2e<T>& b2e, zero<T>) { return blade024<T>(blade02E<T>(b0), blade2e4<T>(b2e)); }
+template<typename T> blade024<T> combine024(zero<T>, const blade2E<T>& b2E, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b2E), blade2e4<T>(b2e, b4)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, zero<T>, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b0), blade2e4<T>(b2e, b4)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, zero<T>, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b0, b2E), blade2e4<T>(b4)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, const blade2e<T>& b2e, zero<T>) { return blade024<T>(blade02E<T>(b0, b2E), blade2e4<T>(b2e)); }
+template<typename T> blade024<T> combine024(const blade0<T>& b0, const blade2E<T>& b2E, const blade2e<T>& b2e, const blade4<T>& b4) { return blade024<T>(blade02E<T>(b0, b2E), blade2e4<T>(b2e, b4)); }
 
 template<typename T> zero<T> combine13(zero<T>, zero<T>) { return zero<T>(); }
 template<typename T> const blade1<T>& combine13(const blade1<T>& b1, zero<T>) { return b1; }

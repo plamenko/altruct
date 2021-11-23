@@ -61,11 +61,11 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade3<T>
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade4<T>& b4);
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& c);
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02E<T>& c);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade22<T>& c);
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& c);
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade2e4<T>& c);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade024<T>& c);
 template<typename T>
@@ -241,7 +241,7 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade4<T>
     return os << b4.e0123 << " e0123";
 }
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02<T>& c) {
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade02E<T>& c) {
     return os << c.b0 << " + " << c.b2E;
 }
 template<typename T>
@@ -249,7 +249,7 @@ std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade22<T
     return os << c.b2E << " + " << c.b2e;
 }
 template<typename T>
-std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade24<T>& c) {
+std::ostream& operator << (std::ostream& os, const altruct::math::pga::blade2e4<T>& c) {
     return os << c.b2e << " + " << c.b4;
 }
 template<typename T>

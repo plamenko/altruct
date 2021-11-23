@@ -36,9 +36,9 @@ auto make_a2E() { return pga::blade2E<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"
 auto make_a2e() { return pga::blade2e<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }); }
 auto make_a3() { return pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} }); }
 auto make_a4() { return pga::blade4<symbolic>({ "ae0123" }); }
-auto make_a02() { return pga::blade02<symbolic>(make_a0(), make_a2E()); }
+auto make_a02() { return pga::blade02E<symbolic>(make_a0(), make_a2E()); }
 auto make_a22() { return pga::blade22<symbolic>(make_a2E(), make_a2e()); }
-auto make_a24() { return pga::blade24<symbolic>(make_a2e(), make_a4()); }
+auto make_a24() { return pga::blade2e4<symbolic>(make_a2e(), make_a4()); }
 auto make_a024() { return pga::blade024<symbolic>(make_a02(), make_a24()); }
 auto make_a13() { return pga::blade13<symbolic>(make_a1(), make_a3()); }
 auto make_am() { return pga::multivector<symbolic>(make_a024(), make_a13()); }
@@ -50,9 +50,9 @@ auto make_b2E() { return pga::blade2E<symbolic>({ {"bbiEx"}, {"bbiEy"}, {"bbiEz"
 auto make_b2e() { return pga::blade2e<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }); }
 auto make_b3() { return pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} }); }
 auto make_b4() { return pga::blade4<symbolic>({ "be0123" }); }
-auto make_b02() { return pga::blade02<symbolic>(make_b0(), make_b2E()); }
+auto make_b02() { return pga::blade02E<symbolic>(make_b0(), make_b2E()); }
 auto make_b22() { return pga::blade22<symbolic>(make_b2E(), make_b2e()); }
-auto make_b24() { return pga::blade24<symbolic>(make_b2e(), make_b4()); }
+auto make_b24() { return pga::blade2e4<symbolic>(make_b2e(), make_b4()); }
 auto make_b024() { return pga::blade024<symbolic>(make_b02(), make_b24()); }
 auto make_b13() { return pga::blade13<symbolic>(make_b1(), make_b3()); }
 auto make_bm() { return pga::multivector<symbolic>(make_b024(), make_b13()); }
@@ -327,30 +327,30 @@ TEST(pga_test, operators_inplace_blade4) {
 	EXPECT_EQ("(ae0123-ae0123) e0123", to_string(r));
 }
 
-TEST(pga_test, constructor_blade02) {
-	pga::blade02<symbolic> d02;
+TEST(pga_test, constructor_blade02E) {
+	pga::blade02E<symbolic> d02;
 	EXPECT_EQ("?", d02.b0.s.v);
 	EXPECT_EQ("0", d02.b2E.biE.x.v);
 	EXPECT_EQ("0", d02.b2E.biE.y.v);
 	EXPECT_EQ("0", d02.b2E.biE.z.v);
-	pga::blade02<symbolic> s02(make_a0());
+	pga::blade02E<symbolic> s02(make_a0());
 	EXPECT_EQ("as", s02.b0.s.v);
 	EXPECT_EQ("0", s02.b2E.biE.x.v);
 	EXPECT_EQ("0", s02.b2E.biE.y.v);
 	EXPECT_EQ("0", s02.b2E.biE.z.v);
-	pga::blade02<symbolic> v02(make_a2E());
+	pga::blade02E<symbolic> v02(make_a2E());
 	EXPECT_EQ("0", v02.b0.s.v);
 	EXPECT_EQ("abiEx", v02.b2E.biE.x.v);
 	EXPECT_EQ("abiEy", v02.b2E.biE.y.v);
 	EXPECT_EQ("abiEz", v02.b2E.biE.z.v);
-	pga::blade02<symbolic> a02(make_a0(), make_a2E());
+	pga::blade02E<symbolic> a02(make_a0(), make_a2E());
 	EXPECT_EQ("as", a02.b0.s.v);
 	EXPECT_EQ("abiEx", a02.b2E.biE.x.v);
 	EXPECT_EQ("abiEy", a02.b2E.biE.y.v);
 	EXPECT_EQ("abiEz", a02.b2E.biE.z.v);
 }
 
-TEST(pga_test, operators_arithmetic_blade02) {
+TEST(pga_test, operators_arithmetic_blade02E) {
 	auto a02 = make_a02();
 	auto b02 = make_b02();
 	EXPECT_EQ("(+as) id + (+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12", to_string(+a02));
@@ -364,7 +364,7 @@ TEST(pga_test, operators_arithmetic_blade02) {
 	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!a02));
 }
 
-TEST(pga_test, operators_inplace_blade02) {
+TEST(pga_test, operators_inplace_blade02E) {
 	auto a02 = make_a02();
 	auto b02 = make_b02();
 	auto r = a02; r += b02;
@@ -443,30 +443,30 @@ TEST(pga_test, operators_inplace_blade22) {
 	EXPECT_EQ("(abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12 + (abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03", to_string(r));
 }
 
-TEST(pga_test, constructor_blade24) {
-	pga::blade24<symbolic> d24;
+TEST(pga_test, constructor_blade2e4) {
+	pga::blade2e4<symbolic> d24;
 	EXPECT_EQ("0", d24.b2e.bie.x.v);
 	EXPECT_EQ("0", d24.b2e.bie.y.v);
 	EXPECT_EQ("0", d24.b2e.bie.z.v);
 	EXPECT_EQ("?", d24.b4.e0123.v);
-	pga::blade24<symbolic> s24(make_a4());
+	pga::blade2e4<symbolic> s24(make_a4());
 	EXPECT_EQ("0", s24.b2e.bie.x.v);
 	EXPECT_EQ("0", s24.b2e.bie.y.v);
 	EXPECT_EQ("0", s24.b2e.bie.z.v);
 	EXPECT_EQ("ae0123", s24.b4.e0123.v);
-	pga::blade24<symbolic> v24(make_a2e());
+	pga::blade2e4<symbolic> v24(make_a2e());
 	EXPECT_EQ("abiex", v24.b2e.bie.x.v);
 	EXPECT_EQ("abiey", v24.b2e.bie.y.v);
 	EXPECT_EQ("abiez", v24.b2e.bie.z.v);
 	EXPECT_EQ("0", v24.b4.e0123.v);
-	pga::blade24<symbolic> a24(make_a2e(), make_a4());
+	pga::blade2e4<symbolic> a24(make_a2e(), make_a4());
 	EXPECT_EQ("abiex", a24.b2e.bie.x.v);
 	EXPECT_EQ("abiey", a24.b2e.bie.y.v);
 	EXPECT_EQ("abiez", a24.b2e.bie.z.v);
 	EXPECT_EQ("ae0123", a24.b4.e0123.v);
 }
 
-TEST(pga_test, operators_arithmetic_blade24) {
+TEST(pga_test, operators_arithmetic_blade2e4) {
 	auto a24 = make_a24();
 	auto b24 = make_b24();
 	EXPECT_EQ("(+abiex) e01 + (+abiey) e02 + (+abiez) e03 + (+ae0123) e0123", to_string(+a24));
@@ -480,7 +480,7 @@ TEST(pga_test, operators_arithmetic_blade24) {
 	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12", to_string(!a24));
 }
 
-TEST(pga_test, operators_inplace_blade24) {
+TEST(pga_test, operators_inplace_blade2e4) {
 	auto a24 = make_a24();
 	auto b24 = make_b24();
 	auto r = a24; r += b24;
