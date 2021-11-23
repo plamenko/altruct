@@ -36,10 +36,12 @@ auto make_a2E() { return pga::blade2E<symbolic>({ {"abiEx"}, {"abiEy"}, {"abiEz"
 auto make_a2e() { return pga::blade2e<symbolic>({ {"abiex"}, {"abiey"}, {"abiez"} }); }
 auto make_a3() { return pga::blade3<symbolic>({ "ae123" }, { {"atriPx"}, {"atriPy"}, {"atriPz"} }); }
 auto make_a4() { return pga::blade4<symbolic>({ "ae0123" }); }
-auto make_a02() { return pga::blade02E<symbolic>(make_a0(), make_a2E()); }
+auto make_a02E() { return pga::blade02E<symbolic>(make_a0(), make_a2E()); }
+auto make_a02e() { return pga::blade02e<symbolic>(make_a0(), make_a2e()); }
 auto make_a22() { return pga::blade22<symbolic>(make_a2E(), make_a2e()); }
-auto make_a24() { return pga::blade2e4<symbolic>(make_a2e(), make_a4()); }
-auto make_a024() { return pga::blade024<symbolic>(make_a02(), make_a24()); }
+auto make_a2E4() { return pga::blade2E4<symbolic>(make_a2E(), make_a4()); }
+auto make_a2e4() { return pga::blade2e4<symbolic>(make_a2e(), make_a4()); }
+auto make_a024() { return pga::blade024<symbolic>(make_a02E(), make_a2e4()); }
 auto make_a13() { return pga::blade13<symbolic>(make_a1(), make_a3()); }
 auto make_am() { return pga::multivector<symbolic>(make_a024(), make_a13()); }
 
@@ -50,10 +52,12 @@ auto make_b2E() { return pga::blade2E<symbolic>({ {"bbiEx"}, {"bbiEy"}, {"bbiEz"
 auto make_b2e() { return pga::blade2e<symbolic>({ {"bbiex"}, {"bbiey"}, {"bbiez"} }); }
 auto make_b3() { return pga::blade3<symbolic>({ "be123" }, { {"btriPx"}, {"btriPy"}, {"btriPz"} }); }
 auto make_b4() { return pga::blade4<symbolic>({ "be0123" }); }
-auto make_b02() { return pga::blade02E<symbolic>(make_b0(), make_b2E()); }
+auto make_b02E() { return pga::blade02E<symbolic>(make_b0(), make_b2E()); }
+auto make_b02e() { return pga::blade02e<symbolic>(make_b0(), make_b2e()); }
 auto make_b22() { return pga::blade22<symbolic>(make_b2E(), make_b2e()); }
-auto make_b24() { return pga::blade2e4<symbolic>(make_b2e(), make_b4()); }
-auto make_b024() { return pga::blade024<symbolic>(make_b02(), make_b24()); }
+auto make_b2E4() { return pga::blade2E4<symbolic>(make_b2E(), make_b4()); }
+auto make_b2e4() { return pga::blade2e4<symbolic>(make_b2e(), make_b4()); }
+auto make_b024() { return pga::blade024<symbolic>(make_b02E(), make_b2e4()); }
 auto make_b13() { return pga::blade13<symbolic>(make_b1(), make_b3()); }
 auto make_bm() { return pga::multivector<symbolic>(make_b024(), make_b13()); }
 
@@ -351,8 +355,8 @@ TEST(pga_test, constructor_blade02E) {
 }
 
 TEST(pga_test, operators_arithmetic_blade02E) {
-	auto a02 = make_a02();
-	auto b02 = make_b02();
+	auto a02 = make_a02E();
+	auto b02 = make_b02E();
 	EXPECT_EQ("(+as) id + (+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12", to_string(+a02));
 	EXPECT_EQ("(-as) id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(-a02));
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a02 + b02));
@@ -365,8 +369,8 @@ TEST(pga_test, operators_arithmetic_blade02E) {
 }
 
 TEST(pga_test, operators_inplace_blade02E) {
-	auto a02 = make_a02();
-	auto b02 = make_b02();
+	auto a02 = make_a02E();
+	auto b02 = make_b02E();
 	auto r = a02; r += b02;
 	EXPECT_EQ("(as+bs) id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(r));
 	r = a02; r -= b02;
@@ -379,6 +383,60 @@ TEST(pga_test, operators_inplace_blade02E) {
 	EXPECT_EQ("(as+as) id + (abiEx+abiEx) e23 + (abiEy+abiEy) e31 + (abiEz+abiEz) e12", to_string(r));
 	r = a02; r -= a02;
 	EXPECT_EQ("(as-as) id + (abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12", to_string(r));
+}
+
+TEST(pga_test, constructor_blade02e) {
+	pga::blade02e<symbolic> d02;
+	EXPECT_EQ("?", d02.b0.s.v);
+	EXPECT_EQ("0", d02.b2e.bie.x.v);
+	EXPECT_EQ("0", d02.b2e.bie.y.v);
+	EXPECT_EQ("0", d02.b2e.bie.z.v);
+	pga::blade02e<symbolic> s02(make_a0());
+	EXPECT_EQ("as", s02.b0.s.v);
+	EXPECT_EQ("0", s02.b2e.bie.x.v);
+	EXPECT_EQ("0", s02.b2e.bie.y.v);
+	EXPECT_EQ("0", s02.b2e.bie.z.v);
+	pga::blade02e<symbolic> v02(make_a2e());
+	EXPECT_EQ("0", v02.b0.s.v);
+	EXPECT_EQ("abiex", v02.b2e.bie.x.v);
+	EXPECT_EQ("abiey", v02.b2e.bie.y.v);
+	EXPECT_EQ("abiez", v02.b2e.bie.z.v);
+	pga::blade02e<symbolic> a02(make_a0(), make_a2e());
+	EXPECT_EQ("as", a02.b0.s.v);
+	EXPECT_EQ("abiex", a02.b2e.bie.x.v);
+	EXPECT_EQ("abiey", a02.b2e.bie.y.v);
+	EXPECT_EQ("abiez", a02.b2e.bie.z.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade02e) {
+	auto a02 = make_a02e();
+	auto b02 = make_b02e();
+	EXPECT_EQ("(+as) id + (+abiex) e01 + (+abiey) e02 + (+abiez) e03", to_string(+a02));
+	EXPECT_EQ("(-as) id + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(-a02));
+	EXPECT_EQ("(as+bs) id + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(a02 + b02));
+	EXPECT_EQ("(as-bs) id + (abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03", to_string(a02 - b02));
+	EXPECT_EQ("(as*bs) id + (abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03", to_string(a02 * make_bs()));
+	EXPECT_EQ("(as/bs) id + (abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03", to_string(a02 / make_bs()));
+	EXPECT_EQ("as id + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(~a02));
+	EXPECT_EQ("as id + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(a02.rev()));
+	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12 + as e0123", to_string(!a02));
+}
+
+TEST(pga_test, operators_inplace_blade02e) {
+	auto a02 = make_a02e();
+	auto b02 = make_b02e();
+	auto r = a02; r += b02;
+	EXPECT_EQ("(as+bs) id + (abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03", to_string(r));
+	r = a02; r -= b02;
+	EXPECT_EQ("(as-bs) id + (abiex-bbiex) e01 + (abiey-bbiey) e02 + (abiez-bbiez) e03", to_string(r));
+	r = a02; r *= make_bs();
+	EXPECT_EQ("(as*bs) id + (abiex*bs) e01 + (abiey*bs) e02 + (abiez*bs) e03", to_string(r));
+	r = a02; r /= make_bs();
+	EXPECT_EQ("(as/bs) id + (abiex/bs) e01 + (abiey/bs) e02 + (abiez/bs) e03", to_string(r));
+	r = a02; r += a02;
+	EXPECT_EQ("(as+as) id + (abiex+abiex) e01 + (abiey+abiey) e02 + (abiez+abiez) e03", to_string(r));
+	r = a02; r -= a02;
+	EXPECT_EQ("(as-as) id + (abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03", to_string(r));
 }
 
 TEST(pga_test, constructor_blade22) {
@@ -443,6 +501,60 @@ TEST(pga_test, operators_inplace_blade22) {
 	EXPECT_EQ("(abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12 + (abiex-abiex) e01 + (abiey-abiey) e02 + (abiez-abiez) e03", to_string(r));
 }
 
+TEST(pga_test, constructor_blade2E4) {
+	pga::blade2E4<symbolic> d24;
+	EXPECT_EQ("0", d24.b2E.biE.x.v);
+	EXPECT_EQ("0", d24.b2E.biE.y.v);
+	EXPECT_EQ("0", d24.b2E.biE.z.v);
+	EXPECT_EQ("?", d24.b4.e0123.v);
+	pga::blade2E4<symbolic> s24(make_a4());
+	EXPECT_EQ("0", s24.b2E.biE.x.v);
+	EXPECT_EQ("0", s24.b2E.biE.y.v);
+	EXPECT_EQ("0", s24.b2E.biE.z.v);
+	EXPECT_EQ("ae0123", s24.b4.e0123.v);
+	pga::blade2E4<symbolic> v24(make_a2E());
+	EXPECT_EQ("abiEx", v24.b2E.biE.x.v);
+	EXPECT_EQ("abiEy", v24.b2E.biE.y.v);
+	EXPECT_EQ("abiEz", v24.b2E.biE.z.v);
+	EXPECT_EQ("0", v24.b4.e0123.v);
+	pga::blade2E4<symbolic> a24(make_a2E(), make_a4());
+	EXPECT_EQ("abiEx", a24.b2E.biE.x.v);
+	EXPECT_EQ("abiEy", a24.b2E.biE.y.v);
+	EXPECT_EQ("abiEz", a24.b2E.biE.z.v);
+	EXPECT_EQ("ae0123", a24.b4.e0123.v);
+}
+
+TEST(pga_test, operators_arithmetic_blade2E4) {
+	auto a24 = make_a2E4();
+	auto b24 = make_b2E4();
+	EXPECT_EQ("(+abiEx) e23 + (+abiEy) e31 + (+abiEz) e12 + (+ae0123) e0123", to_string(+a24));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + (-ae0123) e0123", to_string(-a24));
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + (ae0123+be0123) e0123", to_string(a24 + b24));
+	EXPECT_EQ("(abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + (ae0123-be0123) e0123", to_string(a24 - b24));
+	EXPECT_EQ("(abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + (ae0123*bs) e0123", to_string(a24 * make_bs()));
+	EXPECT_EQ("(abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + (ae0123/bs) e0123", to_string(a24 / make_bs()));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + ae0123 e0123", to_string(~a24));
+	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + ae0123 e0123", to_string(a24.rev()));
+	EXPECT_EQ("ae0123 id + abiEx e01 + abiEy e02 + abiEz e03", to_string(!a24));
+}
+
+TEST(pga_test, operators_inplace_blade2E4) {
+	auto a24 = make_a2E4();
+	auto b24 = make_b2E4();
+	auto r = a24; r += b24;
+	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + (ae0123+be0123) e0123", to_string(r));
+	r = a24; r -= b24;
+	EXPECT_EQ("(abiEx-bbiEx) e23 + (abiEy-bbiEy) e31 + (abiEz-bbiEz) e12 + (ae0123-be0123) e0123", to_string(r));
+	r = a24; r *= make_bs();
+	EXPECT_EQ("(abiEx*bs) e23 + (abiEy*bs) e31 + (abiEz*bs) e12 + (ae0123*bs) e0123", to_string(r));
+	r = a24; r /= make_bs();
+	EXPECT_EQ("(abiEx/bs) e23 + (abiEy/bs) e31 + (abiEz/bs) e12 + (ae0123/bs) e0123", to_string(r));
+	r = a24; r += a24;
+	EXPECT_EQ("(abiEx+abiEx) e23 + (abiEy+abiEy) e31 + (abiEz+abiEz) e12 + (ae0123+ae0123) e0123", to_string(r));
+	r = a24; r -= a24;
+	EXPECT_EQ("(abiEx-abiEx) e23 + (abiEy-abiEy) e31 + (abiEz-abiEz) e12 + (ae0123-ae0123) e0123", to_string(r));
+}
+
 TEST(pga_test, constructor_blade2e4) {
 	pga::blade2e4<symbolic> d24;
 	EXPECT_EQ("0", d24.b2e.bie.x.v);
@@ -467,8 +579,8 @@ TEST(pga_test, constructor_blade2e4) {
 }
 
 TEST(pga_test, operators_arithmetic_blade2e4) {
-	auto a24 = make_a24();
-	auto b24 = make_b24();
+	auto a24 = make_a2e4();
+	auto b24 = make_b2e4();
 	EXPECT_EQ("(+abiex) e01 + (+abiey) e02 + (+abiez) e03 + (+ae0123) e0123", to_string(+a24));
 	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + (-ae0123) e0123", to_string(-a24));
 	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(a24 + b24));
@@ -481,8 +593,8 @@ TEST(pga_test, operators_arithmetic_blade2e4) {
 }
 
 TEST(pga_test, operators_inplace_blade2e4) {
-	auto a24 = make_a24();
-	auto b24 = make_b24();
+	auto a24 = make_a2e4();
+	auto b24 = make_b2e4();
 	auto r = a24; r += b24;
 	EXPECT_EQ("(abiex+bbiex) e01 + (abiey+bbiey) e02 + (abiez+bbiez) e03 + (ae0123+be0123) e0123", to_string(r));
 	r = a24; r -= b24;
@@ -543,15 +655,24 @@ TEST(pga_test, constructor_blade024) {
 	EXPECT_EQ("0", v4.b24.b2e.bie.y.v);
 	EXPECT_EQ("0", v4.b24.b2e.bie.z.v);
 	EXPECT_EQ("ae0123", v4.b24.b4.e0123.v);
-	pga::blade024<symbolic> v02(make_a02());
-	EXPECT_EQ("as", v02.b02.b0.s.v);
-	EXPECT_EQ("abiEx", v02.b02.b2E.biE.x.v);
-	EXPECT_EQ("abiEy", v02.b02.b2E.biE.y.v);
-	EXPECT_EQ("abiEz", v02.b02.b2E.biE.z.v);
-	EXPECT_EQ("0", v02.b24.b2e.bie.x.v);
-	EXPECT_EQ("0", v02.b24.b2e.bie.y.v);
-	EXPECT_EQ("0", v02.b24.b2e.bie.z.v);
-	EXPECT_EQ("0", v02.b24.b4.e0123.v);
+	pga::blade024<symbolic> v02E(make_a02E());
+	EXPECT_EQ("as", v02E.b02.b0.s.v);
+	EXPECT_EQ("abiEx", v02E.b02.b2E.biE.x.v);
+	EXPECT_EQ("abiEy", v02E.b02.b2E.biE.y.v);
+	EXPECT_EQ("abiEz", v02E.b02.b2E.biE.z.v);
+	EXPECT_EQ("0", v02E.b24.b2e.bie.x.v);
+	EXPECT_EQ("0", v02E.b24.b2e.bie.y.v);
+	EXPECT_EQ("0", v02E.b24.b2e.bie.z.v);
+	EXPECT_EQ("0", v02E.b24.b4.e0123.v);
+	pga::blade024<symbolic> v02e(make_a02e());
+	EXPECT_EQ("as", v02e.b02.b0.s.v);
+	EXPECT_EQ("0", v02e.b02.b2E.biE.x.v);
+	EXPECT_EQ("0", v02e.b02.b2E.biE.y.v);
+	EXPECT_EQ("0", v02e.b02.b2E.biE.z.v);
+	EXPECT_EQ("abiex", v02e.b24.b2e.bie.x.v);
+	EXPECT_EQ("abiey", v02e.b24.b2e.bie.y.v);
+	EXPECT_EQ("abiez", v02e.b24.b2e.bie.z.v);
+	EXPECT_EQ("0", v02e.b24.b4.e0123.v);
 	pga::blade024<symbolic> v22(make_a22());
 	EXPECT_EQ("0", v22.b02.b0.s.v);
 	EXPECT_EQ("abiEx", v22.b02.b2E.biE.x.v);
@@ -561,16 +682,25 @@ TEST(pga_test, constructor_blade024) {
 	EXPECT_EQ("abiey", v22.b24.b2e.bie.y.v);
 	EXPECT_EQ("abiez", v22.b24.b2e.bie.z.v);
 	EXPECT_EQ("0", v22.b24.b4.e0123.v);
-	pga::blade024<symbolic> v24(make_a24());
-	EXPECT_EQ("0", v24.b02.b0.s.v);
-	EXPECT_EQ("0", v24.b02.b2E.biE.x.v);
-	EXPECT_EQ("0", v24.b02.b2E.biE.y.v);
-	EXPECT_EQ("0", v24.b02.b2E.biE.z.v);
-	EXPECT_EQ("abiex", v24.b24.b2e.bie.x.v);
-	EXPECT_EQ("abiey", v24.b24.b2e.bie.y.v);
-	EXPECT_EQ("abiez", v24.b24.b2e.bie.z.v);
-	EXPECT_EQ("ae0123", v24.b24.b4.e0123.v);
-	pga::blade024<symbolic> a024(make_a02(), make_a24());
+	pga::blade024<symbolic> v2E4(make_a2E4());
+	EXPECT_EQ("0", v2E4.b02.b0.s.v);
+	EXPECT_EQ("abiEx", v2E4.b02.b2E.biE.x.v);
+	EXPECT_EQ("abiEy", v2E4.b02.b2E.biE.y.v);
+	EXPECT_EQ("abiEz", v2E4.b02.b2E.biE.z.v);
+	EXPECT_EQ("0", v2E4.b24.b2e.bie.x.v);
+	EXPECT_EQ("0", v2E4.b24.b2e.bie.y.v);
+	EXPECT_EQ("0", v2E4.b24.b2e.bie.z.v);
+	EXPECT_EQ("ae0123", v2E4.b24.b4.e0123.v);
+	pga::blade024<symbolic> v2e4(make_a2e4());
+	EXPECT_EQ("0", v2e4.b02.b0.s.v);
+	EXPECT_EQ("0", v2e4.b02.b2E.biE.x.v);
+	EXPECT_EQ("0", v2e4.b02.b2E.biE.y.v);
+	EXPECT_EQ("0", v2e4.b02.b2E.biE.z.v);
+	EXPECT_EQ("abiex", v2e4.b24.b2e.bie.x.v);
+	EXPECT_EQ("abiey", v2e4.b24.b2e.bie.y.v);
+	EXPECT_EQ("abiez", v2e4.b24.b2e.bie.z.v);
+	EXPECT_EQ("ae0123", v2e4.b24.b4.e0123.v);
+	pga::blade024<symbolic> a024(make_a02E(), make_a2e4());
 	EXPECT_EQ("as", a024.b02.b0.s.v);
 	EXPECT_EQ("abiEx", a024.b02.b2E.biE.x.v);
 	EXPECT_EQ("abiEy", a024.b02.b2E.biE.y.v);
@@ -706,7 +836,7 @@ TEST(pga_test, constructor_multivector) {
 		"ae0 e0 + avx e1 + avy e2 + avz e3 + "
 		"ae123 e123 + atriPx e032 + atriPy e013 + atriPz e021",
 		to_string(am));
-	pga::multivector<symbolic> an(make_a1(), make_a02(), make_a24(), make_a3());
+	pga::multivector<symbolic> an(make_a1(), make_a02E(), make_a2e4(), make_a3());
 	EXPECT_EQ(
 		"as id + abiEx e23 + abiEy e31 + abiEz e12 + "
 		"abiex e01 + abiey e02 + abiez e03 + ae0123 e0123 + "
@@ -842,9 +972,11 @@ TEST(pga_test, operators_dual) {
 	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12", to_string(!make_a2e()));
 	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3", to_string(!make_a3()));
 	EXPECT_EQ("ae0123 id", to_string(!make_a4()));
-	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!make_a02()));
+	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!make_a02E()));
+	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12 + as e0123", to_string(!make_a02e()));
 	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12 + abiEx e01 + abiEy e02 + abiEz e03", to_string(!make_a22()));
-	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12", to_string(!make_a24()));
+	EXPECT_EQ("ae0123 id + abiEx e01 + abiEy e02 + abiEz e03", to_string(!make_a2E4()));
+	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12", to_string(!make_a2e4()));
 	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12 + abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!make_a024()));
 	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + ae0 e123 + avx e032 + avy e013 + avz e021", to_string(!make_a13()));
 	EXPECT_EQ(
@@ -858,7 +990,7 @@ TEST(pga_test, operators_dual) {
 TEST(pga_test, get) {
 	auto z = make_z();
 	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E();auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto a02E = make_a02E(); auto a02e = make_a02e(); auto a22 = make_a22(); auto a2E4 = make_a2E4(); auto a2e4 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
 
 	EXPECT_EQ("0", to_string(pga::get<decltype(z)>::b0(z)));
 	EXPECT_EQ("0", to_string(pga::get<decltype(z)>::b1(z)));
@@ -909,12 +1041,19 @@ TEST(pga_test, get) {
 	EXPECT_EQ("0", to_string(pga::get<decltype(a4)>::b3(a4)));
 	EXPECT_EQ("ae0123 e0123", to_string(pga::get<decltype(a4)>::b4(a4)));
 
-	EXPECT_EQ("as id", to_string(pga::get<decltype(a02)>::b0(a02)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a02)>::b1(a02)));
-	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12", to_string(pga::get<decltype(a02)>::b2E(a02)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a02)>::b2e(a02)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a02)>::b3(a02)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a02)>::b4(a02)));
+	EXPECT_EQ("as id", to_string(pga::get<decltype(a02E)>::b0(a02E)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02E)>::b1(a02E)));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12", to_string(pga::get<decltype(a02E)>::b2E(a02E)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02E)>::b2e(a02E)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02E)>::b3(a02E)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02E)>::b4(a02E)));
+
+	EXPECT_EQ("as id", to_string(pga::get<decltype(a02e)>::b0(a02e)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02e)>::b1(a02e)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02e)>::b2E(a02e)));
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03", to_string(pga::get<decltype(a02e)>::b2e(a02e)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02e)>::b3(a02e)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a02e)>::b4(a02e)));
 
 	EXPECT_EQ("0", to_string(pga::get<decltype(a22)>::b0(a22)));
 	EXPECT_EQ("0", to_string(pga::get<decltype(a22)>::b1(a22)));
@@ -923,12 +1062,19 @@ TEST(pga_test, get) {
 	EXPECT_EQ("0", to_string(pga::get<decltype(a22)>::b3(a22)));
 	EXPECT_EQ("0", to_string(pga::get<decltype(a22)>::b4(a22)));
 
-	EXPECT_EQ("0", to_string(pga::get<decltype(a24)>::b0(a24)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a24)>::b1(a24)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a24)>::b2E(a24)));
-	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03", to_string(pga::get<decltype(a24)>::b2e(a24)));
-	EXPECT_EQ("0", to_string(pga::get<decltype(a24)>::b3(a24)));
-	EXPECT_EQ("ae0123 e0123", to_string(pga::get<decltype(a24)>::b4(a24)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2E4)>::b0(a2E4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2E4)>::b1(a2E4)));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12", to_string(pga::get<decltype(a2E4)>::b2E(a2E4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2E4)>::b2e(a2E4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2E4)>::b3(a2E4)));
+	EXPECT_EQ("ae0123 e0123", to_string(pga::get<decltype(a2E4)>::b4(a2E4)));
+
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2e4)>::b0(a2e4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2e4)>::b1(a2e4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2e4)>::b2E(a2e4)));
+	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03", to_string(pga::get<decltype(a2e4)>::b2e(a2e4)));
+	EXPECT_EQ("0", to_string(pga::get<decltype(a2e4)>::b3(a2e4)));
+	EXPECT_EQ("ae0123 e0123", to_string(pga::get<decltype(a2e4)>::b4(a2e4)));
 
 	EXPECT_EQ("as id", to_string(pga::get<decltype(a024)>::b0(a024)));
 	EXPECT_EQ("0", to_string(pga::get<decltype(a024)>::b1(a024)));
@@ -955,7 +1101,7 @@ TEST(pga_test, get) {
 TEST(pga_test, combine) {
 	auto z = make_z();
 	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto a02 = make_a02E(); auto a22 = make_a22(); auto a24 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
 
 	std::string sz = "0";
 	std::string sz0 = "0 id";
@@ -980,9 +1126,9 @@ TEST(pga_test, combine) {
 	EXPECT_EQ(vec_to_string({ sa0, sa2E }), to_string(pga::combine024(a0, a2E, z, z)));
 	EXPECT_EQ(vec_to_string({ sa2E, sa2e }), to_string(pga::combine024(z, a2E, a2e, z)));
 	EXPECT_EQ(vec_to_string({ sa2e, sa4 }), to_string(pga::combine024(z, z, a2e, a4)));
-	EXPECT_EQ(vec_to_string({ sz0, sa2E, sz2e, sa4 }), to_string(pga::combine024(z, a2E, z, a4)));
+	EXPECT_EQ(vec_to_string({ sa2E, sa4 }), to_string(pga::combine024(z, a2E, z, a4)));
 	EXPECT_EQ(vec_to_string({ sa0, sz2E, sz2e, sa4 }), to_string(pga::combine024(a0, z, z, a4)));
-	EXPECT_EQ(vec_to_string({ sa0, sz2E, sa2e, sz4 }), to_string(pga::combine024(a0, z, a2e, z)));
+	EXPECT_EQ(vec_to_string({ sa0, sa2e }), to_string(pga::combine024(a0, z, a2e, z)));
 	EXPECT_EQ(vec_to_string({ sz0, sa2E, sa2e, sa4 }), to_string(pga::combine024(z, a2E, a2e, a4)));
 	EXPECT_EQ(vec_to_string({ sa0, sz2E, sa2e, sa4 }), to_string(pga::combine024(a0, z, a2e, a4)));
 	EXPECT_EQ(vec_to_string({ sa0, sa2E, sz2e, sa4 }), to_string(pga::combine024(a0, a2E, z, a4)));
@@ -1038,9 +1184,9 @@ TEST(pga_test, combine) {
 TEST(pga_test, operators_add) {
 	auto z = make_z();
 	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto a02 = make_a02E(); auto a22 = make_a22(); auto a24 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
 	auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
-	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
+	auto b02 = make_b02E(); auto b22 = make_b22(); auto b24 = make_b2e4(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 	
 	EXPECT_EQ("0", to_string(z + z));
 	EXPECT_EQ("bs id", to_string(z + b0));
@@ -1062,7 +1208,7 @@ TEST(pga_test, operators_add) {
 	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a0 + b1));
 	EXPECT_EQ("as id + bbiEx e23 + bbiEy e31 + bbiEz e12", to_string(a0 + b2E));
-	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + bbiex e01 + bbiey e02 + bbiez e03 + 0 e0123", to_string(a0 + b2e));
+	EXPECT_EQ("as id + bbiex e01 + bbiey e02 + bbiez e03", to_string(a0 + b2e));
 	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a0 + b3));
 	EXPECT_EQ("as id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123", to_string(a0 + b4));
@@ -1106,7 +1252,7 @@ TEST(pga_test, operators_add) {
 	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03", to_string(a2E + b2e));
 	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + 0 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2E + b3));
-	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + 0 e01 + 0 e02 + 0 e03 + be0123 e0123", to_string(a2E + b4));
+	EXPECT_EQ("abiEx e23 + abiEy e31 + abiEz e12 + be0123 e0123", to_string(a2E + b4));
 	EXPECT_EQ("bs id + (abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12", to_string(a2E + b02));
 	EXPECT_EQ("(abiEx+bbiEx) e23 + (abiEy+bbiEy) e31 + (abiEz+bbiEz) e12 + bbiex e01 + bbiey e02 + bbiez e03", to_string(a2E + b22));
 	EXPECT_EQ("0 id + abiEx e23 + abiEy e31 + abiEz e12 + bbiex e01 + bbiey e02 + bbiez e03 + be0123 e0123", to_string(a2E + b24));
@@ -1117,7 +1263,7 @@ TEST(pga_test, operators_add) {
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a2E + bm));
 
 	EXPECT_EQ("abiex e01 + abiey e02 + abiez e03", to_string(a2e + z));
-	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123", to_string(a2e + b0));
+	EXPECT_EQ("bs id + abiex e01 + abiey e02 + abiez e03", to_string(a2e + b0));
 	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + abiex e01 + abiey e02 + abiez e03 + 0 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a2e + b1));
 	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12 + abiex e01 + abiey e02 + abiez e03", to_string(a2e + b2E));
@@ -1161,7 +1307,7 @@ TEST(pga_test, operators_add) {
 	EXPECT_EQ("bs id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123", to_string(a4 + b0));
 	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123 + "
 		"be0 e0 + bvx e1 + bvy e2 + bvz e3 + 0 e123 + 0 e032 + 0 e013 + 0 e021", to_string(a4 + b1));
-	EXPECT_EQ("0 id + bbiEx e23 + bbiEy e31 + bbiEz e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123", to_string(a4 + b2E));
+	EXPECT_EQ("bbiEx e23 + bbiEy e31 + bbiEz e12 + ae0123 e0123", to_string(a4 + b2E));
 	EXPECT_EQ("bbiex e01 + bbiey e02 + bbiez e03 + ae0123 e0123", to_string(a4 + b2e));
 	EXPECT_EQ("0 id + 0 e23 + 0 e31 + 0 e12 + 0 e01 + 0 e02 + 0 e03 + ae0123 e0123 + "
 		"0 e0 + 0 e1 + 0 e2 + 0 e3 + be123 e123 + btriPx e032 + btriPy e013 + btriPz e021", to_string(a4 + b3));
@@ -1308,9 +1454,9 @@ TEST(pga_test, operators_add) {
 TEST(pga_test, operators_multiply) {
 	auto z = make_z();
 	auto as = make_as(); auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto a02E = make_a02E(); auto a02e = make_a02e(); auto a22 = make_a22(); auto a2E4 = make_a2E4(); auto a2e4 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
 	auto bs = make_bs(); auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
-	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
+	auto b02E = make_b02E(); auto b02e = make_b02e(); auto b22 = make_b22(); auto b2E4 = make_b2E4(); auto b2e4 = make_b2e4(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 
 	// zero
 	EXPECT_EQ("0", to_string(z * z));
@@ -1320,9 +1466,11 @@ TEST(pga_test, operators_multiply) {
 	EXPECT_EQ("0", to_string(z * b2e));
 	EXPECT_EQ("0", to_string(z * b3));
 	EXPECT_EQ("0", to_string(z * b4));
-	EXPECT_EQ("0", to_string(z * b02));
+	EXPECT_EQ("0", to_string(z * b02E));
+	EXPECT_EQ("0", to_string(z * b02e));
 	EXPECT_EQ("0", to_string(z * b22));
-	EXPECT_EQ("0", to_string(z * b24));
+	EXPECT_EQ("0", to_string(z * b2E4));
+	EXPECT_EQ("0", to_string(z * b2e4));
 	EXPECT_EQ("0", to_string(z * b024));
 	EXPECT_EQ("0", to_string(z * b13));
 	EXPECT_EQ("0", to_string(z * bm));
@@ -1332,9 +1480,11 @@ TEST(pga_test, operators_multiply) {
 	EXPECT_EQ("0", to_string(a2e * z));
 	EXPECT_EQ("0", to_string(a3 * z));
 	EXPECT_EQ("0", to_string(a4 * z));
-	EXPECT_EQ("0", to_string(a02 * z));
+	EXPECT_EQ("0", to_string(a02E * z));
+	EXPECT_EQ("0", to_string(a02e * z));
 	EXPECT_EQ("0", to_string(a22 * z));
-	EXPECT_EQ("0", to_string(a24 * z));
+	EXPECT_EQ("0", to_string(a2E4 * z));
+	EXPECT_EQ("0", to_string(a2e4 * z));
 	EXPECT_EQ("0", to_string(a024 * z));
 	EXPECT_EQ("0", to_string(am * z));
 
@@ -1345,8 +1495,11 @@ TEST(pga_test, operators_multiply) {
 	EXPECT_EQ("(bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03", to_string(as * b2e));
 	EXPECT_EQ("(be123*as) e123 + (btriPx*as) e032 + (btriPy*as) e013 + (btriPz*as) e021", to_string(as * b3));
 	EXPECT_EQ("(be0123*as) e0123", to_string(as * b4));
-	EXPECT_EQ("(bs*as) id + (bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12", to_string(as * b02));
-	EXPECT_EQ("(bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03 + (be0123*as) e0123", to_string(as * b24));
+	EXPECT_EQ("(bs*as) id + (bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12", to_string(as * b02E));
+	EXPECT_EQ("(bs*as) id + (bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03", to_string(as * b02e));
+	EXPECT_EQ("(bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12 + (bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03", to_string(as * b22));
+	EXPECT_EQ("(bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12 + (be0123*as) e0123", to_string(as * b2E4));
+	EXPECT_EQ("(bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03 + (be0123*as) e0123", to_string(as * b2e4));
 	EXPECT_EQ("(bs*as) id + (bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12 + (bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03 + (be0123*as) e0123", to_string(as * b024));
 	EXPECT_EQ("(be0*as) e0 + (bvx*as) e1 + (bvy*as) e2 + (bvz*as) e3 + (be123*as) e123 + (btriPx*as) e032 + (btriPy*as) e013 + (btriPz*as) e021", to_string(as * b13));
 	EXPECT_EQ("(bs*as) id + (bbiEx*as) e23 + (bbiEy*as) e31 + (bbiEz*as) e12 + (bbiex*as) e01 + (bbiey*as) e02 + (bbiez*as) e03 + (be0123*as) e0123 + "
@@ -1381,7 +1534,7 @@ TEST(pga_test, operators_multiply) {
 	EXPECT_EQ("0 id + (ae123*bvx) e23 + (ae123*bvy) e31 + (ae123*bvz) e12 + ((atriPy*bvz)-(atriPz*bvy)) e01 + ((atriPz*bvx)-(atriPx*bvz)) e02 + ((atriPx*bvy)-(atriPy*bvx)) e03 + (((-ae123)*be0)-(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz))) e0123", to_string(a3 * b1));
 	EXPECT_EQ("(((atriPx*bbiEx)+(atriPy*bbiEy))+(atriPz*bbiEz)) e0 + ((-ae123)*bbiEx) e1 + ((-ae123)*bbiEy) e2 + ((-ae123)*bbiEz) e3 + 0 e123 + (-((atriPy*bbiEz)-(atriPz*bbiEy))) e032 + (-((atriPz*bbiEx)-(atriPx*bbiEz))) e013 + (-((atriPx*bbiEy)-(atriPy*bbiEx))) e021", to_string(a3 * b2E));
 	EXPECT_EQ("0 e123 + (ae123*bbiex) e032 + (ae123*bbiey) e013 + (ae123*bbiez) e021", to_string(a3 * b2e));
-	EXPECT_EQ("((-ae123)*be123) id + 0 e23 + 0 e31 + 0 e12 + ((atriPx*be123)-(ae123*btriPx)) e01 + ((atriPy*be123)-(ae123*btriPy)) e02 + ((atriPz*be123)-(ae123*btriPz)) e03 + 0 e0123", to_string(a3 * b3));
+	EXPECT_EQ("((-ae123)*be123) id + ((atriPx*be123)-(ae123*btriPx)) e01 + ((atriPy*be123)-(ae123*btriPy)) e02 + ((atriPz*be123)-(ae123*btriPz)) e03", to_string(a3 * b3));
 	EXPECT_EQ("(ae123*be0123) e0 + 0 e1 + 0 e2 + 0 e3", to_string(a3 * b4));
 	EXPECT_EQ("(ae0123*bs) e0123", to_string(a4 * b0));
 	EXPECT_EQ("0 e123 + ((-ae0123)*bvx) e032 + ((-ae0123)*bvy) e013 + ((-ae0123)*bvz) e021", to_string(a4 * b1));
@@ -1393,13 +1546,13 @@ TEST(pga_test, operators_multiply) {
 	// multivector
 	EXPECT_EQ(
 		"((((as*bs)+(-(((abiEx*bbiEx)+(abiEy*bbiEy))+(abiEz*bbiEz))))+(0+0))+(((((avx*bvx)+(avy*bvy))+(avz*bvz))+0)+(0+((-ae123)*be123)))) id + "
-		"((((abiEx*bs)+((as*bbiEx)+(-((abiEy*bbiEz)-(abiEz*bbiEy)))))+(0+0))+((((avy*bvz)-(avz*bvy))+(ae123*bvx))+((avx*be123)+0))) e23 + "
-		"((((abiEy*bs)+((as*bbiEy)+(-((abiEz*bbiEx)-(abiEx*bbiEz)))))+(0+0))+((((avz*bvx)-(avx*bvz))+(ae123*bvy))+((avy*be123)+0))) e31 + "
-		"((((abiEz*bs)+((as*bbiEz)+(-((abiEx*bbiEy)-(abiEy*bbiEx)))))+(0+0))+((((avx*bvy)-(avy*bvx))+(ae123*bvz))+((avz*be123)+0))) e12 + "
+		"((((abiEx*bs)+((as*bbiEx)+(-((abiEy*bbiEz)-(abiEz*bbiEy)))))+(0+0))+((((avy*bvz)-(avz*bvy))+(ae123*bvx))+(avx*be123))) e23 + "
+		"((((abiEy*bs)+((as*bbiEy)+(-((abiEz*bbiEx)-(abiEx*bbiEz)))))+(0+0))+((((avz*bvx)-(avx*bvz))+(ae123*bvy))+(avy*be123))) e31 + "
+		"((((abiEz*bs)+((as*bbiEz)+(-((abiEx*bbiEy)-(abiEy*bbiEx)))))+(0+0))+((((avx*bvy)-(avy*bvx))+(ae123*bvz))+(avz*be123))) e12 + "
 		"((((abiex*bs)+((-((abiey*bbiEz)-(abiez*bbiEy)))+((-ae0123)*bbiEx)))+(((as*bbiex)+(-((abiEy*bbiez)-(abiEz*bbiey))))+(abiEx*(-be0123))))+((((ae0*bvx)-(avx*be0))+((atriPy*bvz)-(atriPz*bvy)))+((-((avy*btriPz)-(avz*btriPy)))+((atriPx*be123)-(ae123*btriPx))))) e01 + "
 		"((((abiey*bs)+((-((abiez*bbiEx)-(abiex*bbiEz)))+((-ae0123)*bbiEy)))+(((as*bbiey)+(-((abiEz*bbiex)-(abiEx*bbiez))))+(abiEy*(-be0123))))+((((ae0*bvy)-(avy*be0))+((atriPz*bvx)-(atriPx*bvz)))+((-((avz*btriPx)-(avx*btriPz)))+((atriPy*be123)-(ae123*btriPy))))) e02 + "
 		"((((abiez*bs)+((-((abiex*bbiEy)-(abiey*bbiEx)))+((-ae0123)*bbiEz)))+(((as*bbiez)+(-((abiEx*bbiey)-(abiEy*bbiex))))+(abiEz*(-be0123))))+((((ae0*bvz)-(avz*be0))+((atriPx*bvy)-(atriPy*bvx)))+((-((avx*btriPy)-(avy*btriPx)))+((atriPz*be123)-(ae123*btriPz))))) e03 + "
-		"((((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz)))+((((abiEx*bbiex)+(abiEy*bbiey))+(abiEz*bbiez))+(as*be0123)))+((0+(((-ae123)*be0)-(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz))))+(((ae0*be123)+(((avx*btriPx)+(avy*btriPy))+(avz*btriPz)))+0))) e0123 + "
+		"((((ae0123*bs)+(((abiex*bbiEx)+(abiey*bbiEy))+(abiez*bbiEz)))+((((abiEx*bbiex)+(abiEy*bbiey))+(abiEz*bbiez))+(as*be0123)))+((0+(((-ae123)*be0)-(((atriPx*bvx)+(atriPy*bvy))+(atriPz*bvz))))+((ae0*be123)+(((avx*btriPx)+(avy*btriPy))+(avz*btriPz))))) e0123 + "
 		"((((ae0*bs)+(0+(((atriPx*bbiEx)+(atriPy*bbiEy))+(atriPz*bbiEz))))+((-(((avx*bbiex)+(avy*bbiey))+(avz*bbiez)))+(ae123*be0123)))+((((as*be0)+0)+(((abiex*bvx)+(abiey*bvy))+(abiez*bvz)))+((((abiEx*btriPx)+(abiEy*btriPy))+(abiEz*btriPz))+((-ae0123)*be123)))) e0 + "
 		"((((avx*bs)+((-((avy*bbiEz)-(avz*bbiEy)))+((-ae123)*bbiEx)))+(0+0))+((((as*bvx)+(-((abiEy*bvz)-(abiEz*bvy))))+0)+((abiEx*(-be123))+0))) e1 + "
 		"((((avy*bs)+((-((avz*bbiEx)-(avx*bbiEz)))+((-ae123)*bbiEy)))+(0+0))+((((as*bvy)+(-((abiEz*bvx)-(abiEx*bvz))))+0)+((abiEy*(-be123))+0))) e2 + "
@@ -1413,10 +1566,10 @@ TEST(pga_test, operators_multiply) {
 
 TEST(pga_test, operators_wedge) {
 	auto z = make_z();
-	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
-	auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
-	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
+	auto as = make_as(); auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
+	auto a02E = make_a02E(); auto a02e = make_a02e(); auto a22 = make_a22(); auto a2E4 = make_a2E4(); auto a2e4 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto bs = make_bs(); auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
+	auto b02E = make_b02E(); auto b02e = make_b02e(); auto b22 = make_b22(); auto b2E4 = make_b2E4(); auto b2e4 = make_b2e4(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 
 	// zero
 	EXPECT_EQ("0", to_string(z ^ z));
@@ -1426,9 +1579,11 @@ TEST(pga_test, operators_wedge) {
 	EXPECT_EQ("0", to_string(z ^ b2e));
 	EXPECT_EQ("0", to_string(z ^ b3));
 	EXPECT_EQ("0", to_string(z ^ b4));
-	EXPECT_EQ("0", to_string(z ^ b02));
+	EXPECT_EQ("0", to_string(z ^ b02E));
+	EXPECT_EQ("0", to_string(z ^ b02e));
 	EXPECT_EQ("0", to_string(z ^ b22));
-	EXPECT_EQ("0", to_string(z ^ b24));
+	EXPECT_EQ("0", to_string(z ^ b2E4));
+	EXPECT_EQ("0", to_string(z ^ b2e4));
 	EXPECT_EQ("0", to_string(z ^ b024));
 	EXPECT_EQ("0", to_string(z ^ b13));
 	EXPECT_EQ("0", to_string(z ^ bm));
@@ -1438,9 +1593,11 @@ TEST(pga_test, operators_wedge) {
 	EXPECT_EQ("0", to_string(a2e ^ z));
 	EXPECT_EQ("0", to_string(a3 ^ z));
 	EXPECT_EQ("0", to_string(a4 ^ z));
-	EXPECT_EQ("0", to_string(a02 ^ z));
+	EXPECT_EQ("0", to_string(a02E ^ z));
+	EXPECT_EQ("0", to_string(a02e ^ z));
 	EXPECT_EQ("0", to_string(a22 ^ z));
-	EXPECT_EQ("0", to_string(a24 ^ z));
+	EXPECT_EQ("0", to_string(a2E4 ^ z));
+	EXPECT_EQ("0", to_string(a2e4 ^ z));
 	EXPECT_EQ("0", to_string(a024 ^ z));
 	EXPECT_EQ("0", to_string(am ^ z));
 
@@ -1510,10 +1667,10 @@ TEST(pga_test, operators_wedge) {
 
 TEST(pga_test, operators_dot) {
 	auto z = make_z();
-	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
-	auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
-	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
+	auto as = make_as(); auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
+	auto a02E = make_a02E(); auto a02e = make_a02e(); auto a22 = make_a22(); auto a2E4 = make_a2E4(); auto a2e4 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto bs = make_bs(); auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
+	auto b02E = make_b02E(); auto b02e = make_b02e(); auto b22 = make_b22(); auto b2E4 = make_b2E4(); auto b2e4 = make_b2e4(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 
 	// zero
 	EXPECT_EQ("0", to_string(z & z));
@@ -1523,9 +1680,11 @@ TEST(pga_test, operators_dot) {
 	EXPECT_EQ("0", to_string(z & b2e));
 	EXPECT_EQ("0", to_string(z & b3));
 	EXPECT_EQ("0", to_string(z & b4));
-	EXPECT_EQ("0", to_string(z & b02));
+	EXPECT_EQ("0", to_string(z & b02E));
+	EXPECT_EQ("0", to_string(z & b02e));
 	EXPECT_EQ("0", to_string(z & b22));
-	EXPECT_EQ("0", to_string(z & b24));
+	EXPECT_EQ("0", to_string(z & b2E4));
+	EXPECT_EQ("0", to_string(z & b2e4));
 	EXPECT_EQ("0", to_string(z & b024));
 	EXPECT_EQ("0", to_string(z & b13));
 	EXPECT_EQ("0", to_string(z & bm));
@@ -1535,9 +1694,11 @@ TEST(pga_test, operators_dot) {
 	EXPECT_EQ("0", to_string(a2e & z));
 	EXPECT_EQ("0", to_string(a3 & z));
 	EXPECT_EQ("0", to_string(a4 & z));
-	EXPECT_EQ("0", to_string(a02 & z));
+	EXPECT_EQ("0", to_string(a02E & z));
+	EXPECT_EQ("0", to_string(a02e & z));
 	EXPECT_EQ("0", to_string(a22 & z));
-	EXPECT_EQ("0", to_string(a24 & z));
+	EXPECT_EQ("0", to_string(a2E4 & z));
+	EXPECT_EQ("0", to_string(a2e4 & z));
 	EXPECT_EQ("0", to_string(a024 & z));
 	EXPECT_EQ("0", to_string(am & z));
 
@@ -1602,10 +1763,10 @@ TEST(pga_test, operators_dot) {
 
 TEST(pga_test, operators_join) {
 	auto z = make_z();
-	auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
-	auto a02 = make_a02(); auto a22 = make_a22(); auto a24 = make_a24(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
-	auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
-	auto b02 = make_b02(); auto b22 = make_b22(); auto b24 = make_b24(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
+	auto as = make_as(); auto a0 = make_a0(); auto a1 = make_a1(); auto a2E = make_a2E(); auto a2e = make_a2e(); auto a3 = make_a3(); auto a4 = make_a4();
+	auto a02E = make_a02E(); auto a02e = make_a02e(); auto a22 = make_a22(); auto a2E4 = make_a2E4(); auto a2e4 = make_a2e4(); auto a024 = make_a024(); auto a13 = make_a13(); auto am = make_am();
+	auto bs = make_bs(); auto b0 = make_b0(); auto b1 = make_b1(); auto b2E = make_b2E(); auto b2e = make_b2e(); auto b3 = make_b3(); auto b4 = make_b4();
+	auto b02E = make_b02E(); auto b02e = make_b02e(); auto b22 = make_b22(); auto b2E4 = make_b2E4(); auto b2e4 = make_b2e4(); auto b024 = make_b024(); auto b13 = make_b13(); auto bm = make_bm();
 
 	// zero
 	EXPECT_EQ("0", to_string(z | z));
@@ -1615,9 +1776,11 @@ TEST(pga_test, operators_join) {
 	EXPECT_EQ("0", to_string(z | b2e));
 	EXPECT_EQ("0", to_string(z | b3));
 	EXPECT_EQ("0", to_string(z | b4));
-	EXPECT_EQ("0", to_string(z | b02));
+	EXPECT_EQ("0", to_string(z | b02E));
+	EXPECT_EQ("0", to_string(z | b02e));
 	EXPECT_EQ("0", to_string(z | b22));
-	EXPECT_EQ("0", to_string(z | b24));
+	EXPECT_EQ("0", to_string(z | b2E4));
+	EXPECT_EQ("0", to_string(z | b2e4));
 	EXPECT_EQ("0", to_string(z | b024));
 	EXPECT_EQ("0", to_string(z | b13));
 	EXPECT_EQ("0", to_string(z | bm));
@@ -1627,9 +1790,11 @@ TEST(pga_test, operators_join) {
 	EXPECT_EQ("0", to_string(a2e | z));
 	EXPECT_EQ("0", to_string(a3 | z));
 	EXPECT_EQ("0", to_string(a4 | z));
-	EXPECT_EQ("0", to_string(a02 | z));
+	EXPECT_EQ("0", to_string(a02E | z));
+	EXPECT_EQ("0", to_string(a02e | z));
 	EXPECT_EQ("0", to_string(a22 | z));
-	EXPECT_EQ("0", to_string(a24 | z));
+	EXPECT_EQ("0", to_string(a2E4 | z));
+	EXPECT_EQ("0", to_string(a2e4 | z));
 	EXPECT_EQ("0", to_string(a024 | z));
 	EXPECT_EQ("0", to_string(am | z));
 
