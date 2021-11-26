@@ -125,6 +125,7 @@ public:
     blade0 rev() const { return blade0(s); } // same
     T norm2() const { return sqT(s); }
     T ninf2() const { return zeroOf(s); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -138,6 +139,7 @@ public:
     blade1 rev() const { return blade1(e0, v); } // same
     T norm2() const { return v.abs2(); }
     T ninf2() const { return sqT(e0); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -151,6 +153,7 @@ public:
     blade2E rev() const { return blade2E(-biE); } // negate blade2 part
     T norm2() const { return biE.abs2(); }
     T ninf2() const { return zeroOf(biE.z); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -164,6 +167,7 @@ public:
     blade2e rev() const { return blade2e(-bie); } // negate blade2 part
     T norm2() const { return zeroOf(bie.z); }
     T ninf2() const { return bie.abs2(); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -177,6 +181,7 @@ public:
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
     T norm2() const { return sqT(e123); }
     T ninf2() const { return triP.abs2(); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -190,6 +195,7 @@ public:
     blade4 rev() const { return blade4(e0123); } // same
     T norm2() const { return zeroOf(e0123); }
     T ninf2() const { return sqT(e0123); }
+    auto inv() const { return rev() / norm2(); }
 };
 
 //-------------------------------------------------------------------------------
@@ -203,6 +209,7 @@ public:
     PGA_CONSTRUCTORS_2(blade02E, blade0<T>, b0, zeroOf(b2E.biE.z), blade2E<T>, b2E, zeroOf(b0.s));
     PGA_CLOSED_OPERATORS_2(blade02E, T, b0, b2E);
     PGA_COMPOSITE_GETTERS(blade02E, b0, b2E);
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -214,6 +221,7 @@ public:
     PGA_CONSTRUCTORS_2(blade02e, blade0<T>, b0, zeroOf(b2e.bie.z), blade2e<T>, b2e, zeroOf(b0.s));
     PGA_CLOSED_OPERATORS_2(blade02e, T, b0, b2e);
     PGA_COMPOSITE_GETTERS(blade02e, b0, b2e);
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -225,6 +233,7 @@ public:
     PGA_CONSTRUCTORS_2(blade22, blade2E<T>, b2E, zeroOf(b2e.bie.z), blade2e<T>, b2e, zeroOf(b2E.biE.z));
     PGA_CLOSED_OPERATORS_2(blade22, T, b2E, b2e);
     PGA_COMPOSITE_GETTERS(blade22, b2E, b2e);
+    auto inv() const { return rev() / norm2(); } // only works when b2E and b2e are perpendicular! use blade024::inv() otherwise
 };
 
 template<typename T>
@@ -236,6 +245,7 @@ public:
     PGA_CONSTRUCTORS_2(blade2E4, blade2E<T>, b2E, zeroOf(b4.e0123), blade4<T>, b4, zeroOf(b2E.biE.z));
     PGA_CLOSED_OPERATORS_2(blade2E4, T, b2E, b4);
     PGA_COMPOSITE_GETTERS(blade2E4, b2E, b4);
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -247,6 +257,7 @@ public:
     PGA_CONSTRUCTORS_2(blade2e4, blade2e<T>, b2e, zeroOf(b4.e0123), blade4<T>, b4, zeroOf(b2e.bie.z));
     PGA_CLOSED_OPERATORS_2(blade2e4, T, b2e, b4);
     PGA_COMPOSITE_GETTERS(blade2e4, b2e, b4);
+    auto inv() const { return rev() / norm2(); }
 };
 
 template<typename T>
@@ -265,6 +276,10 @@ public:
     PGA_CONSTRUCTORS_2(blade024, blade02E<T>, b02, blade0<T>(zeroOf(b24.b4.e0123)), blade2e4<T>, b24, blade4<T>(zeroOf(b02.b0.s)));
     PGA_CLOSED_OPERATORS_2(blade024, T, b02, b24);
     PGA_COMPOSITE_GETTERS(blade024, b02, b24);
+    auto inv() const {
+        T n2 = norm2(); T t = ((b02.b2E.biE & b24.b2e.bie) - (b02.b0.s * b24.b4.e0123)) * castOf<T>(b02.b0.s, 2) / n2;
+        return blade024(b02.rev(), b24.rev() + blade2e4<T>(blade2e<T>(b02.b2E.biE), blade4<T>(b02.b0.s)) * t) / n2;
+    }
 };
 
 template<typename T>
@@ -276,6 +291,10 @@ public:
     PGA_CONSTRUCTORS_2(blade13, blade1<T>, b1, zeroOf(b3.e123), blade3<T>, b3, zeroOf(b1.e0));
     PGA_CLOSED_OPERATORS_2(blade13, T, b1, b3);
     PGA_COMPOSITE_GETTERS(blade13, b1, b3);
+    auto inv() const {
+        T n2 = norm2(); T t = ((b1.v & b3.triP) + (b1.e0 * b3.e123)) * castOf<T>(b1.e0, 2) / n2;
+        return blade13(blade1<T>(b1.e0 - b3.e123 * t, b1.v), blade3<T>(-b3.e123, b1.v * t - b3.triP)) / n2;
+    }
 };
 
 template<typename T>
