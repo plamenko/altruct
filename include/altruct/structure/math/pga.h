@@ -45,9 +45,9 @@ namespace math {
  *   motor:      blade024 = blade0 + blade2E + blade2e + blade4
  *
  *
+ *   reverse:                  ~a = a.rev(); change sign of blade2 and blade3
  *   dual:                     !a = {e123, triP, e0123, bie, biE, s,     e0,   v   }
  *                                 !{e0,   v,    s,     biE, bie, e0123, e123, triP}
- *   reverse:                  ~a = a.rev(); change sign of blade2 and blade3
  * > geometric product:        a * b
  * > wedge/meet/outer product: a ^ b
  * > dot/inner product:        a & b
@@ -108,6 +108,8 @@ vector3d<T> make_zero_vec(const T& v) { return vector3d<T>(zeroOf(v), zeroOf(v),
     const auto& second() const { return pr; }                                     \
                                                                                   \
     auto rev() const { return B(pl.rev(), pr.rev()); }                            \
+    auto norm2() const { return pl.norm2() + pr.norm2(); }                        \
+    auto ninf2() const { return pl.ninf2() + pr.ninf2(); }
 
 template<typename T>
 class zero {};
@@ -121,6 +123,8 @@ public:
     PGA_CLOSED_OPERATORS_1(blade0, T, s);
 
     blade0 rev() const { return blade0(s); } // same
+    T norm2() const { return sqT(s); }
+    T ninf2() const { return zeroOf(s); }
 };
 
 template<typename T>
@@ -132,6 +136,8 @@ public:
     PGA_CLOSED_OPERATORS_2(blade1, T, e0, v);
 
     blade1 rev() const { return blade1(e0, v); } // same
+    T norm2() const { return v.abs2(); }
+    T ninf2() const { return sqT(e0); }
 };
 
 template<typename T>
@@ -143,6 +149,8 @@ public:
     PGA_CLOSED_OPERATORS_1(blade2E, T, biE);
 
     blade2E rev() const { return blade2E(-biE); } // negate blade2 part
+    T norm2() const { return biE.abs2(); }
+    T ninf2() const { return zeroOf(biE.z); }
 };
 
 template<typename T>
@@ -154,6 +162,8 @@ public:
     PGA_CLOSED_OPERATORS_1(blade2e, T, bie);
 
     blade2e rev() const { return blade2e(-bie); } // negate blade2 part
+    T norm2() const { return zeroOf(bie.z); }
+    T ninf2() const { return bie.abs2(); }
 };
 
 template<typename T>
@@ -165,6 +175,8 @@ public:
     PGA_CLOSED_OPERATORS_2(blade3, T, e123, triP);
 
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
+    T norm2() const { return sqT(e123); }
+    T ninf2() const { return triP.abs2(); }
 };
 
 template<typename T>
@@ -176,6 +188,8 @@ public:
     PGA_CLOSED_OPERATORS_1(blade4, T, e0123);
 
     blade4 rev() const { return blade4(e0123); } // same
+    T norm2() const { return zeroOf(e0123); }
+    T ninf2() const { return sqT(e0123); }
 };
 
 //-------------------------------------------------------------------------------

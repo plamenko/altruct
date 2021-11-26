@@ -82,6 +82,8 @@ TEST(pga_test, operators_arithmetic_blade0) {
 	EXPECT_EQ("as id", to_string(~a0));
 	EXPECT_EQ("as id", to_string(a0.rev()));
 	EXPECT_EQ("as e0123", to_string(!a0));
+	EXPECT_EQ("(as*as)", to_string(a0.norm2()));
+	EXPECT_EQ("0", to_string(a0.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade0) {
@@ -136,6 +138,8 @@ TEST(pga_test, operators_arithmetic_blade1) {
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3", to_string(~a1));
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3", to_string(a1.rev()));
 	EXPECT_EQ("ae0 e123 + avx e032 + avy e013 + avz e021", to_string(!a1));
+	EXPECT_EQ("(((avx*avx)+(avy*avy))+(avz*avz))", to_string(a1.norm2()));
+	EXPECT_EQ("(ae0*ae0)", to_string(a1.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade1) {
@@ -178,6 +182,8 @@ TEST(pga_test, operators_arithmetic_blade2E) {
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(~a2E));
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(a2E.rev()));
 	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03", to_string(!a2E));
+	EXPECT_EQ("(((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz))", to_string(a2E.norm2()));
+	EXPECT_EQ("0", to_string(a2E.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade2E) {
@@ -220,6 +226,8 @@ TEST(pga_test, operators_arithmetic_blade2e) {
 	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(~a2e));
 	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(a2e.rev()));
 	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12", to_string(!a2e));
+	EXPECT_EQ("0", to_string(a2e.norm2()));
+	EXPECT_EQ("(((abiex*abiex)+(abiey*abiey))+(abiez*abiez))", to_string(a2e.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade2e) {
@@ -274,6 +282,8 @@ TEST(pga_test, operators_arithmetic_blade3) {
 	EXPECT_EQ("(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021", to_string(~a3));
 	EXPECT_EQ("(-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021", to_string(a3.rev()));
 	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3", to_string(!a3));
+	EXPECT_EQ("(ae123*ae123)", to_string(a3.norm2()));
+	EXPECT_EQ("(((atriPx*atriPx)+(atriPy*atriPy))+(atriPz*atriPz))", to_string(a3.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade3) {
@@ -312,6 +322,8 @@ TEST(pga_test, operators_arithmetic_blade4) {
 	EXPECT_EQ("ae0123 e0123", to_string(~a4));
 	EXPECT_EQ("ae0123 e0123", to_string(a4.rev()));
 	EXPECT_EQ("ae0123 id", to_string(!a4));
+	EXPECT_EQ("0", to_string(a4.norm2()));
+	EXPECT_EQ("(ae0123*ae0123)", to_string(a4.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade4) {
@@ -366,6 +378,8 @@ TEST(pga_test, operators_arithmetic_blade02E) {
 	EXPECT_EQ("as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(~a02));
 	EXPECT_EQ("as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12", to_string(a02.rev()));
 	EXPECT_EQ("abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!a02));
+	EXPECT_EQ("((as*as)+(((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz)))", to_string(a02.norm2()));
+	EXPECT_EQ("(0+0)", to_string(a02.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade02E) {
@@ -420,6 +434,8 @@ TEST(pga_test, operators_arithmetic_blade02e) {
 	EXPECT_EQ("as id + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(~a02));
 	EXPECT_EQ("as id + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(a02.rev()));
 	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12 + as e0123", to_string(!a02));
+	EXPECT_EQ("((as*as)+0)", to_string(a02.norm2()));
+	EXPECT_EQ("(0+(((abiex*abiex)+(abiey*abiey))+(abiez*abiez)))", to_string(a02.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade02e) {
@@ -482,6 +498,8 @@ TEST(pga_test, operators_arithmetic_blade22) {
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(~a22));
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + (-abiex) e01 + (-abiey) e02 + (-abiez) e03", to_string(a22.rev()));
 	EXPECT_EQ("abiex e23 + abiey e31 + abiez e12 + abiEx e01 + abiEy e02 + abiEz e03", to_string(!a22));
+	EXPECT_EQ("((((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz))+0)", to_string(a22.norm2()));
+	EXPECT_EQ("(0+(((abiex*abiex)+(abiey*abiey))+(abiez*abiez)))", to_string(a22.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade22) {
@@ -536,6 +554,8 @@ TEST(pga_test, operators_arithmetic_blade2E4) {
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + ae0123 e0123", to_string(~a24));
 	EXPECT_EQ("(-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + ae0123 e0123", to_string(a24.rev()));
 	EXPECT_EQ("ae0123 id + abiEx e01 + abiEy e02 + abiEz e03", to_string(!a24));
+	EXPECT_EQ("((((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz))+0)", to_string(a24.norm2()));
+	EXPECT_EQ("(0+(ae0123*ae0123))", to_string(a24.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade2E4) {
@@ -590,6 +610,8 @@ TEST(pga_test, operators_arithmetic_blade2e4) {
 	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123", to_string(~a24));
 	EXPECT_EQ("(-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123", to_string(a24.rev()));
 	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12", to_string(!a24));
+	EXPECT_EQ("(0+0)", to_string(a24.norm2()));
+	EXPECT_EQ("((((abiex*abiex)+(abiey*abiey))+(abiez*abiez))+(ae0123*ae0123))", to_string(a24.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade2e4) {
@@ -723,6 +745,8 @@ TEST(pga_test, operators_arithmetic_blade024) {
 	EXPECT_EQ("as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + (-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123", to_string(~a024));
 	EXPECT_EQ("as id + (-abiEx) e23 + (-abiEy) e31 + (-abiEz) e12 + (-abiex) e01 + (-abiey) e02 + (-abiez) e03 + ae0123 e0123", to_string(a024.rev()));
 	EXPECT_EQ("ae0123 id + abiex e23 + abiey e31 + abiez e12 + abiEx e01 + abiEy e02 + abiEz e03 + as e0123", to_string(!a024));
+	EXPECT_EQ("(((as*as)+(((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz)))+(0+0))", to_string(a024.norm2()));
+	EXPECT_EQ("((0+0)+((((abiex*abiex)+(abiey*abiey))+(abiez*abiez))+(ae0123*ae0123)))", to_string(a024.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade024) {
@@ -793,6 +817,8 @@ TEST(pga_test, operators_arithmetic_blade13) {
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021", to_string(~a13));
 	EXPECT_EQ("ae0 e0 + avx e1 + avy e2 + avz e3 + (-ae123) e123 + (-atriPx) e032 + (-atriPy) e013 + (-atriPz) e021", to_string(a13.rev()));
 	EXPECT_EQ("ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + ae0 e123 + avx e032 + avy e013 + avz e021", to_string(!a13));
+	EXPECT_EQ("((((avx*avx)+(avy*avy))+(avz*avz))+(ae123*ae123))", to_string(a13.norm2()));
+	EXPECT_EQ("((ae0*ae0)+(((atriPx*atriPx)+(atriPy*atriPy))+(atriPz*atriPz)))", to_string(a13.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_blade13) {
@@ -916,6 +942,14 @@ TEST(pga_test, operators_arithmetic_multivector) {
 		"ae123 e0 + atriPx e1 + atriPy e2 + atriPz e3 + "
 		"ae0 e123 + avx e032 + avy e013 + avz e021",
 		to_string(!am));
+	EXPECT_EQ(
+		"((((as*as)+(((abiEx*abiEx)+(abiEy*abiEy))+(abiEz*abiEz)))+(0+0))+"
+		"((((avx*avx)+(avy*avy))+(avz*avz))+(ae123*ae123)))",
+		to_string(am.norm2()));
+	EXPECT_EQ(
+		"(((0+0)+((((abiex*abiex)+(abiey*abiey))+(abiez*abiez))+(ae0123*ae0123)))+"
+		"((ae0*ae0)+(((atriPx*atriPx)+(atriPy*atriPy))+(atriPz*atriPz))))",
+		to_string(am.ninf2()));
 }
 
 TEST(pga_test, operators_inplace_multivector) {
