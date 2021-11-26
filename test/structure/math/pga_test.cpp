@@ -1976,9 +1976,12 @@ TEST(pga_test, operations) {
 	auto Pt = t * P * t.rev();
 	auto Pr1 = r1 * P * r1.rev();
 	auto Pr2 = r2 * P * r2.rev();
+	auto M = t * r1;
+	auto PM = M * P * M.rev();
 	EXPECT_EQ("1 e123 + -7 e032 + 4 e013 + -15 e021", to_string(Pt));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + 15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr1 * 15625));
-	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + 15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr2 * 15625));
+	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr1.b3 * 15625));
+	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr2.b3 * 15625));
+	EXPECT_EQ("15625 e123 + -24583 e032 + 108694 e013 + -244815 e021", to_string(PM.b3 * 15625));
 }
 
 //TEST(symbolic_test, casts) {
