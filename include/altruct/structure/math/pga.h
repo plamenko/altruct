@@ -723,6 +723,28 @@ blade3<T> point(const vector3d<T>& P) {
 
 //-------------------------------------------------------------------------------
 
+// translator by vector `t`
+template<typename T>
+blade02e<T> translator(const vector3d<T>& t) {
+    auto id = identityOf(t.z);
+    auto ht = t / castOf<T>(t.z, 2);
+    return blade02e<T>(blade0<T>(id), blade2e<T>(ht));
+}
+
+// rotor along axis `n` by angle `a` given `cos(a/2)` and `sin(a/2)`
+template<typename T>
+blade02E<T> rotor(const vector3d<T>& n, T cos_a2, T sin_a2) {
+    return blade02E<T>(blade0<T>(cos_a2), blade2E<T>(n.unit() * -sin_a2));
+}
+// rotor along axis `n` by angle `a` in radians
+template<typename T>
+blade02E<T> rotor(const vector3d<T>& n, T a) {
+    auto ha = a / castOf<T>(a, 2);
+    return rotor(n, cos(ha), sin(ha));
+}
+
+//-------------------------------------------------------------------------------
+
 // TODO: projection, rejection, intersection, join
 // TODO: distance, angle
 

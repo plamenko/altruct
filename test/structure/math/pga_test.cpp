@@ -1886,6 +1886,19 @@ TEST(pga_test, primitives) {
 	EXPECT_EQ("518 e0 + -92 e1 + -58 e2 + 118 e3", to_string(pabc2));
 }
 
+TEST(pga_test, operations) {
+	auto t = pga::translator<double>({ 3, -5, 7 });
+	auto r1 = pga::rotor<double>({ 9, -12, 20 }, 1.28700221758657);
+	auto r2 = pga::rotor<double>({ 9, -12, 20 }, 0.8, 0.6);
+	auto P = pga::point<double>({ 4, 1, 8 });
+	auto Pt = t * P * t.rev();
+	auto Pr1 = r1 * P * r1.rev();
+	auto Pr2 = r2 * P * r2.rev();
+	EXPECT_EQ("1 e123 + -7 e032 + 4 e013 + -15 e021", to_string(Pt));
+	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + 15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr1 * 15625));
+	EXPECT_EQ("0 e0 + 0 e1 + 0 e2 + 0 e3 + 15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr2 * 15625));
+}
+
 //TEST(symbolic_test, casts) {
 //    symbolic s("s");
 //    symbolic e0 = zeroOf(s);
