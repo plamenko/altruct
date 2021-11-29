@@ -109,7 +109,8 @@ vector3d<T> make_zero_vec(const T& v) { return vector3d<T>(zeroOf(v), zeroOf(v),
                                                                                   \
     auto rev() const { return B(pl.rev(), pr.rev()); }                            \
     auto norm2() const { return pl.norm2() + pr.norm2(); }                        \
-    auto ninf2() const { return pl.ninf2() + pr.ninf2(); }
+    auto ninf2() const { return pl.ninf2() + pr.ninf2(); }                        \
+    auto diff2() const { return pl.diff2() + pr.diff2(); }
 
 template<typename T>
 class zero {};
@@ -125,6 +126,7 @@ public:
     blade0 rev() const { return blade0(s); } // same
     T norm2() const { return sqT(s); }
     T ninf2() const { return zeroOf(s); }
+    T diff2() const { return norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -139,6 +141,7 @@ public:
     blade1 rev() const { return blade1(e0, v); } // same
     T norm2() const { return v.abs2(); }
     T ninf2() const { return sqT(e0); }
+    T diff2() const { return norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -153,6 +156,7 @@ public:
     blade2E rev() const { return blade2E(-biE); } // negate blade2 part
     T norm2() const { return biE.abs2(); }
     T ninf2() const { return zeroOf(biE.z); }
+    T diff2() const { return -norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -167,6 +171,7 @@ public:
     blade2e rev() const { return blade2e(-bie); } // negate blade2 part
     T norm2() const { return zeroOf(bie.z); }
     T ninf2() const { return bie.abs2(); }
+    T diff2() const { return norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -181,6 +186,7 @@ public:
     blade3 rev() const { return blade3(-e123, -triP); } // negate blade3 part
     T norm2() const { return sqT(e123); }
     T ninf2() const { return triP.abs2(); }
+    T diff2() const { return -norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -195,6 +201,7 @@ public:
     blade4 rev() const { return blade4(e0123); } // same
     T norm2() const { return zeroOf(e0123); }
     T ninf2() const { return sqT(e0123); }
+    T diff2() const { return norm2(); }
     auto inv() const { return rev() / norm2(); }
 };
 
@@ -277,7 +284,7 @@ public:
     PGA_CLOSED_OPERATORS_2(blade024, T, b02, b24);
     PGA_COMPOSITE_GETTERS(blade024, b02, b24);
     auto inv() const {
-        T n2 = norm2(); T t = ((b02.b2E.biE & b24.b2e.bie) - (b02.b0.s * b24.b4.e0123)) * castOf<T>(b02.b0.s, 2) / n2;
+        T n2 = norm2(); T t = ((b02.b2E.biE & b24.b2e.bie) - (b02.b0.s * b24.b4.e0123)) * castOf(b02.b0.s, 2) / n2;
         return blade024(b02.rev(), b24.rev() + blade2e4<T>(blade2e<T>(b02.b2E.biE), blade4<T>(b02.b0.s)) * t) / n2;
     }
 };
@@ -292,7 +299,7 @@ public:
     PGA_CLOSED_OPERATORS_2(blade13, T, b1, b3);
     PGA_COMPOSITE_GETTERS(blade13, b1, b3);
     auto inv() const {
-        T n2 = norm2(); T t = ((b1.v & b3.triP) + (b1.e0 * b3.e123)) * castOf<T>(b1.e0, 2) / n2;
+        T n2 = norm2(); T t = ((b1.v & b3.triP) + (b1.e0 * b3.e123)) * castOf(b1.e0, 2) / n2;
         return blade13(blade1<T>(b1.e0 - b3.e123 * t, b1.v), blade3<T>(-b3.e123, b1.v * t - b3.triP)) / n2;
     }
 };
@@ -527,8 +534,8 @@ template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_
 multivector<T> combine_multivector(BL bl, BR br) { return multivector<T>(blade024<T>(std::move(bl)), blade13<T>(std::move(br))); }
 
 // add
-template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator + (zero<T>, const B& b) { return b; }
-template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator + (const B& b, zero<T>) { return b; }
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator + (const B& b, zero<T>) { return b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator + (zero<T>, const B& b) { return b; }
 
 template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 auto operator + (const BL& bl, const BR& br) {
@@ -541,6 +548,23 @@ auto operator + (const BL& bl, const BR& br) {
         combine13(
             get<BL>::b1(bl) + get<BR>::b1(br),
             get<BL>::b3(bl) + get<BR>::b3(br)));
+}
+
+// subtract
+template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator - (const B& b, zero<T>) { return b; }
+template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator - (zero<T>, const B& b) { return -b; }
+
+template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+auto operator - (const BL& bl, const BR& br) {
+    return combine_multivector(
+        combine024(
+            get<BL>::b0(bl) - get<BR>::b0(br),
+            get<BL>::b2E(bl) - get<BR>::b2E(br),
+            get<BL>::b2e(bl) - get<BR>::b2e(br),
+            get<BL>::b4(bl) - get<BR>::b4(br)),
+        combine13(
+            get<BL>::b1(bl) - get<BR>::b1(br),
+            get<BL>::b3(bl) - get<BR>::b3(br)));
 }
 
 // multiply
@@ -725,9 +749,193 @@ auto operator | (const BL& lhs, const BR& rhs) { return (lhs.first() | rhs) + (l
 template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator | (const BL& lhs, const BR& rhs) { return (lhs | rhs.first()) + (lhs | rhs.second()); }
 
+//-------------------------------------------------------------------------------
 
-// TODO: inverse
-// TODO: conjugate product overloads (a b ~a)
+// sandwich product: a % b = (-1)^m b a ~b for orthogonal b; a % b = (-1)^m b a b^-1 for orthonormal b; m = number of reflections
+//   blade0    0 reflections = nop
+// > blade1    1 reflection
+//   blade2E   ?
+//   blade2e   ?
+//   blade3    ?
+//   blade4    ?
+//   blade02E  2 reflections = rotation
+//   blade02e  2 reflections = translation
+//   blade22   2 reflections = roto-translation
+//   blade2E4  ?
+//   blade2e4  ?
+//   blade024  4 reflections
+//   blade13   3 reflections
+
+#define PGA_DEF_024(b024, c2)                                               \
+    const auto& b024##s = b024.b02.b0.s, b024##0123 = b024.b24.b4.e0123;    \
+    const auto& b024##biE = b024.b02.b2E.biE, b024##bie = b024.b24.b2e.bie; \
+    const auto c2 = castOf(b024##s, 2);
+
+#define PGA_DEF_13(b13, c2)                                                 \
+    const auto& b13##0 = b13.b1.e0, b13##123 = b13.b3.e123;                 \
+    const auto& b13##v = b13.b1.v, b13##triP = b13.b3.triP;                 \
+    const auto c2 = castOf(b13##0, 2);
+
+#define PGA_DOT_CROSS(a, b, a_o_b, a_x_b)                                   \
+    const auto a_x_b = (a ^ b); const auto a_o_b = (a & b);
+
+template<typename T> auto operator % (const blade0<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade1<T>& b) { return a * -b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade2E<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade2e<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade3<T>& b) { return a * -b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade02E<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade02e<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade22<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade2E4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade2e4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade024<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade0<T>& a, const blade13<T>& b) { return a * -b.norm2(); }
+
+template<typename T> auto operator % (const blade1<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade1<T>& a, const blade1<T>& b) { return a * b.norm2() - b * (a.v & b.v) * castOf(a.e0, 2); }
+template<typename T> auto operator % (const blade1<T>& a, const blade2E<T>& b) { return blade1<T>(a.e0 * b.norm2(), a.v * b.diff2() + b.biE * ((a.v & b.biE) * castOf(a.e0, 2))); }
+template<typename T> auto operator % (const blade1<T>& a, const blade2e<T>& b) { return blade1<T>(zeroOf(a.e0)); }
+template<typename T> auto operator % (const blade1<T>& a, const blade3<T>& b) { return blade1<T>(a.e0 * b.norm2() + b.e123 * (a.v & b.triP) * castOf(a.e0, 2), a.v * b.diff2()); }
+template<typename T> auto operator % (const blade1<T>& a, const blade4<T>& b) { return blade1<T>(zeroOf(a.e0)); }
+template<typename T> auto operator % (const blade1<T>& a, const blade02E<T>& b) {
+    const auto c2 = castOf(a.e0, 2); PGA_DOT_CROSS(a.v, b.b2E.biE, av_o_bbiE, av_x_bbiE);
+    return blade1<T>(a.e0 * b.norm2(), a.v * b.diff2() + (b.b2E.biE * av_o_bbiE + b.b0.s * av_x_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade02e<T>& b) {
+    return blade1<T>(a.e0 * b.norm2() + b.b0.s * (a.v & b.b2e.bie) * castOf(a.e0, 2), a.v * b.diff2());
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade22<T>& b) {
+    const auto c2 = castOf(a.e0, 2); PGA_DOT_CROSS(a.v, b.b2E.biE, av_o_bbiE, av_x_bbiE);
+    return blade1<T>(a.e0 * b.norm2() + (b.b2e.bie & av_x_bbiE) * c2, a.v * b.diff2() + b.b2E.biE * (av_o_bbiE * c2));
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade2E4<T>& b) {
+    const auto av_o_bbiE_c2 = (a.v & b.b2E.biE) * castOf(a.e0, 2);
+    return blade1<T>(a.e0 * b.norm2() + b.b4.e0123 * av_o_bbiE_c2, a.v * b.diff2() + b.b2E.biE * av_o_bbiE_c2);
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade2e4<T>& b) {
+    return blade1<T>(zeroOf(a.e0));
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade024<T>& b) {
+    PGA_DEF_024(b, c2); PGA_DOT_CROSS(a.v, bbiE, av_o_bbiE, av_x_bbiE);
+    return blade1<T>(a.e0 * b.norm2() + (bs * (a.v & bbie) + b0123 * av_o_bbiE + (bbie & av_x_bbiE)) * c2, a.v * b.diff2() + (bbiE * av_o_bbiE + bs * av_x_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade1<T>& a, const blade13<T>& b) {
+    PGA_DEF_13(b, c2); PGA_DOT_CROSS(a.v, bv, av_o_bv, av_x_bv);
+    return blade1<T>(a.e0 * b.norm2() + (-b0 * av_o_bv + b123 * (a.v & btriP) - (btriP & av_x_bv)) * c2, a.v * b.diff2() + (b123 * av_x_bv - bv * av_o_bv) * c2);
+}
+
+template<typename T> auto operator % (const blade2E<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade1<T>& b) { return blade2E<T>(a.biE * b.diff2() - b.v * ((a.biE & b.v) * castOf(a.biE.z, 2))) + blade2e<T>(b.e0 * castOf(a.biE.z, 2) * (a.biE ^ b.v)); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade2E<T>& b) { return blade2E<T>(a.biE * b.diff2() + b.biE * ((a.biE & b.biE) * castOf(a.biE.z, 2))); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade2e<T>& b) { return blade2E<T>(zeroOf(a.biE.z)); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade3<T>& b) { return blade2E<T>(a.biE * b.diff2()) + blade2e<T>(b.e123 * castOf(a.biE.z, 2) * (a.biE ^ b.triP)); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade4<T>& b) { return blade2E<T>(zeroOf(a.biE.z)); }
+template<typename T> auto operator % (const blade2E<T>& a, const blade02E<T>& b) {
+    const auto c2 = castOf(a.biE.z, 2); PGA_DOT_CROSS(a.biE, b.b2E.biE, abiE_o_bbiE, abiE_x_bbiE);
+    return blade2E<T>(a.biE * b.diff2() + (b.b2E.biE * abiE_o_bbiE + b.b0.s * abiE_x_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade02e<T>& b) {
+    return blade2E<T>(a.biE * b.diff2()) + blade2e<T>(b.b0.s * castOf(a.biE.z, 2) * (a.biE ^ b.b2e.bie));
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade22<T>& b) {
+    const auto abiE_o_bbiE_c2 = (a.biE & b.b2E.biE) * castOf(a.biE.z, 2);
+    const auto abiE_o_bbie_c2 = (a.biE & b.b2e.bie) * castOf(a.biE.z, 2);
+    return blade2E<T>(a.biE * b.diff2() + b.b2E.biE * abiE_o_bbiE_c2) + blade2e<T>(b.b2E.biE * abiE_o_bbie_c2 + b.b2e.bie * abiE_o_bbiE_c2);
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade2E4<T>& b) {
+    const auto c2 = castOf(a.biE.z, 2); PGA_DOT_CROSS(a.biE, b.b2E.biE, abiE_o_bbiE, abiE_x_bbiE);
+    return blade2E<T>(a.biE * b.diff2() + b.b2E.biE * (abiE_o_bbiE * c2)) + blade2e<T>(-c2 * b.b4.e0123 * abiE_x_bbiE);
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade2e4<T>& b) {
+    return blade2E<T>(zeroOf(a.biE.z));
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade024<T>& b) {
+    PGA_DEF_024(b, c2); PGA_DOT_CROSS(a.biE, bbiE, abiE_o_bbiE, abiE_x_bbiE); PGA_DOT_CROSS(a.biE, bbie, abiE_o_bbie, abiE_x_bbie);
+    return blade2E<T>(a.biE * b.diff2() + (bbiE * abiE_o_bbiE + bs * abiE_x_bbiE) * c2) +
+        blade2e<T>((a.biE * (b0123 * bs * -c2) + bbiE * abiE_o_bbie + bs * abiE_x_bbie + bbie * abiE_o_bbiE - b0123 * abiE_x_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade2E<T>& a, const blade13<T>& b) {
+    PGA_DEF_13(b, c2); PGA_DOT_CROSS(a.biE, bv, abiE_o_bv, abiE_x_bv); PGA_DOT_CROSS(a.biE, btriP, abiE_o_btriP, abiE_x_btriP);
+    return blade2E<T>(a.biE * b.diff2() + (b123 * abiE_x_bv - bv * abiE_o_bv) * c2) +
+        blade2e<T>((a.biE * (b0 * b123 * -c2) - btriP * abiE_o_bv + b0 * abiE_x_bv - bv * abiE_o_btriP + b123 * abiE_x_btriP) * c2);
+}
+
+template<typename T> auto operator % (const blade2e<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade1<T>& b) { return blade2e<T>(a.bie * -b.diff2() + b.v * (a.bie & b.v) * castOf(a.bie.z, 2)); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade2E<T>& b) { return blade2e<T>(a.bie * b.diff2() + b.biE * ((a.bie & b.biE) * castOf(a.bie.z, 2))); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade2e<T>& b) { return blade2e<T>(zeroOf(a.bie.z)); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade3<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade4<T>& b) { return blade2e<T>(zeroOf(a.bie.z)); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade02E<T>& b) {
+    const auto c2 = castOf(a.bie.z, 2); PGA_DOT_CROSS(a.bie, b.b2E.biE, abie_o_bbiE, abie_x_bbiE);
+    return blade2e<T>(a.bie * b.diff2() + (b.b0.s * abie_x_bbiE + b.b2E.biE * abie_o_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade2e<T>& a, const blade02e<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade22<T>& b) { return a % b.b2E; }
+template<typename T> auto operator % (const blade2e<T>& a, const blade2E4<T>& b) { return a % b.b2E; }
+template<typename T> auto operator % (const blade2e<T>& a, const blade2e4<T>& b) { return blade2e<T>(zeroOf(a.bie.z)); }
+template<typename T> auto operator % (const blade2e<T>& a, const blade024<T>& b) {
+    PGA_DEF_024(b, c2); PGA_DOT_CROSS(a.bie, bbiE, abie_o_bbiE, abie_x_bbiE);
+    return blade2e<T>(a.bie * b.diff2() + (bs * abie_x_bbiE + bbiE * abie_o_bbiE) * c2);
+}
+template<typename T> auto operator % (const blade2e<T>& a, const blade13<T>& b) {
+    PGA_DEF_13(b, c2); PGA_DOT_CROSS(a.bie, bv, abie_o_bv, abie_x_bv);
+    return blade2e<T>(a.bie * -b.diff2() + (bv * abie_o_bv - b123 * abie_x_bv) * c2);
+}
+
+template<typename T> auto operator % (const blade3<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade3<T>& a, const blade1<T>& b) { return blade3<T>(a.e123 * -b.norm2(), a.triP * -b.diff2() + b.v * (((a.triP & b.v) + a.e123 * b.e0) * castOf(a.e123, 2))); }
+template<typename T> auto operator % (const blade3<T>& a, const blade2E<T>& b) { return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() + b.biE * ((a.triP & b.biE) * castOf(a.e123, 2))); }
+template<typename T> auto operator % (const blade3<T>& a, const blade2e<T>& b) { return blade3<T>(zeroOf(a.e123)); }
+template<typename T> auto operator % (const blade3<T>& a, const blade3<T>& b) { return blade3<T>(a.e123 * -b.norm2(), a.triP * -b.diff2() - b.triP * (a.e123 * b.e123 * castOf(a.e123, 2))); }
+template<typename T> auto operator % (const blade3<T>& a, const blade4<T>& b) { return blade3<T>(zeroOf(a.e123)); }
+template<typename T> auto operator % (const blade3<T>& a, const blade02E<T>& b) {
+    const auto c2 = castOf(a.e123, 2); const auto& bs = b.b0.s; const auto& bbiE = b.b2E.biE;
+    return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() + (bbiE * (a.triP & bbiE) + bs * (a.triP ^ bbiE)) * c2);
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade02e<T>& b) {
+    const auto c2 = castOf(a.e123, 2); const auto& bs = b.b0.s; const auto& bbie = b.b2e.bie;
+    return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() - bbie * (a.e123 * bs * c2));
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade22<T>& b) {
+    const auto c2 = castOf(a.e123, 2); const auto& bbiE = b.b2E.biE; const auto& bbie = b.b2e.bie;
+    return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() + (bbiE * (a.triP & bbiE) + a.e123 * (bbiE ^ bbie)) * c2);
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade2E4<T>& b) {
+    const auto c2 = castOf(a.e123, 2); const auto& bbiE = b.b2E.biE; const auto& b0123 = b.b4.e0123;
+    return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() + bbiE * (((a.triP & bbiE) - a.e123 * b0123) * c2));
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade2e4<T>& b) {
+    return blade3<T>(zeroOf(a.e123));
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade024<T>& b) {
+    PGA_DEF_024(b, c2); PGA_DOT_CROSS(a.triP, bbiE, atriP_o_bbiE, atriP_x_bbiE);
+    return blade3<T>(a.e123 * b.norm2(), a.triP * b.diff2() + (bbiE * (atriP_o_bbiE - a.e123 * b0123) - bbie * (a.e123 * bs) + bs * atriP_x_bbiE + a.e123 * (bbiE ^ bbie)) * c2);
+}
+template<typename T> auto operator % (const blade3<T>& a, const blade13<T>& b) {
+    PGA_DEF_13(b, c2); PGA_DOT_CROSS(a.triP, bv, atriP_o_bv, atriP_x_bv);
+    return blade3<T>(a.e123 * -b.norm2(), a.triP * -b.diff2() + (bv * (atriP_o_bv + a.e123 * b0) - btriP * (a.e123 * b123) - b123 * atriP_x_bv - a.e123 * (bv ^ btriP)) * c2);
+}
+
+template<typename T> auto operator % (const blade4<T>& a, const blade0<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade1<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade2E<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade2e<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade3<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade02E<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade02e<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade22<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade2E4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade2e4<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade024<T>& b) { return a * b.norm2(); }
+template<typename T> auto operator % (const blade4<T>& a, const blade13<T>& b) { return a * b.norm2(); }
+
+// composite a can be distribued, but composite b can not! needs explicit overloads for all types of b
+template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+auto operator % (const BL& lhs, const BR& rhs) { return (lhs.first() % rhs) + (lhs.second() % rhs); }
 
 //-------------------------------------------------------------------------------
 
@@ -760,7 +968,7 @@ blade3<T> point(const vector3d<T>& P) {
 template<typename T>
 blade02e<T> translator(const vector3d<T>& t) {
     auto id = identityOf(t.z);
-    auto ht = t / castOf<T>(t.z, 2);
+    auto ht = t / castOf(t.z, 2);
     return blade02e<T>(blade0<T>(id), blade2e<T>(ht));
 }
 
@@ -772,7 +980,7 @@ blade02E<T> rotor(const vector3d<T>& n, T cos_a2, T sin_a2) {
 // rotor along axis `n` by angle `a` in radians
 template<typename T>
 blade02E<T> rotor(const vector3d<T>& n, T a) {
-    auto ha = a / castOf<T>(a, 2);
+    auto ha = a / castOf(a, 2);
     return rotor(n, cos(ha), sin(ha));
 }
 
