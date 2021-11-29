@@ -760,10 +760,10 @@ auto operator | (const BL& lhs, const BR& rhs) { return (lhs | rhs.first()) + (l
 //   blade4    ?
 //   blade02E  2 reflections = rotation
 //   blade02e  2 reflections = translation
-//   blade22   2 reflections = roto-translation
+//   blade22   ?
 //   blade2E4  ?
 //   blade2e4  ?
-//   blade024  4 reflections
+//   blade024  2 or 4 reflections = roto-translation
 //   blade13   3 reflections
 
 #define PGA_DEF_024(b024, c2)                                               \

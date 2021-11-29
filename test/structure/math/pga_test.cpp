@@ -2088,6 +2088,18 @@ TEST(pga_test, operations) {
 	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr1.b3 * 15625));
 	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr2.b3 * 15625));
 	EXPECT_EQ("15625 e123 + -24583 e032 + 108694 e013 + -244815 e021", to_string(PM.b3 * 15625));
+	EXPECT_EQ("15625 e123 + -24583 e032 + 108694 e013 + -244815 e021", to_string((P % M) * 15625));
+	EXPECT_EQ("15625 e123 + -37207 e032 + 103276 e013 + -242385 e021", to_string((P % (r1 * t)) * 15625));
+
+	auto tr = t % r2;
+	auto Ptr = P % tr;
+	EXPECT_EQ("15625 e123 + 29749.5 e032 + -36353.5 e013 + 53472.5 e021", to_string((pga::point<double>({3*-.5, -5*-.5, 7*-.5}) % r2) * 15625));
+	EXPECT_EQ("15625 id + 29749.5 e01 + -36353.5 e02 + 53472.5 e03", to_string(tr * 15625));
+	EXPECT_EQ("15625 e123 + -121999 e032 + 57082 e013 + -231945 e021", to_string(Ptr * 15625));
+	auto rt = r2 % t;
+	auto Prt = P % rt;
+	EXPECT_EQ("12500 id + -3375 e23 + 4500 e31 + -7500 e12 + -6000 e01 + 1125 e02 + 3375 e03 + 0 e0123", to_string(rt * 15625));
+	EXPECT_EQ("15625 e123 + 34916 e032 + 35987 e013 + -137870 e021", to_string(Prt * 15625));
 }
 
 //TEST(symbolic_test, casts) {
