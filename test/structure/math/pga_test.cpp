@@ -2075,31 +2075,63 @@ TEST(pga_test, primitives) {
 }
 
 TEST(pga_test, operations) {
-	auto t = pga::translator<double>({ 3, -5, 7 });
-	auto r1 = pga::rotor<double>({ 9, -12, 20 }, 1.28700221758657);
-	auto r2 = pga::rotor<double>({ 9, -12, 20 }, 0.8, 0.6);
+	using vec3 = vector3d<double>;
+	auto p = pga::plane<double>({ 3, -5, 7 }, 2);
+	auto l = pga::line<double>({ 2, -5, 5 }, { 2, 6, 3 });
 	auto P = pga::point<double>({ 4, 1, 8 });
-	auto Pt = t * P * t.rev();
-	auto Pr1 = r1 * P * r1.rev();
-	auto Pr2 = r2 * P * r2.rev();
-	auto M = t * r1;
-	auto PM = M * P * M.rev();
-	EXPECT_EQ("1 e123 + -7 e032 + 4 e013 + -15 e021", to_string(Pt));
-	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr1.b3 * 15625));
-	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string(Pr2.b3 * 15625));
-	EXPECT_EQ("15625 e123 + -24583 e032 + 108694 e013 + -244815 e021", to_string(PM.b3 * 15625));
-	EXPECT_EQ("15625 e123 + -24583 e032 + 108694 e013 + -244815 e021", to_string((P % M) * 15625));
-	EXPECT_EQ("15625 e123 + -37207 e032 + 103276 e013 + -242385 e021", to_string((P % (r1 * t)) * 15625));
 
-	auto tr = t % r2;
-	auto Ptr = P % tr;
-	EXPECT_EQ("15625 e123 + 29749.5 e032 + -36353.5 e013 + 53472.5 e021", to_string((pga::point<double>({3*-.5, -5*-.5, 7*-.5}) % r2) * 15625));
-	EXPECT_EQ("15625 id + 29749.5 e01 + -36353.5 e02 + 53472.5 e03", to_string(tr * 15625));
-	EXPECT_EQ("15625 e123 + -121999 e032 + 57082 e013 + -231945 e021", to_string(Ptr * 15625));
-	auto rt = r2 % t;
-	auto Prt = P % rt;
-	EXPECT_EQ("12500 id + -3375 e23 + 4500 e31 + -7500 e12 + -6000 e01 + 1125 e02 + 3375 e03 + 0 e0123", to_string(rt * 15625));
-	EXPECT_EQ("15625 e123 + 34916 e032 + 35987 e013 + -137870 e021", to_string(Prt * 15625));
+	auto t = pga::translator<double>({ 3, -1, 4 });
+	auto r = pga::rotor<double>({ 9, -12, 20 }, 0.8, 0.6);
+	auto r2 = pga::rotor<double>({ 9, -12, 20 }, 1.28700221758657);
+	EXPECT_EQ("1 id + 1.5 e01 + -0.5 e02 + 2 e03", to_string(t));
+	EXPECT_EQ("100 id + -27 e23 + 36 e31 + -60 e12", to_string(r * 125));
+	EXPECT_EQ("100 id + -27 e23 + 36 e31 + -60 e12", to_string(r2 * 125));
+
+	auto M = t * r;
+	auto M2 = r * t;
+	EXPECT_EQ("100 id + -27 e23 + 36 e31 + -60 e12 + 192 e01 + -86 e02 + 159.5 e03 + -178.5 e0123", to_string(M * 125));
+	EXPECT_EQ("100 id + -27 e23 + 36 e31 + -60 e12 + 108 e01 + -14 e02 + 240.5 e03 + -178.5 e0123", to_string(M2 * 125));
+
+	// translation of primitives
+	EXPECT_EQ("44 e0 + 3 e1 + -5 e2 + 7 e3", to_string(p % t));
+	EXPECT_EQ("2 e23 + -5 e31 + 5 e12 + -60 e01 + 11 e02 + 35 e03", to_string(l % t));
+	EXPECT_EQ("1 e123 + -7 e032 + 0 e013 + -12 e021", to_string(P % t));
+
+	// rotation of primitives
+	EXPECT_EQ("31250 e0 + 59499 e1 + -72707 e2 + 106945 e3", to_string((p % r) * 15625));
+	EXPECT_EQ("61586 e23 + -63323 e31 + 73355 e12 + -405381 e01 + -638492 e02 + -210830 e03", to_string((l % r) * 15625));
+	EXPECT_EQ("15625 e123 + 22292 e032 + 30569 e013 + -135440 e021", to_string((P % r) * 15625));
+
+	// roto-translation of primitives
+	EXPECT_EQ("710234 e0 + 59499 e1 + -72707 e2 + 106945 e3", to_string((p % M) * 15625));
+	EXPECT_EQ("61586 e23 + -63323 e31 + 73355 e12 + -585318 e01 + -664771 e02 + -82447 e03", to_string((l % M) * 15625));
+	EXPECT_EQ("15625 e123 + -24583 e032 + 46194 e013 + -197940 e021", to_string((P % M) * 15625));
+
+	// roto-translation of primitives
+	EXPECT_EQ("687500 e0 + 59499 e1 + -72707 e2 + 106945 e3", to_string((p % M2) * 15625));
+	EXPECT_EQ("61586 e23 + -63323 e31 + 73355 e12 + -641964 e01 + -866923 e02 + -209395 e03", to_string((l % M2) * 15625));
+	EXPECT_EQ("15625 e123 + 6689 e032 + 46248 e013 + -211980 e021", to_string((P % M2) * 15625));
+
+	// rotation of translation (results in another translation)
+	EXPECT_EQ("15625 id + 7801.5 e01 + -7839.5 e02 + 38270 e03", to_string((t % r) * 15625));
+
+	// translation of rotation (results in roto-translation)
+	EXPECT_EQ("100 id + -27 e23 + 36 e31 + -60 e12 + 84 e01 + -72 e02 + -81 e03 + 0 e0123", to_string((r % t) * 125));
+
+	// rotation of rotation (results in another rotation)
+	EXPECT_EQ("312500 id + -198884 e23 + -13932 e31 + 123218 e12", to_string((r % pga::rotor<double>({ 16, 15, 12 }, 0.6, 0.8)) * 390625));
+
+	// translation of translation (doesn't change the original translation)
+	EXPECT_EQ("1 id + 1.5 e01 + -0.5 e02 + 2 e03", to_string(t % pga::translator<double>({2, 5, 3})));
+
+	// scaling (can't be achieved properly with a single sandwich product)
+	double s = 5.0;
+	auto ps = p * ((1 + s) / 2) - (p % pga::point<double>({ 0, 0, 0 })) * ((1 - s) / 2);
+	EXPECT_EQ("10 e0 + 3 e1 + -5 e2 + 7 e3", to_string(ps));
+	auto ls = l * ((1 + s) / 2) - (l % pga::point<double>({ 0, 0, 0 })) * ((1 - s) / 2);
+	EXPECT_EQ("2 e23 + -5 e31 + 5 e12 + -225 e01 + 20 e02 + 110 e03", to_string(ls));
+	auto Ps = P * ((1 + s) / 2) - (P % pga::point<double>({ 0, 0, 0 })) * ((1 - s) / 2);
+	EXPECT_EQ("1 e123 + -20 e032 + -5 e013 + -40 e021", to_string(Ps));
 }
 
 //TEST(symbolic_test, casts) {

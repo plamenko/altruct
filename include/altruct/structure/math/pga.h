@@ -758,12 +758,12 @@ auto operator | (const BL& lhs, const BR& rhs) { return (lhs | rhs.first()) + (l
 //   blade2e   ?
 //   blade3    ?
 //   blade4    ?
-//   blade02E  2 reflections = rotation
-//   blade02e  2 reflections = translation
-//   blade22   ?
+//   blade02E  2 reflections (non-parallel planes through origin) = rotation at origin
+//   blade02e  2 reflections (parallel planes) = translation
+//   blade22   2 reflections (perpendicular planes) = 180deg rotation around intersection
 //   blade2E4  ?
 //   blade2e4  ?
-//   blade024  2 or 4 reflections = roto-translation
+//   blade024  4 reflections = generic roto-translation
 //   blade13   3 reflections
 
 #define PGA_DEF_024(b024, c2)                                               \
@@ -986,7 +986,7 @@ blade02E<T> rotor(const vector3d<T>& n, T a) {
 
 //-------------------------------------------------------------------------------
 
-// TODO: projection, rejection, intersection, join
+// TODO: projection, rejection
 // TODO: distance, angle
 
 } // pga
