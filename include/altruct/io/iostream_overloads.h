@@ -19,6 +19,8 @@
 /** Forward declarations */
 template<typename T1, typename T2>
 std::ostream& operator << (std::ostream& os, const std::pair<T1, T2>& rhs);
+template<typename T, size_t SZ>
+std::ostream& operator << (std::ostream& os, const std::array<T, SZ>& container);
 template<typename T, typename A>
 std::ostream& operator << (std::ostream& os, const std::vector<T, A>& container);
 template<typename T, typename P, typename A>
@@ -112,6 +114,9 @@ std::ostream& output_container(std::ostream& os, const C& container, const std::
     return os;
 }
 
+/** std::ostream specialization for std::array */
+template<typename T, size_t SZ>
+std::ostream& operator << (std::ostream& os, const std::array<T, SZ>& container) { return output_container(os, container); }
 /** std::ostream specialization for std::vector */
 template<typename T, typename A>
 std::ostream& operator << (std::ostream& os, const std::vector<T, A>& container) { return output_container(os, container); }
@@ -196,7 +201,7 @@ std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs
 }
 
 /** std::ostream specialization for altruct::math::symbolic */
-template<typename T = std::string>
+template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::symbolic& s) {
     return os << s.v;
 }
