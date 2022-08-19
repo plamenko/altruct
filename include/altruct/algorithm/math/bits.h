@@ -22,6 +22,10 @@ template<typename T>
 const int bit_size<T>::value;
 
 
+/** Makes the bit at the given position. */
+template<typename T> T make_bit(int pos) { return T(1) << pos; }
+/** Makes `cnt` ones in a row. */
+template<typename T> T make_ones(int cnt) { return make_bit<T>(cnt) - 1; }
 /** Gets the bit at the given position. */
 template<typename T> T get_bit(T val, int pos) { return (val >> pos) & 1; }
 /** Sets the bit at the given position. */
@@ -35,6 +39,8 @@ template<typename T> T erase_bit(T val, int pos) {
     T lo_mask = (T(1) << pos) - 1;
     return ((val >> 1) & ~lo_mask) | (val & lo_mask);
 }
+/** If the corresponding mask bit is 0, bit from val0 is used, otherwise bit from val1 is used. */
+template<typename T> T mix_bits(T val0, T val1, T mask) { return (val0 & ~mask) | (val1 & mask); }
 
 
 /**
@@ -213,6 +219,19 @@ template<typename I>
 I sign_mag(I x) {
     const I HI_BIT = I(1) << (bit_size<I>::value - 1);
     return (x & HI_BIT) ? neg(x) ^ HI_BIT : x;
+}
+
+/**
+ * Next lexicographic combination with the same number of ones.
+ * Modifies `x` and returns false if last combination was passed.
+ */
+template<typename I>
+bool next_combination(I& x, int size) {
+    I v = (x + lo_bit(x)) & make_ones<I>(size);
+    I w = (v ^ x) >> tzc(x);
+    I y = (v | (w >> 2));
+    x = (v != 0) ? y : w;
+    return (v != 0);
 }
 
 } // math

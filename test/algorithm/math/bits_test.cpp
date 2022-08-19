@@ -54,6 +54,20 @@ TEST(bits_test, bit_size) {
     ASSERT_EQ(64, bit_size<int64_t>::value);
 }
 
+TEST(bits_test, make_bit) {
+    for (int i = 0; i < 64; i++) ASSERT_EQ((uint64_t(1) << i), make_bit<uint64_t>(i));
+    for (int i = 0; i < 32; i++) ASSERT_EQ((uint32_t(1) << i), make_bit<uint32_t>(i));
+    for (int i = 0; i < 16; i++) ASSERT_EQ((uint16_t(1) << i), make_bit<uint16_t>(i));
+    for (int i = 0; i < 8; i++) ASSERT_EQ((uint8_t(1) << i), make_bit<uint8_t>(i));
+}
+
+TEST(bits_test, make_ones) {
+    for (int i = 0; i < 64; i++) ASSERT_EQ((uint64_t(1) << i) - 1, make_ones<uint64_t>(i));
+    for (int i = 0; i < 32; i++) ASSERT_EQ((uint32_t(1) << i) - 1, make_ones<uint32_t>(i));
+    for (int i = 0; i < 16; i++) ASSERT_EQ((uint16_t(1) << i) - 1, make_ones<uint16_t>(i));
+    for (int i = 0; i < 8; i++) ASSERT_EQ((uint8_t(1) << i) - 1, make_ones<uint8_t>(i));
+}
+
 TEST(bits_test, get_bit) {
     uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
     for (int i = 0; i < 64; i++) ASSERT_EQ((x >> i) & 1, get_bit(uint64_t(x), i)) << i;
@@ -129,6 +143,17 @@ TEST(bits_test, erase_bit) {
     for (int i = 0; i < 16; i++) ASSERT_EQ(erase_slow(uint16_t(y), i), erase_bit(uint16_t(y), i)) << i;
     for (int i = 0; i < 8; i++) ASSERT_EQ(erase_slow(uint8_t(x), i), erase_bit(uint8_t(x), i)) << i;
     for (int i = 0; i < 8; i++) ASSERT_EQ(erase_slow(uint8_t(y), i), erase_bit(uint8_t(y), i)) << i;
+}
+
+TEST(bits_test, mix_bits) {
+    uint64_t x = 0x7BD152B330F0A777;
+    uint64_t y = 0x1234567890ABCDEF;
+    ASSERT_EQ(0x7BD152B330F0A777, mix_bits<uint64_t>(x, y, 0x0000000000000000));
+    ASSERT_EQ(0x1234567890ABCDEF, mix_bits<uint64_t>(x, y, 0xFFFFFFFFFFFFFFFF));
+    ASSERT_EQ(0x1B31527390A0C7E7, mix_bits<uint64_t>(x, y, 0xF0F0F0F0F0F0F0F0));
+    for (int i = 0; i < 64; i++) {
+        ASSERT_EQ((clear_bit(x, i) | (get_bit(y, i) << i)), mix_bits(x, y, make_bit<uint64_t>(i)));
+    }
 }
 
 TEST(bits_test, log2) {
@@ -355,6 +380,25 @@ TEST(bits_test, sign_mag) {
     for (int x = 1; x < (1 << 15); x++) ASSERT_EQ(uint16_t(x | uint16_t(0x8000)), sign_mag(uint16_t(-x))) << "16bit x: " << x;
     for (int x = 1; x < (1 << 20); x++) ASSERT_EQ(uint32_t(x | uint32_t(0x80000000)), sign_mag(uint32_t(-x))) << "32bit x: " << x;
     for (int x = 1; x < (1 << 20); x++) ASSERT_EQ(uint64_t(x | uint64_t(0x8000000000000000)), sign_mag(uint64_t(-x))) << "64bit x: " << x;
+}
+
+TEST(bits_test, next_combination) {
+    for (int n = 0; n <= 10; n++) {
+        vector<vector<uint32_t>> v(n + 1);
+        for (uint32_t w = 0; w < make_bit<uint32_t>(n); w++) {
+            v[bit_cnt1(w)].push_back(w);
+        }
+        for (int k = 0; k <= n; k++) {
+            for (int i = 0; i < v[k].size() - 1; i++) {
+                uint32_t x = v[k][i];
+                ASSERT_EQ(true, next_combination(x, n));
+                ASSERT_EQ(v[k][i + 1], x);
+            }
+            uint32_t x = v[k].back();
+            ASSERT_EQ(false, next_combination(x, n));
+            ASSERT_EQ(v[k].front(), x);
+        }
+    }
 }
 
 TEST(bits_test, perf) {
