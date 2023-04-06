@@ -191,8 +191,52 @@ TEST(divisor_sums_test, sieve_mertens) {
     EXPECT_EQ(expected2, actual2);
 }
 
+TEST(divisor_sums_test, sieve_mertens_odd) {
+    int n = 31;
+    auto pa = primes_table(n);
+    auto expected1 = vector<int>{ 0, 1, 1, 0, 0, -1, -1, -2, -2, -2, -2, -3, -3, -4, -4, -3, -3, -4, -4, -5, -5, -4, -4, -5, -5, -5, -5, -5, -5, -6, -6 };
+    vector<int> actual1(n); sieve_mertens_odd(actual1, n, pa.data(), (int)pa.size(), int(1));
+    EXPECT_EQ(expected1, actual1);
+
+    typedef moduloX<int> modx;
+    auto expected2 = to_modx(1009, expected1);
+    vector<modx> actual2(n); sieve_mertens_odd(actual2, n, pa.data(), (int)pa.size(), modx(1, 1009));
+    EXPECT_EQ(expected2, actual2);
+}
+
+TEST(divisor_sums_test, sieve_mertens_even) {
+    int n = 31;
+    auto expected1 = vector<int>{ 0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 3 };
+    vector<int> actual1(n); sieve_mertens_even(actual1, n, int(1));
+    EXPECT_EQ(expected1, actual1);
+
+    typedef moduloX<int> modx;
+    auto expected2 = to_modx(1009, expected1);
+    vector<modx> actual2(n); sieve_mertens_even(actual2, n, modx(1, 1009));
+    EXPECT_EQ(expected2, actual2);
+}
+
+TEST(divisor_sums_test, sieve_mertens_odd_even) {
+    int n = 31;
+    auto pa = primes_table(n);
+    auto expected_even1 = vector<int>{ 0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 3 };
+    auto expected_odd1 = vector<int>{ 0, 1, 1, 0, 0, -1, -1, -2, -2, -2, -2, -3, -3, -4, -4, -3, -3, -4, -4, -5, -5, -4, -4, -5, -5, -5, -5, -5, -5, -6, -6 };
+    vector<int> actual_even1(n), actual_odd1(n);
+    sieve_mertens_even_odd(actual_even1, actual_odd1, n, pa.data(), (int)pa.size(), int(1));
+    EXPECT_EQ(expected_even1, actual_even1);
+    EXPECT_EQ(expected_odd1, actual_odd1);
+
+    typedef moduloX<int> modx;
+    auto expected_even2 = to_modx(1009, expected_even1);
+    auto expected_odd2 = to_modx(1009, expected_odd1);
+    vector<modx> actual_even2(n), actual_odd2(n);
+    sieve_mertens_even_odd(actual_even2, actual_odd2, n, pa.data(), (int)pa.size(), modx(1, 1009));
+    EXPECT_EQ(expected_even2, actual_even2);
+    EXPECT_EQ(expected_odd2, actual_odd2);
+}
+
 TEST(divisor_sums_test, mertens) {
-    int n = 30;
+    int n = 31;
     auto v_M = to_modx(1009, { 0, 1, 0, -1, -1, -2, -1, -2, -2, -2, -1, -2, -2, -3, -2, -1, -1, -2, -2, -3, -3, -2, -1, -2, -2, -2, -1, -1, -1, -2, -3 });
     // preprocess `U = n^(2/3)` values
     int U = (int)isq(icbrt(n));
@@ -202,9 +246,45 @@ TEST(divisor_sums_test, mertens) {
     }
     // calc mertens
     vector<modx> va;
-    for (int k = 0; k <= n; k++) {
+    for (int k = 0; k < n; k++) {
         mm.reset_max(k);
         va.push_back(mertens(k, mm, modx(1, 1009)));
+    }
+    EXPECT_EQ(v_M, va);
+}
+
+TEST(divisor_sums_test, mertens_odd) {
+    int n = 31;
+    auto v_M = to_modx(1009, { 0, 1, 1, 0, 0, -1, -1, -2, -2, -2, -2, -3, -3, -4, -4, -3, -3, -4, -4, -5, -5, -4, -4, -5, -5, -5, -5, -5, -5, -6, -6 });
+    // preprocess `U = n^(2/3)` values
+    int U = (int)isq(icbrt(n));
+    sqrt_map<int, modx> mm(U, n);
+    for (int k = 0; k < U; k++) {
+        mm[k] = v_M[k];
+    }
+    // calc mertens odd
+    vector<modx> va;
+    for (int k = 0; k < n; k++) {
+        mm.reset_max(k);
+        va.push_back(mertens_odd(k, mm, modx(1, 1009)));
+    }
+    EXPECT_EQ(v_M, va);
+}
+
+TEST(divisor_sums_test, mertens_even) {
+    int n = 31;
+    auto v_M = to_modx(1009, { 0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 3 });
+    // preprocess `U = n^(2/3)` values
+    int U = (int)isq(icbrt(n));
+    sqrt_map<int, modx> mm(U, n);
+    for (int k = 0; k < U; k++) {
+        mm[k] = v_M[k];
+    }
+    // calc mertens even
+    vector<modx> va;
+    for (int k = 0; k < n; k++) {
+        mm.reset_max(k);
+        va.push_back(mertens_even(k, mm, modx(1, 1009)));
     }
     EXPECT_EQ(v_M, va);
 }

@@ -25,6 +25,9 @@
     <ProjectReference Include="..\lib\lib.vcxproj">
       <Project>{68d8990b-9719-43a9-aad4-00dec6cd3e0c}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\test_util\test_util.vcxproj">
+      <Project>{606a6d46-b8c9-4bc1-a580-73e41724f2de}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\test\algorithm\collections\collections_test.cpp" />

@@ -238,20 +238,20 @@ void dirichlet_division_multiplicative(TBL& h, F1 f, F2 g, int n, int* pa, int m
 }
 
 /**
-* Dirichlet inverse of `f` up to `n` in `O(n log log n)`.
-*
-* Calculates `f_inv` such that: `f * f_inv = e`
-*
-* Where:
-*   `f` is a multiplicative function, which means:
-*       its inverse `f_inv` is also multiplicative
-*   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
-*
-* @param f_inv - table to store the result; accessed via [] operator
-* @param f - function as defined above; accessed via () operator
-* @param n - bound up to which to calculate `f_inv`; exclusive
-* @param pa - table of all `m` prime numbers up to `n`
-*/
+ * Dirichlet inverse of `f` up to `n` in `O(n log log n)`.
+ *
+ * Calculates `f_inv` such that: `f * f_inv = e`
+ *
+ * Where:
+ *   `f` is a multiplicative function, which means:
+ *       its inverse `f_inv` is also multiplicative
+ *   `e` is the dirichlet multiplicative identity: `e(n) = [n == 1]`
+ *
+ * @param f_inv - table to store the result; accessed via [] operator
+ * @param f - function as defined above; accessed via () operator
+ * @param n - bound up to which to calculate `f_inv`; exclusive
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
 template<typename F1, typename TBL>
 void dirichlet_inverse_multiplicative(TBL& f_inv, F1 f, int n, int* pa, int m) {
     auto e1 = identityOf(castOf(f_inv[0], f(1))), e0 = zeroOf(e1); // TODO: pass via argument?
@@ -531,13 +531,13 @@ void sieve_m(TBL& M, F1 t, int n) {
  * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
  * More precisely, given the precomputed values up to `U`, the complexity
  * is `O(n / sqrt(U))`. I.e. if `U` is `(n/v)^(2/3)` for some `v`, the
- * complexity is `O(n^(2/3) * v^(1/3))`. Sieving is then usually `O(n v(n))`.
+ * complexity is `O(n^(2/3) * v^(1/3))`. Sieving is then usually `O(U v(U))`.
  * The most common scenarios are:
  *   Sieving up to `U` | Otpimal value for `U`     | Calculating `M(n)`
  *    O(U)             |  O(n^(2/3))               |  O(n^(2/3))
  *    O(U log log U)   |  O((n / log log n)^(2/3)) |  O(n^(2/3) (log log n)^(1/3))
  *    O(U log U)       |  O((n / log n)^(2/3))     |  O(n^(2/3) (log n)^(1/3))
- * Sieving can always be done in `O(n log n)` or better; See `sieve_m`.
+ * Sieving can always be done in `O(U log U)` or better; See `sieve_m`.
  *
  * @param t, s - functions as defined above; accessed via () operator
  * @param n - argument at which to evaluate `M`
@@ -589,16 +589,60 @@ T sum_m(F t, I n, TBL& tbl, T id) {
 }
 
 /**
-* Sieves Mertens up to `n` in `O(n log log n)`.
-*
-* @param M - table to store the calculated values; accessed via [] operator
-* @param n - bound up to which to sieve (exclusive)
-* @param pa - table of all `m` prime numbers up to `n`
-*/
+ * Sieves Mertens up to `n` in `O(n log log n)`.
+ *
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param n - bound up to which to sieve (exclusive)
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
 template<typename T, typename TBL>
 void sieve_mertens(TBL& M, int n, int* pa, int m, T id = T(1)) {
     auto one = [&](int k){ return id; };
     sieve_m_multiplicative(M, one, one, n, pa, m);
+}
+
+/**
+ * Sieves MertensOdd up to `n` in `O(n log log n)`.
+ *
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param n - bound up to which to sieve (exclusive)
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
+template<typename T, typename TBL>
+void sieve_mertens_odd(TBL& M1, int n, int* pa, int m, T id = T(1)) {
+    auto zero = zeroOf(id);
+    auto t = [&](int k) { return id; };
+    auto p = [&](int k) { return (k % 2 == 1) ? id : zero; };
+    sieve_m_multiplicative(M1, t, p, n, pa, m);
+}
+
+/**
+ * Sieves MertensEven up to `n` in `O(n log n)`.
+ *
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param n - bound up to which to sieve (exclusive)
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
+template<typename T, typename TBL>
+void sieve_mertens_even(TBL& M0, int n, T id = T(1)) {
+    auto zero = zeroOf(id);
+    auto t = [&](int k) { return (k > 1) ? -id : zero; };
+    auto p = [&](int k) { return (k % 2 == 1) ? id : zero; };
+    sieve_m(M0, t, p, n); // not multiplicative!
+}
+
+/**
+ * Sieves MertensEven and MertensOdd up to `n` in `O(n log log n)`.
+ *
+ * @param M - table to store the calculated values; accessed via [] operator
+ * @param n - bound up to which to sieve (exclusive)
+ * @param pa - table of all `m` prime numbers up to `n`
+ */
+template<typename T, typename TBL>
+void sieve_mertens_even_odd(TBL& M0, TBL& M1, int n, int* pa, int m, T id = T(1)) {
+    sieve_mertens_odd(M1, n, pa, m, id);
+    sieve_mertens(M0, n, pa, m, id); // M0 = M - M1
+    for (int k = 0; k < n; k++) M0[k] -= M1[k];
 }
 
 /**
@@ -615,6 +659,39 @@ T mertens(I n, TBL& tbl, T id = T(1)) {
     // p = 1, f = mu, g = delta, t = 1
     auto one = [&](I k){ return id; };
     return sum_m<T>(one, n, tbl, id);
+}
+
+/**
+ * MertensOdd function: `Sum[moebius_mu(k), {k, 1, n, 2}]` in `O(n^(3/4))` or `O(n^(2/3))`.
+ *
+ * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
+ * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
+ *
+ * @param n - argument at which to evaluate `M`
+ * @param tbl - table to store the calculated values
+ */
+template<typename T, typename I, typename TBL>
+T mertens_odd(I n, TBL& tbl, T id = T(1)) {
+    auto t = [&](I k) { return id; };
+    auto s = [&](I k) { return castOf<T>(id, (k + 1) / 2); };
+    return sum_m<T>(t, s, n, tbl, id);
+}
+
+/**
+ * MertensEven function: `Sum[moebius_mu(k), {k, 2, n, 2}]` in `O(n^(3/4))` or `O(n^(2/3))`.
+ *
+ * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
+ * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
+ *
+ * @param n - argument at which to evaluate `M`
+ * @param tbl - table to store the calculated values
+ */
+template<typename T, typename I, typename TBL>
+T mertens_even(I n, TBL& tbl, T id = T(1)) {
+    auto zero = zeroOf(id);
+    auto t = [&](int k) { return (k > 1) ? -id : zero; };
+    auto s = [&](I k) { return castOf<T>(id, (k + 1) / 2); };
+    return sum_m<T>(t, s, n, tbl, id);
 }
 
 /**
