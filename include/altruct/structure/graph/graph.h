@@ -8,8 +8,7 @@ namespace altruct {
 namespace graph {
 
 /**
- * A base class for edge types.
- * Only the destination vertex is specified.
+ * An edge representation where only the destination vertex is specified.
  */
 struct edge {
     int v; // the destination vertex
@@ -21,9 +20,10 @@ struct edge {
 /**
  * An edge representation where both of its vertices are specified.
  */
-struct full_edge : public edge {
+struct full_edge {
     int u; // the source vertex
-    full_edge(int u, int v) : edge(v), u(u) {}
+    int v; // the destination vertex
+    full_edge(int u, int v) : u(u), v(v) {}
     bool operator < (const full_edge& rhs) const { return (u != rhs.u) ? (u < rhs.u) : (v < rhs.v); }
     bool operator == (const full_edge& rhs) const { return (u == rhs.u) && (v == rhs.v); }
 };
@@ -32,9 +32,25 @@ struct full_edge : public edge {
  * A weighted edge.
  */
 template<typename W>
-struct weighted_edge : public edge {
+struct weighted_edge {
+    int v; // the destination vertex
     W w; // the weight
-    weighted_edge(int v, W w) : edge(v), w(w) {}
+    weighted_edge(int v, W w) : v(v), w(w) {}
+    bool operator < (const weighted_edge& rhs) const { return v < rhs.v; }
+    bool operator == (const weighted_edge& rhs) const { return v == rhs.v; }
+};
+
+/**
+ * A weighted full edge.
+ */
+template<typename W>
+struct weighted_full_edge {
+    int u; // the source vertex
+    int v; // the destination vertex
+    W w; // the weight
+    weighted_full_edge(int u, int v, W w) : u(u), v(v), w(w) {}
+    bool operator < (const weighted_full_edge& rhs) const { return (u != rhs.u) ? (u < rhs.u) : (v < rhs.v); }
+    bool operator == (const weighted_full_edge& rhs) const { return (u == rhs.u) && (v == rhs.v); }
 };
 
 /**
