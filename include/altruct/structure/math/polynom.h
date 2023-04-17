@@ -180,6 +180,25 @@ public:
         }
     }
 
+    // r(x) so that p(x) * r(x) == 1 + O(x^L); O(M(L))
+    polynom inverse(int L) const {
+        // ensure that p[0] is 1 before inverting
+        if (c[0] == ZERO_COEFF) return polynom<T>{ ZERO_COEFF };
+        if (c[0] != id_coeff()) return (*this / c[0]).inverse(L) / c[0];
+        polynom r{ id_coeff() }, t;
+        for (int l = 1; l < L * 2; l *= 2) {
+            int m = std::min(L - 1, l), k = l / 2 + 1;
+            t.c.assign(c.begin(), c.begin() + min(m + 1, (int)c.size()));
+            mul(t, t, r, l + 1);
+            t.c.erase(t.c.begin(), t.c.begin() + k);
+            mul(t, t, r, l - k);
+            for (int i = m; i >= k; i--) {
+                r[i] = -t[i - k];
+            }
+        }
+        return r;
+    }
+
     // pr = p1 % p2 | p1 / p2; O((l1 - lm) * lm)
     // it is allowed for `p1` and `pr` to be the same instance
     // `pr` and `pm` must not be the same instance
@@ -293,6 +312,11 @@ public:
             r[i + 1] = c[i] / (i + 1);
         }
         return r;
+    }
+
+    // identity coefficient
+    T id_coeff() const {
+        return identityOf(ZERO_COEFF);
     }
 };
 

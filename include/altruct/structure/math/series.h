@@ -105,6 +105,8 @@ public:
 
     series operator () (const series& rhs) const { return composition(rhs); }
 
+    // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
+    series inverse() const { return series(p.inverse(this->N()), this->N()); }
     series derivative() const { return series(p.derivative(), this->N()); }
     series integral() const { return integral(p.ZERO_COEFF); }
     series integral(const T& c0) const { auto pi = p.integral(c0); pi.resize(this->N()); return series(std::move(pi), this->N()); }
@@ -274,25 +276,6 @@ public:
         return series(std::move(r.p), this->N());
     }
 
-    // t(x) so that s(x) * t(x) == 1 + O(x^N); O(M(N))
-    series inverse() const {
-        // ensure that p[0] is 1 before inverting
-        if (p[0] == p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
-        if (p[0] != id_coeff()) return (*this / p[0]).inverse() / p[0];
-        polynom<T> r{id_coeff()}, t;
-        for (int l = 1; l < this->N() * 2; l *= 2) {
-            int m = std::min(this->N() - 1, l), k = l / 2 + 1;
-            t.c.assign(p.c.begin(), p.c.begin() + m + 1);
-            polynom<T>::mul(t, t, r, l + 1);
-            t.c.erase(t.c.begin(), t.c.begin() + k);
-            polynom<T>::mul(t, t, r, l - k);
-            for (int i = m; i >= k; i--) {
-                r[i] = -t[i - k];
-            }
-        }
-        return series(std::move(r), this->N());
-    }
-
     // exp(s(x)) - series expansion of exponential of s(x)
     // the following should hold: s(0) == 0
     series exp() const {
@@ -380,7 +363,7 @@ public:
 
     // identity coefficient
     T id_coeff() const {
-        return identityOf(p.ZERO_COEFF);
+        return p.id_coeff();
     }
 };
 
