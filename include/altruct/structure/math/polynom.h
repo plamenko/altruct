@@ -48,7 +48,7 @@ public:
     int deg() const { for (int i = size() - 1; i > 0; i--) if (!(c[i] == ZERO_COEFF)) return i; return 0; }
     int lowest() const { for (int i = 0; i < size(); i++) if (!(c[i] == ZERO_COEFF)) return i; return 0; }
     const T& leading_coeff() const { return at(deg()); }
-    bool is_power() const { return lowest() == deg() && leading_coeff() == identityOf(ZERO_COEFF); }
+    bool is_power() const { return lowest() == deg() && leading_coeff() == id_coeff(); }
 
     // compares p1 and p2; O(l1 + l2)
     static int cmp(const polynom &p1, const polynom &p2) {
@@ -182,7 +182,7 @@ public:
 
     // r(x) so that p(x) * r(x) == 1 + O(x^L); O(M(L))
     polynom inverse(int L) const {
-        // ensure that p[0] is 1 before inverting
+        // ensure that c[0] is 1 before inverting
         if (c[0] == ZERO_COEFF) return polynom<T>{ ZERO_COEFF };
         if (c[0] != id_coeff()) return (*this / c[0]).inverse(L) / c[0];
         polynom r{ id_coeff() }, t;
@@ -216,23 +216,23 @@ public:
 
     // pr = p1 / p2; O((l1 - lm) * lm)
     // it is allowed for `p1` and `pr` to be the same instance
-    // `pr` and `pm` must not be the same instance
-    static void div(polynom &pr, const polynom &p1, const polynom &pm) {
-        int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
+    // `pr` and `p2` must not be the same instance
+    static void div(polynom &pr, const polynom &p1, const polynom &p2) {
+        int l1 = p1.deg(), l2 = p2.deg(); int lr = l1 - l2;
         if (lr < 0) { pr.c.clear(); return; }
-        quot_rem(pr, p1, pm);
+        quot_rem(pr, p1, p2);
         for (int i = 0; i <= lr; i++) {
-            pr[i] = pr[i + lm];
+            pr[i] = pr[i + l2];
         }
         pr.resize(lr + 1);
     }
 
-    // pr = p1 % pm; O((l1 - lm) * lm)
+    // pr = p1 % p2; O((l1 - l2) * l2)
     // it is allowed for `p1` and `pr` to be the same instance
-    // `pr` and `pm` must not be the same instance
-    static void mod(polynom &pr, const polynom &p1, const polynom &pm) {
-        int l1 = p1.deg(), lm = pm.deg(); int lr = lm - 1;
-        quot_rem(pr, p1, pm);
+    // `pr` and `p2` must not be the same instance
+    static void mod(polynom &pr, const polynom &p1, const polynom &p2) {
+        int l1 = p1.deg(), l2 = p2.deg(); int lr = l2 - 1;
+        quot_rem(pr, p1, p2);
         if (lr < l1) pr.resize(lr + 1);
     }
 
@@ -364,7 +364,7 @@ struct castT<polynom<T>, polynom<T>> : nopCastT<polynom<T>>{};
 template<typename T>
 struct identityT<polynom<T>> {
     static polynom<T> of(const polynom<T>& p) {
-        return polynom<T>(identityOf(p.ZERO_COEFF));
+        return polynom<T>(p.id_coeff());
     }
 };
 
