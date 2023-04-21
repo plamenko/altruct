@@ -15,18 +15,22 @@ namespace math {
  * @param root - a principal n-th root of unity in the ring T
  */
 template<typename T, typename R>
-void fft(T *data, int size, R root) {
-    R w, e1 = identityT<R>::of(root);
-    int m, h, i, j, k;
-    for (m = size; h = m / 2, m > 1; m /= 2, root *= root) {
-        for (i = 0, w = e1; i < h; i++, w *= root) {
-            for (j = i; j < size; j += m) {
-                k = j + h;
-                T t = data[j] - data[k];
-                data[j] += data[k];
-                data[k] = t * T(w);
+void fft(T* data, int size, R root) {
+    if ((size & (size - 1)) != 0) return; // error: size not a power of 2!
+    R e1 = identityT<R>::of(root);
+    for (int m = size; m > 1; m /= 2) {
+        int h = m / 2;
+        for (T* data0 = data; data0 != data + size; data0 += h) {
+            R w = e1;
+            for (T* dataH = data0 + h; data0 != dataH; data0++) {
+                T* data1 = data0 + h;
+                T t = *data0 - *data1;
+                *data0 += *data1;
+                *data1 = t * T(w);
+                w *= root;
             }
         }
+        root *= root;
     }
     // reorder: swap(a[j], a[bitrev(j)])
     for (int i = 0, j = 1; j < size - 1; j++) {
