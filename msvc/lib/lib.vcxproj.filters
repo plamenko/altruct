@@ -380,5 +380,8 @@
     <ClInclude Include="..\..\include\altruct\structure\math\pga.h">
       <Filter>include\altruct\structure\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\algorithm\math\intrinsic.h">
+      <Filter>include\altruct\algorithm\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

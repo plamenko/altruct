@@ -63,6 +63,7 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\fft.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\fractions.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\gmp_helpers.h" />
+    <ClInclude Include="..\..\include\altruct\algorithm\math\intrinsic.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\modulos.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\pell.h" />
     <ClInclude Include="..\..\include\altruct\algorithm\math\polynoms.h" />
