@@ -71,6 +71,22 @@ TEST(modulo_int32_test, standalone_functions_2000000011) {
     EXPECT_EQ(INT32_C(7), modulo_div(INT32_C(3), INT32_C(571428575), INT32_C(2000000011)));
 }
 
+TEST(modulo_int32_test, modulo_gcd_ex) {
+    int32_t ni1, ni2;
+    modulo_gcd_ex(1134903170, 1836311903, ni1, ni2);
+    EXPECT_EQ(1134903170, ni1);
+    EXPECT_EQ(433494437, ni2);
+    modulo_gcd_ex(1836311903, 1134903170, ni1, ni2);
+    EXPECT_EQ(433494437, ni1);
+    EXPECT_EQ(1134903170, ni2);
+    modulo_gcd_ex(2147450880, 1836311903, ni1, ni2);
+    EXPECT_EQ(459437288, ni1);
+    EXPECT_EQ(1610167967, ni2);
+    modulo_gcd_ex(1836311903, 2147450880, ni1, ni2);
+    EXPECT_EQ(1610167967, ni1);
+    EXPECT_EQ(459437288, ni2);
+}
+
 TEST(modulo_int32_test, constructor) {
     const int32_t M = INT32_C(2147483629);
     // default

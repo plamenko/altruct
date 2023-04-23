@@ -26,10 +26,7 @@ namespace math {
 template<typename T>
 void chinese_remainder(T* a, T* n, T a1, T n1, T a2, T n2) {
     T e0 = zeroT<T>::of(*a);
-    T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
-    ni2 = modulo_normalize(ni2, n1);
-    ni1 = modulo_normalize(ni1, n2);
-    // ^^ TODO: use modulo_gcd_ex instead of gcd_ex+modulo_normalize
+    T ni1, ni2; T g = modulo_gcd_ex(n1, n2, ni1, ni2);
     if ((a2 - a1) % g != e0) { *n = e0, *a = e0; return; }
     T t1 = modulo_mul(a1, ni2, n1);
     T t2 = modulo_mul(a2, ni1, n2);

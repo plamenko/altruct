@@ -21,6 +21,10 @@ T modulo_neg(const T& v, const T& M) { return -v; }
 template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
 T modulo_mul(const T& x, const T& y, const T& M) { return (x * y) % M; }
 template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
+T modulo_gcd_ex(const T& n1, const T& n2, T& ni1, T& ni2) {
+    return gcd_ex(n1, n2, &ni1, &ni2);
+}
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
 T modulo_inv(const T& v, const T& M) {
     T vi; T g = gcd_ex(v, M, &vi);
     // `gcd_ex` produces `vi` and `Mi` (not stored) such that:
@@ -39,7 +43,6 @@ template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool
 T modulo_div(const T& x, const T& y, const T& M) {
     return modulo_mul(x, modulo_inv(y, M), M);
 }
-
 
 // operations for integral types; input is assumed to be normalized
 
@@ -90,6 +93,16 @@ S modulo_mul(S x, S y, S M) {
     using U = std::make_unsigned<S>::type;
     return S(modulo_mul(U(x), U(y), U(M)));
 }
+template<typename I>
+I modulo_gcd_ex_int(I n1, I n2, I& ni1, I& ni2) {
+    int s;
+    I g = gcd_ex<I>(n1, n2, &ni1, &ni2, &s);
+    if (s % 2 == 1 && ni1 != 0) ni1 += n2;
+    if (s % 2 == 0 && ni2 != 0) ni2 += n1;
+    return g;
+}
+template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>
+I modulo_gcd_ex(I n1, I n2, I& ni1, I& ni2) { return modulo_gcd_ex_int(n1, n2, ni1, ni2); }
 template<typename I>
 I modulo_inv_int(I v, I M) {
     I vi; int s;

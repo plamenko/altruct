@@ -43,6 +43,16 @@ TEST(modulo_uint64_test, standalone_functions_1000000000000000003) {
     EXPECT_EQ(O + 7u, modulo_div(O + 3u, UINT64_C(142857142857142858), M));
 }
 
+TEST(modulo_uint64_test, modulo_gcd_ex) {
+    uint64_t ni1, ni2;
+    modulo_gcd_ex(UINT64_C(12200160415121876738), UINT64_C(18446744064889498501), ni1, ni2);
+    EXPECT_EQ(UINT64_C(2855347448384033400), ni1);
+    EXPECT_EQ(UINT64_C(10311713500660779039), ni2);
+    modulo_gcd_ex(UINT64_C(18446744064889498501), UINT64_C(12200160415121876738), ni1, ni2);
+    EXPECT_EQ(UINT64_C(10311713500660779039), ni1);
+    EXPECT_EQ(UINT64_C(2855347448384033400), ni2);
+}
+
 TEST(modulo_uint64_test, constructor) {
     const uint64_t M = UINT64_C(18446744073709551557);
     // default
