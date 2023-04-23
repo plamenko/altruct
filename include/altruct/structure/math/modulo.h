@@ -92,15 +92,9 @@ S modulo_mul(S x, S y, S M) {
 }
 template<typename I>
 I modulo_inv_int(I v, I M) {
-    int vs = -1;
-    I g = M, gi = 1, vi = 0;
-    while (v != 0) {
-        I q = g / v;
-        I r = g - q * v; g = v; v = r;
-        I ri = vi - q * gi; vi = gi; gi = ri;
-        vs = -vs;
-    }
-    if (vs < 0 && vi != 0) vi += M;
+    I vi; int s;
+    I g = gcd_ex<I>(M, v, nullptr, &vi, &s);
+    if (s % 2 == 0 && vi != 0) vi += M;
     return (g == 1) ? vi : 0;
 }
 template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>

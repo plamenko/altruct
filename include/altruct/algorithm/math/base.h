@@ -178,23 +178,27 @@ T gcd(T a, T b) {
  * @param b - the second operand
  * @param x - the output argument `x`
  * @param y - the output argument `y`
+ * @param s - the output argument `s` - number of steps performed
  * @return g - the greatest common divisor of `a` and `b`
  */
 template<typename T>
-T gcd_ex(const T& a, const T& b, T *x = 0, T *y = 0) {
+T gcd_ex(const T& a, const T& b, T *x = nullptr, T *y = nullptr, int *s = nullptr) {
     T e0 = zeroOf(a), e1 = identityOf(a);
     T r, q, g = a, h = b;
     T xo = e0, xn = e1;
     T yo = e1, yn = e0;
+    int i = 0;
     while (h != e0) {
         q = g / h;
-        r = g  - q * h;  g  = h;  h  = r;
-        r = xn - q * xo; xn = xo; xo = r;
-        r = yn - q * yo; yn = yo; yo = r;
+        r = g - q * h; g = std::move(h); h = std::move(r);
+        if (x) { r = xn - q * xo; xn = std::move(xo); xo = std::move(r); }
+        if (y) { r = yn - q * yo; yn = std::move(yo); yo = std::move(r); }
         // T gn = a * xn + b * yn;
+        i++;
     }
     if (x) *x = xn;
     if (y) *y = yn;
+    if (s) *s = i;
     return g;
 }
 
