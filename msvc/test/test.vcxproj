@@ -91,8 +91,11 @@
     <ClCompile Include="..\..\test\structure\math\fraction_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\galois_field_2_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp" />
-    <ClCompile Include="..\..\test\structure\math\modulox_test.cpp" />
-    <ClCompile Include="..\..\test\structure\math\modulo_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulox_int32_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_int32_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_int64_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_uint64_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_uint32_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\moebius_tr_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\nimber_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\permutation_test.cpp" />

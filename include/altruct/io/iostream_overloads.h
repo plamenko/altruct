@@ -32,7 +32,7 @@ template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::triple<T>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::fraction<T>& rhs);
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, STORAGE_TYPE>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rhs);
@@ -160,7 +160,7 @@ struct iostream_modulo_state_t {
 extern iostream_modulo_state_t iostream_modulo_state;
 ALTRUCT_IO_MANIPULATOR(io_modulo_modulus, iostream_modulo_state.output_modulus, false);
 ALTRUCT_IO_MANIPULATOR(io_modulo_as_pair, iostream_modulo_state.output_as_pair, false);
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, STORAGE_TYPE>& rhs) {
     if (iostream_modulo_state.output_as_pair) {
         return os << std::make_pair(rhs.v, rhs.M());

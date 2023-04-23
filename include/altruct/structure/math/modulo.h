@@ -1,90 +1,131 @@
 #pragma once
 
 #include "altruct/algorithm/math/base.h"
+#include "altruct/algorithm/math/intrinsic.h"
 
 #include <type_traits>
 
 namespace altruct {
 namespace math {
 
-// modulo normalization
-template<typename T>
-void modulo_normalize(T* v, const T& M) { *v %= M; }
-// integral type specializations
-template<typename I>
-void modulo_normalize_int(I* v, I M) { *v %= M; if (*v < 0) *v += M; }
-inline void modulo_normalize(int64_t* v, int64_t M) { modulo_normalize_int(v, M); }
-inline void modulo_normalize(int32_t* v, int32_t M) { modulo_normalize_int(v, M); }
+// operations for non-integral types
 
-// modulo addition
-template<typename T>
+template<typename V, typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
+T modulo_normalize(const V& v, const T& M) { return castOf(M, v) % M; }
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
 T modulo_add(const T& x, const T& y, const T& M) { return (x + y) % M; }
-
-// modulo subtraction
-template<typename T>
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
 T modulo_sub(const T& x, const T& y, const T& M) { return (x - y) % M; }
-// integral type specializations, input is assumed to be normalized
-template<typename I>
-I modulo_sub_int(I x, I y, I M) { return (x + (M - y)) % M; }
-inline int64_t modulo_sub(int64_t x, int64_t y, int64_t M) { return modulo_sub_int(x, y, M); }
-inline int32_t modulo_sub(int32_t x, int32_t y, int32_t M) { return modulo_sub_int(x, y, M); }
-
-// modulo multiplication
-template<typename T>
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
+T modulo_neg(const T& v, const T& M) { return -v; }
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
 T modulo_mul(const T& x, const T& y, const T& M) { return (x * y) % M; }
-// integral type specializations, input is assumed to be normalized
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
+T modulo_inv(const T& v, const T& M) {
+    T vi; T g = gcd_ex(v, M, &vi);
+    // `gcd_ex` produces `vi` and `Mi` (not stored) such that:
+    // v * vi + M * Mi == g
+    // for certain types the produced `g` might not be identity,
+    // but the inverse still exists if `vi/g` and `Mi/g` exist:
+    // v * vi/g + M * Mi/g == 1
+    // for example, for polynomials, `g` may be a 0-degree polynomial
+    // which is just a scalar, and dividing `vi` and `Mi` by `g` are
+    // both well defined provided coefficients are invertible.
+    // in such a case the inverse is simply `vi/g`:
+    if (g != 1) vi /= g;
+    return vi;
+}
+template<typename T, typename std::enable_if_t<!std::is_integral<T>::value, bool> = true>
+T modulo_div(const T& x, const T& y, const T& M) {
+    return modulo_mul(x, modulo_inv(y, M), M);
+}
+
+
+// operations for integral types; input is assumed to be normalized
+
+template<typename U>
+U modulo_add_uint(U x, U y, U M) { // y = M is allowed
+    U r; bool of = add_overflow(x, y, &r);
+    return (!of && r < M) ? r : (r - M);
+}
+template<typename S>
+S modulo_add_int(S x, S y, S M) { // y = M is allowed
+    // TODO: use add_overflow when MSVC adds intrinsics
+    S r = x + y; bool of = (r < 0);
+    return (!of && r < M) ? r : (r - M);
+}
+template<typename U, typename std::enable_if_t<std::is_unsigned<U>::value, bool> = true>
+U modulo_add(U x, U y, U M) { return modulo_add_uint(x, y, M); }
+template<typename S, typename std::enable_if_t<std::is_signed<S>::value, bool> = true>
+S modulo_add(S x, S y, S M) { return modulo_add_int(x, y, M); }
+template<typename I>
+I modulo_sub_int(I x, I y, I M) { return modulo_add<I>(x, M - y, M); } // y = 0 is allowed
+template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>
+I modulo_sub(I x, I y, I M) { return modulo_sub_int(x, y, M); }
+template<typename I>
+I modulo_neg_int(I v, I M) { return (v == 0) ? v : (M - v); }
+template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>
+I modulo_neg(I v, I M) { return modulo_neg_int(v, M); }
 template<typename I>
 I modulo_mul_int_long(I x, I y, I M) {
     I r = 0;
     for (; y > 0; y >>= 1) {
-        if (y & 1) r += x, r %= M;
-        x += x, x %= M;
+        if (y & 1) r = modulo_add(r, x, M);
+        x = modulo_add(x, x, M);
     }
     return r;
 }
-inline int64_t modulo_mul(int64_t x, int64_t y, int64_t M) {
-    return ((x | y) >> 31 == 0) ? (x * y) % M : modulo_mul_int_long(x, y, M);
+template<typename U, typename std::enable_if_t<std::is_unsigned<U>::value, bool> = true>
+U modulo_mul(U x, U y, U M) {
+    return (uint32_t(x) * uint32_t(y)) % uint32_t(M);
 }
-inline int32_t modulo_mul(int32_t x, int32_t y, int32_t M) {
-    return (int64_t(x) * y) % M;
+template<> inline uint32_t modulo_mul(uint32_t x, uint32_t y, uint32_t M) {
+    return (uint64_t(x) * y) % M;
 }
-
-// modulo inversion
-template<typename T> T modulo_inv(const T& v, const T& M) {
-    T vi; T g = gcd_ex(v, M, &vi);
-    if (g != 1) vi /= g;
-    return vi;
+template<> inline uint64_t modulo_mul(uint64_t x, uint64_t y, uint64_t M) {
+    return ((x >> 32) == 0 && (y >> 32) == 0) ? (x * uint32_t(y)) % M : modulo_mul_int_long(x, y, M);
 }
-// integral type specializations, input is assumed to be normalized
-template<typename I> I modulo_inv_int(I v, I M) {
-    I vi; gcd_ex(v, M, &vi);
-    modulo_normalize_int(&vi, M);
-    return vi;
+template<typename S, typename std::enable_if_t<std::is_signed<S>::value, bool> = true>
+S modulo_mul(S x, S y, S M) {
+    using U = std::make_unsigned<S>::type;
+    return S(modulo_mul(U(x), U(y), U(M)));
 }
-inline int64_t modulo_inv(int64_t v, int64_t M) { return modulo_inv_int(v, M); }
-inline int32_t modulo_inv(int32_t v, int32_t M) { return modulo_inv_int(v, M); }
-
-// modulo division
-template<typename T> T modulo_div(const T& x, const T& y, const T& M) {
-    return modulo_mul(x, modulo_inv(y, M), M);
+template<typename I>
+I modulo_inv_int(I v, I M) {
+    int vs = -1;
+    I g = M, gi = 1, vi = 0;
+    while (v != 0) {
+        I q = g / v;
+        I r = g - q * v; g = v; v = r;
+        I ri = vi - q * gi; vi = gi; gi = ri;
+        vs = -vs;
+    }
+    if (vs < 0 && vi != 0) vi += M;
+    return (g == 1) ? vi : 0;
 }
-// integral type specializations, input is assumed to be normalized
+template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>
+I modulo_inv(I v, I M) { return modulo_inv_int(v, M); }
 template<typename I>
 I modulo_div_int(I x, I y, I M) {
     if (y != 0 && x % y == 0) return x / y; // fast path if y divides x
-    I yi; I g = gcd_ex(y, M, &yi);
-    if (g != 1) { // uh oh, y and M are not coprime, try common gcd
-        g = altruct::math::gcd(x, g);
-        x /= g; y /= g;
-        gcd_ex(y, I(M / g), &yi); // == k
-        // if (k != 1), there is no result, or more precisely,
-        // the result will be `k` times bigger than it should.
-    }
-    modulo_normalize_int(&yi, I(M / g));
-    return modulo_mul(x, yi, M);
+    I yi = modulo_inv_int(y, M); // modular inverse
+    if (yi != 0) return modulo_mul(x, yi, M);
+    // y and M are not coprime, try dividing by common gcd
+    I g = altruct::math::gcd(altruct::math::gcd(x, y), M);
+    return modulo_mul<I>(x / g, modulo_inv_int<I>(y / g, M / g), M);
 }
-inline int64_t modulo_div(int64_t x, int64_t y, int64_t M) { return modulo_div_int(x, y, M); }
-inline int32_t modulo_div(int32_t x, int32_t y, int32_t M) { return modulo_div_int(x, y, M); }
+template<typename I, typename std::enable_if_t<std::is_integral<I>::value, bool> = true>
+I modulo_div(I x, I y, I M) { return modulo_div_int(x, y, M); }
+// modulo_normalize for integral types
+template<typename U, typename I, typename std::enable_if_t<std::is_unsigned<U>::value && std::is_integral<I>::value, bool> = true>
+I modulo_normalize(U v, I M) {
+    return v % static_cast<std::make_unsigned<I>::type>(M);
+}
+template<typename S, typename I, typename std::enable_if_t<std::is_signed<S>::value && std::is_integral<I>::value, bool> = true>
+I modulo_normalize(S v, I M) {
+    if (v < 0) return modulo_neg_int(modulo_normalize(-v, M), M);
+    return modulo_normalize(static_cast<std::make_unsigned<S>::type>(v), M);
+}
 
 
 // modulo storage type
@@ -93,29 +134,30 @@ namespace modulo_storage {
     enum type { INSTANCE, STATIC, CONSTANT };
 }
 
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 struct modulo_members;
 
-template<typename T, int ID>
+template<typename T, uint64_t ID>
 struct modulo_members<T, ID, modulo_storage::INSTANCE> {
     T _M;
-    modulo_members(const T& _M = 0) : _M(_M) {}
+    modulo_members(const T& _M = T(1)) : _M(_M) {}
     const T& M() const { return _M; }
     T& M() { return _M; }
 };
 
-template<typename T, int ID>
+template<typename T, uint64_t ID>
 struct modulo_members<T, ID, modulo_storage::STATIC> {
     static T _M;
-    modulo_members(const T& _M = 0) {}
+    modulo_members(const T& _M = T(1)) {}
     static T& M() { return _M; }
 };
 
-template<typename T, int ID>
+template<typename T, uint64_t ID>
 struct modulo_members<T, ID, modulo_storage::CONSTANT> {
-    modulo_members(const T& _M = 0) {}
-    static T M() { return T(ID); }
+    modulo_members(const T& _M = T(1)) {}
+    static T M() { return castOf<T>(ID); }
 };
+
 
 /**
  * Modulo M arithmetics
@@ -128,7 +170,7 @@ struct modulo_members<T, ID, modulo_storage::CONSTANT> {
  *    CONSTANT - Uses the ID template argument as M which is a constant.
  *      This allows compiler to employ optimized division by constant.
  *      If your moudlo is always say 1000000007, this is the way to go.
- *      This option can only be used when the type T is int.
+ *      This option can only be used when the type T is integral.
  *    STATIC - Has a class static member for M. Separate for each <T, ID>.
  *      This allows to avoid having the same instance of M for each instance
  *      of modulo. Useful when having a large array of instances when M gets
@@ -143,21 +185,20 @@ struct modulo_members<T, ID, modulo_storage::CONSTANT> {
  *      as one can do `modx(v, M) * int(u)` in which case the second operand
  *      gets resolved to `modx(u, 0)` which has an invalid modulus 0.
  */
-template<typename T, int ID, int STORAGE_TYPE = modulo_storage::STATIC>
+template<typename T, uint64_t ID, int STORAGE_TYPE = modulo_storage::STATIC>
 class modulo : public modulo_members<T, ID, STORAGE_TYPE> {
     typedef modulo_members<T, ID, STORAGE_TYPE> my_modulo_members;
 public:
     T v;
 
-    // construct from int, but only if T is not integral to avoid constructor clashing
-    template <typename I = T, typename = std::enable_if_t<!std::is_integral<I>::value>>
-    modulo(int v) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-    modulo() : my_modulo_members(1), v(zeroOf(this->M())) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-    modulo(const T& v) : my_modulo_members(1), v(v) { if (STORAGE_TYPE != modulo_storage::INSTANCE) normalize(); }
-    modulo(const T& v, const T& M) : my_modulo_members(M), v(v) { normalize(); }
-    modulo(const modulo& rhs) : my_modulo_members(rhs.M()), v(rhs.v) {}
-
-    void normalize() { modulo_normalize(&v, this->M()); }
+    modulo() : my_modulo_members(), v(zeroOf(this->M())) {}
+    modulo(const T& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, M())) {}
+    modulo(const T& v_) : my_modulo_members(), v((STORAGE_TYPE != modulo_storage::INSTANCE) ? modulo_normalize(v_, M()) : v_) {}
+    // construct from a different type I
+    template<typename I, typename Enable = std::enable_if_t<!std::is_same<T, I>::value, bool>>
+    modulo(const I& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, M())) {}
+    template<typename I, typename Enable = std::enable_if_t<!std::is_same<T, I>::value && STORAGE_TYPE != modulo_storage::INSTANCE, bool>>
+    modulo(const I& v_) : my_modulo_members(), v(modulo_normalize(v_, M())) {}
 
     bool operator == (const modulo &rhs) const { return (v == rhs.v); }
     bool operator != (const modulo &rhs) const { return (v != rhs.v); }
@@ -166,12 +207,12 @@ public:
     bool operator <= (const modulo &rhs) const { return (v <= rhs.v); }
     bool operator >= (const modulo &rhs) const { return (v >= rhs.v); }
 
-    modulo  operator +  (const modulo &rhs) const { modulo t(*this); t += rhs; return t; }
-    modulo  operator -  (const modulo &rhs) const { modulo t(*this); t -= rhs; return t; }
-    modulo  operator -  ()                  const { modulo t(-v, this->M());   return t; }
-    modulo  operator *  (const modulo &rhs) const { modulo t(*this); t *= rhs; return t; }
-    modulo  operator /  (const modulo &rhs) const { modulo t(*this); t /= rhs; return t; }
-    modulo  operator %  (const modulo &rhs) const { modulo t(*this); t %= rhs; return t; }
+    modulo  operator +  (const modulo &rhs) const { auto t = *this; t += rhs; return t; }
+    modulo  operator -  (const modulo &rhs) const { auto t = *this; t -= rhs; return t; }
+    modulo  operator -  ()                  const { return neg(); }
+    modulo  operator *  (const modulo &rhs) const { auto t = *this; t *= rhs; return t; }
+    modulo  operator /  (const modulo &rhs) const { auto t = *this; t /= rhs; return t; }
+    modulo  operator %  (const modulo &rhs) const { auto t = *this; t %= rhs; return t; }
 
     modulo& operator += (const modulo &rhs) { v = modulo_add(v, rhs.v, this->M()); return *this; }
     modulo& operator -= (const modulo &rhs) { v = modulo_sub(v, rhs.v, this->M()); return *this; }
@@ -179,42 +220,30 @@ public:
     modulo& operator /= (const modulo &rhs) { v = modulo_div(v, rhs.v, this->M()); return *this; }
     modulo& operator %= (const modulo &rhs) { v %= rhs.v;                          return *this; }
 
-    modulo inv() const { return modulo_inv(v, this->M()); }
+    modulo neg() const { auto t = *this; t.v = modulo_neg(v, this->M()); return t; }
+    modulo inv() const { auto t = *this; t.v = modulo_inv(v, this->M()); return t; }
 };
 
 template<typename T>
 using moduloX = modulo<T, 0, modulo_storage::INSTANCE>;
 
-template<typename T, int ID>
+template<typename T, uint64_t ID>
 T modulo_members<T, ID, modulo_storage::STATIC>::_M = castOf<T>(ID);
 
-template<typename T, int ID, typename I>
-struct castT<modulo<T, ID, modulo_storage::INSTANCE>, I> {
-    typedef modulo<T, ID, modulo_storage::INSTANCE> mod;
-    static mod of(const I& x) {
-        return mod(castOf<T>(x));
-    }
-    static mod of(const mod& ref, const I& x) {
-        return mod(castOf(ref.v, x % ref.M()), ref.M());
-    }
-};
-template<typename T, int ID>
-struct castT<modulo<T, ID, modulo_storage::INSTANCE>, modulo<T, ID, modulo_storage::INSTANCE>> : nopCastT<modulo<T, ID, modulo_storage::INSTANCE>>{};
-
-template<typename T, int ID, int STORAGE_TYPE, typename I>
+template<typename T, uint64_t ID, int STORAGE_TYPE, typename I>
 struct castT<modulo<T, ID, STORAGE_TYPE>, I> {
     typedef modulo<T, ID, STORAGE_TYPE> mod;
-    static mod of(const I& x) {
-        return mod(castOf<T>(x % mod::M()));
+    static mod of(const I& v) {
+        return mod(v);
     }
-    static mod of(const mod& ref, const I& x) {
-        return mod(castOf(ref.v, x % ref.M()), ref.M());
+    static mod of(const mod& ref, const I& v) {
+        return mod(v, ref.M());
     }
 };
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 struct castT<modulo<T, ID, STORAGE_TYPE>, modulo<T, ID, STORAGE_TYPE>> : nopCastT<modulo<T, ID, STORAGE_TYPE>>{};
 
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 struct identityT<modulo<T, ID, STORAGE_TYPE>> {
     typedef modulo<T, ID, STORAGE_TYPE> mod;
     static mod of(const mod& x) {
@@ -222,7 +251,7 @@ struct identityT<modulo<T, ID, STORAGE_TYPE>> {
     }
 };
 
-template<typename T, int ID, int STORAGE_TYPE>
+template<typename T, uint64_t ID, int STORAGE_TYPE>
 struct zeroT<modulo<T, ID, STORAGE_TYPE>> {
     typedef modulo<T, ID, STORAGE_TYPE> mod;
     static mod of(const mod& x) {
@@ -231,7 +260,7 @@ struct zeroT<modulo<T, ID, STORAGE_TYPE>> {
 };
 
 template<typename T>
-T modT(T v, const T& m) { modulo_normalize(&v, m); return v; }
+T modT(T v, const T& M) { return modulo_normalize(v, M); }
 
 template<typename T, typename I>
 T modulo_power(const T& x, const I& y, const T& M) {

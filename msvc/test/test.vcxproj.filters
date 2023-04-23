@@ -13,9 +13,6 @@
     <ClCompile Include="..\..\test\structure\math\matrix_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\test\structure\math\modulo_test.cpp">
-      <Filter>structure\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp">
       <Filter>structure\math</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
     </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\sums_test.cpp">
       <Filter>algorithm\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\test\structure\math\modulox_test.cpp">
-      <Filter>structure\math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\structure\graph\disjoint_set_test.cpp">
       <Filter>structure\graph</Filter>
@@ -243,6 +237,21 @@
     </ClCompile>
     <ClCompile Include="..\..\test\algorithm\math\intrinsic_test.cpp">
       <Filter>algorithm\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulo_uint32_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulo_uint64_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulo_int32_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulo_int64_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\modulox_int32_test.cpp">
+      <Filter>structure\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace math {
 /**
  * polynom<modulo<int>> specialization
  */
-template<int ID>
+template<uint64_t ID>
 struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
     typedef modulo<int, ID, modulo_storage::CONSTANT> mod;
     typedef complex<double> cplx;

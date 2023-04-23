@@ -91,14 +91,16 @@ inline mpf& f_set(mpf &x, const mpf &val, int prec) { x.set_prec(prec ? prec : v
 
 inline mpz operator % (const mpz& lhs, const int64_t& rhs) { return lhs % int64_to_mpz(rhs); }
 inline mpz operator % (const int64_t& lhs, const mpz& rhs) { return int64_to_mpz(lhs) % rhs; }
-template<> inline int64_t altruct::math::modulo_mul(const int64_t& x, const int64_t& y, const int64_t& M) { return z_mulmod(x, y, M); }
+//template<> inline int64_t altruct::math::modulo_mul(int64_t x, int64_t y, int64_t M) { return z_mulmod(x, y, M); }
 
-template<> inline mpf altruct::math::sqrtT(mpf x, mpf) { return f_sqrt(x); }
 template<> inline mpz altruct::math::sqrtT(mpz x, mpz) { return z_sqrt(x); }
-template<> inline void altruct::math::modulo_normalize(mpz* v, const mpz& M) { altruct::math::modulo_normalize_int<mpz>(v, M); }
-template<> inline mpz altruct::math::modulo_sub(const mpz& x, const mpz&y, const mpz& M) { return modulo_sub_int(x, y, M); }
-template<> inline mpz altruct::math::modulo_inv(const mpz& x, const mpz& M) { return modulo_inv_int(x, M); }
-template<> inline mpz altruct::math::modulo_div(const mpz& x, const mpz& y, const mpz& M) { return modulo_div_int(x, y, M); }
+template<> inline mpz altruct::math::modulo_normalize(const mpz& v, const mpz& M) { mpz r = v % M; return (r < 0) ? (r + M) : r; }
+template<> inline mpz altruct::math::modulo_add(const mpz& x, const mpz& y, const mpz& M) { mpz r = x + y; return (r < M) ? r : (r - M); }
+template<> inline mpz altruct::math::modulo_sub(const mpz& x, const mpz& y, const mpz& M) { mpz r = x - y; return (r < 0) ? (r + M) : r; }
+template<> inline mpz altruct::math::modulo_neg(const mpz& v, const mpz& M) { return (v == 0) ? v : (M - v); }
+template<> inline mpz altruct::math::modulo_mul(const mpz& x, const mpz&y, const mpz& M) { return (x * y) % M; }
+template<> inline mpz altruct::math::modulo_inv(const mpz& v, const mpz& M) { return altruct::math::modulo_inv_int(v, M); }
+template<> inline mpz altruct::math::modulo_div(const mpz& x, const mpz& y, const mpz& M) { return altruct::math::modulo_div_int(x, y, M); }
 template<> inline mpz altruct::math::modulo_power(const mpz& x, const mpz& y, const mpz& M) { return z_powmod(x, y, M); }
 template<> inline mpz altruct::math::modulo_power(const mpz& x, const int64_t& y, const mpz& M) { return z_powmod(x, int64_to_mpz(y), M); }
 

@@ -120,7 +120,8 @@ void test_cyclic_convolution(const vector<mod>& u, const vector<mod>& v) {
     vector<mod> ec(u.size() + v.size() - 1);
     for (int k = 0; k < (int)ec.size(); k++) {
         for (int i = 0; i < (int)u.size(); i++) {
-            ec[k] += u[i] * v[modT(k - i, (int)v.size())];
+            int j = modT(k - i, (int)v.size());
+            ec[k] += u[i] * v[j];
         }
     }
     auto ac = cyclic_convolution<mod>(u.begin(), u.end(), v.begin(), v.end(), mod(41), 1 << 12);

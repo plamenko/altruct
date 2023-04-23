@@ -27,14 +27,14 @@ template<typename T>
 void chinese_remainder(T* a, T* n, T a1, T n1, T a2, T n2) {
     T e0 = zeroT<T>::of(*a);
     T ni1, ni2; T g = gcd_ex(n1, n2, &ni1, &ni2);
+    ni2 = modulo_normalize(ni2, n1);
+    ni1 = modulo_normalize(ni1, n2);
+    // ^^ TODO: use modulo_gcd_ex instead of gcd_ex+modulo_normalize
     if ((a2 - a1) % g != e0) { *n = e0, *a = e0; return; }
-    modulo_normalize(&ni2, n1);
-    modulo_normalize(&ni1, n2);
     T t1 = modulo_mul(a1, ni2, n1);
     T t2 = modulo_mul(a2, ni1, n2);
     n1 /= g; n2 /= g; *n = n1 * n2 * g;
-    *a = modulo_mul(t1, n2, *n) + modulo_mul(t2, n1, *n);
-    return modulo_normalize(a, *n);
+    *a = modulo_add(modulo_mul(t1, n2, *n), modulo_mul(t2, n1, *n), *n);
 }
 template<typename T>
 void chinese_remainder(T* ar, T* nr, T a, T n) {
@@ -54,7 +54,7 @@ T chinese_remainder(T a1, T n1, T a2, T n2) {
  * Then `a` can be represented in the mixed radix form: `u = Sum[x[i] * q[i]]`.
  * Note: `u` is unique modulo `q[n]` as per Chinese Remainder Theorem.
  *
- * @param vap - vector of (remainder, modulus) pairs, moduli shoulde be pairwise relatively prime
+ * @param vap - vector of (remainder, modulus) pairs, moduli should be pairwise relatively prime
  * @return vx - vector of (coeeficient, modulus) pairs, moduli are same as in `vap`
  */
 template<typename V>
@@ -147,8 +147,9 @@ std::pair<I, I> sqrt_hensel_lift_p2(const I& y, I k) {
     I w2 = 4;
     for (int i = 4; i <= k; i++) {
         for (int j = 0; j < 2; j++) {
-            I l = (modx(s[j], w2 * 4) * s[j] - y).v;
-            if (l != 0) {
+            modx r = modx(s[j], w2 * 4);
+            modx v = r * r - modx(y, r.M());
+            if (v.v != 0) {
                 s[j] += w2;
             }
             else if (s[j] >= w2) {
@@ -175,7 +176,7 @@ I sqrt_hensel_lift(const I& y, const I& p, I k) {
         I phi = r.M() / p * (p - 1); // euler_phi(r.M)
         modx u = powT(r * 2, phi - 1); // f'(r) ^-1
         r.M() = (i * 2 < k) ? r.M() * r.M() : powT(p, k); // lift modulus
-        modx v = r * r - y; // f(r)
+        modx v = r * r - modx(y, r.M()); // f(r)
         r -= v * u;
     }
     return r.v;
@@ -196,7 +197,7 @@ std::vector<I> sqrt_mod(I y, const std::vector<std::pair<P, int>>& vf) {
         if ((x * x - y) % q != 0) return;
         for (I r0 : sr0) {
             sr.insert(chinese_remainder(r0, m, x, q));
-            sr.insert(chinese_remainder(r0, m, -x, q));
+            sr.insert(chinese_remainder(r0, m, modulo_neg(x, q), q));
         }
     };
     for (const auto& f : vf) {
