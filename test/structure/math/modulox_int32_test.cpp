@@ -258,3 +258,38 @@ TEST(modulox_int32_test, division) {
 
     EXPECT_EQ(modx(53, 100), modx(17, 100).inv());
 }
+
+TEST(modulox_int32_test, inv) {
+    modx m1(1, 2147450880);
+    modx m1i = m1.inv();
+    EXPECT_EQ(INT32_C(1), m1i.v);
+    EXPECT_EQ(INT32_C(2147450880), m1i.M());
+    modx m2(1836311903, 2147450880);
+    modx m2i = m2.inv();
+    EXPECT_EQ(INT32_C(1610167967), m2i.v);
+    EXPECT_EQ(INT32_C(2147450880), m2i.M());
+}
+
+TEST(modulox_int32_test, neg) {
+    modx m0(0, 2147450880);
+    modx m0n = m0.neg();
+    EXPECT_EQ(INT32_C(0), m0n.v);
+    EXPECT_EQ(INT32_C(2147450880), m0n.M());
+    modx m1(1, 2147450880);
+    modx m1n = m1.neg();
+    EXPECT_EQ(INT32_C(2147450879), m1n.v);
+    EXPECT_EQ(INT32_C(2147450880), m1n.M());
+    modx m2(1836311903, 2147450880);
+    modx m2n = m2.neg();
+    EXPECT_EQ(INT32_C(311138977), m2n.v);
+    EXPECT_EQ(INT32_C(2147450880), m2n.M());
+}
+
+TEST(modulox_int32_test, modulo_power) {
+    EXPECT_EQ(1, modulo_power(0, 0, 2147450880));
+    EXPECT_EQ(1, modulo_power(1, 0, 2147450880));
+    EXPECT_EQ(1, modulo_power(1836311903, 0, 2147450880));
+    EXPECT_EQ(0, modulo_power(0, 100, 2147450880));
+    EXPECT_EQ(1, modulo_power(1, 100, 2147450880));
+    EXPECT_EQ(167214721, modulo_power(1836311903, 100, 2147450880));
+}
