@@ -408,6 +408,93 @@ TEST(polynom_test, mul_size) {
     EXPECT_EQ(q11_150, q_fft_inplace_150);
 }
 
+TEST(polynom_test, reverse) {
+    const polynom<int> p0{};
+    const polynom<int> p1{ 6 };
+    const polynom<int> p2{ 1, -3, 0, -2, 0, 0 };
+    const polynom<int> p3{ 12, 18, 30, -42, 36, 0, 24, 0 };
+    EXPECT_EQ((polynom<int>{}), p0.reverse());
+    EXPECT_EQ((polynom<int>{6}), p1.reverse());
+    EXPECT_EQ((polynom<int>{-2, 0, -3, 1}), p2.reverse());
+    EXPECT_EQ((polynom<int>{24, 0, 36, -42, 30, 18, 12}), p3.reverse());
+}
+
+TEST(polynom_test, inverse) {
+    const polynom<double> p0{};
+    const polynom<double> p1{ 6 };
+    const polynom<double> p2{ 1, -3, 0, -2, 0, 0 };
+    const polynom<double> p3{ 12, 18, 30, -42, 36, 0, 24, 0 };
+    EXPECT_EQ((polynom<double>{}), p0.inverse(10));
+    EXPECT_EQ((polynom<double>{1. / 6}), p1.inverse(10));
+    EXPECT_EQ((polynom<double>{1., 3, 9, 29, 93, 297, 949, 3033, 9693, 30977}), p2.inverse(10));
+    EXPECT_EQ((polynom<double>{1. / 12, -1. / 8, -1. / 48, 61. / 96, -305. / 192, 421. / 384, 3415. / 768, -8513. / 512, 69023. / 3072, 115925. / 6144}), p3.inverse(10));
+    EXPECT_EQ((polynom<double>{1.}), (p2.inverse(10) * p2).resize(10));
+    EXPECT_EQ((polynom<double>{1.}), (p3.inverse(10) * p3).resize(10));
+}
+
+TEST(polynom_test, quot_rem_hensel) {
+    const polynom<double> p0{};
+    const polynom<double> p1{ 6. };
+    const polynom<double> p2{ 1., -3, 0, -2, 0, 0 };
+    const polynom<double> p3{ 12., 18, 30, -42, 36, 0, 24, 0 };
+    polynom<double> pr;
+    polynom<double>::quot_rem_hensel(pr, p0, p1);
+    EXPECT_EQ((polynom<double>{}), pr);
+    polynom<double>::quot_rem_hensel(pr, p0, p2);
+    EXPECT_EQ((polynom<double>{}), pr);
+    polynom<double>::quot_rem_hensel(pr, p1, p1);
+    EXPECT_EQ((polynom<double>{ 1. }), pr);
+    polynom<double>::quot_rem_hensel(pr, p1, p2);
+    EXPECT_EQ((polynom<double>{ 6. }), pr);
+    polynom<double>::quot_rem_hensel(pr, p3, p1);
+    EXPECT_EQ((polynom<double>{ 2., 3, 5, -7, 6, 0, 4 }), pr);
+    polynom<double>::quot_rem_hensel(pr, p3, p2);
+    EXPECT_EQ((polynom<double>{-3., 63, 30, 15, 0, 0, -12}), pr);
+    polynom<double>::quot_rem_hensel(pr, p2, p3);
+    EXPECT_EQ((polynom<double>{ 1., -3, 0, -2 }), pr);
+    // inplace
+    pr = p3;
+    polynom<double>::quot_rem_hensel(pr, pr, p2);
+    EXPECT_EQ((polynom<double>{-3., 63, 30, 15, 0, 0, -12}), pr);
+    pr = p2;
+    polynom<double>::quot_rem_hensel(pr, pr, p3);
+    EXPECT_EQ((polynom<double>{ 1., -3, 0, -2 }), pr);
+    pr = p3;
+    polynom<double>::quot_rem_hensel(pr, pr, p3);
+    EXPECT_EQ((polynom<double>{ 0., 0, 0, 0, 0, 0, 1 }), pr);
+}
+
+TEST(polynom_test, quot_rem_long) {
+    const polynom<int> p0{};
+    const polynom<int> p1{ 6 };
+    const polynom<int> p2{ 1, -3, 0, -2, 0, 0 };
+    const polynom<int> p3{ 12, 18, 30, -42, 36, 0, 24, 0 };
+    polynom<int> pr;
+    polynom<int>::quot_rem_long(pr, p0, p1);
+    EXPECT_EQ((polynom<int>{}), pr);
+    polynom<int>::quot_rem_long(pr, p0, p2);
+    EXPECT_EQ((polynom<int>{}), pr);
+    polynom<int>::quot_rem_long(pr, p1, p1);
+    EXPECT_EQ((polynom<int>{ 1 }), pr);
+    polynom<int>::quot_rem_long(pr, p1, p2);
+    EXPECT_EQ((polynom<int>{ 6 }), pr);
+    polynom<int>::quot_rem_long(pr, p3, p1);
+    EXPECT_EQ((polynom<int>{ 2, 3, 5, -7, 6, 0, 4 }), pr);
+    polynom<int>::quot_rem_long(pr, p3, p2);
+    EXPECT_EQ((polynom<int>{-3, 63, 30, 15, 0, 0, -12}), pr);
+    polynom<int>::quot_rem_long(pr, p2, p3);
+    EXPECT_EQ((polynom<int>{ 1, -3, 0, -2 }), pr);
+    // inplace
+    pr = p3;
+    polynom<int>::quot_rem_long(pr, pr, p2);
+    EXPECT_EQ((polynom<int>{-3, 63, 30, 15, 0, 0, -12}), pr);
+    pr = p2;
+    polynom<int>::quot_rem_long(pr, pr, p3);
+    EXPECT_EQ((polynom<int>{ 1, -3, 0, -2 }), pr);
+    pr = p3;
+    polynom<int>::quot_rem_long(pr, pr, p3);
+    EXPECT_EQ((polynom<int>{ 0, 0, 0, 0, 0, 0, 1 }), pr);
+}
 TEST(polynom_test, quot_rem) {
     const polynom<int> p0{};
     const polynom<int> p1{ 6 };

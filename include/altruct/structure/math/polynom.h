@@ -199,22 +199,57 @@ public:
         return r;
     }
 
-    // pr = p1 % p2 | p1 / p2; O((l1 - lm) * lm)
+    // pr = x^l1 * p(1/x); O(l1)
+    polynom reverse() const {
+        auto r = *this;
+        if (r.c.size() > 0) {
+            std::reverse(r.c.begin(), r.c.begin() + r.deg() + 1);
+        }
+        return r;
+    }
+
+    // pr = p1 % p2 | p1 / p2; O(M(l1 - l2, max(l2, l1 - l2)))
     // it is allowed for `p1` and `pr` to be the same instance
-    // `pr` and `pm` must not be the same instance
-    static void quot_rem(polynom &pr, const polynom &p1, const polynom &pm) {
-        int l1 = p1.deg(), lm = pm.deg(); int lr = l1 - lm;
+    // `pr` and `p2` must not be the same instance
+    static void quot_rem_hensel(polynom& pr, const polynom& p1, const polynom& p2) {
+        int l1 = p1.deg(), l2 = p2.deg(); int lq = l1 - l2;
         pr = p1;
-        if (lr < 0 || pm.is_power()) return;
-        for (int i = l1; i >= lm; i--) {
-            T s = pr[i] /= pm[lm]; if (s == p1.ZERO_COEFF) continue;
-            for (int j = 1; j <= lm; j++) {
-                pr[i - j] = pr[i - j] - s * pm[lm - j];
+        if (lq < 0 || p2.is_power()) return;
+        polynom q;
+        mul(q, p2.reverse().inverse(lq + 1), p1.reverse(), lq);
+        std::reverse(q.c.begin(), q.c.begin() + lq + 1);
+        pr -= q * p2;
+        q.c.insert(q.c.begin(), l2, q.ZERO_COEFF);
+        pr += q;
+    }
+
+    // pr = p1 % p2 | p1 / p2; O((l1 - l2) * l2)
+    // it is allowed for `p1` and `pr` to be the same instance
+    // `pr` and `p2` must not be the same instance
+    static void quot_rem_long(polynom &pr, const polynom &p1, const polynom &p2) {
+        int l1 = p1.deg(), l2 = p2.deg(); int lq = l1 - l2;
+        pr = p1;
+        if (lq < 0 || p2.is_power()) return;
+        for (int i = l1; i >= l2; i--) {
+            T s = pr[i] /= p2[l2]; if (s == p1.ZERO_COEFF) continue;
+            for (int j = 1; j <= l2; j++) {
+                pr[i - j] = pr[i - j] - s * p2[l2 - j];
             }
         }
     }
 
-    // pr = p1 / p2; O((l1 - lm) * lm)
+    static void quot_rem(polynom& pr, const polynom& p1, const polynom& p2) {
+        int l1 = p1.deg(), l2 = p2.deg();
+        bool is_invertible = (p2.id_coeff() / p2[l2]) * p2[l2] == p2.id_coeff();
+        is_invertible |= std::is_floating_point<T>::value;
+        if (l1 < 100 || l2 < 50 || l2 < 25 * log2(l1) || !is_invertible) {
+            return quot_rem_long(pr, p1, p2);
+        } else {
+            return quot_rem_hensel(pr, p1, p2);
+        }
+    }
+
+    // pr = p1 / p2; O((l1 - l2) * l2)
     // it is allowed for `p1` and `pr` to be the same instance
     // `pr` and `p2` must not be the same instance
     static void div(polynom &pr, const polynom &p1, const polynom &p2) {
@@ -341,7 +376,7 @@ struct polynom_mul {
     //             Coefficients of `pr` in the range [0, lr] inclusive must be set.
     //             Truncate or pad with 0 if necessary.
     static void impl(T* pr, int lr, const T* p1, int l1, const T* p2, int l2) {
-        if (l2 < 15 || int64_t(l1) * l2 < 300) {  // just l2 < 16 ???
+        if (l2 < 48) {
             polynom<T>::_mul_long(pr, lr, p1, l1, p2, l2);
         } else {
             polynom<T>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
