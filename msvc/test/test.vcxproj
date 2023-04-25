@@ -100,8 +100,9 @@
     <ClCompile Include="..\..\test\structure\math\nimber_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\permutation_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\pga_test.cpp" />
-    <ClCompile Include="..\..\test\structure\math\polymod_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\modulo_poly_mod_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_modx_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\polynom_mod_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\polynom_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\prime_holder_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\quadratic_modx_test.cpp" />
