@@ -149,7 +149,8 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
             uint64_t hi = rnd(hi2[i], n);
             uint64_t mi = rnd(hi1[i], n);
             uint64_t lo = rnd(lo1[i], n);
-            pr[i] = mod((((hi << 16) + mi) << 16) + lo, p1->M());
+            //pr[i] = mod((((hi << 16) + mi) << 16) + lo, p1->M()); // can overflow by 1 bit
+            pr[i] = mod(hi << 32, p1->M()) + mod((mi << 16) + lo, p1->M());
         }
     }
 

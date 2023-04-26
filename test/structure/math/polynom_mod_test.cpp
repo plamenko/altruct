@@ -175,7 +175,7 @@ TEST(polynom_mod_test, polynom_mul__mod_uint32__fft_double_split2) {
     EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 1000, 700)));
     EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 10000, 10000)));
-    //EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 250000, 250000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 250000, 250000)));
     //find_max_size<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2);
 }
 
