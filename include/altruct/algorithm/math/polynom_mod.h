@@ -57,18 +57,18 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
 
     static int next_pow2(int l) { int n = 1; while (n < l) n *= 2; return n; }
     static uint64_t rnd(const cplx& z, int n, uint32_t M) { return uint64_t(llround(z.a / n)) % M; }
-    static uint64_t shl_sub(uint64_t v) { return (v << 10) - v; }
+    static uint64_t shl_sub(uint64_t v) { return (v << 11) - v; }
 
     static void convert_to_cplx_210(cplx* c2, cplx* c1, cplx* c0, const mod* p, int l) {
         for (int i = 0; i <= l; i++) {
-            c2[i] = uint32_t(p[i].v) >> 20;
-            c1[i] = (uint32_t(p[i].v) >> 10) & 0x3FF;
-            c0[i] = uint32_t(p[i].v) & 0x3FF;
+            c2[i] = uint32_t(p[i].v) >> 22;           // 10 bits
+            c1[i] = (uint32_t(p[i].v) >> 11) & 0x7FF; // 11 bits
+            c0[i] = uint32_t(p[i].v) & 0x7FF;         // 11 bits
         }
     }
 
-    // splits coefficients into three 10-bit blocks each to avoid overflow
-    // works for `mod::M < 2^30` and `la, lb <= 2^30`;
+    // splits coefficients into three 10-11-11-bit blocks to avoid overflow
+    // works for `mod::M < 2^32` and `la+lb < 2^25`;
     static void _mul_fft_big(mod* pr, int lr, const mod* pa, int la, const mod* pb, int lb) {
         I M = pa->M();
         int n = next_pow2(la + lb + 1);
@@ -99,20 +99,20 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
         fft(b2.data(), n, iroot);
         fft(b1.data(), n, iroot);
         fft(b0.data(), n, iroot);
-        mod w = powT(mod(2, M), 20); // 2^20
+        mod w = powT(mod(2, M), 22); // 2^22
         for (int i = 0; i <= lr; i++) {
-            // r = 2^40 * (w22)
-            //   + 2^30 * (w21 - w22 - w11)
-            //   + 2^20 * (w210 - w21 - w10 + 2 * w11)
-            //   + 2^10 * (w10 - w11 - w00)
+            // r = 2^44 * (w22)
+            //   + 2^33 * (w21 - w22 - w11)
+            //   + 2^22 * (w210 - w21 - w10 + 2 * w11)
+            //   + 2^11 * (w10 - w11 - w00)
             //   + 2^00 * (w00)
-            uint64_t z22 = shl_sub(rnd(a2[i], n, M));                    // (w22 << 10) - w22
-            uint64_t z11 = shl_sub(rnd(a1[i], n, M)) + rnd(b1[i], n, M); // (w11 << 10) - w11 + w10
-            uint64_t z00 = shl_sub(rnd(a0[i], n, M));                    // (w00 << 10) - w00
-            uint64_t z21 = shl_sub(rnd(b2[i], n, M)) + rnd(b0[i], n, M); // (w21 << 10) - w21 + w210
-            uint64_t z10 = shl_sub(z11);                                 // (z11 << 10) - z11
-            // r = (z22 << 30) + (z21 << 20) - (z10 << 10) - z00;
-            pr[i] = mod((z22 << 10) + z21, M) * w - mod((z10 << 10) + z00, M);
+            uint64_t z22 = shl_sub(rnd(a2[i], n, M));                    // (w22 << 11) - w22
+            uint64_t z11 = shl_sub(rnd(a1[i], n, M)) + rnd(b1[i], n, M); // (w11 << 11) - w11 + w10
+            uint64_t z00 = shl_sub(rnd(a0[i], n, M));                    // (w00 << 11) - w00
+            uint64_t z21 = shl_sub(rnd(b2[i], n, M)) + rnd(b0[i], n, M); // (w21 << 11) - w21 + w210
+            uint64_t z10 = shl_sub(z11) % uint32_t(M);                   // (z11 << 11) - z11
+            // r = (z22 << 33) + (z21 << 22) - (z10 << 11) - z00;
+            pr[i] = mod((z22 << 11) + z21, M) * w - mod((z10 << 11) + z00, M);
         }
     }
 
@@ -196,10 +196,10 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
             polynom<mod>::_mul_long(pr, lr, p1, l1, p2, l2);
         } else if (l2 < 275 || l1 < 900 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
             polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
-        } else if (l1 <= 250000) {
+        } else if (l1 <= 100000) {
             _mul_fft(pr, lr, p1, l1, p2, l2);
         } else {
-            _mul_fft_big(pr, lr, p1, l1, p2, l2);
+            _mul_fft_crt(pr, lr, p1, l1, p2, l2);
         }
     }
 };

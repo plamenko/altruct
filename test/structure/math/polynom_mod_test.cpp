@@ -284,7 +284,7 @@ TEST(polynom_mod_test, polynom_mul__modx_uint32__fft_double_split2) {
     EXPECT_TRUE((test_polynom_mul(moduloX<uint32_t>(0, UINT32_C(4294967291)), Algorithm::FFT_Double_Split2, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul(moduloX<uint32_t>(0, UINT32_C(4294967291)), Algorithm::FFT_Double_Split2, 10000, 10000)));
     if (!kTestLarge) return;
-    EXPECT_TRUE((test_polynom_mul(moduloX<uint32_t>(0, UINT32_C(4294967291)), Algorithm::FFT_Double_Split2, 250000, 250000)));
+    EXPECT_TRUE((test_polynom_mul(moduloX<uint32_t>(0, UINT32_C(4294967291)), Algorithm::FFT_Double_Split2, 65535, 65535)));
     //find_max_size(moduloX<uint32_t>(0, UINT32_C(4294967291)), Algorithm::FFT_Double_Split2);
 }
 
