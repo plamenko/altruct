@@ -48,11 +48,11 @@ std::array<std::vector<MODP>, 3> polynom_mul_mod_P_hilo(const MOD* p1, int l1, c
 } // namespace
 
 /**
- * polynom<modulo<int>> specialization
+ * polynom<modulo<integral_type, ...>> specialization
  */
-template<uint64_t ID>
-struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
-    typedef modulo<int, ID, modulo_storage::CONSTANT> mod;
+template<typename I, uint64_t ID, int STORAGE_TYPE>
+struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integral<I>::value>> {
+    typedef modulo<I, ID, STORAGE_TYPE> mod;
     typedef complex<double> cplx;
 
     static int next_pow2(int l) { int n = 1; while (n < l) n *= 2; return n; }
@@ -182,25 +182,14 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
         }
     }
 
-    static void _mul_long(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
-        for (int i = lr; i >= 0; i--) {
-            int64_t r = 0;
-            int jmax = std::min(i, l1);
-            int jmin = std::max(0, i - l2);
-            for (int j = jmax; j >= jmin; j--) {
-                r += (int64_t(p1[j].v) * p2[i - j].v) % mod::M();
-            }
-            pr[i] = r % mod::M();
-        }
-    }
-
     static double cost_karatsuba(int l1, int l2) { return 0.25 * l1 * pow(l2, 0.5849625); }
-    static double cost_fft(int l1, int l2) { int n = next_pow2(l1 + l2 + 1); return 0.5 * n * log2(n); }
+    static double cost_fft(int l1, int l2) { int n = next_pow2(l1 + l2 + 1); return 0.75 * n * log2(n); }
 
+    //static int LONG_THRESHOLD;
     static void impl(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
-        if (l2 < 16) {
-            _mul_long(pr, lr, p1, l1, p2, l2);
-        } else if (l2 < 300 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
+        if (l2 < 48) { // LONG_THRESHOLD
+            polynom<mod>::_mul_long(pr, lr, p1, l1, p2, l2);
+        } else if (l2 < 275 || l1 < 900 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
             polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
         } else if (l1 <= 250000) {
             _mul_fft(pr, lr, p1, l1, p2, l2);

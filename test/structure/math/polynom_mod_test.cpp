@@ -53,7 +53,7 @@ bool test_polynom_mul(Algorithm a, int l1, int l2, int a1 = 7, int b1 = 3, int a
     pr.resize(lr + 1, p1.ZERO_COEFF);
     switch (a) {
     case Algorithm::Long:
-        polynom_mul<MOD>::_mul_long(pr.c.data(), lr, p1.c.data(), l1, p2.c.data(), l2);
+        polynom<MOD>::_mul_long(pr.c.data(), lr, p1.c.data(), l1, p2.c.data(), l2);
         break;
     case Algorithm::Karatsuba:
         polynom<MOD>::_mul_karatsuba(pr.c.data(), lr, p1.c.data(), l1, p2.c.data(), l2);
@@ -108,18 +108,21 @@ int find_max_size(Algorithm a, int max_iter = 1000) {
 
 } // namespace
 
-TEST(polynom_mod_test, polynom_mul_long) {
+// 1000000007 = 10^9 + 7; commonly used prime smaller than 2^30
+// 2147483629 = 2^31 - 19; second largest prime that fits int32_t
+
+TEST(polynom_mod_test, polynom_mul__mod_int__long) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::Long, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::Long, 100, 30)));
 }
 
-TEST(polynom_mod_test, polynom_mul_karatsuba) {
+TEST(polynom_mod_test, polynom_mul__mod_int__karatsuba) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 100, 30)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 1000, 700)));
 }
 
-TEST(polynom_mod_test, polynom_mul_fft_double_split2) {
+TEST(polynom_mod_test, polynom_mul__mod_int__fft_double_split2) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 100, 30)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 1000, 700)));
@@ -130,7 +133,7 @@ TEST(polynom_mod_test, polynom_mul_fft_double_split2) {
     //find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2);
 }
 
-TEST(polynom_mod_test, polynom_mul_fft_double_split3) {
+TEST(polynom_mod_test, polynom_mul__mod_int__fft_double_split3) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 4, 4)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 100, 30)));
@@ -141,7 +144,7 @@ TEST(polynom_mod_test, polynom_mul_fft_double_split3) {
     //find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3);
 }
 
-TEST(polynom_mod_test, polynom_mul_fft_crt) {
+TEST(polynom_mod_test, polynom_mul__mod_int__fft_crt) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 4, 4)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 100, 30)));
@@ -150,5 +153,51 @@ TEST(polynom_mod_test, polynom_mul_fft_crt) {
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 10000, 10000)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 250000, 250000)));
-    find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT);
+    //find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_CRT);
+}
+
+// 4294967291 = 2^32 - 5; largest prime that fits uint32_t
+
+TEST(polynom_mod_test, polynom_mul__mod_uint32__long) {
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::Long, 10, 5)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::Long, 100, 30)));
+}
+
+TEST(polynom_mod_test, polynom_mul__mod_uint32__karatsuba) {
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 10, 5)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 100, 30)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::Karatsuba, 1000, 700)));
+}
+
+TEST(polynom_mod_test, polynom_mul__mod_uint32__fft_double_split2) {
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 10, 5)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 100, 30)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 1000, 700)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 1000, 1000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 10000, 10000)));
+    //EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2, 250000, 250000)));
+    //find_max_size<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split2);
+}
+
+TEST(polynom_mod_test, polynom_mul__mod_uint32__fft_double_split3) {
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 4, 4)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 10, 5)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 100, 30)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 1000, 700)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 1000, 1000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 10000, 10000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 250000, 250000)));
+    //find_max_size<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3);
+}
+
+TEST(polynom_mod_test, polynom_mul__mod_uint32__fft_crt) {
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 4, 4)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 10, 5)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 100, 30)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 1000, 700)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 1000, 700)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 1000, 1000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 10000, 10000)));
+    EXPECT_TRUE((test_polynom_mul<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT, 250000, 250000)));
+    //find_max_size<modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>>(Algorithm::FFT_CRT);
 }

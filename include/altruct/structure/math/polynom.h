@@ -9,7 +9,7 @@
 namespace altruct {
 namespace math {
 
-template<typename T> struct polynom_mul;
+template<typename T, typename ENABLE = void> struct polynom_mul;
 
 /**
  * Polynomial with coefficients in T.
@@ -368,7 +368,7 @@ public:
  * `polynom<T>::_mul_long` or `polynom<T>::_mul_karatsuba`,
  * or the utility methods: `_add_to`, `_sub_from` and `_zero`.
  */
-template<typename T>
+template<typename T, typename ENABLE>
 struct polynom_mul {
     // @param pX - The polynomials to perform multiplication on: `pr = p1 * p2`.
     //             It is allowed for `p1`, `p2` and `pr` to be the same instance.
