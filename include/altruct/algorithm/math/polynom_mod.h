@@ -55,7 +55,16 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
     typedef complex<double> cplx;
 
     static int next_pow2(int l) { int n = 1; while (n < l) n *= 2; return n; }
-    static int64_t rnd(const cplx& z, int n) { return llround(z.a / n) % mod::M(); }
+    static uint64_t rnd(const cplx& z, int n) { return uint64_t(llround(z.a / n)) % uint32_t(mod::M()); }
+    static uint64_t shl_sub(uint64_t v) { return (v << 10) - v; }
+
+    static void convert_to_cplx_210(cplx* c2, cplx* c1, cplx* c0, const mod* p, int l) {
+        for (int i = 0; i <= l; i++) {
+            c2[i] = uint32_t(p[i].v) >> 20;
+            c1[i] = (uint32_t(p[i].v) >> 10) & 0x3FF;
+            c0[i] = uint32_t(p[i].v) & 0x3FF;
+        }
+    }
 
     // splits coefficients into three 10-bit blocks each to avoid overflow
     // works for `mod::M < 2^30` and `la, lb <= 2^30`;
@@ -65,8 +74,8 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
         root = powT(root, root.size / n);
         auto iroot = powT(root, n - 1);
         std::vector<cplx> a2(n), a1(n), a0(n), b2(n), b1(n), b0(n), tmp(n);
-        for (int i = 0; i <= la; i++) a2[i] = pa[i].v >> 20, a1[i] = (pa[i].v >> 10) & 0x3FF, a0[i] = pa[i].v & 0x3FF;
-        for (int i = 0; i <= lb; i++) b2[i] = pb[i].v >> 20, b1[i] = (pb[i].v >> 10) & 0x3FF, b0[i] = pb[i].v & 0x3FF;
+        convert_to_cplx_210(a2.data(), a1.data(), a0.data(), pa, la);
+        convert_to_cplx_210(b2.data(), b1.data(), b0.data(), pb, lb);
         fft_rec(tmp.data(), a2.data(), n, root); std::swap(a2, tmp);
         fft_rec(tmp.data(), a1.data(), n, root); std::swap(a1, tmp);
         fft_rec(tmp.data(), a0.data(), n, root); std::swap(a0, tmp);
@@ -74,12 +83,12 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
         fft_rec(tmp.data(), b1.data(), n, root); std::swap(b1, tmp);
         fft_rec(tmp.data(), b0.data(), n, root); std::swap(b0, tmp);
         for (int i = 0; i < n; i++) {
-            auto w22 = a2[i] * b2[i];
-            auto w11 = a1[i] * b1[i];
-            auto w00 = a0[i] * b0[i];
-            auto w21 = (a2[i] + a1[i]) * (b2[i] + b1[i]);
-            auto w10 = (a1[i] + a0[i]) * (b1[i] + b0[i]);
-            auto w210 = (a2[i] + a1[i] + a0[i]) * (b2[i] + b1[i] + b0[i]);
+            cplx w22 = a2[i] * b2[i];
+            cplx w11 = a1[i] * b1[i];
+            cplx w00 = a0[i] * b0[i];
+            cplx w21 = (a2[i] + a1[i]) * (b2[i] + b1[i]);
+            cplx w10 = (a1[i] + a0[i]) * (b1[i] + b0[i]);
+            cplx w210 = (a2[i] + a1[i] + a0[i]) * (b2[i] + b1[i] + b0[i]);
             a2[i] = w22, a1[i] = w11, a0[i] = w00, b2[i] = w21, b1[i] = w10, b0[i] = w210;
         }
         fft_rec(tmp.data(), a2.data(), n, iroot); std::swap(a2, tmp);
@@ -88,14 +97,30 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
         fft_rec(tmp.data(), b2.data(), n, iroot); std::swap(b2, tmp);
         fft_rec(tmp.data(), b1.data(), n, iroot); std::swap(b1, tmp);
         fft_rec(tmp.data(), b0.data(), n, iroot); std::swap(b0, tmp);
+        mod w = powT(mod(2, pa->M()), 20); // 2^20
         for (int i = 0; i <= lr; i++) {
-            auto z11 = ((rnd(a2[i], n) << 20) + (rnd(b2[i] - a2[i] - a1[i], n) << 10) + rnd(a1[i], n));
-            auto z01 = ((rnd(a2[i], n) << 20) + (rnd(b0[i] - a2[i] - b1[i], n) << 10) + rnd(b1[i], n));
-            auto z00 = rnd(a0[i], n);
-            pr[i] = ((z11 % mod::M() << 20) + ((z01 - z11 - z00) % mod::M() << 10) + z00) % mod::M();
+            // r = 2^40 * (w22)
+            //   + 2^30 * (w21 - w22 - w11)
+            //   + 2^20 * (w210 - w21 - w10 + 2 * w11)
+            //   + 2^10 * (w10 - w11 - w00)
+            //   + 2^00 * (w00)
+            uint64_t z22 = shl_sub(rnd(a2[i], n));                 // (w22 << 10) - w22
+            uint64_t z11 = shl_sub(rnd(a1[i], n)) + rnd(b1[i], n); // (w11 << 10) - w11 + w10
+            uint64_t z00 = shl_sub(rnd(a0[i], n));                 // (w00 << 10) - w00
+            uint64_t z21 = shl_sub(rnd(b2[i], n)) + rnd(b0[i], n); // (w21 << 10) - w21 + w210
+            uint64_t z10 = shl_sub(z11);                           // (z11 << 10) - z11
+            // r = (z22 << 30) + (z21 << 20) - (z10 << 10) - z00;
+            pr[i] = mod((z22 << 10) + z21, pa->M()) * w - mod((z10 << 10) + z00, pa->M());
         }
     }
 
+    static void convert_to_cplx_hilo(cplx* hi, cplx* lo, const mod* p, int l) {
+        for (int i = 0; i <= l; i++) {
+            hi[i].a = uint32_t(p[i].v) >> 16;
+            lo[i].a = uint32_t(p[i].v) & 0xFFFF;
+        }
+    }
+    
     // splits coefficients into two 16-bit blocks each to avoid overflow
     // works for `mod::M < 2^30` and `l1, l2 <= 2^18`; e.g.: `M = 10^9+7, l = 250.000`
     static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
@@ -103,25 +128,27 @@ struct polynom_mul<modulo<int, ID, modulo_storage::CONSTANT>> {
         auto root = complex_root_wrapper<double>(n);
         root = powT(root, root.size / n);
         auto iroot = powT(root, n - 1);
-        std::vector<cplx> hi1(n), lo1(n), hi2(n), lo2(n), tmp(n);
-        for (int i = 0; i <= l1; i++) hi1[i] = p1[i].v >> 16, lo1[i] = p1[i].v & 0xFFFF;
-        for (int i = 0; i <= l2; i++) hi2[i] = p2[i].v >> 16, lo2[i] = p2[i].v & 0xFFFF;
-        fft_rec(tmp.data(), hi1.data(), n, root); std::swap(hi1, tmp);
-        fft_rec(tmp.data(), lo1.data(), n, root); std::swap(lo1, tmp);
-        fft_rec(tmp.data(), hi2.data(), n, root); std::swap(hi2, tmp);
-        fft_rec(tmp.data(), lo2.data(), n, root); std::swap(lo2, tmp);
+        std::vector<cplx> hi1(n), lo1(n), hi2(n), lo2(n);
+        convert_to_cplx_hilo(hi1.data(), lo1.data(), p1, l1);
+        convert_to_cplx_hilo(hi2.data(), lo2.data(), p2, l2);
+        fft(hi1.data(), n, root);
+        fft(lo1.data(), n, root);
+        fft(hi2.data(), n, root);
+        fft(lo2.data(), n, root);
         for (int i = 0; i < n; i++) {
-            auto h = hi1[i] * hi2[i];
-            auto l = lo1[i] * lo2[i];
-            auto m = lo1[i] * hi2[i] + lo2[i] * hi1[i];
-            lo1[i] = l, hi1[i] = m, hi2[i] = h;
+            cplx hi = hi1[i] * hi2[i];
+            cplx lo = lo1[i] * lo2[i];
+            cplx mi = lo1[i] * hi2[i] + lo2[i] * hi1[i];
+            lo1[i] = lo, hi1[i] = mi, hi2[i] = hi;
         }
-        fft_rec(tmp.data(), hi1.data(), n, iroot); std::swap(hi1, tmp);
-        fft_rec(tmp.data(), lo1.data(), n, iroot); std::swap(lo1, tmp);
-        fft_rec(tmp.data(), hi2.data(), n, iroot); std::swap(hi2, tmp);
+        fft(hi1.data(), n, iroot);
+        fft(lo1.data(), n, iroot);
+        fft(hi2.data(), n, iroot);
         for (int i = 0; i <= lr; i++) {
-            auto h = rnd(hi2[i], n), m = rnd(hi1[i], n), l = rnd(lo1[i], n);
-            pr[i] = ((l << 0) + (m << 16) + (h << 32) % mod::M()) % mod::M();
+            uint64_t hi = rnd(hi2[i], n);
+            uint64_t mi = rnd(hi1[i], n);
+            uint64_t lo = rnd(lo1[i], n);
+            pr[i] = mod((((hi << 16) + mi) << 16) + lo, p1->M());
         }
     }
 

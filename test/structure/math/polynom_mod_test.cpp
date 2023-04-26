@@ -131,13 +131,14 @@ TEST(polynom_mod_test, polynom_mul_fft_double_split2) {
 }
 
 TEST(polynom_mod_test, polynom_mul_fft_double_split3) {
+    EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 4, 4)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 10, 5)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 100, 30)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 1000000007, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 1000, 700)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 10000, 10000)));
     EXPECT_TRUE((test_polynom_mul<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3, 250000, 250000)));
-    //find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3);
+    find_max_size<modulo<int, 2147483629, modulo_storage::CONSTANT>>(Algorithm::FFT_Double_Split3);
 }
 
 TEST(polynom_mod_test, polynom_mul_fft_crt) {
