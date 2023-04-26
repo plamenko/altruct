@@ -26,23 +26,24 @@ template<typename MODP, typename MOD>
 std::array<std::vector<MODP>, 3> polynom_mul_mod_P_hilo(const MOD* p1, int l1, const MOD* p2, int l2, int n, uint32_t primitive_root) {
     auto root = powT<MODP>(primitive_root, (MODP::M() - 1) / n);
     auto iroot = powT(root, n - 1);
-    std::vector<MODP> hi1(n), lo1(n); convert_to_mod_P_hilo(hi1.data(), lo1.data(), p1, l1);
-    std::vector<MODP> hi2(n), lo2(n); convert_to_mod_P_hilo(hi2.data(), lo2.data(), p2, l2);
+    std::vector<MODP> hi1(n), lo1(n), hi2(n), lo2(n);
+    convert_to_mod_P_hilo(hi1.data(), lo1.data(), p1, l1);
+    convert_to_mod_P_hilo(hi2.data(), lo2.data(), p2, l2);
     auto ni = MODP(n).inv();
     fft(hi1.data(), n, root);
     fft(lo1.data(), n, root);
     fft(hi2.data(), n, root);
     fft(lo2.data(), n, root);
     for (int i = 0; i < n; i++) {
-        MODP ss = (hi1[i] + lo1[i]) * (hi2[i] + lo2[i]) * ni;
-        hi1[i] *= hi2[i] * ni;
-        lo1[i] *= lo2[i] * ni;
-        hi2[i] = ss - hi1[i] - lo1[i];
+        MODP hi = hi1[i] * hi2[i] * ni;
+        MODP lo = lo1[i] * lo2[i] * ni;
+        MODP mi = (lo1[i] * hi2[i] + lo2[i] * hi1[i]) * ni;
+        lo1[i] = lo, hi1[i] = mi, hi2[i] = hi;
     }
-    fft(hi1.data(), n, iroot); // hi1 * hi2
-    fft(hi2.data(), n, iroot); // hi1 * lo2 + lo1 * hi2
+    fft(hi2.data(), n, iroot); // hi1 * hi2
+    fft(hi1.data(), n, iroot); // hi1 * lo2 + lo1 * hi2
     fft(lo1.data(), n, iroot); // lo1 * lo2
-    return { std::move(lo1), std::move(hi2), std::move(hi1) };
+    return { std::move(lo1), std::move(hi1), std::move(hi2) };
 }
 } // namespace
 
