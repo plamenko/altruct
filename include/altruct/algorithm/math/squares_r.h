@@ -67,11 +67,6 @@ std::unordered_map<I, std::pair<I, I>> squares_r_prime_table(I n) {
  * @param tbl - lookup table of squares_r_prime that can be used to speed up computation
  */
 template<typename P, typename I = P>
-std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>& vf, bool unique_only) {
-    std::unordered_map<I, std::pair<I, I>> tbl;
-    return squares_r_list(vf, unique_only, tbl);
-}
-template<typename P, typename I = P>
 std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>& vf, bool unique_only, std::unordered_map<I, std::pair<I, I>>& tbl, I max_b = 0) {
     I z = 0;
     I q = 1;
@@ -128,6 +123,11 @@ std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>
     }
     std::sort(v.begin(), v.end());
     return v;
+}
+template<typename P, typename I = P>
+std::vector<std::pair<I, I>> squares_r_list(const std::vector<std::pair<P, int>>& vf, bool unique_only) {
+    std::unordered_map<I, std::pair<I, I>> tbl;
+    return squares_r_list<P, I>(vf, unique_only, tbl);
 }
 
 /**

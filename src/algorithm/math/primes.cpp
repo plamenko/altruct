@@ -161,7 +161,7 @@ void smallest_factor(int* spf, size_t n) {
     for (size_t i = n - 1; i >= 2; i--) {
         if (spf[i] || i > n / i) continue;
         for (size_t j = i * i; j < n; j += i) {
-            spf[j] = i;
+            spf[j] = (int)i;
         }
     }
 }

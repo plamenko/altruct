@@ -28,7 +28,7 @@ private:
     std::vector<int>& ensure(std::vector<int> &v, void(*f)(int*, int, const int*, int));
 
 public:
-    prime_holder(int sz) : sz(sz) {}
+    prime_holder(int sz) : sz(sz), m(0) {}
 
     int size() { return sz; }
     int primes() { ensure_pq(); return m; }

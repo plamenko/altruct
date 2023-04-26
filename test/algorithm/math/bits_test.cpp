@@ -81,7 +81,7 @@ TEST(bits_test, get_bit) {
 }
 
 TEST(bits_test, set_bit) {
-    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    const uint64_t x = 0x7BD152B330F0A777; const uint64_t y = ~x;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) | (uint64_t(1) << i), set_bit(uint64_t(x), i)) << i;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) | (uint64_t(1) << i), set_bit(uint64_t(y), i)) << i;
     for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) | (uint32_t(1) << i), set_bit(uint32_t(x), i)) << i;
@@ -93,7 +93,7 @@ TEST(bits_test, set_bit) {
 }
 
 TEST(bits_test, flip_bit) {
-    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    const uint64_t x = 0x7BD152B330F0A777; const uint64_t y = ~x;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) ^ (uint64_t(1) << i), flip_bit(uint64_t(x), i)) << i;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) ^ (uint64_t(1) << i), flip_bit(uint64_t(y), i)) << i;
     for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) ^ (uint32_t(1) << i), flip_bit(uint32_t(x), i)) << i;
@@ -105,7 +105,7 @@ TEST(bits_test, flip_bit) {
 }
 
 TEST(bits_test, clear_bit) {
-    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    const uint64_t x = 0x7BD152B330F0A777; const uint64_t y = ~x;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(x) & ~(uint64_t(1) << i), clear_bit(uint64_t(x), i)) << i;
     for (int i = 0; i < 64; i++) ASSERT_EQ(uint64_t(y) & ~(uint64_t(1) << i), clear_bit(uint64_t(y), i)) << i;
     for (int i = 0; i < 32; i++) ASSERT_EQ(uint32_t(x) & ~(uint32_t(1) << i), clear_bit(uint32_t(x), i)) << i;
@@ -119,7 +119,7 @@ TEST(bits_test, clear_bit) {
 namespace {
 template<typename T>
 T erase_slow(T val, int pos) {
-    int sz = bit_size<T>::value;
+    const int sz = bit_size<T>::value;
     vector<int> v(sz);
     for (int i = 0; i < sz; i++) {
         v[i] = (val >> i) & 1;
@@ -134,7 +134,7 @@ T erase_slow(T val, int pos) {
 }
 
 TEST(bits_test, erase_bit) {
-    uint64_t x = 0x7BD152B330F0A777; uint64_t y = ~x;
+    const uint64_t x = 0x7BD152B330F0A777; const uint64_t y = ~x;
     for (int i = 0; i < 64; i++) ASSERT_EQ(erase_slow(uint64_t(x), i), erase_bit(uint64_t(x), i)) << i;
     for (int i = 0; i < 64; i++) ASSERT_EQ(erase_slow(uint64_t(y), i), erase_bit(uint64_t(y), i)) << i;
     for (int i = 0; i < 32; i++) ASSERT_EQ(erase_slow(uint32_t(x), i), erase_bit(uint32_t(x), i)) << i;
@@ -146,8 +146,8 @@ TEST(bits_test, erase_bit) {
 }
 
 TEST(bits_test, mix_bits) {
-    uint64_t x = 0x7BD152B330F0A777;
-    uint64_t y = 0x1234567890ABCDEF;
+    const uint64_t x = 0x7BD152B330F0A777;
+    const uint64_t y = 0x1234567890ABCDEF;
     ASSERT_EQ(0x7BD152B330F0A777, mix_bits<uint64_t>(x, y, 0x0000000000000000));
     ASSERT_EQ(0x1234567890ABCDEF, mix_bits<uint64_t>(x, y, 0xFFFFFFFFFFFFFFFF));
     ASSERT_EQ(0x1B31527390A0C7E7, mix_bits<uint64_t>(x, y, 0xF0F0F0F0F0F0F0F0));

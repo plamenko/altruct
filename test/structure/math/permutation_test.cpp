@@ -1,5 +1,7 @@
 ﻿#include "altruct/structure/math/permutation.h"
 
+#include <random>
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -73,7 +75,7 @@ TEST(permutation_test, operators) {
 
     // product works as composition
     auto l = perm::identity_line(10);
-    random_shuffle(l.begin(), l.end());
+    std::shuffle(l.begin(), l.end(), std::default_random_engine{});
     auto la = l; p2.apply_to(la); p1.apply_to(la);
     auto lb = l; (p1 * p2).apply_to(lb);
     EXPECT_EQ(la, lb);

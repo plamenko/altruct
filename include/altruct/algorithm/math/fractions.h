@@ -4,6 +4,7 @@
 #include "altruct/structure/math/fraction.h"
 #include "altruct/structure/math/modulo.h"
 
+#include <unordered_map>
 #include <vector>
 #include <algorithm>
 
@@ -35,7 +36,7 @@ template<typename I>
 std::pair<std::vector<int>, size_t> repeating_decimal(int b, I p, I q) {
     std::vector<int> digits;
     size_t pos = 0;
-    std::map<I, size_t> positions;
+    std::unordered_map<I, size_t> positions;
     while (!positions.count(p)) {
         positions[p] = pos;
         I bp = b * p;

@@ -262,13 +262,14 @@ public:
 
     // r(x) so that s(r(x)) == x + O(x^N); O(N^2)
     series reversion() const {
+        using serx = series<T, 0, series_storage::INSTANCE>;
         if (p[0] != p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
         if (p[1] == p.ZERO_COEFF) return series(polynom<T>{ p.ZERO_COEFF }, this->N());
-        seriesX<T> r(std::vector<T>{ p.ZERO_COEFF, id_coeff() / p[1] }, 2);
+        serx r(std::vector<T>{ p.ZERO_COEFF, id_coeff() / p[1] }, 2);
         for (int k = 2; k < this->N(); k *= 2) {
             int m = std::min(this->N(), k * 2);
-            auto rk = seriesX<T>(r.p, m);
-            auto pk = seriesX<T>(std::vector<T>(p.c.begin(), p.c.begin() + m), m);
+            auto rk = serx(r.p, m);
+            auto pk = serx(std::vector<T>(p.c.begin(), p.c.begin() + m), m);
             auto prk = pk.composition(rk);
             auto prk1 = prk; prk1[1] -= id_coeff();
             r = rk - prk1 * rk.derivative() / prk.derivative();

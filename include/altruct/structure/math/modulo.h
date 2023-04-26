@@ -90,7 +90,7 @@ template<> inline uint64_t modulo_mul(uint64_t x, uint64_t y, uint64_t M) {
 }
 template<typename S, typename std::enable_if_t<std::is_signed<S>::value, bool> = true>
 S modulo_mul(S x, S y, S M) {
-    using U = std::make_unsigned<S>::type;
+    using U = typename std::make_unsigned<S>::type;
     return S(modulo_mul(U(x), U(y), U(M)));
 }
 template<typename I>
@@ -126,12 +126,12 @@ I modulo_div(I x, I y, I M) { return modulo_div_int(x, y, M); }
 // modulo_normalize for integral types
 template<typename U, typename I, typename std::enable_if_t<std::is_unsigned<U>::value && std::is_integral<I>::value, bool> = true>
 I modulo_normalize(U v, I M) {
-    return v % static_cast<std::make_unsigned<I>::type>(M);
+    return v % static_cast<typename std::make_unsigned<I>::type>(M);
 }
 template<typename S, typename I, typename std::enable_if_t<std::is_signed<S>::value && std::is_integral<I>::value, bool> = true>
 I modulo_normalize(S v, I M) {
     if (v < 0) return modulo_neg_int(modulo_normalize(-v, M), M);
-    return modulo_normalize(static_cast<std::make_unsigned<S>::type>(v), M);
+    return modulo_normalize(static_cast<typename std::make_unsigned<S>::type>(v), M);
 }
 
 
@@ -199,13 +199,13 @@ public:
     T v;
 
     modulo() : my_modulo_members(), v(zeroOf(this->M())) {}
-    modulo(const T& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, M())) {}
-    modulo(const T& v_) : my_modulo_members(), v((STORAGE_TYPE != modulo_storage::INSTANCE) ? modulo_normalize(v_, M()) : v_) {}
+    modulo(const T& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, this->M())) {}
+    modulo(const T& v_) : my_modulo_members(), v((STORAGE_TYPE != modulo_storage::INSTANCE) ? modulo_normalize(v_, this->M()) : v_) {}
     // construct from a different type I
     template<typename I, typename Enable = std::enable_if_t<!std::is_same<T, I>::value, bool>>
-    modulo(const I& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, M())) {}
+    modulo(const I& v_, const T& M_) : my_modulo_members(M_), v(modulo_normalize(v_, this->M())) {}
     template<typename I, typename Enable = std::enable_if_t<!std::is_same<T, I>::value && STORAGE_TYPE != modulo_storage::INSTANCE, bool>>
-    modulo(const I& v_) : my_modulo_members(), v(modulo_normalize(v_, M())) {}
+    modulo(const I& v_) : my_modulo_members(), v(modulo_normalize(v_, this->M())) {}
 
     bool operator == (const modulo &rhs) const { return (v == rhs.v); }
     bool operator != (const modulo &rhs) const { return (v != rhs.v); }

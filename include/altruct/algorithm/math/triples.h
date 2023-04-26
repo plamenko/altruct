@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <type_traits>
 #include <vector>
 
@@ -91,7 +92,7 @@ bool is_pythagorean_triple_generator(const triple<I>& t) {
  */
 template<typename I>
 std::vector<triple<I>> pythagorean_triples_generators(I k) {
-    vector<triple<int>> vg;
+    std::vector<triple<int>> vg;
     if (k == 0) {
         vg.push_back({ 3, 4, 5 });
     }
@@ -101,7 +102,7 @@ std::vector<triple<I>> pythagorean_triples_generators(I k) {
     else if (k >= 2) {
         int a_max = isqrt(k) * 2;
         for (int a = 0; a <= a_max; a++) {
-            int b_max = k / max(a, 1) + a;
+            int b_max = k / std::max(a, 1) + a;
             for (int b = a; b <= b_max; b++) {
                 int64_t c2 = isq(a) + isq(b) + k; // TODO: isq, isqrt
                 int c = isqrt(c2);

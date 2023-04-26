@@ -1,10 +1,11 @@
 #include "altruct/algorithm/random/random.h"
 
+#include <algorithm>
 #include <map>
+#include <random>
 
 #include "gtest/gtest.h"
 
-using namespace std;
 using namespace altruct::random;
 
 TEST(random_test, integer_to_double_0_1) {
@@ -60,11 +61,11 @@ TEST(random_test, biggest_multiple) {
 }
 
 TEST(random_test, uniform_next) {
-    vector<int> values(256);
+    std::vector<int> values(256);
     for (int i = 0; i < values.size(); i++) {
         values[i] = i;
     }
-    random_shuffle(values.begin(), values.end());
+    std::shuffle(values.begin(), values.end(), std::default_random_engine{});
 
     auto next = [&](){
         static int index = 0;
@@ -72,7 +73,7 @@ TEST(random_test, uniform_next) {
         return values[index++];
     };
 
-    map<uint8_t, int> hist;
+    std::map<uint8_t, int> hist;
     for (int i = 0; i < 100 * 10; i++) {
         //auto r = integer_to_range<uint8_t>(next(), 10, 10 + 100 - 1); // fails
         auto r = uniform_next<uint8_t>(next, 10, 10 + 100 - 1); // passes

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <vector>
@@ -37,6 +38,7 @@ public:
         buff = new char[capacity+1];
         buff[capacity] = 0;
         ptr = end = buff;
+        cnt = 0;
     }
 
     ~fast_read() {

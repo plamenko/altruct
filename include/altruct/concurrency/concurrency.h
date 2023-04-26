@@ -1,9 +1,11 @@
 #pragma once
 
+#include <algorithm>
 #include <thread>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <vector>
 
 namespace altruct {
 namespace concurrency {
@@ -49,8 +51,8 @@ namespace concurrency {
  */
 template<typename RESULT_COLLECTOR, typename JOB_PROVIDER, typename WORKER_PROVIDER>
 void parallel_execute(RESULT_COLLECTOR& result_collector, JOB_PROVIDER& job_provider, WORKER_PROVIDER& worker_provider, int num_threads) {
-    mutex job_provider_mutex;
-    mutex result_collector_mutex;
+    std::mutex job_provider_mutex;
+    std::mutex result_collector_mutex;
     auto func = [&]() {
         auto worker = worker_provider.create_worker();
         while (true) {

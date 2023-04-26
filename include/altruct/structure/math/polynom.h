@@ -1,10 +1,11 @@
 #pragma once
 
 #include "altruct/algorithm/math/base.h"
+
+#include <algorithm>
 #include <limits>
 #include <type_traits>
 #include <vector>
-#include <algorithm>
 
 namespace altruct {
 namespace math {
@@ -188,7 +189,7 @@ public:
         polynom r{ id_coeff() }, t;
         for (int l = 1; l < L * 2; l *= 2) {
             int m = std::min(L - 1, l), k = l / 2 + 1;
-            t.c.assign(c.begin(), c.begin() + min(m + 1, (int)c.size()));
+            t.c.assign(c.begin(), c.begin() + std::min(m + 1, (int)c.size()));
             mul(t, t, r, l + 1);
             t.c.erase(t.c.begin(), t.c.begin() + k);
             mul(t, t, r, l - k);
