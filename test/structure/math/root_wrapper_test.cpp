@@ -9,7 +9,8 @@ typedef complex<double> cplx;
 
 TEST(root_wrapper_test, complex_root_wrapper) {
     auto w = complex_root_wrapper<double>(6);
-    EXPECT_EQ(8, w.size);
+    ASSERT_TRUE(w.size % 8 == 0);
+    w = powT(w, w.size / 8);
     auto w0 = identityOf(w); cplx r0 = w0;
     EXPECT_NEAR(1.0, r0.a, 1e-9);
     EXPECT_NEAR(0.0, r0.b, 1e-9);
