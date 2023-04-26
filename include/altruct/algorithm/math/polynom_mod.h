@@ -56,7 +56,7 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     typedef complex<double> cplx;
 
     static int next_pow2(int l) { int n = 1; while (n < l) n *= 2; return n; }
-    static uint64_t rnd(const cplx& z, int n) { return uint64_t(llround(z.a / n)) % uint32_t(mod::M()); }
+    static uint64_t rnd(const cplx& z, int n, uint32_t M) { return uint64_t(llround(z.a / n)) % M; }
     static uint64_t shl_sub(uint64_t v) { return (v << 10) - v; }
 
     static void convert_to_cplx_210(cplx* c2, cplx* c1, cplx* c0, const mod* p, int l) {
@@ -70,6 +70,7 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     // splits coefficients into three 10-bit blocks each to avoid overflow
     // works for `mod::M < 2^30` and `la, lb <= 2^30`;
     static void _mul_fft_big(mod* pr, int lr, const mod* pa, int la, const mod* pb, int lb) {
+        I M = pa->M();
         int n = next_pow2(la + lb + 1);
         auto root = complex_root_wrapper<double>(n);
         root = powT(root, root.size / n);
@@ -98,20 +99,20 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
         fft_rec(tmp.data(), b2.data(), n, iroot); std::swap(b2, tmp);
         fft_rec(tmp.data(), b1.data(), n, iroot); std::swap(b1, tmp);
         fft_rec(tmp.data(), b0.data(), n, iroot); std::swap(b0, tmp);
-        mod w = powT(mod(2, pa->M()), 20); // 2^20
+        mod w = powT(mod(2, M), 20); // 2^20
         for (int i = 0; i <= lr; i++) {
             // r = 2^40 * (w22)
             //   + 2^30 * (w21 - w22 - w11)
             //   + 2^20 * (w210 - w21 - w10 + 2 * w11)
             //   + 2^10 * (w10 - w11 - w00)
             //   + 2^00 * (w00)
-            uint64_t z22 = shl_sub(rnd(a2[i], n));                 // (w22 << 10) - w22
-            uint64_t z11 = shl_sub(rnd(a1[i], n)) + rnd(b1[i], n); // (w11 << 10) - w11 + w10
-            uint64_t z00 = shl_sub(rnd(a0[i], n));                 // (w00 << 10) - w00
-            uint64_t z21 = shl_sub(rnd(b2[i], n)) + rnd(b0[i], n); // (w21 << 10) - w21 + w210
-            uint64_t z10 = shl_sub(z11);                           // (z11 << 10) - z11
+            uint64_t z22 = shl_sub(rnd(a2[i], n, M));                    // (w22 << 10) - w22
+            uint64_t z11 = shl_sub(rnd(a1[i], n, M)) + rnd(b1[i], n, M); // (w11 << 10) - w11 + w10
+            uint64_t z00 = shl_sub(rnd(a0[i], n, M));                    // (w00 << 10) - w00
+            uint64_t z21 = shl_sub(rnd(b2[i], n, M)) + rnd(b0[i], n, M); // (w21 << 10) - w21 + w210
+            uint64_t z10 = shl_sub(z11);                                 // (z11 << 10) - z11
             // r = (z22 << 30) + (z21 << 20) - (z10 << 10) - z00;
-            pr[i] = mod((z22 << 10) + z21, pa->M()) * w - mod((z10 << 10) + z00, pa->M());
+            pr[i] = mod((z22 << 10) + z21, M) * w - mod((z10 << 10) + z00, M);
         }
     }
 
@@ -125,6 +126,7 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     // splits coefficients into two 16-bit blocks each to avoid overflow
     // works for `mod::M < 2^30` and `l1, l2 <= 2^18`; e.g.: `M = 10^9+7, l = 250.000`
     static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
+        I M = p1->M();
         int n = next_pow2(l1 + l2 + 1);
         auto root = complex_root_wrapper<double>(n);
         root = powT(root, root.size / n);
@@ -146,11 +148,11 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
         fft(lo1.data(), n, iroot);
         fft(hi2.data(), n, iroot);
         for (int i = 0; i <= lr; i++) {
-            uint64_t hi = rnd(hi2[i], n);
-            uint64_t mi = rnd(hi1[i], n);
-            uint64_t lo = rnd(lo1[i], n);
-            //pr[i] = mod((((hi << 16) + mi) << 16) + lo, p1->M()); // can overflow by 1 bit
-            pr[i] = mod(hi << 32, p1->M()) + mod((mi << 16) + lo, p1->M());
+            uint64_t hi = rnd(hi2[i], n, M);
+            uint64_t mi = rnd(hi1[i], n, M);
+            uint64_t lo = rnd(lo1[i], n, M);
+            //pr[i] = mod((((hi << 16) + mi) << 16) + lo, M); // can overflow by 1 bit
+            pr[i] = mod(hi << 32, M) + mod((mi << 16) + lo, M);
         }
     }
 
@@ -160,6 +162,7 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     // ~ 14 n log2 n + 18 n mad-operations (modulo mul + modulo add)
     static void _mul_fft_crt(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
         // n must divide 2^28, the largest power of two that divides both phi(P1) and phi(P2)
+        I M = p1->M();
         int n = next_pow2(l1 + l2 + 1);
         const uint32_t P1 = UINT32_C(3221225473), root1 = 5u; // P1 = 3 * 2^30 + 1
         const uint32_t P2 = UINT32_C(3489660929), root2 = 3u; // P2 = 13 * 2^28 + 1
@@ -172,9 +175,9 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
             uint64_t r1 = uint64_t(P2) * (P2i * v1).v;
             uint64_t r2 = uint64_t(P1) * (P1i * v2).v;
             // r1 + r2 < 2 * PP, but can still overflow uint64_t
-            return mod((r1 < PP - r2) ? r1 + r2 : (r1 + r2 - PP), p1->M());
+            return mod((r1 < PP - r2) ? r1 + r2 : (r1 + r2 - PP), M);
         };
-        mod w = powT(mod(2, p1->M()), 16); // 2^16
+        mod w = powT(mod(2, M), 16); // 2^16
         for (int i = 0; i <= lr; i++) {
             mod lo = crt(hmlP1[0][i], hmlP2[0][i]);
             mod mi = crt(hmlP1[1][i], hmlP2[1][i]);
