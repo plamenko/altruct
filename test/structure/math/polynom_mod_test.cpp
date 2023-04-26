@@ -54,8 +54,11 @@ polynom<MOD> make_poly_0(int l, int a, int b, MOD zero) {
 }
 template<typename MOD>
 MOD eval_poly_0(int l, int a, int b, MOD x) {
+    MOD am = castOf(x, a);
     MOD bx = castOf(x, b) * x;
-    return castOf(x, a) * (powT(bx, l + 1) - identityOf(x)) / (bx - identityOf(x));
+    MOD e1 = identityOf(x);
+    if (bx == e1) return am * castOf(x, l + 1);
+    return am * (powT(bx, l + 1) - e1) / (bx - e1);
 }
 template<typename MOD>
 bool test_polynom_mul_0(MOD zero, Algorithm a, int l1, int l2, int a1 = 7, int b1 = 3, int a2 = 2, int b2 = 9) {
@@ -126,6 +129,7 @@ bool test_polynom_mul_1(MOD zero, Algorithm a, int l1, int l2, int a1 = 7, int b
 template<typename MOD>
 bool test_polynom_mul(MOD zero, Algorithm a, int l1, int l2, int a1 = 7, int b1 = 3, int a2 = 2, int b2 = 9) {
     return test_polynom_mul_0(zero, a, l1, l2, a1, b1, a2, b2) &&
+        test_polynom_mul_0(zero, a, l1, l2, -1, 1, -1, 1) &&
         test_polynom_mul_1(zero, a, l1, l2, a1, b1, a2, b2);
 }
 
@@ -182,7 +186,9 @@ TEST(polynom_mod_test, polynom_mul__mod_int__fft_double_split2) {
     EXPECT_TRUE((test_polynom_mul(modulo<int, 2147483629, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul(modulo<int, 2147483629, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 10000, 10000)));
     if (!kTestLarge) return;
-    EXPECT_TRUE((test_polynom_mul(modulo<int, 2147483629, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 250000, 250000)));
+    EXPECT_TRUE((test_polynom_mul(modulo<int, 2147483629, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 65535, 65535)));
+    //find_max_size(modulo<int, 1000000007, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2);
+    //find_max_size(modulo<int, 1073741789, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2);
     //find_max_size(modulo<int, 2147483629, modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2);
 }
 
@@ -231,7 +237,7 @@ TEST(polynom_mod_test, polynom_mul__mod_uint32__fft_double_split2) {
     EXPECT_TRUE((test_polynom_mul(modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 1000, 1000)));
     EXPECT_TRUE((test_polynom_mul(modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 10000, 10000)));
     if (!kTestLarge) return;
-    EXPECT_TRUE((test_polynom_mul(modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 250000, 250000)));
+    EXPECT_TRUE((test_polynom_mul(modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2, 65535, 65535)));
     //find_max_size(modulo<uint32_t, UINT32_C(4294967291), modulo_storage::CONSTANT>(0), Algorithm::FFT_Double_Split2);
 }
 

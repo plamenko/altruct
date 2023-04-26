@@ -75,15 +75,15 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
         auto root = complex_root_wrapper<double>(n);
         root = powT(root, root.size / n);
         auto iroot = powT(root, n - 1);
-        std::vector<cplx> a2(n), a1(n), a0(n), b2(n), b1(n), b0(n), tmp(n);
+        std::vector<cplx> a2(n), a1(n), a0(n), b2(n), b1(n), b0(n);
         convert_to_cplx_210(a2.data(), a1.data(), a0.data(), pa, la);
         convert_to_cplx_210(b2.data(), b1.data(), b0.data(), pb, lb);
-        fft_rec(tmp.data(), a2.data(), n, root); std::swap(a2, tmp);
-        fft_rec(tmp.data(), a1.data(), n, root); std::swap(a1, tmp);
-        fft_rec(tmp.data(), a0.data(), n, root); std::swap(a0, tmp);
-        fft_rec(tmp.data(), b2.data(), n, root); std::swap(b2, tmp);
-        fft_rec(tmp.data(), b1.data(), n, root); std::swap(b1, tmp);
-        fft_rec(tmp.data(), b0.data(), n, root); std::swap(b0, tmp);
+        fft(a2.data(), n, root);
+        fft(a1.data(), n, root);
+        fft(a0.data(), n, root);
+        fft(b2.data(), n, root);
+        fft(b1.data(), n, root);
+        fft(b0.data(), n, root);
         for (int i = 0; i < n; i++) {
             cplx w22 = a2[i] * b2[i];
             cplx w11 = a1[i] * b1[i];
@@ -93,12 +93,12 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
             cplx w210 = (a2[i] + a1[i] + a0[i]) * (b2[i] + b1[i] + b0[i]);
             a2[i] = w22, a1[i] = w11, a0[i] = w00, b2[i] = w21, b1[i] = w10, b0[i] = w210;
         }
-        fft_rec(tmp.data(), a2.data(), n, iroot); std::swap(a2, tmp);
-        fft_rec(tmp.data(), a1.data(), n, iroot); std::swap(a1, tmp);
-        fft_rec(tmp.data(), a0.data(), n, iroot); std::swap(a0, tmp);
-        fft_rec(tmp.data(), b2.data(), n, iroot); std::swap(b2, tmp);
-        fft_rec(tmp.data(), b1.data(), n, iroot); std::swap(b1, tmp);
-        fft_rec(tmp.data(), b0.data(), n, iroot); std::swap(b0, tmp);
+        fft(a2.data(), n, iroot);
+        fft(a1.data(), n, iroot);
+        fft(a0.data(), n, iroot);
+        fft(b2.data(), n, iroot);
+        fft(b1.data(), n, iroot);
+        fft(b0.data(), n, iroot);
         mod w = powT(mod(2, M), 20); // 2^20
         for (int i = 0; i <= lr; i++) {
             // r = 2^40 * (w22)
@@ -124,7 +124,8 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     }
     
     // splits coefficients into two 16-bit blocks each to avoid overflow
-    // works for `mod::M < 2^30` and `l1, l2 <= 2^18`; e.g.: `M = 10^9+7, l = 250.000`
+    // works for `mod::M < 2^32` and `l1+l2 < 2^17`; e.g.: `M = 2^32 - 5,  l1+l2 < 132.072`
+    // works for `mod::M < 2^31` and `l1+l2 < 2^18`; e.g.: `M = 2^31 - 19, l1+l2 < 262.144`
     static void _mul_fft(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
         I M = p1->M();
         int n = next_pow2(l1 + l2 + 1);
@@ -158,7 +159,7 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
 
     // splits coefficients into two 16-bit blocks each to avoid overflow; then
     // performs two separate convolutions modulo P1 and P2 and combines the result with CRT
-    // works for: `mod::M < 2^32` and `l1 + l2 + 1 <= 2^28`
+    // works for: `mod::M < 2^32` and `l1+l2 < 2^28`
     // ~ 14 n log2 n + 18 n mad-operations (modulo mul + modulo add)
     static void _mul_fft_crt(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
         // n must divide 2^28, the largest power of two that divides both phi(P1) and phi(P2)
