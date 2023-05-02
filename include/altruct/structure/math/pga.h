@@ -530,14 +530,14 @@ template<typename T> blade13<T> combine13(blade1<T> b1, blade3<T> b3) { return b
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& combine_multivector(zero<T>, const B& b) { return b; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& combine_multivector(const B& b, zero<T>) { return b; }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 multivector<T> combine_multivector(BL bl, BR br) { return multivector<T>(blade024<T>(std::move(bl)), blade13<T>(std::move(br))); }
 
 // add
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator + (const B& b, zero<T>) { return b; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator + (zero<T>, const B& b) { return b; }
 
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 auto operator + (const BL& bl, const BR& br) {
     return combine_multivector(
         combine024(
@@ -554,7 +554,7 @@ auto operator + (const BL& bl, const BR& br) {
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> const B& operator - (const B& b, zero<T>) { return b; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> const B& operator - (zero<T>, const B& b) { return -b; }
 
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 auto operator - (const BL& bl, const BR& br) {
     return combine_multivector(
         combine024(
@@ -609,9 +609,9 @@ template<typename T> auto operator * (const blade4<T>& a, const blade4<T>& b) { 
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator * (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator * (const B& b, zero<T> z) { return z; }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
 auto operator * (const BL& lhs, const BR& rhs) { return (lhs.first() * rhs) + (lhs.second() * rhs); }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator * (const BL& lhs, const BR& rhs) { return (lhs * rhs.first()) + (lhs * rhs.second()); }
 
 // wedge
@@ -654,9 +654,9 @@ template<typename T> auto operator ^ (const blade4<T>& a, const blade4<T>& b) { 
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator ^ (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator ^ (const B& b, zero<T> z) { return z; }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
 auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs.first() ^ rhs) + (lhs.second() ^ rhs); }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator ^ (const BL& lhs, const BR& rhs) { return (lhs ^ rhs.first()) + (lhs ^ rhs.second()); }
 
 // dot
@@ -699,9 +699,9 @@ template<typename T> auto operator & (const blade4<T>& a, const blade4<T>& b) { 
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator & (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator & (const B& b, zero<T> z) { return z; }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
 auto operator & (const BL& lhs, const BR& rhs) { return (lhs.first() & rhs) + (lhs.second() & rhs); }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator & (const BL& lhs, const BR& rhs) { return (lhs & rhs.first()) + (lhs & rhs.second()); }
 
 // join
@@ -744,9 +744,9 @@ template<typename T> auto operator | (const blade4<T>& a, const blade4<T>& b) { 
 
 template<typename B, typename T, IF_BLADE_TYPE(B, T)> zero<T> operator | (zero<T> z, const B& b) { return z; }
 template<typename B, typename T, IF_NONZERO_BLADE_TYPE(B, T)> zero<T> operator | (const B& b, zero<T> z) { return z; }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_PRIMITIVE_BLADE_TYPE(BR, T)>
 auto operator | (const BL& lhs, const BR& rhs) { return (lhs.first() | rhs) + (lhs.second() | rhs); }
-template<typename BL, typename BR, typename T = get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_NONZERO_BLADE_TYPE(BL, T), IF_COMPOSITE_BLADE_TYPE(BR, T)>
 auto operator | (const BL& lhs, const BR& rhs) { return (lhs | rhs.first()) + (lhs | rhs.second()); }
 
 //-------------------------------------------------------------------------------
@@ -934,7 +934,7 @@ template<typename T> auto operator % (const blade4<T>& a, const blade024<T>& b) 
 template<typename T> auto operator % (const blade4<T>& a, const blade13<T>& b) { return a * b.norm2(); }
 
 // composite a can be distribued, but composite b can not! needs explicit overloads for all types of b
-template<typename BL, typename BR, typename T = get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
+template<typename BL, typename BR, typename T = typename get<BL>::type, IF_COMPOSITE_BLADE_TYPE(BL, T), IF_NONZERO_BLADE_TYPE(BR, T)>
 auto operator % (const BL& lhs, const BR& rhs) { return (lhs.first() % rhs) + (lhs.second() % rhs); }
 
 //-------------------------------------------------------------------------------
