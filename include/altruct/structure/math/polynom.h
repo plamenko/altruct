@@ -134,7 +134,7 @@ public:
         } else if (l2 < k) {
             std::vector<T> MM(lr - k + 1, ZERO_COEFF);
             _mul(MM.data(), lr - k, p1 + k, l1 - k, p2, l2);
-            _mul(pr, std::min(lr, l2 + k - 1), p1, k - 1, p2, l2);
+            _mul(pr, l2 + k - 1, p1, k - 1, p2, l2);
             _zero(pr, l2 + k - 1, lr, ZERO_COEFF);
             _add_to(pr + k, MM.data(), lr - k);
         } else {
@@ -145,12 +145,12 @@ public:
             int mm_l = std::min(lr - k, k - 1 + k - 1);
             std::vector<T> MM(mm_l + 1);
             _mul(MM.data(), mm_l, S1.data(), k - 1, S2.data(), k - 1);
-            int hh_l = std::min(mm_l, l1 - k + l2 - k);
+            int hh_l = std::min(lr - k, l1 - k + l2 - k);
             std::vector<T> HH(hh_l + 1, ZERO_COEFF);
             _mul(HH.data(), hh_l, p1 + k, l1 - k, p2 + k, l2 - k);
             _mul(pr, k - 1 + k - 1, p1, k - 1, p2, k - 1);
             _zero(pr, k - 1 + k - 1, lr, ZERO_COEFF);
-            _sub_from(MM.data(), pr, std::min(mm_l, k - 1 + k - 1));
+            _sub_from(MM.data(), pr, mm_l);
             _sub_from(MM.data(), HH.data(), hh_l);
             _add_to(pr + k, MM.data(), mm_l);
             _add_to(pr + k + k, HH.data(), lr - k - k);
