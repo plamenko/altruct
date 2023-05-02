@@ -126,7 +126,9 @@ I modulo_div(I x, I y, I M) { return modulo_div_int(x, y, M); }
 // modulo_normalize for integral types
 template<typename U, typename I, typename std::enable_if_t<std::is_unsigned<U>::value && std::is_integral<I>::value, bool> = true>
 I modulo_normalize(U v, I M) {
-    return v % static_cast<typename std::make_unsigned<I>::type>(M);
+    auto UM = static_cast<typename std::make_unsigned<I>::type>(M);
+    if (v < UM) return static_cast<I>(v);
+    return static_cast<I>(v % UM);
 }
 template<typename S, typename I, typename std::enable_if_t<std::is_signed<S>::value && std::is_integral<I>::value, bool> = true>
 I modulo_normalize(S v, I M) {
