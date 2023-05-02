@@ -188,15 +188,15 @@ struct polynom_mul<modulo<I, ID, STORAGE_TYPE>, std::enable_if_t<std::is_integra
     }
 
     static double cost_karatsuba(int l1, int l2) { return 0.25 * l1 * pow(l2, 0.5849625); }
-    static double cost_fft(int l1, int l2) { int n = next_pow2(l1 + l2 + 1); return 0.75 * n * log2(n); }
+    static double cost_fft(int l1, int l2) { int n = next_pow2(l1 + l2 + 1); return 0.375 * n * log2(n); }
 
     //static int LONG_THRESHOLD;
     static void impl(mod* pr, int lr, const mod* p1, int l1, const mod* p2, int l2) {
         if (l2 < 48) { // LONG_THRESHOLD
             polynom<mod>::_mul_long(pr, lr, p1, l1, p2, l2);
-        } else if (l2 < 275 || l1 < 900 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
+        } else if (l2 < 100 || l1 < 450 || cost_karatsuba(l1, l2) < cost_fft(l1, l2)) {
             polynom<mod>::_mul_karatsuba(pr, lr, p1, l1, p2, l2);
-        } else if (l1 <= 100000) {
+        } else if (l1 + l2 <= 100000) {
             _mul_fft(pr, lr, p1, l1, p2, l2);
         } else {
             _mul_fft_crt(pr, lr, p1, l1, p2, l2);
