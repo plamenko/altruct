@@ -17,7 +17,7 @@ namespace search {
 template<typename It, typename F>
 It binary_search_pred(It lo, It hi, F predicate) {
     while (lo < hi) {
-        auto mid = lo + (hi - lo) / 2;
+        It mid = lo + (hi - lo) / 2;
         if (predicate(mid)) {
             hi = mid;
         } else {
