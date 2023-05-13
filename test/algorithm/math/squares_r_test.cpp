@@ -75,3 +75,24 @@ TEST(squares_r_test, squares_r_list_tbl_max) {
         }
     }
 }
+
+TEST(squares_r_test, squares_r_list_bf) {
+    int n_max = 10000;
+    int a_max = isqrt(n_max);
+    std::vector<vector<pair<int, int>>> vu(n_max + 1), va(n_max + 1);
+    for (int a = -a_max; a <= a_max; a++) {
+        int b_max = isqrt(n_max - isq(a));
+        for (int b = -b_max; b <= b_max; b++) {
+            int n = a * a + b * b;
+            va[n].push_back({ a, b });
+            if (0 <= a && a <= b) vu[n].push_back({ a, b });
+        }
+    }
+    for (int n = 1; n <= n_max; n++) {
+        auto vf = factor_integer_slow(n);
+        EXPECT_EQ(vu[n].size(), squares_r(vf, true));
+        EXPECT_EQ(va[n].size(), squares_r(vf, false));
+        EXPECT_EQ(vu[n], squares_r_list(vf, true));
+        EXPECT_EQ(va[n], squares_r_list(vf, false));
+    }
+}
