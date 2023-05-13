@@ -317,7 +317,7 @@ std::pair<R, I> factorial_mod_pp_reduced(I n, int p, int e, const R* fact_table)
  *
  * @param I - type of the numbers `n` and `k`
  * @param n, k - numbers to take the binomial of
- * @param fact_table - look-up table of `n! % p^e` up to 'p^e',
+ * @param fact_table - look-up table of `n! % p^e` up to 'p*e',
  *   see `factorials_mod_pp_skipped`
  * @return - the pair {b, a}
  */
@@ -330,7 +330,7 @@ std::pair<R, I> binomial_mod_pp_reduced(I n, I k, int p, int e, const R* fact_ta
     bool sign = !(p == 2 && e != 2);
     for (int i = 0; n > 1; i++) {
         // Since we are multiplying factorial_mod_pp_skipped(n % m)
-        // instead of simply doing factorial_mod_pp_duced(n),
+        // instead of simply doing factorial_mod_pp_reduced(n),
         // we need to adjust the sign. This is faster than the later.
         if (sign && i >= e - 1 && (n % p) < (k % p) + (l % p)) r = -r;
         if (n > 0) r *= factorial_mod_pp_skipped(castOf<R, I>(n % m), p, e, fact_table).first, n /= p, a += n;
