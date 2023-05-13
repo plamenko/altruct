@@ -300,5 +300,44 @@ std::vector<triple<I>> eisenstein_triples120(I c_max, bool only_primitive) {
     return vt;
 }
 
+/**
+ * Generates all almost-pythagoprean triples up to the specified limit.
+ *
+ * Almost-pythagoprean triple (a, b, c) satisfies:
+ *   a^2 + b^2 = c^2 + 1
+ */
+template<typename I, typename F>
+void almost_pythagorean_triples(I c_max, F visitor) {
+    for (I n = 1; n <= c_max; n++) {
+        I m_max = c_max / n;
+        for (I m = 1; m <= m_max; m++) {
+            I ni = 0, mi = 0;
+            I g = modulo_gcd_ex(n, m, ni, mi);
+            if (g != 1) continue;
+            mi = modulo_neg(mi, n);
+            if (m == 1) ni = 1;
+            // n * ni - m * mi == 1
+            // 0 <= ni <= m
+            // 0 <= mi < n
+            // 0 <= ni * mi < n * m
+            I a = n * m - ni * mi;
+            I b = n * ni + m * mi;
+            I c = n * m + ni * mi;
+            if (c > c_max) continue;
+            if (c % 2 == 1 && b < a) continue; // duplicate, but only for odd c
+            visitor(a, b, c);
+            if (b != a) visitor(b, a, c);
+        }
+    }
+
+}
+template<typename I>
+std::vector<triple<I>> almost_pythagorean_triples(I c_max) {
+    std::vector<triple<I>> vt;
+    auto visitor = [&](I a, I b, I c) { vt.push_back({ a, b, c }); };
+    almost_pythagorean_triples(c_max, visitor);
+    return vt;
+}
+
 } // math
 } // altruct

@@ -26,3 +26,19 @@ TEST(triples_test, eisenstein_triples120) {
     EXPECT_EQ((vector<triple<int>>{{ 3, 5, 7 }, { 5, 16, 19 }, { 7, 8, 13 }, { 7, 33, 37 }, { 9, 56, 61 }, { 11, 24, 31 }, { 11, 85, 91 }, { 13, 35, 43 }, { 13, 120, 127 }, { 15, 161, 169 }, { 16, 39, 49 }, { 17, 63, 73 }, { 19, 80, 91 }, { 23, 120, 133 }, { 24, 95, 109 }, { 25, 143, 157 }, { 32, 45, 67 }, { 32, 175, 193 }, { 40, 51, 79 }, { 40, 77, 103 }, { 55, 57, 97 }, { 56, 115, 151 }, { 56, 165, 199 }, { 65, 88, 133 }, { 69, 91, 139 }, { 75, 112, 163 }, { 104, 105, 181 }}), sorted(eisenstein_triples120(200, true)));
     EXPECT_EQ((vector<triple<int>>{{ 3, 5, 7 }, { 5, 16, 19 }, { 6, 10, 14 }, { 7, 8, 13 }, { 7, 33, 37 }, { 9, 15, 21 }, { 10, 32, 38 }, { 11, 24, 31 }, { 12, 20, 28 }, { 13, 35, 43 }, { 14, 16, 26 }, { 15, 25, 35 }, { 16, 39, 49 }, { 18, 30, 42 }, { 21, 24, 39 }, { 21, 35, 49 }}), sorted(eisenstein_triples120(50, false)));
 }
+
+TEST(triples_test, almost_pythagorean_triples) {
+    vector<triple<int>> ve;
+    int c_max = 1000;
+    for (int a = 1; a <= c_max; a++) {
+        int max_b = isqrt(isq(c_max) + 1 - isq(a));
+        for (int b = 1; b <= max_b; b++) {
+            int64_t c2 = isq(a) + isq(b) - 1;
+            int c = isqrt(c2);
+            if (isq(c) == c2 && c <= c_max) {
+                ve.push_back({ a, b, c });
+            }
+        }
+    }
+    EXPECT_EQ(ve, sorted(almost_pythagorean_triples(c_max)));
+}
