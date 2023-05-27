@@ -63,6 +63,16 @@ TEST(primes_test, moebius_mu) {
     EXPECT_EQ((vector<int> { 0, +1, -1, -1, 0, -1, +1, -1, 0, 0, +1, -1, 0, -1, +1, +1, 0, -1, 0, -1, 0, +1, +1, -1, 0, 0, +1, 0, 0, -1 }), vmu);
 }
 
+TEST(primes_test, prime_nu) {
+    int n = 31;
+    vector<int> vp(n);
+    int m = primes(&vp[0], nullptr, n);
+
+    vector<int> vnu(n);
+    prime_nu(&vnu[0], n, &vp[0], m);
+    EXPECT_EQ((vector<int> {0, 0, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 3}), vnu);
+}
+
 TEST(primes_test, segmented_q) {
     int b = 20, e = 30;
     int q = isqrt(e) + 1;
@@ -124,7 +134,18 @@ TEST(primes_test, divisor_sigma_1) {
     EXPECT_EQ((vector<int64_t> {0, 1, 3, 4, 7, 6, 12, 8, 15, 13, 18, 12, 28, 14, 24, 24, 31, 18, 39, 20, 42, 32, 36, 24, 60, 31, 42, 40, 56, 30}), vds1);
 }
 
-TEST(primes_test, factor) {
+TEST(primes_test, smallest_factor) {
+    int n = 31;
+    vector<int> vp(n);
+    int m = primes(&vp[0], nullptr, n);
+
+    vector<int> vpf(n);
+    smallest_factor(&vpf[0], n);
+    // 0 for primes and 1!
+    EXPECT_EQ((vector<int> {0, 0, 0, 0, 2, 0, 2, 0, 2, 3, 2, 0, 2, 0, 2, 3, 2, 0, 2, 0, 2, 3, 2, 0, 2, 5, 2, 3, 2, 0, 2}), vpf);
+}
+
+TEST(primes_test, biggest_factor) {
     int n = 30;
     vector<int> vp(n);
     int m = primes(&vp[0], nullptr, n);
@@ -190,6 +211,28 @@ TEST(primes_test, factor_integer) {
     EXPECT_EQ(2, divisor_sigma0(vf17));
     EXPECT_EQ(6, divisor_sigma0(vf20));
     EXPECT_EQ(36, divisor_sigma0(vf9800));
+}
+
+TEST(primes_test, divisors) {
+    EXPECT_EQ((vector<int64_t>{1}), divisors<int64_t>(vector<pair<int, int>>{}, 0));
+    EXPECT_EQ((vector<int64_t>{1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45}), divisors<int64_t>(vector<pair<int, int>>{ {2, 3}, { 3, 2 }, { 5, 1 }}, 45));
+    EXPECT_EQ((vector<int64_t>{1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180, 360}), divisors<int64_t>(vector<pair<int, int>>{ {2, 3}, { 3, 2 }, { 5, 1 }}));
+}
+
+TEST(primes_test, squarefree_signed_divisors) {
+    vector<int64_t> va;
+    squarefree_signed_divisors<int64_t>(va, vector<pair<int, int>>{ {2, 3}, { 3, 2 }, { 5, 1 }});
+    std::sort(va.begin(), va.end(), [](int64_t d1, int64_t d2) { return abs(d1) < abs(d2); });
+    EXPECT_EQ((vector<int64_t>{1, -2, -3, -5, 6, 10, 15, -30}), va);
+}
+
+TEST(primes_test, prime_factors_and_exponents) {
+    EXPECT_EQ((vector<int>{2, 3, 5}), prime_factors(vector<pair<int, int>>{ {2, 3}, { 3, 2 }, { 5, 1 }}));
+    EXPECT_EQ((vector<int>{3, 2, 1}), prime_exponents(vector<pair<int, int>>{ {2, 3}, { 3, 2 }, { 5, 1 }}));
+}
+
+TEST(primes_test, divisor_sigma0_vf) {
+    EXPECT_EQ(36, divisor_sigma0(vector<pair<int, int>> { { 5, 2 }, { 2, 3 }, { 7, 2 } }));
 }
 
 TEST(primes_test, euler_phi_vf) {

@@ -2,6 +2,7 @@
 
 #include "base.h"
 
+#include <algorithm>
 #include <vector>
 #include <string>
 
@@ -71,6 +72,8 @@ void euler_phi(int *phi, int n, const int *p, int m);
  *
  * @param mu - array to store the result
  * @param n - calculate moebius mu up to `n` (exclusive)
+ * @param p - array of prime numbers up to `n`
+ * @param m - number of prime numbers up to `n`
  */
 void moebius_mu(int *mu, int n, const int* p = 0, int m = 0);
 
@@ -83,6 +86,8 @@ void moebius_mu(int *mu, int n, const int* p = 0, int m = 0);
  *
  * @param nu - array to store the result
  * @param n - calculate prime nu up to `n` (exclusive)
+ * @param p - array of prime numbers up to `n`
+ * @param m - number of prime numbers up to `n`
  */
 void prime_nu(int *nu, int n, const int* p, int m);
 
@@ -264,6 +269,32 @@ void divisors(std::vector<D> &vd, const std::vector<std::pair<P, int>> &vf, D ma
         if (maxd > 0 && d > maxd / f.first) break;
         d *= f.first;
     }
+}
+template<typename D, typename P>
+std::vector<D> divisors(const std::vector<std::pair<P, int>>& vf, D maxd = 0, D d = 1, int i = 0) {
+    std::vector<D> vd;
+    divisors(vd, vf, maxd, d, i);
+    std::sort(vd.begin(), vd.end());
+    return vd;
+}
+
+/**
+ * Calculates signed squarefree divisors.
+ *
+ * Sign of each divisor `d` is given as `(-1)^prime_nu(d)`.
+ * I.e. negative if the divisor has odd number of distinct prime factors and positive otherwise.
+ * 
+ * @param vd - vector to store divisors
+ * @param vf - prime factorization of the original number
+ * @param d - reserved
+ * @param i - reserved
+ */
+template<typename D, typename P>
+void squarefree_signed_divisors(std::vector<D>& vd, const std::vector<std::pair<P, int>>& vf, D d = 1, int i = 0) {
+    if (i >= (int)vf.size()) { vd.push_back(d); return; }
+    const auto& p = vf[i].first;
+    squarefree_signed_divisors(vd, vf, d, i + 1);
+    squarefree_signed_divisors(vd, vf, d * -p, i + 1);
 }
 
 /**
