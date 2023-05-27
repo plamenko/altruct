@@ -451,6 +451,23 @@ void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pa, int m) {
 }
 
 /**
+ * Creates a map of values of `f(n / k)` for each `k` in `[1, n]` in `O(n^(1/2))` assuming `f` is `O(1)`.
+ */
+template<typename I, typename T, typename F>
+altruct::container::sqrt_map<I, T> make_sqrt_map(F f, I n) {
+    I q = sqrtT(n), n_q = n / q;
+    altruct::container::sqrt_map<I, T> tbl(n_q, n);
+    for (I k = 1; k <= n_q; k++) {
+        tbl[k] = f(k);
+    }
+    for (I m = 1; m <= q; m++) {
+        tbl[n / m] = f(n / m);
+    }
+    tbl[0] = zeroOf(tbl[1]);
+    return tbl;
+}
+
+/**
  * Sieves `M` up to `n` in `O(n log n)`.
  *
  * Where:
@@ -964,12 +981,7 @@ T sum_multiplicative_34(const altruct::container::sqrt_map<int64_t, T>& s1, cons
 
 template<typename T, typename S1, typename F1>
 T sum_multiplicative_34(const S1& s1, const F1& f, int64_t n, const int* pa, int m, T id = T(1)) {
-    int q = isqrt(n);
-    altruct::container::sqrt_map<int64_t, T> s1_tbl(q, n);
-    for (int i = 1; i <= q; i++) {
-        s1_tbl[i] = s1(i);
-        s1_tbl[n / i] = s1(n / i);
-    }
+    auto s1_tbl = make_sqrt_map<int64_t, T>(s1, n);
     return sum_multiplicative_34<T, F1>(s1_tbl, f, n, pa, m, id, 1, 0);
 }
 
@@ -1051,6 +1063,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
     // F_prime(n) = Sum[f(p), {2 <= p <= n, prime p}]
     // F_k(n) = Sum[f(i), {1 <= i <= n, lpf(i) >= p_k}]
 
+    T zero = zeroOf(id);
     auto pa1 = pa - 1; // 1-based indexing, pa1[k] = p_k
 
     int q = isqrt(n);   // n^(1/2)
@@ -1064,7 +1077,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
     altruct::container::sqrt_map<int64_t, T> F_prime(q, n);
     altruct::container::sqrt_map<int64_t, T> F_k1(q, n); // F_(k+1)
     altruct::container::sqrt_map<int64_t, T> F_k(q, n);
-    altruct::math::fenwick_tree<T, std::plus<T>> Ft(tsz - d + 1, std::plus<T>(), zeroOf(id));
+    altruct::math::fenwick_tree<T, std::plus<T>> Ft(tsz - d + 1, std::plus<T>(), zero);
 
     if (n == 1) { F_k[1] = id; return F_k; }
 
@@ -1081,6 +1094,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
         int p_k = pa1[k];
         int64_t p_k2 = isq(p_k);
         // m < p_k; only 1 is included in the sum
+        F_k[0] = zero;
         for (int m = 1; m < p_k; m++) {
             F_k[m] = id;
         }
@@ -1096,7 +1110,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
         // p_k^2 <= m < n <= p_k^3; also includes semiprimes with factors >= p_k in the sum
         for (int i = c; i >= 1; i--) {
             int64_t m = n / i; if (m < p_k2) continue;
-            T s2 = zeroOf(id);
+            T s2 = zero;
             for (int j = k; j <= psz && isq(pa1[j]) <= m; j++) {
                 int p_j = pa1[j];
                 T f_p = f(id, p_j, 1);
@@ -1112,7 +1126,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
     {
         auto get_Ft_k1 = [&](int64_t m) {
             if (m >= nd) return F_k1[m];
-            return Ft.get_sum((m <= q) ? m : tsz - n / m);
+            return Ft.get_sum((m <= q) ? m : tsz - n / m, zero);
         };
         auto update_Ft_k = [&](int64_t m, T f_m) {
             Ft.add((m <= q) ? m : tsz - n / m, f_m);
@@ -1134,7 +1148,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
             last_k = k;
         }
         // read sums from the fenwick tree
-        for (int64_t m = 1; m <= q; m++) F_k[m] = get_Ft_k1(m);
+        for (int64_t m = 0; m <= q; m++) F_k[m] = get_Ft_k1(m);
         for (int i = nq; i > d; i--) F_k[n / i] = get_Ft_k1(n / i);
     }
 

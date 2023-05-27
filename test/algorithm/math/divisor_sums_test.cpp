@@ -166,6 +166,18 @@ TEST(divisor_sums_test, sieve_m_multiplicative) {
     EXPECT_EQ(to_modx(1009, { 0, 1, 5, 23, 55, 155, 227, 521, 777, 254, 654, 855, 422, 432, 599, 381, 411, 999, 925, 360, 533 }), actual2);
 }
 
+TEST(divisor_sums_test, make_sqrt_map) {
+    int n = 200, M = 101;
+    auto f = [&](int n) { return modx(n, M); };
+    auto tbl = make_sqrt_map<int, modx>(f, n);
+    for (int i = 1; i <= n; i++) {
+        EXPECT_EQ(modx(n / i, M), tbl[n / i]) << "i:" << i;
+        EXPECT_EQ(M, tbl[n / i].M()) << "i:" << i;
+    }
+    EXPECT_EQ(0, tbl[0].v);
+    EXPECT_EQ(M, tbl[0].M());
+}
+
 TEST(divisor_sums_test, sieve_m) {
     auto t = [](int n){ return n * (n + 1) / 2; };
     vector<int> actual1(n); sieve_m(actual1, t, n);
@@ -216,7 +228,7 @@ TEST(divisor_sums_test, sieve_mertens_even) {
     EXPECT_EQ(expected2, actual2);
 }
 
-TEST(divisor_sums_test, sieve_mertens_odd_even) {
+TEST(divisor_sums_test, sieve_mertens_even_odd) {
     int n = 31;
     auto pa = primes_table(n);
     auto expected_even1 = vector<int>{ 0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 3 };
@@ -378,4 +390,28 @@ TEST(divisor_sums_test, divisor_sigma) {
     vector<modx> vds10(n);
     divisor_sigma(vds10, 10, n, pa.data(), (int)pa.size(), modx(1, 107));
     EXPECT_EQ(to_modx(107, { 0, 1, 62, 93, 38, 57, 95, 65, 72, 104, 3, 43, 3, 10, 71, 58, 6, 20, 28, 38, 26, 53, 98, 36, 62, 90, 85, 46, 9, 5 }), vds10);
+}
+
+TEST(divisor_sums_test, sum_multiplicative) {
+    int M = 101;
+    int n = 1000;
+    auto pa = primes_table(n);
+    auto zero = modx(0, M);
+    // moebius
+    auto g = [&](modx f_pe1, int p, int e) {
+        return castOf(zero, (e > 1) ? 0 : -1);
+    };
+    // -primes_pi
+    auto sg1 = [&](int64_t n) {
+        int pi = int(std::upper_bound(pa.begin(), pa.end(), n) - pa.begin());
+        return castOf(zero, -pi);
+    };
+    // mertens
+    auto sg_tbl = sum_multiplicative<modx>(sg1, g, n, pa.data(), (int)pa.size(), identityOf(zero));
+    vector<modx> mertens(n + 1); sieve_mertens(mertens, n + 1, pa.data(), (int)pa.size(), identityOf(zero));
+    for (int i = 1; i <= n; i++) {
+        int k = n / i;
+        EXPECT_EQ(mertens[k], sg_tbl[k]) << "i:" << i;
+        EXPECT_EQ(mertens[k], sum_multiplicative_34(sg1, g, k, pa.data(), (int)pa.size(), identityOf(zero))) << "i:" << i;
+    }
 }
