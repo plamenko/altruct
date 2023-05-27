@@ -48,34 +48,6 @@ public:
         cnt_lo(max_lo_key + 1, 0),
         tbl_lo(max_lo_key + 1) {}
 
-    sqrt_map(const sqrt_map& rhs) {
-        max_lo_key = rhs.max_lo_key;
-        max_key = rhs.max_key;
-        cnt_lo = rhs.cnt_lo;
-        tbl_lo = rhs.tbl_lo;
-        cnt_hi = rhs.cnt_hi;
-        tbl_hi = rhs.tbl_hi;
-    }
-
-    sqrt_map(sqrt_map&& rhs) {
-        max_lo_key = rhs.max_lo_key;
-        max_key = rhs.max_key;
-        cnt_lo = std::move(rhs.cnt_lo);
-        tbl_lo = std::move(rhs.tbl_lo);
-        cnt_hi = std::move(rhs.cnt_hi);
-        tbl_hi = std::move(rhs.tbl_hi);
-    }
-
-    sqrt_map& operator=(sqrt_map&& rhs) {
-        max_lo_key = rhs.max_lo_key;
-        max_key = rhs.max_key;
-        cnt_lo = std::move(rhs.cnt_lo);
-        tbl_lo = std::move(rhs.tbl_lo);
-        cnt_hi = std::move(rhs.cnt_hi);
-        tbl_hi = std::move(rhs.tbl_hi);
-        return *this;
-    }
-
     void swap(sqrt_map& rhs) {
         std::swap(max_lo_key, rhs.max_lo_key);
         std::swap(max_key, rhs.max_key);
@@ -122,6 +94,11 @@ public:
 
     // unchecked element access
     T& el(const I& k) {
+        return (k <= max_lo_key) ? tbl_lo[k] : tbl_hi[max_key / k];
+    }
+
+    // unchecked element access as function
+    const T& operator () (const I& k) const {
         return (k <= max_lo_key) ? tbl_lo[k] : tbl_hi[max_key / k];
     }
 

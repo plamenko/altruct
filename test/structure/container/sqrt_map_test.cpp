@@ -87,6 +87,8 @@ TEST(sqrt_map_test, accessors) {
         EXPECT_EQ(n / k, cm.el(n / k)) << "unexpected element el " << (n / k);
         EXPECT_EQ(n / k, mm[n / k]) << "unexpected element [] " << (n / k);
         EXPECT_EQ(n / k, cm[n / k]) << "unexpected element [] " << (n / k);
+        EXPECT_EQ(n / k, mm(n / k)) << "unexpected element [] " << (n / k);
+        EXPECT_EQ(n / k, cm(n / k)) << "unexpected element [] " << (n / k);
     }
     for (int i = 1; i <= q; i++) {
         EXPECT_EQ(i, mm.lo(i)) << "unexpected element lo " << (i);
