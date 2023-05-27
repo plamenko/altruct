@@ -12,16 +12,39 @@ TEST(sums_test, sum_ratio) {
     auto f = [](int a, int b, int q, int n) {
         int s = 0;
         for (int k = 0; k < n; k++) {
-            s += (a * k + b) / q;
+            s += div_floor(a * k + b, q);
         }
         return s;
     };
     int U = 20;
-    for (int a = 0; a < U; a++) {
-        for (int b = 0; b < U; b++) {
-            for (int q = 1; q < U; q++) {
-                for (int n = 0; n < U; n++) {
+    for (int a = -U; a < U; a++) {
+        for (int b = -U; b < U; b++) {
+            for (int q = -U; q < U; q++) {
+                if (q == 0) continue;
+                for (int n = -3; n < U; n++) {
                     EXPECT_EQ(f(a, b, q, n), (sum_ratio<int>(a, b, q, n)));
+                }
+            }
+        }
+    }
+}
+
+TEST(sums_test, sum_ratio_modx) {
+    using modx = moduloX<int>;
+    auto f = [](int a, int b, int q, int n) {
+        int s = 0;
+        for (int k = 0; k < n; k++) {
+            s += div_floor(a * k + b, q);
+        }
+        return modx(s, 101);
+    };
+    int U = 20;
+    for (int a = -U; a < U; a++) {
+        for (int b = -U; b < U; b++) {
+            for (int q = -U; q < U; q++) {
+                if (q == 0) continue;
+                for (int n = -3; n < U; n++) {
+                    EXPECT_EQ(f(a, b, q, n), (sum_ratio<modx>(a, b, q, n, modx(0, 101))));
                 }
             }
         }

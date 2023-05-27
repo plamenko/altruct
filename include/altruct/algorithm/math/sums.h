@@ -8,24 +8,30 @@ namespace altruct {
 namespace math {
 
 /**
- * Calculates `Sum[(a * k + b) / q, {k, 0, n - 1}]` in `O(log min(q, n))`.
+ * Calculates `Sum[Floor[(a * k + b) / q], {k, 0, n - 1}]` in `O(log min(q, n))`.
  *
- * Note: `a` and `b` must be non-negative integers, `q` must be a positive integer.
+ * Note: `q` must not be zero.
  */
-template<typename I>
-I sum_ratio(I a, I b, I q, I n) {
-    I s = 0;
-    while (n > 0) {
+template<typename T, typename I>
+T sum_ratio(I a, I b, I q, I n, T zero = T(0)) {
+    auto TT = [&](I n) { return castOf(zero, n); };
+    if (n < 1) return zero;
+    if (q < 0) return sum_ratio<T, I>(-a, -b, -q, n, zero);
+    if (a < 0) return -sum_ratio<T, I>(-a, q - 1 - b, q, n, zero);
+    if (b < 0) { I m = -b / q + 1; return sum_ratio<T, I>(a, b + q * m, q, n, zero) - TT(n) * TT(m); }
+    T s = zero;
+    I i = 0;
+    for (i = 0; n > 0; i++) {
         I n1 = n - 1;
-        s += (b / q) * n + (a / q) * n * n1 / 2;
+        T t = (n % 2 == 1) ? TT(n) * TT(n1 / 2) : TT(n / 2) * TT(n1);
+        s += TT(b / q) * TT(n) + TT(a / q) * t;
         b %= q, a %= q; if (a == 0) break;
         n = (a * n1 + b) / q;
         b = (q - 1) - b, std::swap(a, q);
-        s += n * n1;
+        s += TT(n) * TT(n1);
         s = -s;
     }
-    // we could keep track of the sign above, but the sum can't be negative
-    return s < 0 ? -s : s;
+    return (i % 2 == 1) ? -s : s;
 }
 
 /**
