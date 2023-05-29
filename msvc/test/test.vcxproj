@@ -46,6 +46,7 @@
     <ClCompile Include="..\..\test\algorithm\math\fft_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\fractions_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\intrinsic_test.cpp" />
+    <ClCompile Include="..\..\test\algorithm\math\mertens_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\modulos_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\pell_test.cpp" />
     <ClCompile Include="..\..\test\algorithm\math\polynoms_test.cpp" />

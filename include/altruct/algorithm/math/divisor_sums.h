@@ -455,13 +455,13 @@ void sieve_m_multiplicative(TBL& M, F1 t, F2 p, int n, int* pa, int m) {
  */
 template<typename I, typename T, typename F>
 altruct::container::sqrt_map<I, T> make_sqrt_map(F f, I n) {
-    I q = sqrtT(n), n_q = n / q;
-    altruct::container::sqrt_map<I, T> tbl(n_q, n);
-    for (I k = 1; k <= n_q; k++) {
-        tbl[k] = f(k);
+    I q = sqrtT(n), n_q = n / (q + 1);
+    altruct::container::sqrt_map<I, T> tbl(q, n);
+    for (I i = 1; i <= q; i++) {
+        tbl[i] = f(i);
     }
-    for (I m = 1; m <= q; m++) {
-        tbl[n / m] = f(n / m);
+    for (I i = 1; i <= n_q; i++) {
+        tbl[n / i] = f(n / i);
     }
     tbl[0] = zeroOf(tbl[1]);
     return tbl;
@@ -603,112 +603,6 @@ T sum_m(F t, I n, TBL& tbl, T id) {
         r -= sum_m<T>(t, m, tbl, id) * castOf(e0, (n / m) - (n / (m + 1)));
     }
     return tbl[n] = r;
-}
-
-/**
- * Sieves Mertens up to `n` in `O(n log log n)`.
- *
- * @param M - table to store the calculated values; accessed via [] operator
- * @param n - bound up to which to sieve (exclusive)
- * @param pa - table of all `m` prime numbers up to `n`
- */
-template<typename T, typename TBL>
-void sieve_mertens(TBL& M, int n, int* pa, int m, T id = T(1)) {
-    auto one = [&](int k){ return id; };
-    sieve_m_multiplicative(M, one, one, n, pa, m);
-}
-
-/**
- * Sieves MertensOdd up to `n` in `O(n log log n)`.
- *
- * @param M - table to store the calculated values; accessed via [] operator
- * @param n - bound up to which to sieve (exclusive)
- * @param pa - table of all `m` prime numbers up to `n`
- */
-template<typename T, typename TBL>
-void sieve_mertens_odd(TBL& M1, int n, int* pa, int m, T id = T(1)) {
-    auto zero = zeroOf(id);
-    auto t = [&](int k) { return id; };
-    auto p = [&](int k) { return (k % 2 == 1) ? id : zero; };
-    sieve_m_multiplicative(M1, t, p, n, pa, m);
-}
-
-/**
- * Sieves MertensEven up to `n` in `O(n log n)`.
- *
- * @param M - table to store the calculated values; accessed via [] operator
- * @param n - bound up to which to sieve (exclusive)
- * @param pa - table of all `m` prime numbers up to `n`
- */
-template<typename T, typename TBL>
-void sieve_mertens_even(TBL& M0, int n, T id = T(1)) {
-    auto zero = zeroOf(id);
-    auto t = [&](int k) { return (k > 1) ? -id : zero; };
-    auto p = [&](int k) { return (k % 2 == 1) ? id : zero; };
-    sieve_m(M0, t, p, n); // not multiplicative!
-}
-
-/**
- * Sieves MertensEven and MertensOdd up to `n` in `O(n log log n)`.
- *
- * @param M - table to store the calculated values; accessed via [] operator
- * @param n - bound up to which to sieve (exclusive)
- * @param pa - table of all `m` prime numbers up to `n`
- */
-template<typename T, typename TBL>
-void sieve_mertens_even_odd(TBL& M0, TBL& M1, int n, int* pa, int m, T id = T(1)) {
-    sieve_mertens_odd(M1, n, pa, m, id);
-    sieve_mertens(M0, n, pa, m, id); // M0 = M - M1
-    for (int k = 0; k < n; k++) M0[k] -= M1[k];
-}
-
-/**
- * Mertens function: `Sum[moebius_mu(k), {k, 1, n}]` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
- * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
- *
- * @param n - argument at which to evaluate `M`
- * @param tbl - table to store the calculated values
- */
-template<typename T, typename I, typename TBL>
-T mertens(I n, TBL& tbl, T id = T(1)) {
-    // p = 1, f = mu, g = delta, t = 1
-    auto one = [&](I k){ return id; };
-    return sum_m<T>(one, n, tbl, id);
-}
-
-/**
- * MertensOdd function: `Sum[moebius_mu(k), {k, 1, n, 2}]` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
- * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
- *
- * @param n - argument at which to evaluate `M`
- * @param tbl - table to store the calculated values
- */
-template<typename T, typename I, typename TBL>
-T mertens_odd(I n, TBL& tbl, T id = T(1)) {
-    auto t = [&](I k) { return id; };
-    auto s = [&](I k) { return castOf<T>(id, (k + 1) / 2); };
-    return sum_m<T>(t, s, n, tbl, id);
-}
-
-/**
- * MertensEven function: `Sum[moebius_mu(k), {k, 2, n, 2}]` in `O(n^(3/4))` or `O(n^(2/3))`.
- *
- * Note, to achieve the better `O(n^(2/3))` complexity, `tbl` values
- * smaller than `O(n^(2/3))` have to be precomputed with sieve in advance.
- *
- * @param n - argument at which to evaluate `M`
- * @param tbl - table to store the calculated values
- */
-template<typename T, typename I, typename TBL>
-T mertens_even(I n, TBL& tbl, T id = T(1)) {
-    auto zero = zeroOf(id);
-    auto t = [&](int k) { return (k > 1) ? -id : zero; };
-    auto s = [&](I k) { return castOf<T>(id, (k + 1) / 2); };
-    return sum_m<T>(t, s, n, tbl, id);
 }
 
 /**
