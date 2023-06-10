@@ -1,5 +1,8 @@
 #include "altruct/algorithm/random/xorshift.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -114,14 +117,15 @@ uint64_t kTest64_2_expected[] = {
     16595650600837003373ULL
 };
 
-TEST(xorshift_test, default_constructor) {
-    xorshift_1024star rng;
+TEST(xorshift_1024star_test, default_constructor) {
+    xorshift_1024star rng0(uint64_t(1));
+    xorshift_1024star rng; // same as seed=1
     for (int i = 0; i < 20; i++) {
-        EXPECT_EQ(0, rng.next());
+        EXPECT_EQ(rng0.next(), rng.next());
     }
 }
 
-TEST(xorshift_test, default_constructor_later_seed_short) {
+TEST(xorshift_1024star_test, default_constructor_later_seed_short) {
     xorshift_1024star rng;
     rng.seed(kTest1024_1_seed);
     for (auto expected : kTest1024_1_expected) {
@@ -129,7 +133,7 @@ TEST(xorshift_test, default_constructor_later_seed_short) {
     }
 }
 
-TEST(xorshift_test, default_constructor_later_seed_full) {
+TEST(xorshift_1024star_test, default_constructor_later_seed_full) {
     xorshift_1024star rng;
     rng.seed(kTest1024_2_seed);
     for (auto expected : kTest1024_2_expected) {
@@ -137,21 +141,21 @@ TEST(xorshift_test, default_constructor_later_seed_full) {
     }
 }
 
-TEST(xorshift_test, short_seed_constructor) {
+TEST(xorshift_1024star_test, short_seed_constructor) {
     xorshift_1024star rng(kTest1024_1_seed);
     for (auto expected : kTest1024_1_expected) {
         EXPECT_EQ(expected, rng.next());
     }
 }
 
-TEST(xorshift_test, full_seed_constructor) {
+TEST(xorshift_1024star_test, full_seed_constructor) {
     xorshift_1024star rng(kTest1024_2_seed);
     for (auto expected : kTest1024_2_expected) {
         EXPECT_EQ(expected, rng.next());
     }
 }
 
-TEST(xorshift_test, reseed) {
+TEST(xorshift_1024star_test, reseed) {
     xorshift_1024star rng(kTest1024_1_seed);
     rng.seed(kTest1024_2_seed);
     for (auto expected : kTest1024_2_expected) {
@@ -163,7 +167,7 @@ TEST(xorshift_test, reseed) {
     }
 }
 
-TEST(xorshift_test, output_1000) {
+TEST(xorshift_1024star_test, output_1000) {
     xorshift_1024star rng(kTest1024_1_seed);
     uint64_t v = 0;
     for (int i = 0; i < 1000; i++) {
@@ -172,27 +176,35 @@ TEST(xorshift_test, output_1000) {
     EXPECT_EQ(563674104727552105ULL, v);
 }
 
-TEST(xorshift_test, next_range) {
+TEST(xorshift_1024star_test, next_range) {
     xorshift_1024star rng(kTest1024_1_seed);
     EXPECT_EQ(162, rng.next(100, 1100 - 1));
     EXPECT_EQ(867, rng.next(100, 1100 - 1));
 }
 
-TEST(xorshift_test, next_uniform) {
+TEST(xorshift_1024star_test, next_uniform) {
     xorshift_1024star rng(kTest1024_1_seed);
     EXPECT_EQ(162, rng.next_uniform(100, 1100 - 1));
     EXPECT_EQ(867, rng.next_uniform(100, 1100 - 1));
 }
 
-TEST(xorshift_test, next_0_1) {
+TEST(xorshift_1024star_test, next_0_1) {
     xorshift_1024star rng(kTest1024_1_seed);
     EXPECT_NEAR(0.307961606279405, rng.next_0_1(), 1e-14);
 }
 
+TEST(xorshift_1024star_test, Cpp17_UniformRandomBitGenerator) {
+    xorshift_1024star rng(kTest1024_2_seed);
+    vector<int> v{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    std::shuffle(v.begin(), v.end(), rng);
+    EXPECT_EQ((vector<int> { 7, 5, 4, 0, 3, 1, 9, 8, 2, 6 }), v);
+}
+
 TEST(xorshift_64star_test, default_constructor) {
-    xorshift_64star rng;
+    xorshift_64star rng0(uint64_t(1));
+    xorshift_64star rng; // same as seed=1
     for (int i = 0; i < 20; i++) {
-        EXPECT_EQ(0, rng.next());
+        EXPECT_EQ(rng0.next(), rng.next());
     }
 }
 
@@ -221,4 +233,28 @@ TEST(xorshift_64star_test, reseed) {
     for (auto expected : kTest64_1_expected) {
         EXPECT_EQ(expected, rng.next());
     }
+}
+
+TEST(xorshift_64star_test, next_range) {
+    xorshift_64star rng(kTest64_1_seed);
+    EXPECT_EQ(371, rng.next(100, 1100 - 1));
+    EXPECT_EQ(1013, rng.next(100, 1100 - 1));
+}
+
+TEST(xorshift_64star_test, next_uniform) {
+    xorshift_64star rng(kTest64_1_seed);
+    EXPECT_EQ(371, rng.next_uniform(100, 1100 - 1));
+    EXPECT_EQ(1013, rng.next_uniform(100, 1100 - 1));
+}
+
+TEST(xorshift_64star_test, next_0_1) {
+    xorshift_64star rng(kTest64_1_seed);
+    EXPECT_NEAR(0.39497598980069015, rng.next_0_1(), 1e-14);
+}
+
+TEST(xorshift_64star_test, Cpp17_UniformRandomBitGenerator) {
+    xorshift_64star rng(kTest64_2_seed);
+    vector<int> v{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    std::shuffle(v.begin(), v.end(), rng);
+    EXPECT_EQ((vector<int>{ 4, 7, 2, 1, 3, 5, 6, 8, 9, 0 }), v);
 }
