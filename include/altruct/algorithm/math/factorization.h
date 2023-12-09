@@ -194,6 +194,30 @@ I from_factorization(const std::vector<std::pair<P, int>>& vf) {
 }
 
 /**
+ * Generate numbers from the list of allowed prime factors.
+ *
+ * @param vp - allowed prime factors
+ * @param n_max - generates numbers up to n_max
+ * @param visitor - visitor for each (factorization, number)
+ */
+template<typename I, typename P, typename F>
+void from_primes_impl(std::vector<std::pair<P, int>>& vf, const P* pa, size_t psz, I n_max, I n, const F& visitor) {
+    if (psz == 0) return visitor(vf, n);
+    P p = pa[psz - 1];
+    from_primes_impl<I, P, F>(vf, pa, psz - 1, n_max, n, visitor);
+    for (int e = 1; n *= p, (n_max /= p) > 0; e++) {
+        vf.push_back({ p, e });
+        from_primes_impl<I, P, F>(vf, pa, psz - 1, n_max, n, visitor);
+        vf.pop_back();
+    }
+}
+template<typename I, typename P, typename F>
+void from_primes(const std::vector<P>& vp, I n_max, const F& visitor) {
+    std::vector<std::pair<P, int>> vf;
+    from_primes_impl<I, P, F>(vf, vp.data(), vp.size(), n_max, 1, visitor);
+}
+
+/**
  * Jointly reduces the given lists of numerators and denominators.
  *
  *    n     n_0 * ... * n_l1
