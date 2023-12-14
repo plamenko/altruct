@@ -386,5 +386,8 @@
     <ClInclude Include="..\..\include\altruct\algorithm\math\mertens.h">
       <Filter>include\altruct\algorithm\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\io\stream_tokenizer.h">
+      <Filter>include\altruct\io</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

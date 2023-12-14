@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\test\io\fast_io_test.cpp" />
     <ClCompile Include="..\..\test\io\iostream_overloads_test.cpp" />
     <ClCompile Include="..\..\test\io\reader_test.cpp" />
+    <ClCompile Include="..\..\test\io\stream_tokenizer_test.cpp" />
     <ClCompile Include="..\..\test\io\writer_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\binary_heap_test.cpp" />
     <ClCompile Include="..\..\test\structure\container\binary_search_tree_test.cpp" />

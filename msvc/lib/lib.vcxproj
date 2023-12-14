@@ -91,6 +91,7 @@
     <ClInclude Include="..\..\include\altruct\io\fast_io.h" />
     <ClInclude Include="..\..\include\altruct\io\iostream_overloads.h" />
     <ClInclude Include="..\..\include\altruct\io\reader.h" />
+    <ClInclude Include="..\..\include\altruct\io\stream_tokenizer.h" />
     <ClInclude Include="..\..\include\altruct\io\writer.h" />
     <ClInclude Include="..\..\include\altruct\structure\container\binary_heap.h" />
     <ClInclude Include="..\..\include\altruct\structure\container\binary_search_tree.h" />

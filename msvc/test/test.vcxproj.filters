@@ -259,6 +259,9 @@
     <ClCompile Include="..\..\test\algorithm\math\mertens_test.cpp">
       <Filter>algorithm\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\io\stream_tokenizer_test.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
