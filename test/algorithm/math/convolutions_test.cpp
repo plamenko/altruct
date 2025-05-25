@@ -95,3 +95,49 @@ TEST(convolutions_test, cyclic_convolution) {
     slow_cyclic_convolution(r0.data(), u.data(), v.data(), n);
     EXPECT_EQ(e, r0);
 }
+
+TEST(convolutions_test, subset_sum) {
+    typedef int64_t mod;
+    const int log_n = 4;
+    const int n = (1 << log_n);
+    vector<mod> u{ 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144, 3258, 4752, 6345, 8756, 6716, 7647 };
+    vector<mod> r0(n);
+    slow_subset_sum(r0.data(), u.data(), log_n);
+    vector<mod> r1(n);
+    fast_subset_sum(r1.data(), u.data(), log_n);
+    EXPECT_EQ(r0, r1);
+    // inplace
+    vector<mod> w{ 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144, 3258, 4752, 6345, 8756, 6716, 7647 };
+    vector<mod> z0(n);
+    slow_subset_sum(z0.data(), w.data(), log_n);
+    vector<mod> z1 = w;
+    fast_subset_sum(z1.data(), z1.data(), log_n);
+    EXPECT_EQ(z0, z1);
+    // inverse
+    vector<mod> zi(n);
+    fast_subset_sum_inverse(zi.data(), z1.data(), log_n);
+    EXPECT_EQ(w, zi);
+    // inverse inplace
+    vector<mod> zii = z1;
+    fast_subset_sum_inverse(zii.data(), zii.data(), log_n);
+    EXPECT_EQ(w, zii);
+}
+
+TEST(convolutions_test, subset_convolution) {
+    typedef int64_t mod;
+    const int L = 4;
+    vector<mod> u{ 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144, 3258, 4752, 6345, 8756, 6716, 7647 };
+    vector<mod> v{ 8468, 3944, 4798, 6405, 8016, 8884, 1006, 54, 7066, 3531, 6778, 9168, 7965, 6873, 6557, 2641 };
+    vector<mod> r0(1 << L);
+    slow_subset_convolution(r0.data(), u.data(), v.data(), L);
+    vector<mod> r1(1 << L);
+    fast_subset_convolution(r1.data(), u.data(), v.data(), L);
+    EXPECT_EQ(r0, r1);
+    // inplace
+    vector<mod> w{ 671, 9230, 3302, 4764, 6135, 7750, 9881, 1189, 411, 8144, 3258, 4752, 6345, 8756, 6716, 7647 };
+    vector<mod> z0(1 << L);
+    slow_subset_convolution(z0.data(), w.data(), w.data(), L);
+    vector<mod> z1 = w;
+    fast_subset_convolution(z1.data(), z1.data(), z1.data(), L);
+    EXPECT_EQ(z0, z1);
+}

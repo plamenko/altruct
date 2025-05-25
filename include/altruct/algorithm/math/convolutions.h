@@ -1,5 +1,7 @@
 #include "base.h"
+#include "bits.h"
 #include <algorithm>
+#include <vector>
 
 namespace altruct {
 namespace math {
@@ -164,6 +166,137 @@ void max_convolution(T* r, T* f, T* g, int n) {
     for (int k = 0; k < n; ++k) {
         T r_new = f[k] * g[k] + sf * g[k] + sg * f[k];
         sf += f[k], sg += g[k], r[k] = r_new;
+    }
+}
+
+/**
+ * Subset-Sum:
+ *   r[k] = Sum[f[i], i is bit-subset of k]
+ *
+ * Complexity: O(3^log_n) = O(n^1.585)
+ * `f` and `r` must not be the same array.
+ *
+ * @param log_n - base-2 logarithm of the array length
+ */
+template<typename T>
+void slow_subset_sum(T* r, T* f, int log_n) {
+    const uint32_t n = uint32_t(1) << log_n;
+    for (uint32_t w = 0; w < n; w++) {
+        r[w] = zeroOf(f[0]);
+        for (uint32_t sub = w; ; sub = (sub - 1) & w) {
+            r[w] += f[sub];
+            if (sub == 0) break;
+        }
+    }
+}
+
+/**
+ * Subset-Sum (Moebius Transform on the Subset Lattice):
+ *   r[k] = Sum[f[i], i is bit-subset of k]
+ *
+ * Complexity: O(log_n 2^log_n) = O(n log n)
+ * It is allowed for `f` and `r` to be the same array.
+ *
+ * @param log_n - base-2 logarithm of the array length
+ */
+template<typename T>
+void fast_subset_sum(T* r, T* f, int log_n) {
+    const uint32_t n = uint32_t(1) << log_n;
+    if (r != f) {
+        for (uint32_t w = 0; w < n; w++) {
+            r[w] = f[w];
+        }
+    }
+    for (int i = 0; i < log_n; i++) {
+        for (uint32_t w = 0; w < n; w++) {
+            if (w & (uint32_t(1) << i)) {
+                r[w] += r[w ^ (uint32_t(1) << i)];
+            }
+        }
+    }
+}
+
+/**
+ * Subset-Sum Inverse (Moebius Inversion on the Subset Lattice):
+ *   f[k] = Sum[r[i], i is bit-subset of k]
+ *
+ * Complexity: O(log_n 2^log_n) = O(n log n)
+ * It is allowed for `f` and `r` to be the same array.
+ *
+ * @param log_n - base-2 logarithm of the array length
+ */
+template<typename T>
+void fast_subset_sum_inverse(T* r, T* f, int log_n) {
+    const uint32_t n = uint32_t(1) << log_n;
+    if (r != f) {
+        for (uint32_t w = 0; w < n; w++) {
+            r[w] = f[w];
+        }
+    }
+    for (int i = 0; i < log_n; i++) {
+        for (uint32_t w = 0; w < n; w++) {
+            if (w & (uint32_t(1) << i)) {
+                r[w] -= r[w ^ (uint32_t(1) << i)];
+            }
+        }
+    }
+}
+
+/**
+ * Subset-Sum Convolution (Moebius Transform on the Subset Lattice):
+ *   r[k] = Sum[f[i] * g[k^i], i is bit-subset of k]
+ *
+ * Complexity: O(log_n^2 2^log_n) = O(n log^2 n)
+ * `f` and `g` must not be the same array as `r`.
+ *
+ * @param log_n - base-2 logarithm of the array length
+ */
+template<typename T>
+void slow_subset_convolution(T* r, T* f, T* g, int log_n) {
+    const uint32_t n = uint32_t(1) << log_n;
+    for (uint32_t w = 0; w < n; w++) {
+        r[w] = zeroOf(f[0]);
+        for (uint32_t sub = w; ; sub = (sub - 1) & w) {
+            r[w] += f[sub] * g[w ^ sub];
+            if (sub == 0) break;
+        }
+    }
+}
+
+/**
+ * Subset-Sum Convolution (Uses Moebius Transform on the Subset Lattice):
+ *   r[k] = Sum[f[i] * g[k^i], i is bit-subset of k]
+ *
+ * Complexity: O(log_n^2 2^log_n) = O(n log^2 n)
+ * It is allowed for `f` and `r` to be the same array.
+ *
+ * @param log_n - base-2 logarithm of the array length
+ */
+template<typename T>
+void fast_subset_convolution(T* r, T* f, T* g, int log_n) {
+    const uint32_t n = uint32_t(1) << log_n;
+    // n log_n memory allocation for ranked moebius transform and inversion
+    std::vector<std::vector<T>> f1(log_n + 1, std::vector<T>(n, zeroOf(f[0]))), g1 = f1, h1 = f1;
+    for (uint32_t w = 0; w < n; w++) {
+        f1[bit_cnt1(w)][w] = f[w];
+        g1[bit_cnt1(w)][w] = g[w];
+    }
+    for (int i = 0; i <= log_n; i++) {
+        fast_subset_sum(f1[i].data(), f1[i].data(), log_n);
+        fast_subset_sum(g1[i].data(), g1[i].data(), log_n);
+    }
+    for (int k = 0; k <= log_n; k++) {
+        for (int j = 0; j <= k; j++) {
+            for (uint32_t w = 0; w < n; w++) {
+                h1[k][w] += f1[j][w] * g1[k - j][w];
+            }
+        }
+    }
+    for (int i = 0; i <= log_n; i++) {
+        fast_subset_sum_inverse(h1[i].data(), h1[i].data(), log_n);
+    }
+    for (uint32_t w = 0; w < n; w++) {
+        r[w] = h1[bit_cnt1(w)][w];
     }
 }
 
