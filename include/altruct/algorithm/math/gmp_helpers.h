@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <iostream>
+#include <string>
+
 #include <gmpxx.h>
 #include "altruct/algorithm/math/base.h"
 #include "altruct/structure/math/modulo.h"
@@ -93,12 +95,13 @@ inline mpz operator % (const mpz& lhs, const int64_t& rhs) { return lhs % int64_
 inline mpz operator % (const int64_t& lhs, const mpz& rhs) { return int64_to_mpz(lhs) % rhs; }
 //template<> inline int64_t altruct::math::modulo_mul(int64_t x, int64_t y, int64_t M) { return z_mulmod(x, y, M); }
 
-template<> inline mpz altruct::math::sqrtT(mpz x, mpz) { return z_sqrt(x); }
+template<> inline mpz altruct::math::sqrtT(mpz x, mpz, size_t) { return z_sqrt(x); }
 template<> inline mpz altruct::math::modulo_normalize(const mpz& v, const mpz& M) { mpz r = v % M; return (r < 0) ? (r + M) : r; }
 template<> inline mpz altruct::math::modulo_add(const mpz& x, const mpz& y, const mpz& M) { mpz r = x + y; return (r < M) ? r : (r - M); }
 template<> inline mpz altruct::math::modulo_sub(const mpz& x, const mpz& y, const mpz& M) { mpz r = x - y; return (r < 0) ? (r + M) : r; }
 template<> inline mpz altruct::math::modulo_neg(const mpz& v, const mpz& M) { return (v == 0) ? v : (M - v); }
 template<> inline mpz altruct::math::modulo_mul(const mpz& x, const mpz&y, const mpz& M) { return (x * y) % M; }
+template<> inline mpz altruct::math::modulo_gcd_ex(const mpz& n1, const mpz& n2, mpz& ni1, mpz& ni2) { return modulo_gcd_ex_int(n1, n2, ni1, ni2); }
 template<> inline mpz altruct::math::modulo_inv(const mpz& v, const mpz& M) { return altruct::math::modulo_inv_int(v, M); }
 template<> inline mpz altruct::math::modulo_div(const mpz& x, const mpz& y, const mpz& M) { return altruct::math::modulo_div_int(x, y, M); }
 template<> inline mpz altruct::math::modulo_power(const mpz& x, const mpz& y, const mpz& M) { return z_powmod(x, y, M); }
