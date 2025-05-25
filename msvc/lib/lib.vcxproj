@@ -107,6 +107,7 @@
     <ClInclude Include="..\..\include\altruct\structure\graph\graph.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\clifford3.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\complex.h" />
+    <ClInclude Include="..\..\include\altruct\structure\math\factorial_holder.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\fenwick_tree.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\fraction.h" />
     <ClInclude Include="..\..\include\altruct\structure\math\galois_field_2.h" />

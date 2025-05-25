@@ -389,5 +389,8 @@
     <ClInclude Include="..\..\include\altruct\io\stream_tokenizer.h">
       <Filter>include\altruct\io</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\altruct\structure\math\factorial_holder.h">
+      <Filter>include\altruct\structure\math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -89,6 +89,7 @@
     <ClCompile Include="..\..\test\structure\math\clifford3_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\complex_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\double_int_test.cpp" />
+    <ClCompile Include="..\..\test\structure\math\factorial_holder_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fenwick_tree_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\fraction_test.cpp" />
     <ClCompile Include="..\..\test\structure\math\galois_field_2_test.cpp" />

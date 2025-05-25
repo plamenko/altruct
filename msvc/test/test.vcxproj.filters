@@ -262,6 +262,9 @@
     <ClCompile Include="..\..\test\io\stream_tokenizer_test.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\structure\math\factorial_holder_test.cpp">
+      <Filter>structure\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="algorithm">
