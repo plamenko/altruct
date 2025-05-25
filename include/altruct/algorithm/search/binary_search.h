@@ -41,7 +41,7 @@ template<typename X, typename F>
 X binary_search_num(X lo, X hi, X eps, F predicate) {
     auto prev_mid = hi;
     while ((hi - lo) >= eps) {
-        auto mid = lo + (hi - lo) / 2;
+        X mid = lo + (hi - lo) / 2;
         if (mid == prev_mid) break;
         if (predicate(mid)) {
             hi = mid;
