@@ -5,6 +5,8 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 
 #include "altruct/algorithm/math/triples.h"
@@ -15,6 +17,7 @@
 #include "altruct/structure/math/clifford3.h"
 #include "altruct/structure/math/pga.h"
 #include "altruct/structure/math/symbolic.h"
+#include "altruct/structure/math/vector2d.h"
 
 /** Forward declarations */
 template<typename T1, typename T2>
@@ -36,6 +39,8 @@ template<typename T, uint64_t ID, int STORAGE_TYPE>
 std::ostream& operator << (std::ostream& os, const altruct::math::modulo<T, ID, STORAGE_TYPE>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rhs);
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::vector2d<T>& rhs);
 template<typename T>
 std::ostream& operator << (std::ostream& os, const altruct::math::matrix<T>& rhs);
 template<typename T=std::string>
@@ -126,6 +131,13 @@ std::ostream& operator << (std::ostream& os, const std::set<T, P, A>& container)
 /** std::ostream specialization for std::map */
 template<typename K, typename V, typename P, typename A>
 std::ostream& operator << (std::ostream& os, const std::map<K, V, P, A>& container) { return output_container(os, container); }
+/** std::ostream specialization for std::unordered_set */
+template<typename T, typename P, typename A>
+std::ostream& operator << (std::ostream& os, const std::unordered_set<T, P, A>& container) { return output_container(os, container); }
+/** std::ostream specialization for std::unordered_map*/
+template<typename K, typename V, typename P, typename A>
+std::ostream& operator << (std::ostream& os, const std::unordered_map<K, V, P, A>& container) { return output_container(os, container); }
+
 
 /** std::ostream specialization for altruct::math::triple */
 template<typename T>
@@ -192,6 +204,12 @@ std::ostream& operator << (std::ostream& os, const altruct::math::polynom<T>& rh
         }
         return os;
     }
+}
+
+/** std::ostream specialization for vector2d */
+template<typename T>
+std::ostream& operator << (std::ostream& os, const altruct::math::vector2d<T>& rhs) {
+    return os << "{" << rhs.x << ", " << rhs.y << "}";
 }
 
 /** std::ostream specialization for altruct::math::matrix */
