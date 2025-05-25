@@ -123,11 +123,11 @@ public:
     // s(x)*x^l - shifts coefficients of s(x) by l places
     series shift(int l) const {
         if (l < 0) {
-            polynom<T> t{ p.c.begin() - l, p.c.end() };
+            polynom<T> t(p.c.begin() - l, p.c.end());
             t.c.insert(t.c.end(), -l, p.ZERO_COEFF);
             return series(t, this->N());
         } else {
-            polynom<T> t{ p.c.begin(), p.c.end() - l };
+            polynom<T> t(p.c.begin(), p.c.end() - l);
             t.c.insert(t.c.begin(), l, p.ZERO_COEFF);
             return series(t, this->N());
         }
@@ -352,6 +352,11 @@ public:
         return s;
     }
 
+    // identity coefficient
+    T id_coeff() const {
+        return p.id_coeff();
+    }
+
     // Sum[f(n) * x^n, n]
     template<typename F>
     static series of(F f, int _N = 0) {
@@ -361,10 +366,26 @@ public:
         }
         return s;
     }
-
-    // identity coefficient
-    T id_coeff() const {
-        return p.id_coeff();
+    
+    /**
+     * Finds root `R` of `F(R) == 0 (mod x^N)` using Newton's iterative method.
+     *
+     * @param R0       - R (mod x)
+     * @param F_div_dF - F_div_dF(R_k) = F(R_k) / F'(R_k)
+     */
+    template<typename T, typename FUNC>
+    static series find_root(T R0, int N, const FUNC& F_div_dF) {
+        typedef series<T, 0, series_storage::INSTANCE> serx;
+        auto R = serx({ R0 }, 1); // R == R0 (mod x)
+        // in each step we double the number of coefficients
+        while (R.N() < N) {
+            // R == Rk (mod x^(2^k))
+            // R_k+1 = R_k - F(R_k) / F'(R_k)
+            // R_k+1 = R_k - F_div_dF(R_k)
+            R.resize(std::min(R.N() * 2, N));
+            R -= F_div_dF(R);
+        }
+        return series(std::move(R.p), N);
     }
 };
 
