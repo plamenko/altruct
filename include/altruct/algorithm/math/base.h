@@ -260,29 +260,29 @@ T sqT(T x) {
  * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
-T sqrtT(T x, T eps = T(1)) {
-    if (x < 0) return -sqrtT<T>(-x, eps);
+T sqrtT(T x, T eps = T(1), size_t max_iter = 0) {
+    if (x < 0) return -sqrtT<T>(-x, eps, max_iter);
     if (x == 0) return 0;
     if (x == 1) return 1;
     T q1 = x / 2;
     T q2 = x / q1;
-    while (absT(T(q1 - q2)) > eps) {
+    while (absT(T(q1 - q2)) > eps && --max_iter > 0) {
         q1 = (q1 + q2) / 2;
         q2 = x / q1;
     }
     return minT(q1, q2);
 }
-template<> inline float sqrtT(float x, float) { return sqrt(x); }
-template<> inline double sqrtT(double x, double) { return sqrt(x); }
-template<> inline long double sqrtT(long double x, long double) { return sqrt(x); }
-template<> inline int8_t sqrtT(int8_t x, int8_t) { return isqrt(x); }
-template<> inline uint8_t sqrtT(uint8_t x, uint8_t) { return isqrt(x); }
-template<> inline int16_t sqrtT(int16_t x, int16_t) { return isqrt(x); }
-template<> inline uint16_t sqrtT(uint16_t x, uint16_t) { return isqrt(x); }
-template<> inline int32_t sqrtT(int32_t x, int32_t) { return isqrt(x); }
-template<> inline uint32_t sqrtT(uint32_t x, uint32_t) { return isqrt(x); }
-template<> inline int64_t sqrtT(int64_t x, int64_t) { return isqrt(x); }
-template<> inline uint64_t sqrtT(uint64_t x, uint64_t) { return isqrt(x); }
+template<> inline float sqrtT(float x, float, size_t) { return sqrt(x); }
+template<> inline double sqrtT(double x, double, size_t) { return sqrt(x); }
+template<> inline long double sqrtT(long double x, long double, size_t) { return sqrt(x); }
+template<> inline int8_t sqrtT(int8_t x, int8_t, size_t) { return isqrt(x); }
+template<> inline uint8_t sqrtT(uint8_t x, uint8_t, size_t) { return isqrt(x); }
+template<> inline int16_t sqrtT(int16_t x, int16_t, size_t) { return isqrt(x); }
+template<> inline uint16_t sqrtT(uint16_t x, uint16_t, size_t) { return isqrt(x); }
+template<> inline int32_t sqrtT(int32_t x, int32_t, size_t) { return isqrt(x); }
+template<> inline uint32_t sqrtT(uint32_t x, uint32_t, size_t) { return isqrt(x); }
+template<> inline int64_t sqrtT(int64_t x, int64_t, size_t) { return isqrt(x); }
+template<> inline uint64_t sqrtT(uint64_t x, uint64_t, size_t) { return isqrt(x); }
 
 /**
  * Tests whether `x` is a square.
@@ -307,28 +307,28 @@ T cbT(T x) {
  * Base implementation uses the Newton-Raphson method in O(log3(n)).
  */
 template<typename T>
-T cbrtT(T x, T eps = T(1)) {
-    if (x < 0) return -cbrtT<T>(-x, eps);
+T cbrtT(T x, T eps = T(1), size_t max_iter = 0) {
+    if (x < 0) return -cbrtT<T>(-x, eps, max_iter);
     if (x == 0) return 0;
     if (x == 1) return 1;
     T r0 = 0;
     T r1 = sqrtT(x, eps);
     T r2 = x / sqT(r1);
-    while (r1 != r0 && absT(T(r1 - r2)) > eps) {
+    while (r1 != r0 && absT(T(r1 - r2)) > eps && --max_iter > 0) {
         r0 = r1;
         r1 = (r1 + r1 + r2) / 3;
         r2 = x / sqT(r1);
     }
     return minT(r1, r2);
 }
-template<> inline float cbrtT(float x, float) { return cbrt(x); }
-template<> inline double cbrtT(double x, double) { return cbrt(x); }
-template<> inline int16_t cbrtT(int16_t x, int16_t) { return icbrt(x); }
-template<> inline uint16_t cbrtT(uint16_t x, uint16_t) { return icbrt(x); }
-template<> inline int32_t cbrtT(int32_t x, int32_t) { return icbrt(x); }
-template<> inline uint32_t cbrtT(uint32_t x, uint32_t) { return icbrt(x); }
-template<> inline int64_t cbrtT(int64_t x, int64_t) { return icbrt(x); }
-template<> inline uint64_t cbrtT(uint64_t x, uint64_t) { return icbrt(x); }
+template<> inline float cbrtT(float x, float, size_t) { return cbrt(x); }
+template<> inline double cbrtT(double x, double, size_t) { return cbrt(x); }
+template<> inline int16_t cbrtT(int16_t x, int16_t, size_t) { return icbrt(x); }
+template<> inline uint16_t cbrtT(uint16_t x, uint16_t, size_t) { return icbrt(x); }
+template<> inline int32_t cbrtT(int32_t x, int32_t, size_t) { return icbrt(x); }
+template<> inline uint32_t cbrtT(uint32_t x, uint32_t, size_t) { return icbrt(x); }
+template<> inline int64_t cbrtT(int64_t x, int64_t, size_t) { return icbrt(x); }
+template<> inline uint64_t cbrtT(uint64_t x, uint64_t, size_t) { return icbrt(x); }
 
 /**
  * Tests whether `x` is a cube.
