@@ -22,7 +22,7 @@ void range(It begin, It end, T step = T(1)) {
     }
 }
 template<typename T>
-std::vector<T> range(int n, T step = T(1)) {
+std::vector<T> range(size_t n, T step = T(1)) {
     std::vector<T> v(n, step);
     range(v.begin(), v.end(), step);
     return v;
@@ -41,7 +41,7 @@ void powers(It begin, It end, T base) {
     }
 }
 template<typename T>
-std::vector<T> powers(int n, T base) {
+std::vector<T> powers(size_t n, T base) {
     std::vector<T> v(n, base);
     powers(v.begin(), v.end(), base);
     return v;
@@ -60,7 +60,7 @@ void factorials(It begin, It end, T id = T(1)) {
     }
 }
 template<typename T>
-std::vector<T> factorials(int n, T id = T(1)) {
+std::vector<T> make_factorials(size_t n, T id = T(1)) {
     std::vector<T> v(n, id);
     factorials(v.begin(), v.end(), id);
     return v;
@@ -70,22 +70,24 @@ std::vector<T> factorials(int n, T id = T(1)) {
  * Builds the inverse factorial look-up table up to `n`.
  *
  * `v[i] = 1 / i!`
+ * `k!` and `k` can be provided to avoid computing `n!` from scratch
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
-void inv_factorials(It begin, It end, T id = T(1)) {
-    T fact = id, i = id;
-    for (It it = begin; it != end; ++it) {
-        fact *= i; i += id;
+void inv_factorials(It begin, It end, T fact_k = T(1), size_t k = 1) {
+    if (k == 0) k = 1;
+    T id = identityOf(fact_k), val_k = castOf(fact_k, k);
+    for (size_t n = std::distance(begin, end); ++k < n;) {
+        val_k += id, fact_k *= val_k;
     }
-    T ifact = id / fact;
+    T ifact = id / fact_k;
     for (It it = end; it != begin; ) {
-        i -= id; ifact *= i; *--it = ifact;
+        *--it = ifact; ifact *= val_k; val_k -= id;
     }
 }
 template<typename T>
-std::vector<T> inv_factorials(int n, T id = T(1)) {
-    std::vector<T> v(n, id);
-    inv_factorials(v.begin(), v.end(), id);
+std::vector<T> make_inv_factorials(size_t n, T fact_k = T(1), size_t k = 1) {
+    std::vector<T> v(n, identityOf(fact_k));
+    inv_factorials(v.begin(), v.end(), fact_k, k);
     return v;
 }
 
@@ -95,16 +97,20 @@ std::vector<T> inv_factorials(int n, T id = T(1)) {
  * `v[i] = 1 / i`
  */
 template<typename It, typename T = typename std::iterator_traits<It>::value_type>
-void inverses(It begin, It end, T id = T(1)) {
-    inv_factorials(begin, end, id);
+void inverses_from_ifact(It begin, It end, T id = T(1)) {
     T fact = id, i = id;
-    *begin = zeroT<T>::of(id);
+    *begin = zeroOf(id);
     for (It it = ++begin; it != end; ++it) {
         *it *= fact; fact *= i; i += id;
     }
 }
+template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+void inverses(It begin, It end, T id = T(1)) {
+    inv_factorials(begin, end, id);
+    inverses_from_ifact(begin, end, id);
+}
 template<typename T>
-std::vector<T> inverses(int n, T id = T(1)) {
+std::vector<T> make_inverses(size_t n, T id = T(1)) {
     std::vector<T> v(n, id);
     inverses(v.begin(), v.end(), id);
     return v;

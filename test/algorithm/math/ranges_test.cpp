@@ -29,21 +29,35 @@ TEST(ranges_test, factorials) {
     vector<modx> expected{ 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600, 227020758, 178290591, 674358851 };
     vector<modx> table(16); factorials(table.begin(), table.end(), modx(1, P));
     EXPECT_EQ(expected, table);
-    EXPECT_EQ(expected, factorials(16, modx(1, P)));
+    EXPECT_EQ(expected, make_factorials(16, modx(1, P)));
 }
 
 TEST(ranges_test, inv_factorials) {
     vector<modx> expected{ 1, 1, 500000004, 166666668, 41666667, 808333339, 301388891, 900198419, 487524805, 831947206, 283194722, 571199524, 380933296, 490841026, 320774361, 821384963 };
     vector<modx> table(16); inv_factorials(table.begin(), table.end(), modx(1, P));
     EXPECT_EQ(expected, table);
-    EXPECT_EQ(expected, inv_factorials(16, modx(1, P)));
+    EXPECT_EQ(expected, make_inv_factorials(16, modx(1, P)));
+    vector<modx> expected17{ 1, 1, 9, 3, 5, 1, 3, 15, 4, 8, 11, 1, 10, 6, 15, 1, 16 };
+    
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(1, 17)));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(1, 17), 0));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(1, 17), 1));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(2, 17), 2));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(6, 17), 3));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(7, 17), 4));
+    EXPECT_EQ(expected17, make_inv_factorials(17, modx(16, 17), 16));
 }
 
 TEST(ranges_test, inverses) {
     vector<modx> expected{ 0, 1, 500000004, 333333336, 250000002, 400000003, 166666668, 142857144, 125000001, 111111112, 700000005, 818181824, 83333334, 153846155, 71428572, 466666670 };
-    vector<modx> table(16); inverses(table.begin(), table.end(), modx(1, P));
-    EXPECT_EQ(expected, table);
-    EXPECT_EQ(expected, inverses(16, modx(1, P)));
+    vector<modx> actual(16); inverses(actual.begin(), actual.end(), modx(1, P));
+    EXPECT_EQ(expected, actual);
+    EXPECT_EQ(expected, make_inverses(16, modx(1, P)));
+
+    vector<modx> expected17{ 0, 1, 9, 6, 13, 7, 3, 5, 15, 2, 12, 14, 10, 4, 11, 8, 16 };
+    const auto ifact17 = make_inv_factorials(17, modx(1, 17));
+    vector<modx> actual17 = ifact17; inverses_from_ifact(actual17.begin(), actual17.end(), modx(1, 17));
+    EXPECT_EQ(expected17, actual17);
 }
 
 TEST(ranges_test, power) {
@@ -83,7 +97,7 @@ TEST(ranges_test, accumulate) {
 
 TEST(ranges_test, differentiate) {
     vector<modx> expected{ 1, 0, 1, 4, 18, 96, 600, 4320, 35280, 322560, 3265920, 36288000, 439084800, 748019165, 951269840, 496068260 };
-    auto table = factorials(16, modx(1, P));
+    auto table = make_factorials(16, modx(1, P));
     differentiate(table.begin(), table.end());
     EXPECT_EQ(expected, table);
 }
