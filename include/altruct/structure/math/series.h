@@ -1,6 +1,8 @@
 #pragma once
 
 #include "altruct/structure/math/polynom.h"
+#include "altruct/algorithm/math/ranges.h"
+
 
 namespace altruct {
 namespace math {
@@ -118,6 +120,22 @@ public:
             s[i] *= rhs[i];
         }
         return s;
+    }
+    // pointwise inverse of the coefficients
+    template<bool IS_FIELD>
+    series pointwise_inv() const {
+        series s = *this;
+        if (IS_FIELD) {
+            invert_field(s.p.c.begin(), s.p.c.end(), id_coeff());
+        } else {
+            invert(s.p.c.begin(), s.p.c.end(), id_coeff());
+        }
+        return s;
+    }
+    // pointwise division of the coefficients
+    template<bool IS_FIELD>
+    series pointwise_div(const series& rhs) const {
+        return pointwise_mul(rhs.pointwise_inv<IS_FIELD>());
     }
 
     // s(x)*x^l - shifts coefficients of s(x) by l places
