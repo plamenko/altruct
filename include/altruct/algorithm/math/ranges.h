@@ -141,6 +141,33 @@ void invert(It begin, It end, T id = T(1)) {
         if (*it != e0) *it = id / *it;
     }
 }
+/**
+ * Inverts the table elements with respect to multiplication.
+ * Note: all elements must be invertible (i.e. non-zero field elements)
+ * Uses 3*n multiplications and a single division!
+ * Useful for modulo arithmetic where inversion is much slower than multiplication.
+ *
+ * `v[i] <- 1 / v[i]`
+ */
+template<typename It, typename T = typename std::iterator_traits<It>::value_type>
+void invert_field(It begin, It end, T id = T(1)) {
+    if (begin == end) return;
+    // compute cumulative products
+    std::vector<T> vp(begin, end);
+    for (size_t i = 1; i < vp.size(); i++) {
+        vp[i] *= vp[i - 1];
+    }
+    // invert the cumulative product
+    T p = id / vp.back();
+    // 
+    It it = end;
+    for (size_t i = vp.size() - 1; i > 0; i--) {
+        --it; T t = *it;
+        *it = p * vp[i - 1];
+        p *= t;
+    }
+    *--it = p;
+}
 
 /**
  * Negates the table elements.

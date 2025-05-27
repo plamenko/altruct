@@ -9,6 +9,14 @@ using namespace altruct::math;
 const int P = 1000000007;
 typedef moduloX<int> modx;
 
+namespace {
+vector<modx> make_vector_modx(std::initializer_list<int> l, int M) {
+    vector<modx> r(l.begin(), l.end());
+    for (modx& e : r) e.M() = M;
+    return r;
+}
+} // namespace
+
 TEST(ranges_test, range) {
     vector<modx> expected{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
     vector<modx> expected5{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75 };
@@ -71,6 +79,13 @@ TEST(ranges_test, invert) {
     vector<modx> expected{ 0, 1, 500000004, 333333336, 250000002, 400000003, 166666668, 142857144, 125000001, 111111112, 700000005, 818181824, 83333334, 153846155, 71428572, 466666670 };
     auto table = range(16, modx(1, P));
     invert(table.begin(), table.end(), modx(1, P));
+    EXPECT_EQ(expected, table);
+}
+
+TEST(ranges_test, invert_field) {
+    vector<modx> expected = make_vector_modx({ 3, 7, 2, 8, 13, 16, 11, 4, 10, 9, 12, 6, 5, 1, 15, 14 }, 17);
+    vector<modx> table = make_vector_modx({ 6, 5, 9, 15, 4, 16, 14, 13, 12, 2, 10, 3, 7, 1, 8, 11 }, 17);
+    invert_field(table.begin(), table.end(), modx(1, 17));
     EXPECT_EQ(expected, table);
 }
 
