@@ -1066,5 +1066,25 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
     return F_k;
 }
 
+/* Calculates `Sum[Boole[GCD[P, k]==1] f[k], {k, 1, n}]`
+ *
+ * Uses simple Inclusion-Exclusion over primes p in P.
+ *
+ * Complexity:
+ *   O(2^nu(P)) - where nu(P) is the number of distinct primes in P
+ *   O(m log m) - total complexity when invoked for each P up to m
+ *
+ * @param pb, pe - range of distinct primes in P that `k` should be coprime with
+ *                 P = product of all p in [pb, pe)
+ * @param n - bound of summation (inclusive)
+ * @param sf - R sf(I n, I m = 1) = Sum[f[k*m], {k, 1, n}]
+ */
+template<typename R, typename I, typename PP, typename F>
+R coprime_sum(PP pb, PP pe, I n, F sf, I m = 1) {
+    if (pb == pe) return sf(n, m);
+    auto p = *pb; ++pb;
+    return coprime_sum<R, I, PP, F>(pb, pe, n, sf, m) - coprime_sum<R, I, PP, F>(pb, pe, n / p, sf, m * p);
+}
+
 } // math
 } // altruct

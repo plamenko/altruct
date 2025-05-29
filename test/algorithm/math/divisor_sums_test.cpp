@@ -307,3 +307,26 @@ TEST(divisor_sums_test, sum_multiplicative) {
         EXPECT_EQ(v_mertens[k], sum_multiplicative_34(sg1, g, k, pa.data(), (int)pa.size(), identityOf(zero))) << "i:" << i;
     }
 }
+
+TEST(divisor_sums_test, coprime_sum) {
+    vector<int> vp = { 2, 3, 5 };
+    
+    // expected_L = Sum[Boole[GCD[2*3*5, k]==1] k^L, {k, 1, n}]
+    vector<int> expected0 = { 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 12, 12, 12, 12, 13, 13, 14, 14 };
+    vector<int> expected1 = { 0, 1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 19, 19, 32, 32, 32, 32, 49, 49, 68, 68, 68, 68, 91, 91, 91, 91, 91, 91, 120, 120, 151, 151, 151, 151, 151, 151, 188, 188, 188, 188, 229, 229, 272, 272, 272, 272, 319, 319, 368, 368 };
+    vector<int> expected2 = { 0, 1, 1, 1, 1, 1, 1, 50, 50, 50, 50, 171, 171, 340, 340, 340, 340, 629, 629, 990, 990, 990, 990, 1519, 1519, 1519, 1519, 1519, 1519, 2360, 2360, 3321, 3321, 3321, 3321, 3321, 3321, 4690, 4690, 4690, 4690, 6371, 6371, 8220, 8220, 8220, 8220, 10429, 10429, 12830, 12830 };
+    vector<int> expected3 = { 0, 1, 1, 1, 1, 1, 1, 344, 344, 344, 344, 1675, 1675, 3872, 3872, 3872, 3872, 8785, 8785, 15644, 15644, 15644, 15644, 27811, 27811, 27811, 27811, 27811, 27811, 52200, 52200, 81991, 81991, 81991, 81991, 81991, 81991, 132644, 132644, 132644, 132644, 201565, 201565, 281072, 281072, 281072, 281072, 384895, 384895, 502544, 502544 };
+    
+    // f_L = Sum[(m*k)^L, {k, 1, n}]
+    auto sf0 = [](int n, int m) { return n; };
+    auto sf1 = [](int n, int m) { return int64_t(m) * (int64_t(n) * (n + 1) / 2); };
+    auto sf2 = [](int n, int m) { return int64_t(m) * m * (int64_t(n) * (n + 1) * (n * 2 + 1) / 6); };
+    auto sf3 = [](int n, int m) { return int64_t(m) * m * m * (int64_t(n) * n * (n + 1) * (n + 1) / 4); };
+    
+    for (int n = 0; n <= 50; n++) {
+        EXPECT_EQ(expected0[n], coprime_sum<int64_t>(vp.begin(), vp.end(), n, sf0)) << n;
+        EXPECT_EQ(expected1[n], coprime_sum<int64_t>(vp.begin(), vp.end(), n, sf1)) << n;
+        EXPECT_EQ(expected2[n], coprime_sum<int64_t>(vp.begin(), vp.end(), n, sf2)) << n;
+        EXPECT_EQ(expected3[n], coprime_sum<int64_t>(vp.begin(), vp.end(), n, sf3)) << n;
+    }
+}
