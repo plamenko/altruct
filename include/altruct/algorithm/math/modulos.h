@@ -5,6 +5,7 @@
 #include "altruct/structure/math/prime_holder.h"
 
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 #include <algorithm>
@@ -216,22 +217,42 @@ std::vector<I> sqrt_mod(I y, const std::vector<std::pair<P, int>>& vf) {
 }
 
 /**
+ * Multiplicative order of x modulo `m`
+ *
+ * @param m - modulus
+ * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
+ * @param phi_factors - unique prime factors of `phi`
+ * @return - smallest k such that a^k=1 (mod m)
+ */
+template<typename I, typename P>
+I multiplicative_order(I a, I m, I phi, const std::vector<P>& phi_factors) {
+    I k = phi;
+    for (const P& p : phi_factors) {
+        while (k % p == 0 && modulo_power(a, I(k / p), m) == 1) k /= p;
+    }
+    return k;
+}
+
+/**
  * Primitive root modulo `m`
  *
  * `m` must be 2, 4, p^k or 2p^k.
+ *
+ * A root `g` generates all the elements coprime to `m`
+ * as `g^k` for `0 <= k < phi`
  *
  * @param m - modulus
  * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
  * @param phi_factors - unique prime factors of `phi`
  * @return - root or 0 if there is none
  */
-template<typename I>
-I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
+template<typename I, typename P>
+I primitive_root(I m, I phi, const std::vector<P> &phi_factors) {
     typedef moduloX<I> modx;
     for (I g = 1; g < m; g += 1) {
         if (gcd(g, m) > 1) continue;
         bool primitive = true;
-        for (const I& p : phi_factors) {
+        for (const P& p : phi_factors) {
             primitive &= (powT(modx(g, m), I(phi / p)) != 1);
         }
         if (primitive) return g;
@@ -242,10 +263,16 @@ I primitive_root(I m, I phi, const std::vector<I> &phi_factors) {
 /**
  * Primitive root of unity modulo `m`
  *
+ * `r` with maximal `k` where `r^k=1 (mod m)`
+ * 
+ * While a primitive root that generates all elements
+ * coprime to `m` might not exist, `r` always exists.
+ * When primitive root does exist, `r = g` holds.
+ *
  * @param m - modulus
  * @param lam - `carmichael_lambda(m)`;
  * @param lam_factors - unique prime factors of `lam`
- * @return - root or 0 if there is none
+ * @return - root
  */
 template<typename I>
 I primitive_root_of_unity(I m, I lam, const std::vector<I> &lam_factors) {
@@ -320,6 +347,200 @@ std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
         r *= w;
     }
     return sr;
+}
+
+/**
+ * Discrete logarithm modulo `m`; brute-force in O(m)
+ *
+ * `a^x = b (mod m)`
+ *
+ * @return smallest x
+ */
+template <typename I>
+I discrete_log_brute_force(I a, I b, I m) {
+    I a_x = 1;
+    for (I x = 0; x < m; x++) {
+        if (a_x == b) return x;
+        a_x = modulo_mul(a_x, a, m);
+    }
+    return -1;
+}
+
+/**
+ * Discrete logarithm modulo `m`, in O(sqrt(n))
+ *
+ * `a^x = b (mod m)`, `a` and `b` comprime to `m`,
+ * order of `a` mod `m` is `n`
+ *
+ * @return x
+ */
+template <typename I>
+I discrete_log_baby_giant(I a, I b, I m, I n) {
+    I q = sqrtT(n) + 1;
+    std::unordered_map<I, I> baby;
+    baby.reserve(q + 1);
+    // baby steps: a^j (mod m)
+    I cur = 1;
+    for (I j = 0; j < q; ++j) {
+        if (!baby.emplace(cur, j).second) break;
+        cur = modulo_mul(cur, a, m);
+    }
+    I alpha = modulo_power(a, n - q, m); // a^-q (mod m)
+    // giant steps: b * alpha^i (mod m)
+    I gamma = b;
+    for (I i = 0; i < q; ++i) {
+        if (baby.count(gamma)) {
+            return i * q + baby[gamma];
+        }
+        gamma = modulo_mul(gamma, alpha, m);
+    }
+    return -1;
+}
+
+/**
+ * Discrete logarithm modulo odd prime `p`, in O(sqrt(p))
+ *
+ * `a^x = b (mod p)`, `a` and `b` comprime to `p`
+ *
+ * @return x
+ */
+template <typename I>
+I discrete_log_shanks(I a, I b, I p) {
+    return discrete_log_baby_giant(a, b, p, p - 1);
+}
+
+/**
+ * Discrete logarithm modulo odd prime `p`, in O(sqrt(p))
+ *
+ *   a^x = b (mod p), a and b comprime to p
+ *
+ * @return x
+ */
+template <typename I>
+I discrete_log_oddp(I a, I b, I p) {
+    // brute force for small p
+    if (p < 1100) return discrete_log_brute_force(a, b, p);
+    return discrete_log_shanks(a, b, p);
+}
+
+/**
+ * Discrete logarithm modulo `2^s`, in O(s)
+ *
+ *   a^x = b (mod 2^s), a and b odd
+ *
+ * @return x
+ */
+template <typename I>
+I discrete_log_p2(I a, I b, int s) {
+    I m = powT<I>(2, s);
+    I o = 1;
+    I ao = a;
+    int t = 0;
+    while (ao != 1) {
+        ao = modulo_mul(ao, ao, m);
+        o *= 2;
+        t++;
+    }
+    I ai = modulo_inv(a, m);
+    I x = 0;
+    for (int i = 0; i < t; i++) {
+        I e = o >> (i + 1);
+        I y = modulo_power(modulo_mul(b, modulo_power(ai, x, m), m), e, m);
+        if (y != 1) x += I(1) << i;
+    }
+    return x;
+}
+
+/**
+ * Discrete logarithm modulo prime power `p^s`, in O(s*sqrt(p))
+ *
+ *   a^x = b (mod p^s), a and b comprime to p
+ *
+ * Note: this is not necessarily the smallest such x!
+ * Smallest one is `x % o` where `o = multiplicative_order(a, p^s)`
+ *
+ * Note: Operations can be done mod `m`, provided we work in a
+ * cyclic subgroup of Zm of order `p^s`.
+ *
+ * @param m - modulus `m` if different than `p^s`
+ * @return x
+ */
+template <typename I>
+I discrete_log_pp(I a, I b, I p, int s) {
+    if (s == 0) return 0;
+    if (a == 1) return 0;
+    if (b == 1) return 0;
+    if (a == b) return 1;
+    if (p == 2) return discrete_log_p2(a, b, s);
+    I x1 = discrete_log_oddp(a % p, b % p, p);
+    if (s == 1) return x1;
+    // Eric Bach - Discrete Logarithms and Factoring
+    I p1 = p - 1;
+    I phi = p1 * powT(p, s - 1);
+    I ps1 = powT(p, s - 1), ps = ps1 * p;
+    auto theta = [&](I c) { return (modulo_power(c, phi, ps * ps1) - 1) / ps; };
+    I ta = theta(a), tb = theta(b);
+    while (ta % p == 0 && tb % p == 0 && ps1 % p == 0) ta /= p, tb /= p, ps1 /= p;
+    I xs1 = modulo_mul(tb, modulo_inv(ta, ps1), ps1);
+    return chinese_remainder(x1, p1, xs1, ps1);
+}
+
+/**
+ * Discrete logarithm modulo `m`, in O(s*sqrt(p))
+ *
+ * `a^x = b (mod m)`, `a` and `b` comprime to `m`,
+ * order of `a` mod `m` is `p^s`
+ *
+ * @return x
+ */
+template <typename I>
+I discrete_log_order_pp(I a, I b, I m, I p, int s) {
+    if (s == 0) return 0;
+    if (a == 1) return 0;
+    if (b == 1) return 0;
+    if (a == b) return 1;
+    // Pohlig–Hellman algorithm
+    std::vector<I> pp(s + 1);
+    pp[0] = 1;
+    for (int k = 1; k <= s; k++) {
+        pp[k] = pp[k - 1] * p;
+    }
+    I ai = modulo_inv(a, m);
+    I x = 0;
+    I gamma = modulo_power(a, pp[s - 1], m);
+    for (int k = 0; k < s; k++) {
+        I bk = modulo_power(modulo_mul(modulo_power(ai, x, m), b, m), pp[s - 1 - k], m);
+        I d = discrete_log_baby_giant(gamma, bk, m, p);
+        x += pp[k] * d;
+    }
+    return x;
+}
+
+/**
+ * Discrete logarithm modulo `m`, in O(Sum[s_i*sqrt(p_i)])
+ * Where:
+ *   `phi = Product[p_i^s_i]`
+ *   `a^x = b (mod m)`, `a` and `b` comprime to `m`
+ *
+ * @param m - modulus
+ * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
+ * @param phi_factors - unique prime factors of `phi`
+ * @return x
+ */
+template <typename I, typename P>
+I discrete_log(I a, I b, I m, I phi, const std::vector<P>& phi_factors) {
+    I o = multiplicative_order(a, m, phi, phi_factors);
+    I x = 0, n = 1;
+    for (const P& p : phi_factors) {
+        I d = o, pe = 1; int e = 0;
+        while (d % p == 0) d /= p, pe *= p, e++;
+        if (e == 0) continue;
+        I a_sub = modulo_power(a, d, m); // generator in subgroup
+        I b_sub = modulo_power(b, d, m); // target in subgroup
+        I x_pe = discrete_log_order_pp(a_sub, b_sub, m, p, e);
+        chinese_remainder(&x, &n, x_pe, pe);
+    }
+    return x;
 }
 
 } // math

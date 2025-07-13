@@ -155,6 +155,22 @@ TEST(modulos_test, sqrt_mod) {
     }
 }
 
+TEST(modulos_test, multiplicative_order) {
+    prime_holder prim(100);
+    for (int m = 2; m < prim.size(); m++) {
+        int phi = prim.phi(m);
+        auto phi_factors = prime_factors(prim.factor_integer(phi));
+        for (int a = 1; a < m; a++) {
+            if (gcd(a, m) != 1) continue;
+            int o = multiplicative_order(a, m, phi, phi_factors);
+            EXPECT_EQ(modulo_power(a, o, m), 1) << m << " " << a;
+            for (int k = 1; k < o; k++) {
+                EXPECT_NE(modulo_power(a, k, m), 1) << m << " " << a << " " << k;
+            }
+        }
+    }
+}
+
 TEST(modulos_test, primitive_root) {
     prime_holder prim(100);
     EXPECT_EQ(1, primitive_root(2, 1, vector<int>{ }));
@@ -207,4 +223,87 @@ TEST(modulos_test, kth_roots_of_unity) {
     EXPECT_EQ((set<int>{1, 17}), kth_roots_of_unity(18, 4, prim));
     EXPECT_EQ((set<int>{1}), kth_roots_of_unity(18, 5, prim));
     EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots_of_unity(18, 6, prim));
+}
+
+TEST(modulos_test, discrete_log_brute_force) {
+    for (int m = 2; m < 100; m++) {
+        for (int a = 1; a < m; a++) {
+            int a_x = 1;
+            for (int x = 0; x < m; x++) {
+                int xx = discrete_log_brute_force(a, a_x, m);
+                EXPECT_EQ(modulo_power(a, xx, m), a_x) << m << " " << a << " " << x;
+                a_x = modulo_mul(a_x, a, m);
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_baby_giant) {
+    for (int m = 2; m < 100; m++) {
+        for (int a = 1; a < m; a++) {
+            if (gcd(a, m) != 1) continue;
+            int n = 1;
+            for (int a_n = a; a_n != 1; a_n = modulo_mul(a_n, a, m)) {
+                n++;
+            }
+            int a_x = 1;
+            for (int x = 0; x < n; x++) {
+                int xx = discrete_log_baby_giant(a, a_x, m, n);
+                EXPECT_EQ(modulo_power(a, xx, m), a_x) << m << " " << a << " " << x;
+                a_x = modulo_mul(a_x, a, m);
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_shanks) {
+    prime_holder prim(300);
+    for (int p : prim.p()) {
+        for (int a = 1; a < p; a++) {
+            if (a % p == 0) continue;
+            int a_x = 1;
+            for (int x = 0; x == 0 || a_x != 1; x++) {
+                int xx = discrete_log_shanks(a, a_x, p);
+                EXPECT_EQ(modulo_power(a, xx, p), a_x) << p << " " << a << " " << x;
+                a_x = modulo_mul(a_x, a, p);
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_pp) {
+    int N = 300;
+    prime_holder prim(N);
+    for (int p : prim.p()) {
+        int ps = p;
+        for (int s = 1; ps < N; ps *= p, s++) {
+            for (int a = 1; a < ps; a++) {
+                if (a % p == 0) continue;
+                int a_x = 1;
+                for (int x = 0; x == 0 || a_x != 1; x++) {
+                    int xx = discrete_log_pp(a, a_x, p, s);
+                    EXPECT_EQ(modulo_power(a, xx, ps), a_x) << p << " " << s << " " << a << " " << x;
+                    a_x = modulo_mul(a_x, a, ps);
+                }
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log) {
+    int N = 300;
+    prime_holder prim(N);
+    for (int m = 2; m < N; m++) {
+        int phi = prim.phi(m);
+        auto phi_factors = prime_factors(prim.factor_integer(phi));
+        for (int a = 1; a < m; a++) {
+            if (gcd(a, m) != 1) continue;
+            int a_x = 1;
+            for (int x = 0; x == 0 || a_x != 1; x++) {
+                uint64_t xx = discrete_log(a, a_x, m, phi, phi_factors);
+                EXPECT_EQ(modulo_power(a, xx, m), a_x) << m << " " << a << " " << x;
+                a_x = modulo_mul(a_x, a, m);
+            }
+        }
+    }
 }
