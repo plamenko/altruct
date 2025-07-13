@@ -1081,7 +1081,7 @@ altruct::container::sqrt_map<int64_t, T> sum_multiplicative(const S1& s1, const 
  */
 template<typename R, typename I, typename PP, typename F>
 R coprime_sum(PP pb, PP pe, I n, F sf, I m = 1) {
-    if (pb == pe) return sf(n, m);
+    if (n == 0 || pb == pe) return sf(n, m);
     auto p = *pb; ++pb;
     return coprime_sum<R, I, PP, F>(pb, pe, n, sf, m) - coprime_sum<R, I, PP, F>(pb, pe, n / p, sf, m * p);
 }
