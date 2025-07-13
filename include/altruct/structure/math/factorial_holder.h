@@ -29,10 +29,10 @@ public:
     std::vector<T>& ifact() { return _ifact; }
     std::vector<T>& inv() { return _inv; }
 
-    T fact(size_t k) { return fact().at(k); }
-    T ifact(size_t k) { return ifact().at(k); }
-    T inv(size_t k) { return inv().at(k); }
-    T bin(size_t n, size_t k) {
+    T fact(size_t k) const { return _fact.at(k); }
+    T ifact(size_t k) const { return _ifact.at(k); }
+    T inv(size_t k) const { return _inv.at(k); }
+    T bin(size_t n, size_t k) const {
         if (k < 0 || k > n) return zeroOf(_fact[0]);
         return _fact[n] * _ifact[n - k] * _ifact[k];
     }
