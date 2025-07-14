@@ -217,20 +217,34 @@ std::vector<I> sqrt_mod(I y, const std::vector<std::pair<P, int>>& vf) {
 }
 
 /**
+ * Multiplicative order of `a` in a cyclic group of order `n`
+ *
+ * @param n
+ * @param n_factors - unique prime factors of `n`
+ * @return - smallest `k` such that `a^k = a^0`, `k` divides `n`
+ */
+template<typename G, typename I, typename P>
+I multiplicative_order_g(G a, I n, const std::vector<P>& n_factors) {
+    G id = identityOf(a);
+    I k = n;
+    for (const P& p : n_factors) {
+        while (k % p == 0 && powT(a, I(k / p)) == id) k /= p;
+    }
+    return k;
+}
+
+/**
  * Multiplicative order of x modulo `m`
  *
  * @param m - modulus
  * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
  * @param phi_factors - unique prime factors of `phi`
- * @return - smallest k such that a^k=1 (mod m)
+ * @return - smallest `k` such that `a^k = 1 (mod m)`
  */
 template<typename I, typename P>
 I multiplicative_order(I a, I m, I phi, const std::vector<P>& phi_factors) {
-    I k = phi;
-    for (const P& p : phi_factors) {
-        while (k % p == 0 && modulo_power(a, I(k / p), m) == 1) k /= p;
-    }
-    return k;
+    typedef moduloX<I> modx;
+    return multiplicative_order_g(modx(a, m), phi, phi_factors);
 }
 
 /**
@@ -350,51 +364,136 @@ std::set<I> kth_roots(I m, I k, I phi, I g, I l) {
 }
 
 /**
+ * Discrete logarithm in group; brute-force in O(max_iter)
+ *
+ * `a^x = b`
+ *
+ * @param max_iter - maximum number of iterations
+ * @return smallest `x`
+ */
+template <typename G, typename I>
+I discrete_log_brute_force_g(G a, G b, I max_iter) {
+    G a_x = identityOf(a);
+    for (I x = 0; x < max_iter; x++) {
+        if (a_x == b) return x;
+        a_x *= a;
+    }
+    return -1;
+}
+
+/**
+ * Discrete logarithm in cyclic group of order `n`; in O(sqrt(n))
+ *
+ * `a^x = b`, order of `a` is `n` (or its divisor)
+ *
+ * @return `x`
+ */
+template <typename G, typename I>
+I discrete_log_baby_giant_g(G a, G b, I n) {
+    I q = sqrtT(n) + 1;
+    std::unordered_map<G, I, hasherT<G>> baby;
+    // baby steps: a^j
+    G cur = identityOf(a);
+    for (I j = 0; j < q; ++j) {
+        if (!baby.emplace(cur, j).second) break;
+        cur *= a;
+    }
+    G alpha = powT(a, n - q); // a^-q
+    // giant steps: b * alpha^i
+    G gamma = b;
+    for (I i = 0; i < q; ++i) {
+        if (baby.count(gamma)) {
+            return i * q + baby[gamma];
+        }
+        gamma *= alpha;
+    }
+    return -1;
+}
+
+/**
+ * Discrete logarithm in cyclic group of order `p^s`, in O(s*sqrt(p))
+ *
+ * `a^x = b`, order of `a` is `p^s` with `p` prime
+ *
+ * @return `x`
+ */
+template <typename G, typename I>
+I discrete_log_order_pp_g(G a, G b, I p, int s) {
+    G id = identityOf(a);
+    if (s == 0) return 0;
+    if (a == id) return 0;
+    if (b == id) return 0;
+    if (a == b) return 1;
+    // Pohlig–Hellman algorithm
+    std::vector<I> pp(s + 1);
+    pp[0] = 1;
+    for (int k = 1; k <= s; k++) {
+        pp[k] = pp[k - 1] * p;
+    }
+    G ai = powT(a, pp[s] - 1); // a^-1
+    I x = 0;
+    G gamma = powT(a, pp[s - 1]);
+    for (int k = 0; k < s; k++) {
+        G bk = powT(powT(ai, x) * b, pp[s - 1 - k]);
+        I d = discrete_log_baby_giant_g(gamma, bk, p);
+        x += pp[k] * d;
+    }
+    return x;
+}
+
+/**
+ * Discrete logarithm in cyclic group of order `n`, in O(Sum[s_i*sqrt(p_i)])
+ * Where:
+ *   `n = Product[p_i^s_i]`
+ *   `a^x = b`
+ *
+ * @param n
+ * @param n_factors - unique prime factors of `n`
+ * @param out_o - optional output `o`, order of `a`, `o` divides `n`
+ * @return `x`
+ */
+template <typename G, typename I, typename P>
+I discrete_log_g(G a, G b, I n, const std::vector<P>& n_factors, I* out_o = nullptr) {
+    I o = multiplicative_order_g(a, n, n_factors);
+    I x = 0, q = 1;
+    for (const P& p : n_factors) {
+        I d = o, pe = 1; int e = 0;
+        while (d % p == 0) d /= p, pe *= p, e++;
+        if (e == 0) continue;
+        G a_sub = powT(a, d); // generator in subgroup
+        G b_sub = powT(b, d); // target in subgroup
+        I x_pe = discrete_log_order_pp_g(a_sub, b_sub, p, e);
+        chinese_remainder(&x, &q, x_pe, pe);
+    }
+    if (out_o) *out_o = o; // q == o at this point
+    return x;
+}
+
+/**
  * Discrete logarithm modulo `m`; brute-force in O(m)
  *
  * `a^x = b (mod m)`
  *
- * @return smallest x
+ * @return smallest `x`
  */
 template <typename I>
 I discrete_log_brute_force(I a, I b, I m) {
-    I a_x = 1;
-    for (I x = 0; x < m; x++) {
-        if (a_x == b) return x;
-        a_x = modulo_mul(a_x, a, m);
-    }
-    return -1;
+    typedef moduloX<I> modx;
+    return discrete_log_brute_force_g(modx(a, m), modx(b, m), m);
 }
 
 /**
  * Discrete logarithm modulo `m`, in O(sqrt(n))
  *
  * `a^x = b (mod m)`, `a` and `b` comprime to `m`,
- * order of `a` mod `m` is `n`
+ * order of `a` mod `m` is `n` (or its divisor)
  *
- * @return x
+ * @return `x`
  */
 template <typename I>
 I discrete_log_baby_giant(I a, I b, I m, I n) {
-    I q = sqrtT(n) + 1;
-    std::unordered_map<I, I> baby;
-    baby.reserve(q + 1);
-    // baby steps: a^j (mod m)
-    I cur = 1;
-    for (I j = 0; j < q; ++j) {
-        if (!baby.emplace(cur, j).second) break;
-        cur = modulo_mul(cur, a, m);
-    }
-    I alpha = modulo_power(a, n - q, m); // a^-q (mod m)
-    // giant steps: b * alpha^i (mod m)
-    I gamma = b;
-    for (I i = 0; i < q; ++i) {
-        if (baby.count(gamma)) {
-            return i * q + baby[gamma];
-        }
-        gamma = modulo_mul(gamma, alpha, m);
-    }
-    return -1;
+    typedef moduloX<I> modx;
+    return discrete_log_baby_giant_g(modx(a, m), modx(b, m), n);
 }
 
 /**
@@ -402,7 +501,7 @@ I discrete_log_baby_giant(I a, I b, I m, I n) {
  *
  * `a^x = b (mod p)`, `a` and `b` comprime to `p`
  *
- * @return x
+ * @return `x`
  */
 template <typename I>
 I discrete_log_shanks(I a, I b, I p) {
@@ -412,9 +511,9 @@ I discrete_log_shanks(I a, I b, I p) {
 /**
  * Discrete logarithm modulo odd prime `p`, in O(sqrt(p))
  *
- *   a^x = b (mod p), a and b comprime to p
+ * `a^x = b (mod p)`, `a` and `b` comprime to `p`
  *
- * @return x
+ * @return `x`
  */
 template <typename I>
 I discrete_log_oddp(I a, I b, I p) {
@@ -426,9 +525,9 @@ I discrete_log_oddp(I a, I b, I p) {
 /**
  * Discrete logarithm modulo `2^s`, in O(s)
  *
- *   a^x = b (mod 2^s), a and b odd
+ * `a^x = b (mod 2^s)`, `a` and `b` odd
  *
- * @return x
+ * @return `x`
  */
 template <typename I>
 I discrete_log_p2(I a, I b, int s) {
@@ -454,16 +553,12 @@ I discrete_log_p2(I a, I b, int s) {
 /**
  * Discrete logarithm modulo prime power `p^s`, in O(s*sqrt(p))
  *
- *   a^x = b (mod p^s), a and b comprime to p
+ * `a^x = b (mod p^s)`, `a` and `b` comprime to `p`
  *
- * Note: this is not necessarily the smallest such x!
+ * Note: this is not necessarily the smallest such `x`!
  * Smallest one is `x % o` where `o = multiplicative_order(a, p^s)`
  *
- * Note: Operations can be done mod `m`, provided we work in a
- * cyclic subgroup of Zm of order `p^s`.
- *
- * @param m - modulus `m` if different than `p^s`
- * @return x
+ * @return `x`
  */
 template <typename I>
 I discrete_log_pp(I a, I b, I p, int s) {
@@ -486,37 +581,6 @@ I discrete_log_pp(I a, I b, I p, int s) {
 }
 
 /**
- * Discrete logarithm modulo `m`, in O(s*sqrt(p))
- *
- * `a^x = b (mod m)`, `a` and `b` comprime to `m`,
- * order of `a` mod `m` is `p^s`
- *
- * @return x
- */
-template <typename I>
-I discrete_log_order_pp(I a, I b, I m, I p, int s) {
-    if (s == 0) return 0;
-    if (a == 1) return 0;
-    if (b == 1) return 0;
-    if (a == b) return 1;
-    // Pohlig–Hellman algorithm
-    std::vector<I> pp(s + 1);
-    pp[0] = 1;
-    for (int k = 1; k <= s; k++) {
-        pp[k] = pp[k - 1] * p;
-    }
-    I ai = modulo_inv(a, m);
-    I x = 0;
-    I gamma = modulo_power(a, pp[s - 1], m);
-    for (int k = 0; k < s; k++) {
-        I bk = modulo_power(modulo_mul(modulo_power(ai, x, m), b, m), pp[s - 1 - k], m);
-        I d = discrete_log_baby_giant(gamma, bk, m, p);
-        x += pp[k] * d;
-    }
-    return x;
-}
-
-/**
  * Discrete logarithm modulo `m`, in O(Sum[s_i*sqrt(p_i)])
  * Where:
  *   `phi = Product[p_i^s_i]`
@@ -525,22 +589,13 @@ I discrete_log_order_pp(I a, I b, I m, I p, int s) {
  * @param m - modulus
  * @param phi - `euler_phi(m)`; number of coprimes with `m` up to `m`
  * @param phi_factors - unique prime factors of `phi`
- * @return x
+ * @param out_o - optional output `o`, order of `a` mod `m`.
+ * @return `x`
  */
 template <typename I, typename P>
-I discrete_log(I a, I b, I m, I phi, const std::vector<P>& phi_factors) {
-    I o = multiplicative_order(a, m, phi, phi_factors);
-    I x = 0, n = 1;
-    for (const P& p : phi_factors) {
-        I d = o, pe = 1; int e = 0;
-        while (d % p == 0) d /= p, pe *= p, e++;
-        if (e == 0) continue;
-        I a_sub = modulo_power(a, d, m); // generator in subgroup
-        I b_sub = modulo_power(b, d, m); // target in subgroup
-        I x_pe = discrete_log_order_pp(a_sub, b_sub, m, p, e);
-        chinese_remainder(&x, &n, x_pe, pe);
-    }
-    return x;
+I discrete_log(I a, I b, I m, I phi, const std::vector<P>& phi_factors, I* out_o = nullptr) {
+    typedef moduloX<I> modx;
+    return discrete_log_g(modx(a, m), modx(b, m), phi, phi_factors, out_o);
 }
 
 } // math

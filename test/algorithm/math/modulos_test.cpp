@@ -10,6 +10,19 @@
 using namespace std;
 using namespace altruct::math;
 
+namespace {
+struct cyclic {
+    int v, o;
+    cyclic(int v, int o) : v(v), o(o) {}
+    bool operator==(const cyclic& rhs) const { return v == rhs.v; }
+    cyclic& operator*=(const cyclic& rhs) { v += rhs.v; v %= o; return *this; }
+    cyclic operator*(const cyclic& rhs) const { auto t = *this; return t *= rhs; }
+};
+} // namespace
+template<> struct identityT<cyclic> { static cyclic of(const cyclic& x) { return cyclic(0, x.o); } };
+template<> struct hasherT<cyclic> { size_t operator()(const cyclic& x) const { return x.v; } };
+
+
 void crt_test_impl(int a1, int n1, int a2, int n2) {
     int a, n; chinese_remainder(&a, &n, a1, n1, a2, n2);
     EXPECT_EQ(lcm(n1, n2), n);
@@ -225,6 +238,72 @@ TEST(modulos_test, kth_roots_of_unity) {
     EXPECT_EQ((set<int>{1, 5, 7, 11, 13, 17}), kth_roots_of_unity(18, 6, prim));
 }
 
+TEST(modulos_test, discrete_log_brute_force_g) {
+    for (int o = 1; o <= 120; o++) {
+        for (int v = 0; v < o; v++) {
+            cyclic a(v, o);
+            cyclic a_x(0, o);
+            for (int x = 0; x < o; x++) {
+                int xx = discrete_log_brute_force_g(a, a_x, o);
+                EXPECT_EQ(powT(a, xx), a_x) << o << " " << v << " " << x;
+                a_x *= a;
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_baby_giant_g) {
+    for (int o = 1; o <= 120; o++) {
+        for (int v = 0; v < o; v++) {
+            cyclic a(v, o);
+            cyclic a_x(0, o);
+            for (int x = 0; x < o; x++) {
+                int xx = discrete_log_baby_giant_g(a, a_x, o);
+                EXPECT_EQ(powT(a, xx), a_x) << o << " " << v << " " << x;
+                a_x *= a;
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_order_pp_g) {
+    int N = 300;
+    prime_holder prim(N);
+    for (int p : prim.p()) {
+        int ps = p;
+        for (int s = 1; ps < N; ps *= p, s++) {
+            for (int v = 0; v < ps; v++) {
+                if (v % p == 0) continue; // otherwise order of a isn't p^s
+                cyclic a(v, ps);
+                cyclic a_x(0, ps);
+                for (int x = 0; x < ps; x++) {
+                    int xx = discrete_log_order_pp_g(a, a_x, p, s);
+                    EXPECT_EQ(powT(a, xx), a_x) << p << " " << s << " " << v << " " << x;
+                    a_x *= a;
+                }
+            }
+        }
+    }
+}
+
+TEST(modulos_test, discrete_log_g) {
+    int N = 200;
+    prime_holder prim(N);
+    for (int n = 1; n < N; n++) {
+        auto n_factors = prime_factors(prim.factor_integer(n));
+        for (int v = 0; v < n; v++) {
+            if (gcd(v, n) != 1) continue; // otherwise order of a isn't p^s
+            cyclic a(v, n);
+            cyclic a_x(0, n);
+            for (int x = 0; x < n; x++) {
+                uint64_t xx = discrete_log_g(a, a_x, n, n_factors);
+                EXPECT_EQ(powT(a, xx), a_x) << n << " " << v << " " << x;
+                a_x *= a;
+            }
+        }
+    }
+}
+
 TEST(modulos_test, discrete_log_brute_force) {
     for (int m = 2; m < 100; m++) {
         for (int a = 1; a < m; a++) {
@@ -272,6 +351,7 @@ TEST(modulos_test, discrete_log_shanks) {
 }
 
 TEST(modulos_test, discrete_log_pp) {
+    // also covers discrete_log_oddp and discrete_log_p2
     int N = 300;
     prime_holder prim(N);
     for (int p : prim.p()) {
