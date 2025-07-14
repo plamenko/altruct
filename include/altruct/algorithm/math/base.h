@@ -37,6 +37,16 @@ template<typename R, typename T>
 R castOf(const R& ref, const T& x) { return castT<R, T>::of(ref, x); }
 
 /**
+ * Hashes value T to size_t
+ */
+template<typename T>
+struct hasherT {
+    size_t operator()(const T& x) const {
+        return castOf<size_t>(x);
+    }
+};
+
+/**
  * Gives the multiplicative identity element for the element `x`.
  *
  * For example:

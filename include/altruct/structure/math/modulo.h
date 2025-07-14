@@ -268,6 +268,14 @@ struct zeroT<modulo<T, ID, STORAGE_TYPE>> {
     }
 };
 
+template<typename T, uint64_t ID, int STORAGE_TYPE>
+struct hasherT<modulo<T, ID, STORAGE_TYPE>> {
+    typedef modulo<T, ID, STORAGE_TYPE> mod;
+    size_t operator()(const mod& x) const {
+        return hasherT<T>()(x.v);
+    }
+};
+
 template<typename T>
 T modT(T v, const T& M) { return modulo_normalize(v, M); }
 
