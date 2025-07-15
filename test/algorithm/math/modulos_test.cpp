@@ -273,7 +273,6 @@ TEST(modulos_test, discrete_log_order_pp_g) {
         int ps = p;
         for (int s = 1; ps < N; ps *= p, s++) {
             for (int v = 0; v < ps; v++) {
-                if (v % p == 0) continue; // otherwise order of a isn't p^s
                 cyclic a(v, ps);
                 cyclic a_x(0, ps);
                 for (int x = 0; x < ps; x++) {
@@ -292,7 +291,6 @@ TEST(modulos_test, discrete_log_g) {
     for (int n = 1; n < N; n++) {
         auto n_factors = prime_factors(prim.factor_integer(n));
         for (int v = 0; v < n; v++) {
-            if (gcd(v, n) != 1) continue; // otherwise order of a isn't p^s
             cyclic a(v, n);
             cyclic a_x(0, n);
             for (int x = 0; x < n; x++) {
@@ -377,7 +375,7 @@ TEST(modulos_test, discrete_log) {
         int phi = prim.phi(m);
         auto phi_factors = prime_factors(prim.factor_integer(phi));
         for (int a = 1; a < m; a++) {
-            if (gcd(a, m) != 1) continue;
+            if (gcd(a, m) != 1) continue; // otherwise `a^k (mod m)` not a cyclic subgroup
             int a_x = 1;
             for (int x = 0; x == 0 || a_x != 1; x++) {
                 uint64_t xx = discrete_log(a, a_x, m, phi, phi_factors);

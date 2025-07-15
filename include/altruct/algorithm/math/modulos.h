@@ -413,7 +413,7 @@ I discrete_log_baby_giant_g(G a, G b, I n) {
 /**
  * Discrete logarithm in cyclic group of order `p^s`, in O(s*sqrt(p))
  *
- * `a^x = b`, order of `a` is `p^s` with `p` prime
+ * `a^x = b`, order of `a` is `p^s` (or its divisor) with `p` prime
  *
  * @return `x`
  */
@@ -428,6 +428,8 @@ I discrete_log_order_pp_g(G a, G b, I p, int s) {
     std::vector<I> pp(s + 1);
     pp[0] = 1;
     for (int k = 1; k <= s; k++) {
+        // check if the order is a proper divisor of p^s
+        if (powT(a, pp[k - 1]) == id) { s = k - 1; break; }
         pp[k] = pp[k - 1] * p;
     }
     G ai = powT(a, pp[s] - 1); // a^-1
